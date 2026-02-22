@@ -34,6 +34,10 @@ RUN apt-get update && apt-get install -y \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
+# Set env vars for debug runs
+ENV LD_LIBRARY_PATH=/workspace/lib:${LD_LIBRARY_PATH}
+ENV R_HOME=/workspace
+
 # Create vscode user
 RUN useradd -m -s /bin/bash vscode
 RUN echo "vscode ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/vscode
