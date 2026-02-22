@@ -22,6 +22,7 @@ RUN apt-get update && apt-get install -y \
     libssl-dev \
     texinfo \
     wget \
+    file \
     zlib1g-dev \
     libpcre3-dev \
     libicu-dev \
