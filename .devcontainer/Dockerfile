@@ -26,6 +26,7 @@ RUN apt-get update && apt-get install -y \
     libpcre3-dev \
     libicu-dev \
     libxmu-dev \
+    rsync \
     tcl-dev \
     tk-dev \
     libtirpc-dev \
