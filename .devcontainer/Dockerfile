@@ -22,6 +22,7 @@ RUN apt-get update && apt-get install -y \
     libssl-dev \
     texinfo \
     wget \
+    file \
     zlib1g-dev \
     libpcre3-dev \
     libicu-dev \
@@ -32,6 +33,11 @@ RUN apt-get update && apt-get install -y \
     libtirpc-dev \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
+
+# Set env vars for debug runs
+ENV LD_LIBRARY_PATH=/workspace/lib:${LD_LIBRARY_PATH}
+ENV R_HOME=/workspace
+ENV LC_ALL=en_US.UTF-8
 
 # Create vscode user
 RUN useradd -m -s /bin/bash vscode
