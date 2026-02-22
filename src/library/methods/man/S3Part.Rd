@@ -1,6 +1,6 @@
 % File src/library/methods/man/S3Part.Rd
 % Part of the R package, https://www.R-project.org
-% Copyright 2008-2025 R Core Team
+% Copyright 2008-2016 R Core Team
 % Distributed under GPL 2 or later
 
 \name{S3Part}
@@ -218,9 +218,10 @@ empty list for any other object.
 }
 
 \references{
-  \bibinfo{R:Chambers:2016}{footer}{(Chapters 9 and 10, particularly
-    Section 10.8)}
-  \bibshow{R:Chambers:2016}
+ Chambers, John M. (2016)
+ \emph{Extending R},
+  Chapman & Hall.
+(Chapters 9 and 10, particularly Section 10.8)
 }
 
 \seealso{  \code{\link{setOldClass}} }

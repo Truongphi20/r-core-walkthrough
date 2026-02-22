@@ -27,21 +27,20 @@ rexp(n, rate = 1)
   \item{n}{number of observations. If \code{length(n) > 1}, the length
     is taken to be the number required.}
   \item{rate}{vector of rates.}
-  \item{log, log.p}{logical; if \code{TRUE}, probabilities/densities
-    are given as logarithms.}
-  \item{lower.tail}{logical; if \code{TRUE} (default), probabilities are
+  \item{log, log.p}{logical; if TRUE, probabilities p are given as log(p).}
+  \item{lower.tail}{logical; if TRUE (default), probabilities are
     \eqn{P[X \le x]}, otherwise, \eqn{P[X > x]}.}
 }
 \value{
   \code{dexp} gives the density,
-  \code{pexp} is the cumulative distribution function, and
-  \code{qexp} is the quantile function of the exponential distribution.
+  \code{pexp} gives the distribution function,
+  \code{qexp} gives the quantile function, and
   \code{rexp} generates random deviates.
 
   The length of the result is determined by \code{n} for
   \code{rexp}, and is the maximum of the lengths of the
-  numerical arguments for the other functions.
-
+  numerical arguments for the other functions.  
+  
   The numerical arguments other than \code{n} are recycled to the
   length of the result.  Only the first elements of the logical
   arguments are used.
@@ -57,13 +56,20 @@ rexp(n, rate = 1)
   \code{dexp}, \code{pexp} and \code{qexp} are all calculated
   from numerically stable versions of the definitions.
 
-  \code{rexp} uses \bibcitet{R:Ahrens+Dieter:1972}.
+  \code{rexp} uses
+
+  Ahrens, J. H. and Dieter, U. (1972).
+  Computer methods for sampling from the exponential and normal distributions.
+  \emph{Communications of the ACM}, \bold{15}, 873--882.
 }
 \references{
-  \bibinfo{R:Johnson+Kotz+Balakrishnan:1994}{footer}{Chapter 19.}  
-  \bibshow{*,
-    R:Becker+Chambers+Wilks:1988,
-    R:Johnson+Kotz+Balakrishnan:1994}
+  Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+  \emph{The New S Language}.
+  Wadsworth & Brooks/Cole.
+
+  Johnson, N. L., Kotz, S. and Balakrishnan, N. (1995)
+  \emph{Continuous Univariate Distributions}, volume 1, chapter 19.
+  Wiley, New York.
 }
 \seealso{
   \code{\link{exp}} for the exponential function.

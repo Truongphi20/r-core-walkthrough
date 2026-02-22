@@ -1,6 +1,6 @@
 % File src/library/utils/man/install.packages.Rd
 % Part of the R package, https://www.R-project.org
-% Copyright 1995-2025 R Core Team
+% Copyright 1995-2023 R Core Team
 % Distributed under GPL 2 or later
 
 \name{install.packages}
@@ -72,7 +72,8 @@ install.packages(pkgs, lib, repos = getOption("repos"),
     Incompatible with \code{type = "both"}.
   }
   \item{method}{
-    download method, see \code{\link{download.file}}.
+    download method, see \code{\link{download.file}}.  Unused if
+    a non-\code{NULL} \code{available} is supplied.
   }
   \item{available}{
     a matrix as returned by \code{\link{available.packages}}
@@ -155,14 +156,13 @@ install.packages(pkgs, lib, repos = getOption("repos"),
     a logical value: should the \option{--libs-only} option be used to
     install only additional sub-architectures for source installs?  (See also
     \code{INSTALL_opts}.)  This can also be used on Windows to install
-    just the DLL(s) from a binary package.
-    %, e.g.\sspace{}to add 64-bit DLLs to a 32-bit install.
+    just the DLL(s) from a binary package, e.g.\sspace{}to add 64-bit
+    DLLs to a 32-bit install.
   }
   \item{INSTALL_opts}{
     an optional character vector of additional option(s) to be passed to
     \command{R CMD INSTALL} for a source package install.  E.g.,
-    \code{c("--html", "--no-multiarch", "--no-test-load")} or, for
-    macOS, \code{"--dsym"}.
+    \code{c("--html", "--no-multiarch", "--no-test-load")}.
 
     Can also be a named list of character vectors to be used as
     additional options, with names the respective package names.
@@ -182,8 +182,7 @@ install.packages(pkgs, lib, repos = getOption("repos"),
   }
   \item{\dots}{
     further arguments to be passed to \code{\link{download.file}},
-    \code{\link{available.packages}}, or to
-    the functions for binary
+    \code{\link{available.packages}}, or to the functions for binary
     installs on macOS and Windows (which accept an argument \code{"lock"}:
     see the section on \sQuote{Locking}).
   }
@@ -223,19 +222,10 @@ install.packages(pkgs, lib, repos = getOption("repos"),
   CRAN builds for macOS.  This function can install either type, either by
   downloading a file from a repository or from a local file.
 
-  Possible values of \code{type} for binary packages are either simply
-  \code{"binary"} to denote the binaries matching the current R, or
-  a string consisting of two or three parts separated by periods: the
-  operating system (\code{"win"} or \code{"mac"}), the string
-  \code{"binary"} and optional build name (e.g., \code{"big-sur-arm64"}).
-  The last part is optional and currently only used on macOS to
-  disambiguate builds targeting different macOS versions or
-  architectures. Example values:
-  \code{"win.binary"} for Windows binaries and
-  \code{"mac.binary.big-sur-arm64"} for macOS 11 (\I{Big Sur}) arm64 binaries.
-  The corresponding binary type for the running R can be obtained via
-  \code{.Platform$pkgType}, however, it may be \code{"source"} if
-  the build does not support package binaries.
+  Possible values of \code{type} are (currently) \code{"source"},
+  \code{"mac.binary"}, and
+  \code{"win.binary"}: the appropriate binary type where supported can
+  also be selected as \code{"binary"}.
 
   For a binary install from a repository, the function checks for the
   availability of a source package on the same repository, and reports
@@ -258,14 +248,16 @@ install.packages(pkgs, lib, repos = getOption("repos"),
   Otherwise,
   \describe{
     \item{on Windows,}{you will need to have installed the \I{Rtools}
-  collection from \url{https://CRAN.R-project.org/bin/windows/Rtools/}.
+  collection as described in the \sQuote{R for Windows FAQ} \emph{and}
+  you must have the \env{PATH} environment variable set up as required
+  by \I{Rtools}.
 
-  %% For a 32/64-bit installation of \R on Windows, a small minority of
-  %% packages with compiled code need either \code{INSTALL_opts =
-  %% "--force-biarch"} or \code{INSTALL_opts = "--merge-multiarch"} for a
-  %% source installation.  (It is safe to always set the latter when
-  %% installing from a repository or tarballs, although it will be a little
-  %% slower.)
+  For a 32/64-bit installation of \R on Windows, a small minority of
+  packages with compiled code need either \code{INSTALL_opts =
+  "--force-biarch"} or \code{INSTALL_opts = "--merge-multiarch"} for a
+  source installation.  (It is safe to always set the latter when
+  installing from a repository or tarballs, although it will be a little
+  slower.)
 
   When installing a package on Windows, \code{install.packages} will abort
   the install if it detects that the package is already installed and is
@@ -276,8 +268,8 @@ install.packages(pkgs, lib, repos = getOption("repos"),
     \item{On Unix-alikes,}{when the package contains C/C++/Fortran code
       that needs compilation, suitable compilers and related tools need
       to be installed.  On macOS you need to have installed the
-      \sQuote{Command-line tools for \I{Xcode}} (see
-      \manual{R-admin}{}) and if needed
+      \sQuote{Command-line tools for \I{Xcode}} (see the
+      \sQuote{R Installation and Administration} manual) and if needed
       by the package a Fortran compiler, and have them in your path.
     }
   }
@@ -347,7 +339,7 @@ install.packages(pkgs, lib, repos = getOption("repos"),
   For non-parallel installs this is implemented \emph{via} the
   \code{timeout} argument of \code{\link{system2}}: for parallel
   installs \emph{via} the OS's \command{timeout} command.  (The one
-  tested is from GNU \I{coreutils}, commonly available on Linux but
+  tested is from GNU \pkg{coreutils}, commonly available on Linux but
   not other Unix-alikes.  If no such command is available the timeout
   request is ignored, with a warning. On Windows, one needs to specify
   a suitable \command{timeout} command via environment variable
@@ -399,8 +391,7 @@ install.packages(pkgs, lib, repos = getOption("repos"),
   find out by creating a test directory, but even this need not be the
   whole story: you may have permission to write in a library directory
   but lack permission to write binary files (such as \file{.dll} files)
-  there.  See \manual{rw-FAQ}{I don't have permission to write to the R
-  library directory} for workarounds.
+  there.  See the \sQuote{R for Windows FAQ} for workarounds.
     }
   }
 }
@@ -419,7 +410,8 @@ install.packages(pkgs, lib, repos = getOption("repos"),
   \code{\link{INSTALL}}, \code{\link{REMOVE}}, \code{\link{remove.packages}},
   \code{\link{library}}, \code{\link{.packages}}, \code{\link{read.dcf}}
 
-  Section \manual{R-admin}{Setting up a package repository}.
+  The \sQuote{R Installation and Administration} manual for how to
+  set up a repository.
 }
 
 \examples{\dontrun{

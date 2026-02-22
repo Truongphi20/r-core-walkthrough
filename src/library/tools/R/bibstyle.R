@@ -1,7 +1,7 @@
 #  File src/library/tools/R/bibstyle.R
 #  Part of the R package, https://www.R-project.org
 #
-#  Copyright (C) 1995-2025 The R Core Team
+#  Copyright (C) 1995-2019 The R Core Team
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -25,11 +25,11 @@ cleanupLatex <- function(x) {
     if (inherits(latex, "error")) {
     	x
     } else {
-    	deparseLatex(latexToUtf8(latex), dropBraces=TRUE, math=c("\\eqn{", "}"))
+    	deparseLatex(latexToUtf8(latex), dropBraces=TRUE)
     }
 }
 
-make_bibstyle_JSS <- function() {
+makeJSS <- function() {
 
     # First, some utilities
 
@@ -81,30 +81,19 @@ make_bibstyle_JSS <- function() {
     fmtAddress <- plainclean
     fmtBook <- emphclean
     fmtBtitle <- emphclean
-    fmtChapter <- labelclean(prefix = "chapter ")
-    fmtDOI <- function(doi) {
-        ## PR#17725: DOIs can contain % signs, and need multiple levels
-        ## of escaping when translated to Rd. 
-        .escape <- function(s)
-            gsub("%", paste0(strrep("\\", 11L), "%"), s, fixed = TRUE)
-        .fmtDOI <- label(prefix = "\\doi{", suffix = "}")
-        .fmtDOI(.escape(doi))
-    }
+    fmtChapter <- labelclean(prefix="chapter ")
+    fmtDOI <- label(prefix="\\doi{", suffix="}")
     fmtEdition <- labelclean(suffix=" edition")
     fmtEprint <- plain
     fmtHowpublished <- plainclean
     fmtISBN <- label(prefix = "ISBN ")
-    fmtISSN <- label(prefix = "ISSN ")
-    fmtInstitution <- function(s) {
-        if(inherits(s, "person"))
-            s <- s$given
-        plainclean(s)
-    }
+    fmtISSN <- label(prefix="ISSN ")
+    fmtInstitution <- plainclean
     fmtNote <- plainclean
     fmtPages <- plain
-    fmtSchool <- fmtInstitution
+    fmtSchool <- plainclean
     ## fmtTechreportnumber <- labelclean(prefix="Technical Report ")
-    fmtUrl <- label(prefix = "\\url{", suffix="}")
+    fmtUrl <- label(prefix="\\url{", suffix="}")
     fmtTitle <- function(title) 
         if (length(title)) {
             title <- gsub("%", "\\\\\\%", title)
@@ -139,18 +128,17 @@ make_bibstyle_JSS <- function() {
             result <- cleanupLatex(person$family)
             if (length(person$given))
                 paste(result,
-                      paste(substr(vapply(person$given, cleanupLatex, ""),
-                                   1L, 1L),
-                            collapse = ""))
+                      paste(substr(sapply(person$given, cleanupLatex),
+                                   1, 1), collapse=""))
             else result
         }
         else
-            paste(cleanupLatex(person$given), collapse = " ")
+            paste(cleanupLatex(person$given), collapse=" ")
     }
 
     # Format all authors for one paper
     authorList <- function(paper) {
-        names <- vapply(paper$author, shortName, "")
+        names <- sapply(paper$author, shortName)
         if (length(names) > 1L)
             result <- paste(names, collapse = ", ")
         else
@@ -160,7 +148,7 @@ make_bibstyle_JSS <- function() {
 
     # Format all editors for one paper
     editorList <- function(paper) {
-        names <- vapply(paper$editor, shortName, "")
+        names <- sapply(paper$editor, shortName)
         if (length(names) > 1L)
             result <- paste(paste(names, collapse = ", "), "(eds.)")
         else if (length(names))
@@ -171,10 +159,15 @@ make_bibstyle_JSS <- function() {
     }
 
     extraInfo <- function(paper) {
-        result <- paste(c(fmtNote(paper$note),
-                          fmtEprint(paper$eprint),
-                          fmtUrl(paper$url)),
-                        collapse = ", ")
+    	# PR#17725:  DOIs can contain % signs, and need multiple 
+    	#            levels of escaping when translated to Rd.
+    	escapeDOIPercent <- function(s) gsub("%", 
+    					  paste0(strrep("\\", 11L), "%"),
+    					  fixed = TRUE,
+    					  s)
+        result <- paste(c(fmtDOI(escapeDOIPercent(paper$doi)), fmtNote(paper$note),
+                          fmtEprint(paper$eprint), fmtUrl(paper$url)),
+                        collapse=", ")
         if (nzchar(result)) result
     }
 
@@ -185,32 +178,24 @@ make_bibstyle_JSS <- function() {
         if (length(book$number))
             result <- paste(result, "number", collapse(book$number))
         if (length(book$series))
-            result <- paste(result, "series", collapse(cleanupLatex(book$series)))
+            result <- paste(result, "series", collapse(book$series))
         if (nzchar(result)) result
     }
 
     bookPublisher <- function(book) {
-        if(length(p <- book$publisher)) {
-            if(inherits(p, "person"))
-                p <- p$given
-            result <- collapse(cleanupLatex(p))
-            if(length(book$address))
-                result <- paste(result,
-                                collapse(book$address),
-                                sep = ", ")
+        if (length(book$publisher)) {
+            result <- collapse(book$publisher)
+            if (length(book$address))
+                result <- paste(result, collapse(book$address), sep = ", ")
             result
         }
     }
 
     procOrganization <- function(paper) {
-        if(length(o <- paper$organization)) {
-            if(inherits(o, "person"))
-                o <- o$given
-            result <- collapse(cleanupLatex(o))
-            if(length(paper$address))
-                result <- paste(result,
-                                collapse(cleanupLatex(paper$address)),
-                                sep = ", ")
+        if (length(paper$organization)) {
+            result <- collapse(cleanupLatex(paper$organization))
+            if (length(paper$address))
+                result <- paste(result, collapse(cleanupLatex(paper$address)), sep =", ")
             result
         }
     }
@@ -228,9 +213,7 @@ make_bibstyle_JSS <- function() {
                    fmtTitle(paper$title),
                    sentence(fmtBook(paper$journal), volNum(paper),
                             fmtPages(paper$pages)),
-                   sentence(fmtISSN(paper$issn)),
-                   sentence(fmtDOI(paper$doi)),
-                   sentence(extraInfo(paper))))
+                   sentence(fmtISSN(paper$issn), extraInfo(paper))))
     }
 
     formatBook <- function(book) {
@@ -243,9 +226,7 @@ make_bibstyle_JSS <- function() {
                    sentence(fmtBtitle(book$title), bookVolume(book),
                             fmtEdition(book$edition)),
                    sentence(bookPublisher(book)),
-                   sentence(fmtISBN(book$isbn)),
-                   sentence(fmtDOI(book$doi)),
-                   sentence(extraInfo(book))))
+                   sentence(fmtISBN(book$isbn), extraInfo(book))))
     }
 
     formatInbook <- function(paper) {
@@ -261,12 +242,10 @@ make_bibstyle_JSS <- function() {
                    paste("In", sentence(editors, fmtBtitle(paper$booktitle),
                                         bookVolume(paper),
                                         fmtChapter(paper$chapter),
-                                        fmtPages(paper$pages),
-                                        fmtEdition(paper$edition))),
+                                        fmtEdition(paper$edition),
+                                        fmtPages(paper$pages))),
                    sentence(bookPublisher(paper)),
-                   sentence(fmtISBN(paper$isbn)),
-                   sentence(fmtDOI(paper$doi)),
-                   sentence(extraInfo(paper))))
+                   sentence(fmtISBN(paper$isbn), extraInfo(paper))))
     }
 
     formatIncollection <- function(paper) {
@@ -277,12 +256,9 @@ make_bibstyle_JSS <- function() {
                                         fmtBtitle(paper$booktitle),
                                         bookVolume(paper),
                                         fmtEdition(paper$edition),
-                                        fmtChapter(paper$chapter),
                                         fmtPages(paper$pages))),
                    sentence(bookPublisher(paper)),
-                   sentence(fmtISBN(paper$isbn)),
-                   sentence(fmtDOI(paper$doi)),
-                   sentence(extraInfo(paper))))
+                   sentence(fmtISBN(paper$isbn), extraInfo(paper))))
     }
 
     formatInProceedings <- function(paper)
@@ -295,9 +271,7 @@ make_bibstyle_JSS <- function() {
                                         fmtEdition(paper$edition),
                                         fmtPages(paper$pages))),
                    sentence(procOrganization(paper)),
-                   sentence(fmtISBN(paper$isbn)),
-                   sentence(fmtDOI(paper$doi)),
-                   sentence(extraInfo(paper))))
+                   sentence(fmtISBN(paper$isbn), extraInfo(paper))))
 
     formatManual <- function(paper) {
         collapse(c(fmtPrefix(paper),
@@ -305,9 +279,7 @@ make_bibstyle_JSS <- function() {
                    sentence(fmtBtitle(paper$title), bookVolume(paper),
                             fmtEdition(paper$edition)),
                    sentence(procOrganization(paper)),
-                   sentence(fmtISBN(paper$isbn)),
-                   sentence(fmtDOI(paper$doi)),
-                   sentence(extraInfo(paper))))
+                   sentence(fmtISBN(paper$isbn), extraInfo(paper))))
     }
 
     formatMastersthesis <- function(paper) {
@@ -317,7 +289,6 @@ make_bibstyle_JSS <- function() {
                    sentence(fmtType(paper$type, "Master's thesis"),
                             fmtSchool(paper$school),
                             fmtAddress(paper$address)),
-                   sentence(fmtDOI(paper$doi)),
                    sentence(extraInfo(paper))))
     }
 
@@ -328,7 +299,6 @@ make_bibstyle_JSS <- function() {
                    sentence(fmtType(paper$type, "Ph.D. thesis"),
                             fmtSchool(paper$school),
                             fmtAddress(paper$address)),
-                   sentence(fmtDOI(paper$doi)),
                    sentence(extraInfo(paper))))
     }
 
@@ -337,7 +307,6 @@ make_bibstyle_JSS <- function() {
                    sentence(authorList(paper), fmtYear(paper$year), sep = " "),
                    fmtTitle(paper$title),
                    sentence(fmtHowpublished(paper$howpublished)),
-                   sentence(fmtDOI(paper$doi)),
                    sentence(extraInfo(paper))))
     }
 
@@ -348,10 +317,8 @@ make_bibstyle_JSS <- function() {
                    sentence(editor, fmtYear(book$year), sep = " "),
                    sentence(fmtBtitle(book$title), bookVolume(book)),
                    sentence(procOrganization(book)),
-                   sentence(fmtISBN(book$isbn)),
-                   sentence(fmtISSN(book$issn)),
-                   sentence(fmtDOI(book$doi)),
-                   sentence(extraInfo(book))))
+                   sentence(fmtISBN(book$isbn), fmtISSN(book$issn),
+                            extraInfo(book))))
     }
 
     formatTechreport <- function(paper) {
@@ -361,7 +328,6 @@ make_bibstyle_JSS <- function() {
                    sentence(fmtTechreportnumber(paper),
                             fmtInstitution(paper$institution),
                             fmtAddress(paper$address)),
-                   sentence(fmtDOI(paper$doi)),
                    sentence(extraInfo(paper))))
     }
 
@@ -369,7 +335,6 @@ make_bibstyle_JSS <- function() {
         collapse(c(fmtPrefix(paper),
                    sentence(authorList(paper), fmtYear(paper$year), sep = " "),
                    fmtTitle(paper$title),
-                   sentence(fmtDOI(paper$doi)),
                    sentence(extraInfo(paper))))
     }
 
@@ -399,57 +364,8 @@ make_bibstyle_JSS <- function() {
     environment()
 }
 
-make_bibstyle_R <- function() {
-    env <- make_bibstyle_JSS()
-
-    ## Format one person object in not-so-short "Murdoch D. J." format
-    shortName <- function(person) {
-        if(length(family <- person$family)) {
-            result <- cleanupLatex(family)
-            if(length(given <- person$given)) {
-                given <- vapply(given, cleanupLatex, "")
-                paste(result,
-                      paste0(substring(given, 1L, 1L),
-                             ifelse(nchar(given) > 1L, ".", ""),
-                             collapse = " "))
-            } else result
-        }
-        else paste(cleanupLatex(person$given), collapse = " ")
-    }
-    environment(shortName) <- env
-    
-    ## authorList <- function(paper) {
-    ##     names <- vapply(paper$author, shortName, "")
-    ##     if (length(names) > 1L)
-    ##         result <- paste(names, collapse = " and ")
-    ##     else
-    ##         result <- names
-    ##     result
-    ## }
-    ## environment(authorList) <- env
-    
-    ## editorList <- function(paper) {
-    ##     names <- vapply(paper$editor, shortName, "")
-    ##     if (length(names) > 1L)
-    ##         result <- paste(paste(names, collapse = " and "), "(eds.)")
-    ##     else if (length(names))
-    ##         result <- paste(names, "(ed.)")
-    ##     else
-    ##         result <- NULL
-    ##     result
-    ## }
-    ## environment(editorList) <- env
-    
-    env$shortName <- shortName
-    ## env$authorList <- authorList
-    ## env$editorList <- editorList
-    
-    env
-}
-
 bibstyle <- local({
-    styles <- list(JSS = make_bibstyle_JSS(),
-                   R = make_bibstyle_R())
+    styles <- list(JSS = makeJSS())
     default <- "JSS"
     function(style, envir, ..., .init = FALSE, .default=TRUE) {
         newfns <- list(...)
@@ -462,7 +378,7 @@ bibstyle <- local({
 		stopifnot(!.init)
 		styles[[style]] <<- envir
 	    }
-	    if (.init) styles[[style]] <<- make_bibstyle_JSS()
+	    if (.init) styles[[style]] <<- makeJSS()
 	    if (length(newfns) && style == "JSS")
 		stop("The default JSS style may not be modified.")
 	    for (n in names(newfns))

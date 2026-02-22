@@ -294,17 +294,17 @@ tre_tnfa_run_approx(const tre_tnfa_t *tnfa, const void *string, int len,
     /* Allocate `tmp_tags' from `buf'. */
     tmp_tags = (void *)buf;
     buf_cursor = buf + tag_bytes;
-    buf_cursor += ALIGN(buf_cursor, anytype);
+    buf_cursor += ALIGN(buf_cursor, long);
 
     /* Allocate `reach' from `buf'. */
     reach = (void *)buf_cursor;
     buf_cursor += reach_bytes;
-    buf_cursor += ALIGN(buf_cursor, anytype);
+    buf_cursor += ALIGN(buf_cursor, long);
 
     /* Allocate `reach_next' from `buf'. */
     reach_next = (void *)buf_cursor;
     buf_cursor += reach_bytes;
-    buf_cursor += ALIGN(buf_cursor, anytype);
+    buf_cursor += ALIGN(buf_cursor, long);
 
     /* Allocate tag arrays for `reach' and `reach_next' from `buf'. */
     for (i = 0; i < tnfa->num_states; i++)

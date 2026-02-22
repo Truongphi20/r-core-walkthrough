@@ -1,7 +1,7 @@
 #  File src/library/tools/R/Vignettes.R
 #  Part of the R package, https://www.R-project.org
 #
-#  Copyright (C) 1995-2025 The R Core Team
+#  Copyright (C) 1995-2022 The R Core Team
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -273,20 +273,15 @@ function(package, dir, lib.loc = NULL,
             ## </NOTE>
             for (i in seq_along(result$weave)) {
                 file <- names(result$weave)[i]
-                output <- result$weave[[i]]
+                output <- result$weave[i]
                 if (inherits(output, "error"))
                     next
                 if (!vignette_is_tex(output))
                     next
-                ## Ensure that the vignette dir is in TEX/BIBINPUTS.
-                ## This will often fail, however, when checking from an
-                ## installed 'package', as bib files are usually not installed
                 .eval_with_capture({
                     result$latex[[file]] <- tryCatch({
-                       texi2pdf(file = output, clean = FALSE, quiet = TRUE,
-                                texinputs = vigns$dir)
-                       find_vignette_product(file_path_sans_ext(output),
-                                             by = "texi2pdf", engine = engine)
+                       texi2pdf(file = output, clean = FALSE, quiet = TRUE)
+                       find_vignette_product(name, by = "texi2pdf", engine = engine)
                     }, error = identity)
                 })
             }
@@ -1058,22 +1053,19 @@ function(x, ...)
 
 ### * .writeVignetteHtmlIndex
 
+## NB SamplerCompare has a .Rnw file which produces no R code.
 .writeVignetteHtmlIndex <-
 function(pkg, con, vignetteIndex = NULL)
 {
-    html <- c(HTMLheader("Vignettes and other documentation",
-                         up = "../html/00Index.html",
-                         css = "../html/R.css", # installed since R 2.13.0
-                         ## relative paths to 'top' and 'logo' will only work
-                         ## for the (site-)library in RHOME (or dynamic help)
-                         Rhome = "../../.."),
+    ## FIXME: in principle we could need to set an encoding here
+    html <- c(HTMLheader("Vignettes and other documentation"),
               paste0("<h2>Vignettes from package '", pkg,"'</h2>"),
               if(NROW(vignetteIndex) == 0L) ## NROW(NULL) = 0
                   "The package contains no vignette meta-information."
               else {
                   vignetteIndex <- cbind(Package = pkg,
                                          as.matrix(vignetteIndex[, c("File", "Title", "PDF", "R")]))
-                  makeVignetteTable(vignetteIndex, depth = NULL)
+                  makeVignetteTable(vignetteIndex, depth = 3L)
               })
     otherfiles <- list.files(system.file("doc", package = pkg))
     if(NROW(vignetteIndex))
@@ -1086,9 +1078,9 @@ function(pkg, con, vignetteIndex = NULL)
 	urls <- paste0('<a href="', otherfiles, '">', otherfiles, '</a>')
         html <- c(html, '<h2>Other files in the <span class="samp">doc</span> directory</h2>',
                   '<table style="width: 100%;">',
-		  '<col style="width: 24%;">',
-		  '<col style="width: 50%;">',
-		  '<col style="width: 24%;">',
+		  '<col style="width: 24%;" />',
+		  '<col style="width: 50%;" />',
+		  '<col style="width: 24%;" />',
                   paste0('<tr><td></td><td><span class="samp">',
                          iconv(urls, "", "UTF-8"), "</span></td></tr>"),
                   "</table>")
@@ -1190,7 +1182,6 @@ vignetteEngine <- local({
         key
     }
 
-    ## FIXME: return a character vector, not stop here.
     getEngine <- function(name, package) {
         if (missing(name)) {
             result <- as.list(registry)

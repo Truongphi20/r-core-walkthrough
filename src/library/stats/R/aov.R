@@ -104,11 +104,10 @@ aov <- function(formula, data = NULL, projections = FALSE, qr = TRUE,
             qtx <- qtx * wts
         }
         qty <- as.matrix(qr.qty(qr.e, resp))
-        dimnames(qty) <- list(seq(nrow(qty)),
-                              if((nc <- ncol(qty)) > 1L)
-                                  colnames(resp) %||% paste0("Y", 1L:nc)
-                              ## else NULL
-                              )
+        if((nc <- ncol(qty)) > 1L) {
+            dny <- colnames(resp) %||% paste0("Y", 1L:nc)
+            dimnames(qty) <- list(seq(nrow(qty)), dny)
+        } else dimnames(qty) <- list(seq(nrow(qty)), NULL)
         qtx <- qr.qty(qr.e, qtx)
         dimnames(qtx) <- list(seq(nrow(qtx)) , dnx)
         for(i in seq_along(nmstrata)) {
@@ -274,7 +273,7 @@ summary.aov <- function(object, intercept = FALSE, split,
                     tmp <- apply(tmp, 1L, function(x) paste(x, collapse="."))
                     new <- lapply(splitnames, function(x) match(x, tmp))
                     split[[ names[i+1L] ]] <-
-                        new[lengths(new) > 0L]
+                        new[sapply(new, function(x) length(x) > 0L)]
                 } else {
                     old <- split[[ f[sp] ]]
                     marg.coefs <- df.names[asgn == (match(f[sp], names) - 1L)]

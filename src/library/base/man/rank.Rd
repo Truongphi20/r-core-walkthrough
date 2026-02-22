@@ -24,7 +24,9 @@ rank(x, na.last = TRUE,
     see \sQuote{Details}; can be abbreviated.}
 }
 \references{
-  \bibshow{R:Becker+Chambers+Wilks:1988}
+  Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+  \emph{The New S Language}.
+  Wadsworth & Brooks/Cole.
 }
 \details{
   If all components are different (and no \code{NA}s), the ranks are

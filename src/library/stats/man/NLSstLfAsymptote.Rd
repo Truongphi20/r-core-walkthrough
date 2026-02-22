@@ -4,6 +4,7 @@
 % Distributed under GPL 2 or later
 
 \name{NLSstLfAsymptote}
+\encoding{UTF-8}
 \title{Horizontal Asymptote on the Left Side}
 \alias{NLSstLfAsymptote}
 \alias{NLSstLfAsymptote.sortedXyData}

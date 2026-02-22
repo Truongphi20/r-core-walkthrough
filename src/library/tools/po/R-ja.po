@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: R 2.1.0\n"
 "Report-Msgid-Bugs-To: bugs.r-project.org\n"
-"POT-Creation-Date: 2025-03-31 11:51\n"
+"POT-Creation-Date: 2024-04-15 12:10\n"
 "PO-Revision-Date: 2024-03-18 21:18+0000\n"
 "Last-Translator: Michael Chirico <michaelchirico4@gmail.com>\n"
 "Language-Team: RjpWiki Message Translation Team <mokada@md.tsukuba.ac.jp>\n"
@@ -278,18 +278,6 @@ msgstr "Authors@R にMaintainerロールをもち，かつ正しいe-mail アド
 msgid "Authors@R field gives persons with invalid ORCID identifiers:"
 msgstr "Authors@Rフィールドに役割が明示されていない人がいます"
 
-#, fuzzy
-msgid "Authors@R field gives persons with duplicated ORCID identifiers:"
-msgstr "Authors@Rフィールドに役割が明示されていない人がいます"
-
-#, fuzzy
-msgid "Authors@R field gives persons with invalid ROR identifiers:"
-msgstr "Authors@Rフィールドに役割が明示されていない人がいます"
-
-#, fuzzy
-msgid "Authors@R field gives persons with duplicated ROR identifiers:"
-msgstr "Authors@Rフィールドに役割が明示されていない人がいます"
-
 msgid "Encoding '%s' is not portable"
 msgstr "エンコーディング '%s' は移植出来ません"
 
@@ -344,11 +332,11 @@ msgid "invalid 'OS.type' \"%s\".  Should not happen"
 msgstr ""
 
 #, fuzzy
-msgid "Missing link(s) in Rd file '%s':"
+msgid "Missing link or links in Rd file '%s':"
 msgstr "ドキュメントオブジェクト '%s' 中に欠損したリンクが見つかりました:"
 
 #, fuzzy
-msgid "Non-topic package-anchored link(s) in Rd file '%s':"
+msgid "Non-file package-anchored link(s) in Rd file '%s':"
 msgstr "ドキュメントオブジェクト '%s' 中に疑わしいリンクが見つかりました:"
 
 msgid "See section 'Cross-references' in the 'Writing R Extensions' manual."
@@ -713,6 +701,9 @@ msgstr "ビニエットエンジンパッケージが指定されていません
 msgid "Unsupported engine name"
 msgstr "未サポートのエンジン名"
 
+msgid "None of packages %s have registered vignette engines"
+msgstr "パッケージ %s のうち、どれもビニエットエンジンを登録していません"
+
 msgid "Vignette engine %s is not registered"
 msgstr "ビニエットエンジン %s は登録されていません"
 
@@ -798,12 +789,6 @@ msgstr "エラー: この R はバージョン %s です。 R %s %s を必要と
 
 msgid "loading failed"
 msgstr "ロードに失敗しました"
-
-msgid "'cc' is not on the path"
-msgstr ""
-
-msgid "'objdump' is not on the path"
-msgstr ""
 
 msgid "Got %s in evaluating %s; wanted %s"
 msgstr "%2$s を評価しているときに、%1$s を得ました; しかし欲しかったのは %3$s です"
@@ -1158,13 +1143,6 @@ msgstr "パッケージに R コードが含まれていません"
 msgid "package seems to be using lazy loading already"
 msgstr "パッケージは既に遅延読み込みを使用しているように見えます"
 
-msgid "'files' and 'bytes' are mutually exclusive"
-msgstr ""
-
-#, fuzzy
-msgid "'bytes' must be a raw vector"
-msgstr "'text' は文字型ベクトルでなければなりません"
-
 msgid ""
 "Cannot process chunk/lines:\n"
 "%s"
@@ -1260,13 +1238,6 @@ msgstr "引数 '%s' は文字列かコネクションでなければなりませ
 
 msgid "unimplemented encoding"
 msgstr "実装されていないエンコード"
-
-#, fuzzy
-msgid "x must be a single string"
-msgstr "'x' は 1 つの文字でなければなりません"
-
-msgid "invalid hex string"
-msgstr ""
 
 msgid "this requires 'objdump.exe' to be on the PATH"
 msgstr ""
@@ -1418,8 +1389,7 @@ msgstr ""
 msgid "update_PACKAGES complete."
 msgstr ""
 
-#, fuzzy
-msgid "'%s' must be a character string"
+msgid "'x' must be a single character string"
 msgstr "'x' は 1 つの文字でなければなりません"
 
 msgid "test '%s' is not available"
@@ -1474,10 +1444,6 @@ msgstr "非 ASCII データをもつ未知のエンコーディングです: ASC
 msgid "cannot source package code:"
 msgstr "パッケージコードを読み込めません"
 
-#, fuzzy
-msgid "inferiorCallError"
-msgstr " 内部エラー "
-
 msgid "inferior call failed"
 msgstr ""
 
@@ -1531,8 +1497,7 @@ msgid "Found a .Internal call in the following function:"
 msgid_plural "Found .Internal calls in the following functions:"
 msgstr[0] "以下の関数中に .internal 呼び出しが見つかりました:"
 
-#, fuzzy
-msgid "Found a .Internal call in methods for the following S4 generic:"
+msgid "Found a.Internal call in methods for the following S4 generic:"
 msgid_plural "Found .Internal calls in methods for the following S4 generics:"
 msgstr[0] "以下の S4 関数に対するメソッド中に .Internal 呼び出しが見つかりました:"
 
@@ -1581,11 +1546,6 @@ msgstr[0] ""
 msgid "SUMMARY: processing the following file failed:"
 msgid_plural "SUMMARY: processing the following files failed:"
 msgstr[0] "以下の Rd 例示ファイル中に大局的かもしれない 'T' もしくは 'F' がありました:"
-
-#, fuzzy
-msgid "Package %s does not have a registered vignette engine"
-msgid_plural "None of packages %s have registered vignette engines"
-msgstr[0] "パッケージ %s のうち、どれもビニエットエンジンを登録していません"
 
 msgid "unable to re-encode %s line %s"
 msgid_plural "unable to re-encode %s lines %s"
@@ -1993,6 +1953,9 @@ msgstr[0] ""
 
 #~ msgid "Internal error:  NULL tag"
 #~ msgstr " 内部エラー： NULL タグ "
+
+#~ msgid "internal error"
+#~ msgstr " 内部エラー "
 
 #~ msgid "Inconsistent arg count for"
 #~ msgstr " 以下に対する不整合な引数の数 "

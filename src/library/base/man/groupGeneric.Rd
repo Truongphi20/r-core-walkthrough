@@ -22,7 +22,7 @@
   Group generic methods can be defined for the following pre-specified groups of
   functions, \code{Math}, \code{Ops}, \code{matrixOps}, \code{Summary} and \code{Complex}.
   (There are no objects of these names in base \R, but there are in the
-  \pkg{methods} package.)
+  \pkg{methods} package, not yet for \code{matrixOps}.)
 
   A method defined for an individual member of the group takes
   precedence over a method defined for the group as a whole.
@@ -201,7 +201,10 @@
   for that package.
 }
 \references{
-  \bibshow{R:Chambers:1992:aa}
+  Appendix A, \emph{Classes and Methods} of\cr
+  Chambers, J. M.  and Hastie, T. J. eds (1992)
+  \emph{Statistical Models in S.}
+  Wadsworth & Brooks/Cole.
 }
 \seealso{
   \code{\link{methods}} for methods of non-internal generic functions.

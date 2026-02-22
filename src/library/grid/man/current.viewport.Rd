@@ -33,7 +33,6 @@ current.parent(n=1)
 current.vpTree(all=TRUE)
 current.vpPath()
 current.transform()
-current.rotation()
 }
 \arguments{
   \item{n}{ The number of generations to go up.}

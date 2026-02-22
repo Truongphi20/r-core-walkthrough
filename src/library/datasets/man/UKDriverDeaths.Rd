@@ -37,10 +37,22 @@ Seatbelts
   }
 }
 \source{
-  \bibcitet{|R:Harvey:1989|pages 519--523, R:Durbin+Koopman:2001}.
+  Harvey, A.C. (1989).
+  \emph{Forecasting, Structural Time Series Models and the Kalman Filter}.
+  Cambridge University Press, pp.\sspace{}519--523.
+
+  Durbin, J. and Koopman, S. J. (2001).
+  \emph{Time Series Analysis by State Space Methods}.
+  Oxford University Press.
+  %% \url{http://www.ssfpack.com/dkbook/}
 }
 \references{
-  \bibshow{*, R:Harvey+Durbin:1986}
+  Harvey, A. C. and Durbin, J. (1986).
+  The effects of seat belt legislation on British road casualties: A
+  case study in structural time series modelling.
+  \emph{Journal of the Royal Statistical Society} series A, \bold{149},
+  187--227.
+  \doi{10.2307/2981553}.
 }
 \examples{
 require(stats); require(graphics)

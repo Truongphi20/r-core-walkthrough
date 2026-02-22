@@ -1,7 +1,7 @@
 #  File src/library/methods/R/RClassUtils.R
 #  Part of the R package, https://www.R-project.org
 #
-#  Copyright (C) 1995-2024 The R Core Team
+#  Copyright (C) 1995-2022 The R Core Team
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -268,7 +268,7 @@ completeClassDefinition <-
             for(i in seq_along(ext)) {
                 eClass <- ext[[i]]
                 if(isClass(eClass, where = where))
-                    superProps[[i+1L]] <- getClassDef(eClass, where = where)@slots
+                    superProps[[i+1]] <- getClassDef(eClass, where = where)@slots
             }
             properties <- unlist(superProps, recursive = FALSE)
             ## check for conflicting slot names
@@ -419,7 +419,7 @@ superClassDepth <-
             more <- Recall(superClass, soFar)
             whatMore <- more$label
             if(!all(is.na(match(whatMore, soFar)))) {
-                ## eliminate classes reachable by more than one path
+                ## elminate classes reachable by more than one path
                 ## (This is allowed in the model, however)
                 ok <- is.na(match(whatMore, soFar))
                 more$depth <- more$depth[ok]
@@ -1229,7 +1229,7 @@ completeSubclasses <-
       what2 <- what[affected]
       dups <- unique(what2[duplicated(what2)])
       if(length(dups) == 0) {
-        ##  eliminating conditional relations removed duplicates
+        ##  eliminating conditonal relations removed duplicates
         if(length(conflicts) > 0)
           attr(ext, "conflicts") <- unique(c(conflicts, attr(ext, "conflicts")))
         return(ext)
@@ -1708,7 +1708,7 @@ newClassRepresentation <- function(...) {
 .insertExpr <- function(expr, el) {
     if(!is(expr, "{"))
         expr <- substitute({EXPR}, list(EXPR = expr))
-    expr[3L:(length(expr)+1L)] <- expr[2L:length(expr)]
+    expr[3L:(length(expr)+1)] <- expr[2L:length(expr)]
     expr[[2L]] <- el
     expr
 }
@@ -1807,41 +1807,42 @@ substituteFunctionArgs <-
 
 ## bootstrap version:  all classes and methods must be in the version of the methods
 ## package being built in the toplevel environment: MUST avoid require("methods") !
-.requirePackage <- function(package, mustFind = TRUE, quietly = FALSE)
+.requirePackage <- function(package, mustFind = TRUE)
     topenv(parent.frame())
 
 ## real version of .requirePackage
-..requirePackage <- function(package, mustFind = TRUE, quietly = FALSE) {
+..requirePackage <- function(package, mustFind = TRUE) {
+    value <- package
     if(nzchar(package)) {
         ## lookup as lightning fast as possible:
-        if(!is.null(ns <-.Internal(getRegisteredNamespace(package))))
-           return(ns)
+	if (.Internal(exists(package, .Internal(getNamespaceRegistry()),
+			     "any", FALSE)))
+            value <- getNamespace(package)
         else {
             if(identical(package, ".GlobalEnv"))
                 return(.GlobalEnv)
             if(identical(package, "methods"))
                 return(topenv(parent.frame())) # booting methods
-            ## else continue
         }
     }
-    topEnv <- getOption("topLevelEnvironment", default = .GlobalEnv)
+    if(is.environment(value))
+        return(value)
+    topEnv <- getOption("topLevelEnvironment")
+    if(is.null(topEnv))
+        topEnv <- .GlobalEnv
     if(!is.null(pkgN <- get0(".packageName", topEnv, inherits=TRUE)) &&
        .identC(package, pkgN))
         return(topEnv) # kludge for source'ing package code
-
-    ## If called from .findInheritedMethods which disables S4 primitive dispatch,
-    ## allow it here, as namespace loading hooks may need it:
-    if(!.allowPrimitiveMethods(TRUE))
-        on.exit(.allowPrimitiveMethods(FALSE))
-    if(nzchar(package) && requireNamespace(package, quietly=quietly))
-        getNamespace(package)
+    if(nzchar(package) && require(package, character.only = TRUE)) {}
     else {
         if(mustFind)
-          stop(gettextf("unable to load required package %s",
+          stop(gettextf("unable to find required package %s",
                         sQuote(package)),
                domain = NA)
+        else
+          return(NULL)
     }
-    ## else return(NULL)
+    getNamespace(package)
 }
 
 .classDefEnv <- function(classDef) {
@@ -2032,7 +2033,7 @@ assign("#HAS_DUPLICATE_CLASS_NAMES", FALSE, envir = .classTable)
         i <- match(newpkg, names(prev))
         if(!is.na(i))
             prev[[i]] <- NULL
-        else # we might warn about uncaching more than once
+        else # we might warn about unchaching more than once
             return()
         if(length(prev) == 0L)
             return(remove(list = name, envir = .classTable))
@@ -2400,21 +2401,22 @@ classesToAM <- function(classes, includeSubclasses = FALSE,
         score <- vapply(subNames, problems, NA, x=possibles[[i]])
         scores[[i]] <- whichCase[score]
         if(!any(score))
-          return(-candidates[[i]]+1L)
+          return(-candidates[[i]]+1)
     }
     # the first min. scoring possibility and its score
     i <- which.min(lengths(scores))
-    list(-candidates[[i]]+1L, scores[[i]])
+    list(-candidates[[i]]+1, scores[[i]])
 }
 
 .checkGeneric <- function(what, where) {
   .checkFun <-  function(x) {
-      if(!is.null(f <- get0(x, where, mode = "function")))
-        is(f, "genericFunction") ||
-            any(grepl("UseMethod", deparse(f), fixed=TRUE)) ||
-            is.primitive(f)
-      else FALSE
-  }
+      maybe <- if(!is.null(f <- get0(x, where))) is.function(f) else FALSE
+      if(maybe)
+        maybe <- is(f, "genericFunction") ||
+              (length(grep("UseMethod", deparse(f))) > 0) ||
+              is.primitive(f)
+      maybe
+    }
   vapply(what, .checkFun, NA)
 }
 
@@ -2422,7 +2424,7 @@ classesToAM <- function(classes, includeSubclasses = FALSE,
 S3forS4Methods <- function(where, checkClasses = character()) {
   allClasses <- getClasses(where)
   if(length(checkClasses) > 0)
-    allClasses <- allClasses[allClasses %in% checkClasses]
+    allClasses <- allClasses[match(allClasses, checkClasses, 0) > 0]
   if(length(allClasses) == 0)
     return(allClasses)
   pattern <- paste0("([.]",allClasses, "$)", collapse="|")

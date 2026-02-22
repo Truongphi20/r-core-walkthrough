@@ -77,7 +77,7 @@ void initDL(pGEDevDesc dd)
 
 /*
  * This is used to init some bits of the system state
- * Called when a graphics engine redraw is about to occur
+ * Called when a grahpics engine redraw is about to occur
  * NOTE that it does not init all of the state, in particular,
  * the display list is not initialised here (see initDL), 
  * nor is the ROOT viewport (see initVP),
@@ -311,7 +311,7 @@ SEXP gridCallback(GEevent task, pGEDevDesc dd, SEXP data) {
 		 */
 		SEXP fcall;
 		PROTECT(fcall = lang1(install("draw.all")));
-		Rf_eval_with_gd(fcall, R_gridEvalEnv, dd); 
+		eval(fcall, R_gridEvalEnv); 
 		UNPROTECT(1);
 	    }
 	}

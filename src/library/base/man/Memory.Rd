@@ -58,8 +58,7 @@
 }
 
 \seealso{
-  \manual{R-intro}{Invoking R from the command line}
-  for more command-line options.
+  \emph{An Introduction to R} for more command-line options.
 
   \code{\link{Memory-limits}} for the design limitations.
 

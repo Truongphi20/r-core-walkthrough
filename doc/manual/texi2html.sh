@@ -25,6 +25,8 @@ elif test "$1" -eq 6 -a "$2" -eq 8; then
   cat "${sedscriptini}" - >>"${sedscriptuse}" <<-EOF
 	/<h1 class="settitle"/d
 	EOF
+else
+  cat ${sedscriptini} > ${sedscriptuse}
 fi
 ${SED} -f ${sedscriptuse} $3.tmp > $3
 rm -f ${sedscriptuse}

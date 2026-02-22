@@ -22,7 +22,8 @@ ARMAtoMA(ar = numeric(), ma = numeric(), lag.max)
 }
 
 \references{
-  \bibshow{R:Brockwell+Davis:1991}
+  Brockwell, P. J. and Davis, R. A. (1991) \emph{Time Series: Theory and
+    Methods}, Second Edition.  Springer.
 }
 
 \seealso{\code{\link{arima}}, \code{\link{ARMAacf}}.}

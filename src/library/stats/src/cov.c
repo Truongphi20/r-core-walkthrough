@@ -1,6 +1,6 @@
 /*
  *  R : A Computer Language for Statistical Data Analysis
- *  Copyright (C) 1995-2025	The R Core Team
+ *  Copyright (C) 1995-2018	The R Core Team
  *  Copyright (C) 2003		The R Foundation
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -28,22 +28,28 @@
 # define SQRTL sqrt
 #endif
 
-#include <Defn.h> // for LDOUBLE
+#include <Defn.h>
 #include <Rmath.h>
 
 #include "statsR.h"
-#include "statsErr.h"
+#undef _
+#ifdef ENABLE_NLS
+#include <libintl.h>
+#define _(String) dgettext ("stats", String)
+#else
+#define _(String) (String)
+#endif
 
-static SEXP corcov(SEXP x, SEXP y, SEXP na_method, SEXP kendall, bool cor);
+static SEXP corcov(SEXP x, SEXP y, SEXP na_method, SEXP kendall, Rboolean cor);
 
 
 SEXP cor(SEXP x, SEXP y, SEXP na_method, SEXP kendall)
 {
-    return corcov(x, y, na_method, kendall, true);
+    return corcov(x, y, na_method, kendall, TRUE);
 }
 SEXP cov(SEXP x, SEXP y, SEXP na_method, SEXP kendall)
 {
-    return corcov(x, y, na_method, kendall, false);
+    return corcov(x, y, na_method, kendall, FALSE);
 }
 
 
@@ -112,7 +118,7 @@ SEXP cov(SEXP x, SEXP y, SEXP na_method, SEXP kendall)
 		}							\
 		if (cor) {						\
 		    if(xsd == 0. || ysd == 0.) {			\
-			*sd_0 = true;					\
+			*sd_0 = TRUE;					\
 			sum = NA_REAL;					\
 		    }							\
 		    else {						\
@@ -135,8 +141,8 @@ SEXP cov(SEXP x, SEXP y, SEXP na_method, SEXP kendall)
 
 
 static void cov_pairwise1(int n, int ncx, double *x,
-			  double *ans, bool *sd_0, bool cor,
-			  bool kendall)
+			  double *ans, Rboolean *sd_0, Rboolean cor,
+			  Rboolean kendall)
 {
     for (int i = 0 ; i < ncx ; i++) {
 	double *xx = &x[i * n];
@@ -151,8 +157,8 @@ static void cov_pairwise1(int n, int ncx, double *x,
 }
 
 static void cov_pairwise2(int n, int ncx, int ncy, double *x, double *y,
-			  double *ans, bool *sd_0, bool cor,
-			  bool kendall)
+			  double *ans, Rboolean *sd_0, Rboolean cor,
+			  Rboolean kendall)
 {
     for (int i = 0 ; i < ncx ; i++) {
 	double *xx = &x[i * n];
@@ -242,8 +248,8 @@ static void cov_pairwise2(int n, int ncx, int ncy, double *x, double *y,
 
 static void
 cov_complete1(int n, int ncx, double *x, double *xm,
-	      int *ind, double *ans, bool *sd_0, bool cor,
-	      bool kendall)
+	      int *ind, double *ans, Rboolean *sd_0, Rboolean cor,
+	      Rboolean kendall)
 {
     COV_init(ncx);
 
@@ -287,7 +293,7 @@ cov_complete1(int n, int ncx, double *x, double *xm,
 	for (i = 0 ; i < ncx ; i++) {
 	    for (j = 0 ; j < i ; j++) {
 		if (xm[i] == 0 || xm[j] == 0) {
-		    *sd_0 = true;
+		    *sd_0 = TRUE;
 		    ANS(j,i) = ANS(i,j) = NA_REAL;
 		}
 		else {
@@ -302,8 +308,8 @@ cov_complete1(int n, int ncx, double *x, double *xm,
 
 static void
 cov_na_1(int n, int ncx, double *x, double *xm,
-	 int *has_na, double *ans, bool *sd_0, bool cor,
-	 bool kendall)
+	 int *has_na, double *ans, Rboolean *sd_0, Rboolean cor,
+	 Rboolean kendall)
 {
 
     COV_ini_na(ncx);
@@ -356,7 +362,7 @@ cov_na_1(int n, int ncx, double *x, double *xm,
 	for (i = 0 ; i < ncx ; i++) {
 	    if(!has_na[i]) for (j = 0 ; j < i ; j++) {
 		if (xm[i] == 0 || xm[j] == 0) {
-		    *sd_0 = true;
+		    *sd_0 = TRUE;
 		    ANS(j,i) = ANS(i,j) = NA_REAL;
 		}
 		else {
@@ -372,7 +378,7 @@ cov_na_1(int n, int ncx, double *x, double *xm,
 static void
 cov_complete2(int n, int ncx, int ncy, double *x, double *y,
 	      double *xm, double *ym, int *ind,
-	      double *ans, bool *sd_0, bool cor, bool kendall)
+	      double *ans, Rboolean *sd_0, Rboolean cor, Rboolean kendall)
 {
     COV_init(ncy);
 
@@ -439,7 +445,7 @@ cov_complete2(int n, int ncx, int ncy, double *x, double *y,
 	for (i = 0 ; i < ncx ; i++)
 	    for (j = 0 ; j < ncy ; j++)
 		if (xm[i] == 0. || ym[j] == 0.) {
-		    *sd_0 = true;
+		    *sd_0 = TRUE;
 		    ANS(i,j) = NA_REAL;
 		}
 		else {
@@ -454,7 +460,7 @@ cov_complete2(int n, int ncx, int ncy, double *x, double *y,
 static void
 cov_na_2(int n, int ncx, int ncy, double *x, double *y,
 	 double *xm, double *ym, int *has_na_x, int *has_na_y,
-	 double *ans, bool *sd_0, bool cor, bool kendall)
+	 double *ans, Rboolean *sd_0, Rboolean cor, Rboolean kendall)
 {
     COV_ini_na(ncy);
 
@@ -530,7 +536,7 @@ cov_na_2(int n, int ncx, int ncy, double *x, double *y,
 		for (j = 0 ; j < ncy ; j++)
 		    if(!has_na_y[j]) {
 			if (xm[i] == 0. || ym[j] == 0.) {
-			    *sd_0 = true;
+			    *sd_0 = TRUE;
 			    ANS(i,j) = NA_REAL;
 			}
 			else {
@@ -574,13 +580,13 @@ cov_na_2(int n, int ncx, int ncy, double *x, double *y,
 	NA_LOOP					\
     }
 
-static void complete1(int n, int ncx, double *x, int *ind, bool na_fail)
+static void complete1(int n, int ncx, double *x, int *ind, Rboolean na_fail)
 {
     COMPLETE_1
 }
 
 static void
-complete2(int n, int ncx, int ncy, double *x, double *y, int *ind, bool na_fail)
+complete2(int n, int ncx, int ncy, double *x, double *y, int *ind, Rboolean na_fail)
 {
     COMPLETE_1
 
@@ -626,10 +632,10 @@ find_na_2(int n, int ncx, int ncy, double *x, double *y, int *has_na_x, int *has
   "all.obs", "complete.obs", "pairwise.complete", "everything", "na.or.complete"
 	  kendall = TRUE/FALSE)
 */
-static SEXP corcov(SEXP x, SEXP y, SEXP na_method, SEXP skendall, bool cor)
+static SEXP corcov(SEXP x, SEXP y, SEXP na_method, SEXP skendall, Rboolean cor)
 {
     SEXP ans, xm, ym, ind;
-    bool ansmat, kendall, pair, na_fail, everything, sd_0, empty_err;
+    Rboolean ansmat, kendall, pair, na_fail, everything, sd_0, empty_err;
     int i, method, n, ncx, ncy, nprotect = 2;
 
 #define DEFUNCT_VAR_FACTOR
@@ -675,7 +681,7 @@ static SEXP corcov(SEXP x, SEXP y, SEXP na_method, SEXP skendall, bool cor)
 	    if (nrows(y) != n)
 		error(_("incompatible dimensions"));
 	    ncy = ncols(y);
-	    ansmat = true;
+	    ansmat = TRUE;
 	}
 	else {
 	    if (length(y) != n)
@@ -687,28 +693,28 @@ static SEXP corcov(SEXP x, SEXP y, SEXP na_method, SEXP skendall, bool cor)
     method = asInteger(na_method);
 
     /* Arg.4:  kendall */
-    kendall = asBool(skendall);
+    kendall = asLogical(skendall);
 
     /* "default: complete" (easier for -Wall) */
-    na_fail = false; everything = FALSE; empty_err = true;
-    pair = false;
+    na_fail = FALSE; everything = FALSE; empty_err = TRUE;
+    pair = FALSE;
     switch(method) {
     case 1:		/* use all :  no NAs */
-	na_fail = true;
+	na_fail = TRUE;
 	break;
     case 2:		/* complete */
 	/* did na.omit in R */
 	if (!LENGTH(x)) error(_("no complete element pairs"));
 	break;
     case 3:		/* pairwise.complete */
-	pair = true;
+	pair = TRUE;
 	break;
     case 4:		/* "everything": NAs are propagated */
-	everything = true;
-	empty_err = false;
+	everything = TRUE;
+	empty_err = FALSE;
 	break;
     case 5:		/* "na.or.complete": NAs are propagated */
-	empty_err = false;
+	empty_err = FALSE;
 	break;
     default:
 	error(_("invalid 'use' (computational method)"));
@@ -718,7 +724,7 @@ static SEXP corcov(SEXP x, SEXP y, SEXP na_method, SEXP skendall, bool cor)
 
     if (ansmat) PROTECT(ans = allocMatrix(REALSXP, ncx, ncy));
     else PROTECT(ans = allocVector(REALSXP, ncx * ncy));
-    sd_0 = false;
+    sd_0 = FALSE;
     if (isNull(y)) {
 	if (everything) { /* NA's are propagated */
 	    PROTECT(xm = allocVector(REALSXP, ncx));
@@ -735,9 +741,9 @@ static SEXP corcov(SEXP x, SEXP y, SEXP na_method, SEXP skendall, bool cor)
 	    cov_complete1(n, ncx, REAL(x), REAL(xm),
 			  INTEGER(ind), REAL(ans), &sd_0, cor, kendall);
 	    if(empty_err) {
-		bool indany = false;
+		Rboolean indany = FALSE;
 		for(i = 0; i < n; i++) {
-		    if(INTEGER(ind)[i] == 1) { indany = true; break; }
+		    if(INTEGER(ind)[i] == 1) { indany = TRUE; break; }
 		}
 		if(!indany) error(_("no complete element pairs"));
 	    }
@@ -768,9 +774,9 @@ static SEXP corcov(SEXP x, SEXP y, SEXP na_method, SEXP skendall, bool cor)
 	    cov_complete2(n, ncx, ncy, REAL(x), REAL(y), REAL(xm), REAL(ym),
 			  INTEGER(ind), REAL(ans), &sd_0, cor, kendall);
 	    if(empty_err) {
-		bool indany = false;
+		Rboolean indany = FALSE;
 		for(i = 0; i < n; i++) {
-		    if(INTEGER(ind)[i] == 1) { indany = true; break; }
+		    if(INTEGER(ind)[i] == 1) { indany = TRUE; break; }
 		}
 		if(!indany) error(_("no complete element pairs"));
 	    }

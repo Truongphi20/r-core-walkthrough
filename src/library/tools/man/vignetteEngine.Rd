@@ -75,7 +75,7 @@ is used.
 Duncan Murdoch and \I{Henrik Bengtsson}.
 }
 \seealso{
-\code{\link{Sweave}} and Section \manual{R-exts}{Writing package vignettes}.
+\code{\link{Sweave}} and the \sQuote{Writing R Extensions} manual.
 }
 \examples{
 str(vignetteEngine("Sweave"))

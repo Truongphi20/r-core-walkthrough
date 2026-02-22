@@ -589,7 +589,7 @@ anova.glmlist <- function(object, ..., dispersion=NULL, test=NULL)
                 domain = NA)
     }
 
-    ns <- vapply(object, function(x) length(x$residuals), 0)
+    ns <- sapply(object, function(x) length(x$residuals))
     if(any(ns != ns[1L]))
 	stop("models were not all fitted to the same size of dataset")
 
@@ -711,7 +711,7 @@ summary.glm <- function(object, dispersion = NULL,
     if (p > 0) {
         p1 <- 1L:p
 	Qr <- qr.lm(object)
-        ## WATCHIT! doesn't this rely on pivoting not permuting 1L:p? -- that's guaranteed
+        ## WATCHIT! doesn't this rely on pivoting not permuting 1L:p? -- that's quaranteed
         coef.p <- object$coefficients[Qr$pivot[p1]]
         covmat.unscaled <- chol2inv(Qr$qr[p1,p1,drop=FALSE])
         dimnames(covmat.unscaled) <- list(names(coef.p),names(coef.p))

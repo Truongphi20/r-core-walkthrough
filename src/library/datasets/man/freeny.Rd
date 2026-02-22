@@ -1,6 +1,6 @@
 % File src/library/datasets/man/freeny.Rd
 % Part of the R package, https://www.R-project.org
-% Copyright 1995-2025 R Core Team
+% Copyright 1995-2007 R Core Team
 % Distributed under GPL 2 or later
 
 \name{freeny}
@@ -32,10 +32,14 @@ freeny.y
   and \code{market.potential} obtained from the above two data objects.
 }
 \source{
-  \bibshow{R:Freeny:1977}
+  A. E. Freeny (1977)
+  \emph{A Portable Linear Regression Package with Test Programs}.
+  Bell Laboratories memorandum.
 }
 \references{
-  \bibshow{R:Becker+Chambers+Wilks:1988}
+  Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+  \emph{The New S Language}.
+  Wadsworth & Brooks/Cole.
 }
 \examples{
 require(stats); require(graphics)

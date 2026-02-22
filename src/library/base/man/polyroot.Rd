@@ -39,12 +39,16 @@ polyroot(z)
   modifications by the R Core Team.
 }
 \references{
-  \bibshow{R:Jenkins+Traub:1972}
+  Jenkins, M. A. and Traub, J. F. (1972).
+  Algorithm 419: zeros of a complex polynomial.
+  \emph{Communications of the ACM}, \bold{15}(2), 97--99.
+  \doi{10.1145/361254.361262}.
 }
 \seealso{
   \code{\link{uniroot}} for numerical root finding of arbitrary
   functions;
-  \code{\link{complex}}.
+  \code{\link{complex}} and the \code{zero} example in the demos
+  directory.
 }
 \examples{
 polyroot(c(1, 2, 1))

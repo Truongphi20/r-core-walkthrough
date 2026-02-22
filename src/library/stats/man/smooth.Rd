@@ -62,7 +62,9 @@ smooth(x, kind = c("3RS3R", "3RSS", "3RSR", "3R", "3", "S"),
   smooth more, for the \code{"3RS*"} kinds.
 }
 \references{
-  \bibshow{R:Tukey:1977}
+  Tukey, J. W. (1977).
+  \emph{Exploratory Data Analysis},
+  Reading Massachusetts: Addison-Wesley.
 }
 \seealso{
   \code{\link{runmed}} for running medians;

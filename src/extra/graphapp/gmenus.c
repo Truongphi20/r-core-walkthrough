@@ -31,16 +31,16 @@ static void mdimenu(menuitem m)
 {
     switch (getvalue(m)) {
     case 1:
-	sendmessage(hwndClient,WM_MDICASCADE,0,0);
+	SendMessage(hwndClient,WM_MDICASCADE,0,0);
 	break;
     case 2:
-	sendmessage(hwndClient,WM_MDITILE,MDITILE_HORIZONTAL,0);
+	SendMessage(hwndClient,WM_MDITILE,MDITILE_HORIZONTAL,0);
 	break;
     case 3:
-	sendmessage(hwndClient,WM_MDITILE,MDITILE_VERTICAL,0);
+	SendMessage(hwndClient,WM_MDITILE,MDITILE_VERTICAL,0);
 	break;	
     case 4:
-	sendmessage(hwndClient,WM_MDIICONARRANGE,0,0);
+	SendMessage(hwndClient,WM_MDIICONARRANGE,0,0);
 	break;
     }
 }
@@ -82,7 +82,7 @@ void gchangemenubar(menubar mb)
     SetMenu(w->handle, mb->handle);
     if (ismdi()) {
 	menu mdi = (w->menubar)->menubar;
-	sendmessage(hwndClient, WM_MDISETMENU,
+	SendMessage(hwndClient, WM_MDISETMENU,
 		    (WPARAM)w->menubar->handle,
 		    (LPARAM)(mdi ? (mdi->handle) : 0));
 	DrawMenuBar(hwndFrame);

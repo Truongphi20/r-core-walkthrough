@@ -44,7 +44,8 @@ rWishart(n, df, Sigma)
   \eqn{W_p(\Sigma, m),\ \ m=\code{df},\ \Sigma=\code{Sigma}}{W_p(Sigma, df)}.
 }
 \references{
-  \bibshow{R:Mardia+Kent+Bibby:1979}
+  Mardia, K. V., J. T. Kent, and J. M. Bibby (1979)
+  \emph{Multivariate Analysis}, London: Academic Press.
 }
 \author{Douglas Bates}
 \seealso{

@@ -1,6 +1,6 @@
 % File src/library/base/man/get.Rd
 % Part of the R package, https://www.R-project.org
-% Copyright 1995-2025 R Core Team
+% Copyright 1995-2023 R Core Team
 % Distributed under GPL 2 or later
 
 \name{get}
@@ -16,8 +16,8 @@
 get(x, pos = -1, envir = as.environment(pos), mode = "any",
     inherits = TRUE)
 
-mget(x, envir = as.environment(pos), mode = "any", ifnotfound,
-     inherits = FALSE, pos = -1)
+mget(x, envir = as.environment(-1), mode = "any", ifnotfound,
+     inherits = FALSE)
 
 dynGet(x, ifnotfound = , minframe = 1L, inherits = FALSE)
 }
@@ -57,7 +57,7 @@ dynGet(x, ifnotfound = , minframe = 1L, inherits = FALSE)
   \code{TRUE} and a value is not found for \code{x} in the specified
   environment, the enclosing frames of the environment are searched
   until the name \code{x} is encountered.  See \code{\link{environment}}
-  and \manual{R-lang}{} for details about the
+  and the \sQuote{R Language Definition} manual for details about the
   structure of environments and their enclosures.
 
   If \code{mode} is specified then only objects of that type are sought.
@@ -82,9 +82,6 @@ dynGet(x, ifnotfound = , minframe = 1L, inherits = FALSE)
 }
 \value{
   For \code{get}, the object found.  If no object is found an error results.
-  If the object is the internal missing argument (aka \code{R_MissingArg}
-  in C), a \emph{classed} error, class \code{"getMissingError"} is
-  signalled.
 
   For \code{mget}, a named list of objects (found or specified \emph{via}
   \code{ifnotfound}).
@@ -97,7 +94,9 @@ dynGet(x, ifnotfound = , minframe = 1L, inherits = FALSE)
   but not for S where it had a different meaning.
 }
 \references{
-  \bibshow{R:Becker+Chambers+Wilks:1988}
+  Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+  \emph{The New S Language}.
+  Wadsworth & Brooks/Cole.
 }
 \seealso{
   \code{\link{exists}} for checking whether an object exists;
@@ -117,20 +116,5 @@ get("\%o\%")
 ## test mget
 e1 <- new.env()
 mget(letters, e1, ifnotfound = as.list(LETTERS))
-
-## very low-level: get()ing the "missing argument", e.g., inside browser()
-ls.str(E <- environment((\(m) \(){})()))  # m : <missing>
-str(E$m) # (empty) symbol
-ee <- tryCatch(get("m",E), error = function(e) e)
-str(ee)
-ee
-stopifnot(exprs = {
-    inherits(ee, "missingArgError") # and
-    inherits(ee, "getMissingError")
-    ##
-    inherits(tryCatch(get0("m", E), error=identity), "getMissingError")
-    is.symbol(E$m) # => valid argument to get(), and *also* gets 'missing arg':
-    inherits(tryCatch(get ( E$m ) , error=identity), "getMissingError")
-})
 }
 \keyword{data}

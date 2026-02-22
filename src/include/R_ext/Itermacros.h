@@ -179,13 +179,8 @@
     } while (0)
 
 #define GET_REGION_BUFSIZE 512
-#ifdef USE_RINTERNALS
-# define GET_REGION_PTR(x, i, n, buf, type)				\
+#define GET_REGION_PTR(x, i, n, buf, type)				\
     (ALTREP(x) == 0 ? type##0(x) + (i) : (type##_GET_REGION(x, i, n, buf), buf))
-#else
-# define GET_REGION_PTR(x, i, n, buf, type)				\
-    (ALTREP(x) == 0 ? type(x) + (i) : (type##_GET_REGION(x, i, n, buf), buf))
-#endif
 
 #define ITERATE_BY_REGION_PARTIAL0(sx, px, idx, nb, etype, vtype,	\
 				   strt, nfull, expr) do {		\

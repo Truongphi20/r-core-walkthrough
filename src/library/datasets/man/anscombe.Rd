@@ -22,11 +22,16 @@
     with mean 7.5 and standard deviation 2.03}
 }
 \source{
-  \bibinfo{R:Tufte:1990}{note}{Pages 13--14}
-  \bibshow{R:Tufte:1990}
+  Tufte, Edward R. (1989).
+  \emph{The Visual Display of Quantitative Information}, 13--14.
+  Graphics Press.
 }
 \references{
-  \bibshow{R:Anscombe:1973}
+  Anscombe, Francis J. (1973).
+  Graphs in statistical analysis.
+  \emph{The American Statistician}, \bold{27}, 17--21.
+  \doi{10.2307/2682899}.
+  
 }
 \examples{
 require(stats); require(graphics)

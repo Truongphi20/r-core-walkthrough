@@ -50,7 +50,9 @@ arrows(x0, y0, x1 = x0, y1 = y0, length = 0.25, angle = 30,
   than 1/1000 inch.
 }
 \references{
-  \bibshow{R:Becker+Chambers+Wilks:1988}
+  Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+  \emph{The New S Language}.
+  Wadsworth & Brooks/Cole.
 }
 \seealso{
   \code{\link{segments}} to draw segments.

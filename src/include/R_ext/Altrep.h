@@ -1,6 +1,6 @@
 /*
  *  R : A Computer Language for Statistical Data Analysis
- *  Copyright (C) 2016-2024  The R Core Team.
+ *  Copyright (C) 2016-2023  The R Core Team.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -17,16 +17,8 @@
  *  https://www.R-project.org/Licenses/
  */
 
-/* 
-   This API is experimental and may change on short notice.
-   Package authors using this API should be prepared to adapt to changes
-   when they occur.
-*/
-
 #ifndef R_EXT_ALTREP_H_
 #define R_EXT_ALTREP_H_
-
-#include <R_ext/Complex.h>
 
 #ifdef  __cplusplus
 extern "C" {
@@ -106,6 +98,7 @@ typedef Rbyte (*R_altraw_Elt_method_t)(SEXP, R_xlen_t);
 typedef R_xlen_t
 (*R_altraw_Get_region_method_t)(SEXP, R_xlen_t, R_xlen_t, Rbyte *);
 
+#include <R_ext/Complex.h>
 typedef Rcomplex (*R_altcomplex_Elt_method_t)(SEXP, R_xlen_t);
 typedef R_xlen_t
 (*R_altcomplex_Get_region_method_t)(SEXP, R_xlen_t, R_xlen_t, Rcomplex *);
@@ -171,10 +164,6 @@ DECLARE_METHOD_SETTER(altstring, No_NA)
 
 DECLARE_METHOD_SETTER(altlist, Elt)
 DECLARE_METHOD_SETTER(altlist, Set_elt)
-
-/* DATAPTR_RW is declared here since it should only be used to
-   implement Dataptr methods. */
-void *DATAPTR_RW(SEXP);
 
 #ifdef  __cplusplus
 }

@@ -506,10 +506,6 @@ sink(type="message")
 sink()
 try(log("a"))
 
-op <- options(warn = -1)
-# *ignore* warnings (for now) to keep the output deterministic wrt to
-# warning about closing an unused connections by the gc
-
 ## capture all the output to a file.
 zz <- file("all.Rout", open="wt")
 sink(zz)
@@ -520,7 +516,6 @@ try(log("a"))
 closeAllConnections()
 (foo <- showConnections())
 stopifnot(nrow(foo) == 0)
-options(op) # re-enable warnings
 try(log("a"))
 unlink("all.Rout")
 ## many of these were untested before 1.4.0.
@@ -686,7 +681,7 @@ glm(y ~ x, family = poisson(identity), start = c(1,0))
 summary(warnings())
 
 
-## extending char arrays
+## extending char arrrays
 x <- y <- LETTERS[1:2]
 x[5] <- "C"
 length(y) <- 5
@@ -1196,14 +1191,6 @@ stem(c(rep(1, 10), 1+1.e-8))
 stem(c(rep(1, 10), 1+1.e-9))
 stem(c(rep(1, 10), 1+1.e-10), atom=0) # integer-overflow is avoided.
 ##  had integer overflows in 1.8.1, and silly shifts of decimal point
-
-## PR#8934 stem() with correct width
-stem(c(8.48, 9.58, 9.96))
-## wrongly indented  '10 |'  since even before R 1.0.0
-
-## stem(<length 1>) now produces output
-stem(123)
-## length(x) == 1  was explicitly skipped in R <= 4.4.z
 
 
 ## PR#6633 warnings with vector op matrix, and more
@@ -2450,7 +2437,7 @@ bar
 m22 <- matrix(list(NA_complex_, 3, "A string", NA_complex_), 2,2)
 print(m22)
 print(m22, na.print="<missing value>")
-## used uninitialized variable in C, noticeably Windows, for R <= 2.9.0
+## used uninitialized variable in C, noticably Windows, for R <= 2.9.0
 
 
 ## non-standard variable names in update etc
@@ -2492,7 +2479,7 @@ switch("a", a=, b=, c=, )
 .Last.value
 switch("a", a=, b=, c=, invisible(4))
 .Last.value
-## visibility changed in 2.11.0
+## visiblilty changed in 2.11.0
 
 
 ## rounding error in aggregate.ts
@@ -3241,7 +3228,7 @@ cm <- cbind(Estimate = 0, SE = 0, t = NaN, "Pr(>|t|)" = NaN)
 printCoefmat(cm)  # NaN's were replaced by NA in R < 4.1.0
 
 
-## deparse() wraps cflow bodies when deeply buried through a LHS (PR#18232)
+## deparse() wraps cflow bodies when deeply burried through a LHS (PR#18232)
 ##
 ## These didn't print the same before fix, the bquote() expression
 ## missed parentheses
@@ -3271,7 +3258,7 @@ quote(1^-2 + 3)
 quote(A + ~B + C ~ D) # no parens
 ## 'simple' binary op
 quote(a$"b")
-## When cflow body is buried deeply through the right, don't rewrap
+## When cflow body is burried deeply through the right, don't rewrap
 ## unnecessarily. There should be only one set of parentheses.
 ## Cases where R-devel 81211 still gave unneeded parens:
 quote(`^`(1 + if(L) 2, 3))
@@ -3400,7 +3387,3 @@ withAutoprint({
     1 + 2
 })
 ## temporarily wrongly showed " withAutoprint({ "
-
-
-# ----- Last line -------------
-cat('Time elapsed: ', proc.time(),'\n')

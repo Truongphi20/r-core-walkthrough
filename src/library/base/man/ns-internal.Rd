@@ -28,6 +28,7 @@
 \alias{.knownS3Generics}
 \alias{loadingNamespaceInfo}
 \alias{.getNamespace}
+\alias{.getNamespaceInfo}
 \alias{..getNamespace}
 \alias{.S3_methods_table}
 \usage{

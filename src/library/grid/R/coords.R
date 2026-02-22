@@ -20,13 +20,13 @@ validCoords <- function(x) {
 
 validGrobCoords <- function(x) {
     is.list(x) && length(x) > 0 &&
-        all(vapply(x, inherits, NA, "GridCoords"))
+        all(sapply(x, inherits, "GridCoords"))
 }
 
 validGTreeCoords <- function(x) {
     is.list(x) && length(x) > 0 &&
-        all(vapply(x, inherits, NA, "GridGrobCoords") |
-            vapply(x, inherits, NA, "GridGTreeCoords"))
+        all(sapply(x, inherits, "GridGrobCoords") |
+            sapply(x, inherits, "GridGTreeCoords"))
 }
 
 coordPrintIndent <- "  "
@@ -216,11 +216,11 @@ isEmptyCoords.GridCoords <- function(coords) {
 }
 
 isEmptyCoords.GridGrobCoords <- function(coords) {
-    all(vapply(coords, identical, NA, emptyCoords))
+    all(sapply(coords, identical, emptyCoords))
 }
 
 isEmptyCoords.GridGTreeCoords <- function(coords) {
-    all(vapply(coords, isEmptyCoords, NA))
+    all(sapply(coords, isEmptyCoords))    
 }
 
 ################################################################################
@@ -613,11 +613,11 @@ grobPoints.text <- function(x, closed=TRUE, ...) {
 
 grobPoints.points <- function(x, closed=TRUE, ...) {
     closed <- as.logical(closed)
-    if (length(closed) != 1 || is.na(closed)) 
-        stop("Closed must be length 1 and must not be a missing value")
+    if (is.na(closed)) 
+        stop("Closed must not be a missing value")
     pts <- grid.Call(C_pointsPoints, x$x, x$y, x$pch, x$size, closed)
     if (is.null(pts) ||
-        all(vapply(pts, is.null, NA))) {
+        all(sapply(pts, is.null))) {
         emptyGrobCoords(x$name)
     } else {
         names <- attr(pts, "coordNames")

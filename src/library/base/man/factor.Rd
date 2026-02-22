@@ -217,7 +217,9 @@ addNA(x, ifany = FALSE)
   pointer of 4 or 8 bytes.)
 }
 \references{
-  \bibshow{R:Chambers+Hastie:1992}
+  Chambers, J. M. and Hastie, T. J. (1992)
+  \emph{Statistical Models in S}.
+  Wadsworth & Brooks/Cole.
 }
 \seealso{
   \code{\link{[.factor}} for subsetting of factors.

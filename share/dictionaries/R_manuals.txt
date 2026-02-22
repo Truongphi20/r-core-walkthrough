@@ -7,8 +7,6 @@ automagically
 backported
 backports
 basenames
-bibentries
-bibentry
 bitmapped
 bugfix
 builtins
@@ -61,7 +59,6 @@ hardcopy
 HPC
 ideographic
 initializer
-initializers
 inlining
 integrand
 integrators
@@ -119,7 +116,6 @@ prebuilt
 preformatted
 premultiplied
 prepending
-preprocess
 preprocessed
 preprocessor
 preprocessors
@@ -140,7 +136,6 @@ reparsing
 representable
 reproducibility
 resaved
-resizable
 RHEL
 RNGs
 roundoff
@@ -156,7 +151,6 @@ standardizable
 stderr
 stdout
 structs
-stylesheet
 subclasses
 suboptions
 subscripted
@@ -179,9 +173,7 @@ typedef
 typedefs
 unbundle
 uncomment
-uncompiled
 undefine
-undeprecated
 unescaped
 unevaluated
 unflagged
@@ -199,7 +191,6 @@ unscaled
 unserialization
 unserialized
 unserializes
-unserializing
 untar
 unterminated
 untrace

@@ -1,6 +1,6 @@
 % File src/library/datasets/man/pressure.Rd
 % Part of the R package, https://www.R-project.org
-% Copyright 1995-2025 R Core Team
+% Copyright 1995-2007 R Core Team
 % Distributed under GPL 2 or later
 
 \name{pressure}
@@ -20,10 +20,14 @@
   }
 }
 \source{
-  \bibshow{R:Weast:1973}
+  Weast, R. C., ed. (1973)
+  \emph{Handbook of Chemistry and Physics}.
+  \I{CRC Press}.
 }
 \references{
-  \bibshow{R:McNeil:1977}
+  McNeil, D. R. (1977)
+  \emph{Interactive Data Analysis}.
+  New York: Wiley.
 }
 \examples{
 require(graphics)

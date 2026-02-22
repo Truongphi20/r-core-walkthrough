@@ -29,16 +29,13 @@ AIC.logLik <- function(object, ..., k = 2)
 AIC.default <- function(object, ..., k = 2)
 {
     ## AIC for various fitted objects --- any for which there's a logLik() method:
-    ll <- if(isNamespaceLoaded("methods")) stats4::logLik else logLik
+    ll <- if(isNamespaceLoaded("stats4")) stats4::logLik else logLik
     if(!missing(...)) {# several objects: produce data.frame
 	lls <- lapply(list(object, ...), ll)
-        vals <- vapply(lls,
-                       function(el) {
-                           c(as.numeric(el),
-                             attr(el, "df"),
-                             attr(el, "nobs") %||% NA_integer_)
-                       },
-                       numeric(3L))
+        vals <- sapply(lls, function(el) {
+            c(as.numeric(el), attr(el, "df"),
+              attr(el, "nobs") %||% NA_integer_)
+        })
         val <- data.frame(df = vals[2L,], ll = vals[1L,])
         nos <- na.omit(vals[3L,])
         if (length(nos) && any(nos != nos[1L]))
@@ -62,17 +59,14 @@ BIC.logLik <- function(object, ...)
 
 BIC.default <- function(object, ...)
 {
-    ll   <- if(isNamespaceLoaded("methods")) stats4::logLik else logLik
-    Nobs <- if(isNamespaceLoaded("methods")) stats4::nobs   else nobs
+    ll   <- if(isNamespaceLoaded("stats4")) stats4::logLik else logLik
+    Nobs <- if(isNamespaceLoaded("stats4")) stats4::nobs   else nobs
     if(!missing(...)) {# several objects: produce data.frame
         lls <- lapply(list(object, ...), ll)
-        vals <- vapply(lls,
-                       function(el) {
-                           c(as.numeric(el),
-                             attr(el, "df"),
-                             attr(el, "nobs") %||% NA_integer_)
-                       },
-                       numeric(3L))
+        vals <- sapply(lls, function(el) {
+            c(as.numeric(el), attr(el, "df"),
+              attr(el, "nobs") %||% NA_integer_)
+        })
         val <- data.frame(df = vals[2L,], ll = vals[1L,], nobs = vals[3L,])
         nos <- na.omit(val$nobs)
         if (length(nos) && any(nos != nos[1L]))
@@ -81,10 +75,8 @@ BIC.default <- function(object, ...)
         unknown <- is.na(val$nobs)
         if(any(unknown))
             val$nobs[unknown] <-
-		vapply(list(object, ...)[unknown],
-		       function(x)
-                           tryCatch(Nobs(x), error = function(e) NA_real_),
-                       0)
+		sapply(list(object, ...)[unknown],
+		       function(x) tryCatch(Nobs(x), error = function(e) NA_real_))
         val <- data.frame(df = val$df, BIC = -2*val$ll + log(val$nobs)*val$df)
         row.names(val) <- as.character(match.call()[-1L])
         val

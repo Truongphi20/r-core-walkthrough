@@ -138,7 +138,14 @@ nls(formula, data, start, control, algorithm,
   convergence analysis, \emph{but \bold{not} for inference}.
 }
 \references{
-  \bibshow{R:Bates+Watts:1988, R:Bates+Chambers:1992}
+  Bates, D. M. and Watts, D. G. (1988)
+  \emph{Nonlinear Regression Analysis and Its Applications},
+  Wiley
+
+  Bates, D. M. and Chambers, J. M. (1992)
+  \emph{Nonlinear models.}
+  Chapter 10 of \emph{Statistical Models in S}
+  eds J. M. Chambers and T. J. Hastie, Wadsworth & Brooks/Cole.
 
   \url{https://netlib.org/port/} for the Port library
   documentation.

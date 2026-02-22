@@ -59,7 +59,9 @@ is.name(x)
   \sQuote{name} has been the standard S term for this.
 }
 \references{
-  \bibshow{R:Becker+Chambers+Wilks:1988}
+  Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+  \emph{The New S Language}.
+  Wadsworth & Brooks/Cole.
 }
 \seealso{
   \code{\link{call}}, \code{\link{is.language}}.

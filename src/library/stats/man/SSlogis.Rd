@@ -4,6 +4,7 @@
 % Distributed under GPL 2 or later
 
 \name{SSlogis}
+\encoding{UTF-8}
 \title{Self-Starting \code{nls} Logistic Model}
 \usage{
 SSlogis(input, Asym, xmid, scal)

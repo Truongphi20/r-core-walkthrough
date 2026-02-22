@@ -155,8 +155,8 @@ scan(file = "", what = double(), nmax = -1, n = -1, sep = "",
   \item{fileEncoding}{character string: if non-empty declares the
     encoding used on a file (not a connection nor the keyboard) so the
     character data can be re-encoded.  See the \sQuote{Encoding} section
-    of the help for \code{\link{file}}, and
-    \manual{R-data}{Variations on read.table}.
+    of the help for \code{\link{file}}, and the \sQuote{R Data
+      Import/Export Manual}.
   }
 
   \item{encoding}{encoding to be assumed for input strings.  If the
@@ -232,7 +232,8 @@ scan(file = "", what = double(), nmax = -1, n = -1, sep = "",
   blank lines.
 
   There is a line-length limit of 4095 bytes when reading from the
-  console (which may impose a lower limit).% see \manual{R-intro}{}
+  console (which may impose a lower limit: see \sQuote{An Introduction
+  to R}).
 
   There is a check for a user interrupt every 1000 lines if \code{what}
   is a list, otherwise every 10000 items.
@@ -277,7 +278,9 @@ scan(file = "", what = double(), nmax = -1, n = -1, sep = "",
   in text files -- see \code{\link{readBin}}.
 }
 \references{
-  \bibshow{R:Becker+Chambers+Wilks:1988}
+  Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+  \emph{The New S Language}.
+  Wadsworth & Brooks/Cole.
 }
 \seealso{
   \code{\link{read.table}} for more user-friendly reading of data

@@ -1,6 +1,6 @@
 /*
  *  R : A Computer Language for Statistical Data Analysis
- *  Copyright (C) 1998-2025   The R Core Team.
+ *  Copyright (C) 1998-2023   The R Core Team.
  *  Copyright (C) 2004-2017   The R Foundation
  *  Copyright (C) 1995, 1996  Robert Gentleman and Ross Ihaka
  *
@@ -26,8 +26,14 @@
 #include <config.h>
 #endif
 
-#include <Defn.h>  // for deparse1
-#include "statsErr.h"
+#include "Defn.h"
+#undef _
+#ifdef ENABLE_NLS
+#include <libintl.h>
+#define _(String) dgettext ("stats", String)
+#else
+#define _(String) (String)
+#endif
 
 static SEXP ParenSymbol;
 static SEXP PlusSymbol;
@@ -71,7 +77,7 @@ static SEXP Log1MExpSymbol;
 static SEXP Log1PMxSymbol;
 */
 
-static bool Initialized = false;
+static Rboolean Initialized = FALSE;
 
 
 static void InitDerivSymbols(void)
@@ -120,7 +126,7 @@ static void InitDerivSymbols(void)
     Log1PMxSymbol = install("log1pmx");      # log1p(x)-x
 */
 
-    Initialized = true;
+    Initialized = TRUE;
 }
 
 static SEXP Constant(double x)
@@ -481,7 +487,8 @@ static SEXP D(SEXP expr, SEXP var)
 	    UNPROTECT(4);
 	}
 	else if (CAR(expr) == SqrtSymbol) {
-	    PROTECT(expr1 = allocLang(3));
+	    PROTECT(expr1 = allocList(3));
+	    SET_TYPEOF(expr1, LANGSXP);
 	    SETCAR(expr1, PowerSymbol);
 	    SETCADR(expr1, CADR(expr));
 	    SETCADDR(expr1, Constant(0.5));
@@ -1059,7 +1066,7 @@ static SEXP Prune(SEXP lst)
 SEXP deriv(SEXP args)
 {
 /* deriv(expr, namevec, function.arg, tag, hessian) */
-    SEXP ans, ans2, expr, funarg, names;
+    SEXP ans, ans2, expr, funarg, names, s;
     int f_index, *d_index, *d2_index;
     int i, j, k, nexpr, nderiv=0, hessian;
     SEXP exprlist, stag;
@@ -1234,21 +1241,25 @@ SEXP deriv(SEXP args)
 
     if (TYPEOF(funarg) == CLOSXP)
     {
-	SEXP formals = R_ClosureFormals(funarg);
-	SEXP rho = R_ClosureEnv(funarg);
-	    funarg = R_mkClosure(formals, exprlist, rho);
+	s = allocSExp(CLOSXP);
+	SET_FORMALS(s, FORMALS(funarg));
+	SET_CLOENV(s, CLOENV(funarg));
+	funarg = s;
+	SET_BODY(funarg, exprlist);
     }
     else if (isString(funarg)) {
 	PROTECT(names = duplicate(funarg));
+	PROTECT(funarg = allocSExp(CLOSXP));
 	PROTECT(ans = allocList(length(names)));
-	SEXP a = ans;
+	SET_FORMALS(funarg, ans);
 	for(i = 0; i < length(names); i++) {
-	    SET_TAG(a, installTrChar(STRING_ELT(names, i)));
-	    SETCAR(a, R_MissingArg);
-	    a = CDR(a);
+	    SET_TAG(ans, installTrChar(STRING_ELT(names, i)));
+	    SETCAR(ans, R_MissingArg);
+	    ans = CDR(ans);
 	}
-	funarg = R_mkClosure(ans, exprlist, R_GlobalEnv);
-	UNPROTECT(2);
+	UNPROTECT(3);
+	SET_BODY(funarg, exprlist);
+	SET_CLOENV(funarg, R_GlobalEnv);
     }
     else {
 	funarg = allocVector(EXPRSXP, 1);

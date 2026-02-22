@@ -39,8 +39,8 @@ SSweibull(x, Asym, Drop, lrc, pwr)
 }
 \author{Douglas Bates}
 \references{
-  \bibinfo{R:Ratkowsky:1983}{note}{Section 4.4.5}
-  \bibshow{R:Ratkowsky:1983}
+  Ratkowsky, David A. (1983), \emph{Nonlinear Regression Modeling},
+  Dekker. (section 4.4.5)
 }
 \seealso{\code{\link{nls}}, \code{\link{selfStart}}, \code{\link{SSasymp}}
 }

@@ -1,6 +1,6 @@
 % File src/library/base/man/args.Rd
 % Part of the R package, https://www.R-project.org
-% Copyright 1995-2025 R Core Team
+% Copyright 1995-2022 R Core Team
 % Distributed under GPL 2 or later
 
 \name{args}
@@ -25,9 +25,7 @@ args(name)
 
   For a primitive (function), a closure with the documented usage and \code{NULL}
   body.  Note that some primitives do not make use of named arguments
-  and match by position rather than name. Some primitives, mainly those
-  considered to be language elements, do not have a well-defined
-  argument list; for those \code{NULL} is returned.
+  and match by position rather than name.
 
   \code{NULL} in case of a non-function.
 }
@@ -37,7 +35,9 @@ args(name)
   instead.
 }
 \references{
-  \bibshow{R:Becker+Chambers+Wilks:1988}
+  Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+  \emph{The New S Language}.
+  Wadsworth & Brooks/Cole.
 }
 \seealso{
   \code{\link{formals}}, \code{\link{help}};

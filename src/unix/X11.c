@@ -62,7 +62,6 @@ attribute_hidden int R_X11_Init(void)
     return initialized;
 }
 
-/* used in src/main/platform.c */
 attribute_hidden Rboolean R_access_X11(void)
 {
     R_X11_Init();

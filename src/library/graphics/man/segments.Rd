@@ -34,7 +34,9 @@ segments(x0, y0, x1 = x0, y1 = y0,
   vectors of length greater than one and will be recycled if necessary.
 }
 \references{
-  \bibshow{R:Becker+Chambers+Wilks:1988}
+  Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+  \emph{The New S Language}.
+  Wadsworth & Brooks/Cole.
 }
 \seealso{
   \code{\link{arrows}},

@@ -1,3 +1,4 @@
+\inputencoding{utf8}
 \HeaderA{testit}{An Rd Regression Test}{testit}
 \aliasB{\{}{testit}{.Rlbrace.}
 %
@@ -23,15 +24,13 @@ paragraph
 \begin{Details}
 Included
 conditional content.
-End(\AsIs{\texttt{\#ifdef}}).
 
 Escaped backslash \code{\bsl{}x}.
 
 \code{\%\{\}}
 
 \LinkA{a link}{a link} and some to known destinations:
-\code{\LinkA{weighted.mean}{weighted.mean}}, \LinkA{dito}{dito},
-\code{\LinkA{\{}{Paren}}, \LinkB{\env{R\_HOME}}{R.Rul.HOME}.
+\LinkA{weighted.mean}{weighted.mean}, \code{\LinkA{\{}{Paren}}
 
 var in \var{text}.
 
@@ -72,20 +71,6 @@ output
 \AsIs{\texttt{
 > x<-007
 }}
-
-Georgi Boshnakov's example of generated paragraphs:
-a
-
-b
-
-c
-
-\AsIs{\texttt{
-[1] "a\bsl{}n    b\bsl{}n    c"
-}}
-
-R (2025).
-``\eqn{t}{}.''
 \end{Section}
 %
 \begin{Section}{\AsIs{\texttt{\bsl{}tabular}}}
@@ -99,11 +84,6 @@ column\\{}
 --3-- & third
 row& 
 }
-\end{Section}
-%
-\begin{Section}{\AsIs{\texttt{\bsl{}eqn}}}
-This should not start a new paragraph:
-\eqn{\frac{1}{n-1}}{}.
 \end{Section}
 %
 \begin{Section}{\AsIs{\texttt{\bsl{}deqn}}}

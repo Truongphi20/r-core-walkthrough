@@ -1,7 +1,7 @@
 #  File src/library/methods/R/Methods.R
 #  Part of the R package, https://www.R-project.org
 #
-#  Copyright (C) 1995-2025 The R Core Team
+#  Copyright (C) 1995-2023 The R Core Team
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 #  https://www.R-project.org/Licenses/
 
 ## copy here to avoid importing from stats and hence loading stats
-## namespace when methods is loaded
+## namespace when methods if loaded
 setNames <- stats::setNames
 
 
@@ -267,26 +267,27 @@ isGeneric <-
         ## a successful search will usually end here w/o other tests
          if(!is.null(fdef))
            return(if(getName) fdef@generic else TRUE)
-    }
+     }
     if(is.null(fdef))
         fdef <- getFunction(f, where=where, mustFind = FALSE)
     if(is.null(fdef))
       return(FALSE)
     ## check primitives. These are never found as explicit generic functions.
-    if(is.primitive(fdef)) {
-        ## the definition of isGeneric() for such a function is that methods are defined
+    if(isBaseFun(fdef)) {
+        if(is.character(f) && f %in% "as.double") f <- "as.numeric"
+        ## the definition of isGeneric() for a base function is that methods are defined
         ## (other than the default primitive)
-        gen <- genericForBasic(.primname(fdef), mustFind = FALSE)
-        return(
-            if(is.function(gen) && length(names(.getMethodsTable(gen))) > 1L)
-                if(getName) gen@generic else TRUE
-            else FALSE)
+        gen <- genericForBasic(f, mustFind = FALSE)
+        return(is.function(gen) && length(names(.getMethodsTable(gen))) > 1L)
     }
     if(!is(fdef, "genericFunction"))
         return(FALSE)
     gen <- fdef@generic # the name with package attribute
     if(missing(f) || .identC(gen, f)) {
-	if(getName) gen else TRUE
+	if(getName)
+	    gen
+	else
+	    TRUE
     }
     else {
         warning(gettextf(
@@ -350,8 +351,7 @@ getMethods <-
     function(f, where = topenv(parent.frame()), table = FALSE)
 {
     if(!table)
-        .MlistDefunct("getMethods", "findMethods")
-    else .Deprecated("getMethodsForDispatch(f, TRUE)")
+      .MlistDefunct("getMethods", "findMethods")
     nowhere <- missing(where)
     fdef <- getGeneric(f, where = where)
     f <- fdef@generic
@@ -364,6 +364,41 @@ getMethods <-
 getMethodsForDispatch <- function(fdef, inherited = FALSE)
 {
     .getMethodsTable(fdef, environment(fdef), inherited = inherited)
+}
+
+## Some functions used in MethodsListSelect, that must be safe against recursive
+## method selection.
+
+.setIfBase <- function(f, fdef, mlist) {
+    if(is.null(f))
+        FALSE
+    else {
+        found <- base::exists(f, "package:base")
+	if(found) {
+	    ## force (default) computation of mlist in MethodsListSelect
+	    base::assign(".Methods", envir = base::environment(fdef),
+			 base::get(f, "package:base"))
+	}
+        found
+    }
+}
+
+## Must NOT use the standard version to prevent recursion  {still true ?}
+.getMethodsForDispatch <- function(fdef) {
+    ev <- base::environment(fdef)
+    if(base::exists(".Methods", envir = ev))
+        base::get(".Methods", envir = ev)
+    ## else NULL
+}
+
+.setMethodsForDispatch <- function(f, fdef, mlist) {
+    ev <- environment(fdef)
+    if(!is(fdef, "genericFunction") ||
+       !exists(".Methods", envir = ev, inherits = FALSE))
+        stop(sprintf("internal error: did not get a valid generic function object for function %s",
+                      sQuote(f)),
+             domain = NA)
+    assign(".Methods", envir = ev, mlist)
 }
 
 cacheMethod <-
@@ -382,7 +417,6 @@ cacheMethod <-
 			      .getMethodsTable(fdef, ev, inherited = TRUE))
   }
 
-## for .removeSubClass() and .removeSuperClass():
 .removeCachedMethod <- function(f, sig, fdef = getGeneric(f))
     cacheMethod(f, sig, NULL, names(sig), fdef)
 
@@ -774,12 +808,6 @@ selectMethod <-
             cat("* mlist environment with", length(mlist),"potential methods\n")
         if(length(signature) < nsig)
             signature[(length(signature)+1):nsig] <- "ANY"
-        inGroups <- length(fdef@group) > 0L # " I belong to a group "
-        maybeGrp <- function(meth) { # meth: a function, possibly primitive, or method
-            if(inGroups && isS4(meth) && meth@generic != fdef@generic)
-                attr(meth@generic, "orig") <- fdef@generic
-            meth
-        }
         if(identical(fdef@signature, "...")) {
             method <- .selectDotsMethod(signature, mlist,
                  if(useInherited) getMethodsForDispatch(fdef, inherited = TRUE))
@@ -787,7 +815,7 @@ selectMethod <-
               stop(gettextf("no method for %s matches class %s",
                             sQuote("..."), dQuote(signature)),
                    domain = NA)
-            return(maybeGrp(method))
+            return(method)
         }
         method <- .findMethodInTable(signature, mlist, fdef)
 	if(is.null(method)) {
@@ -811,7 +839,7 @@ selectMethod <-
 		## else list() : just look in the direct table
 
 	    if(length(methods))
-		return(maybeGrp(methods[[1L]]))
+		return(methods[[1L]])
 	    else if(optional)
 		return(NULL)
 	    else stop(gettextf("no method found for signature %s",
@@ -1062,11 +1090,9 @@ showMethods <-
     geom <- vapply(signatures, Negate(is.null), logical(1))
     packages <- packages[geom]
     methods <- methods[geom]
-    signatures <- vapply(signatures[geom],
-                         function(elt) {
-                             paste0(as.vector(elt), collapse=",")
-                         },
-                         "")
+    signatures <- sapply(signatures[geom], function(elt) {
+        paste0(as.vector(elt), collapse=",")
+    })
 
     .methods_info(generic=rep(generic.function, length(packages)), from=packages,
                   signature=signatures)
@@ -1345,7 +1371,7 @@ implicitGeneric <- function(...) NULL
 ### Add the named function to the table of implicit generics in environment where.
 ###
 ### If there is a generic function of this name, it is saved to the
-### table.  This is the recommended approach and is required if you
+### table.  This is the reccomended approach and is required if you
 ### want the saved generic to include any non-default methods.
 ###
   {

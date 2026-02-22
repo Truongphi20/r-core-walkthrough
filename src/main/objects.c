@@ -1,6 +1,6 @@
 /*
  *  R : A Computer Language for Statistical Data Analysis
- *  Copyright (C) 1999-2025  The R Core Team.
+ *  Copyright (C) 1999-2023  The R Core Team.
  *  Copyright (C) 2002-2023  The R Foundation
  *  Copyright (C) 1995, 1996  Robert Gentleman and Ross Ihaka
  *
@@ -171,7 +171,7 @@ static SEXP findFunInEnvRange(SEXP symbol, SEXP rho, SEXP target)
 {
     SEXP vl;
     while(rho != R_EmptyEnv) {
-	vl = R_findVarInFrame(rho, symbol);
+	vl = findVarInFrame3(rho, symbol, TRUE);
 	if (vl != R_UnboundValue) {
 	    if (TYPEOF(vl) == PROMSXP) {
 		PROTECT(vl);
@@ -195,7 +195,7 @@ static SEXP findFunWithBaseEnvAfterGlobalEnv(SEXP symbol, SEXP rho)
 {
     SEXP vl;
     while(rho != R_EmptyEnv) {
-	vl = R_findVarInFrame(rho, symbol);
+	vl = findVarInFrame3(rho, symbol, TRUE);
 	if (vl != R_UnboundValue) {
 	    if (TYPEOF(vl) == PROMSXP) {
 		PROTECT(vl);
@@ -264,7 +264,7 @@ SEXP R_LookupMethod(SEXP method, SEXP rho, SEXP callrho, SEXP defrho)
     /* We assume here that no one registered a non-function */
     if (!s_S3MethodsTable)
 	s_S3MethodsTable = install(".__S3MethodsTable__.");
-    SEXP table = R_findVarInFrame(defrho, s_S3MethodsTable);
+    SEXP table = findVarInFrame3(defrho, s_S3MethodsTable, TRUE);
     if (TYPEOF(table) == PROMSXP) {
 	PROTECT(table);
 	table = eval(table, R_BaseEnv);
@@ -272,7 +272,7 @@ SEXP R_LookupMethod(SEXP method, SEXP rho, SEXP callrho, SEXP defrho)
     }
     if (TYPEOF(table) == ENVSXP) {
 	PROTECT(table);
-	REPROTECT(val = R_findVarInFrame(table, method), validx);
+	REPROTECT(val = findVarInFrame3(table, method, TRUE), validx);
 	UNPROTECT(1); /* table */
 	if (TYPEOF(val) == PROMSXP) 
 	    REPROTECT(val = eval(val, rho), validx);
@@ -304,11 +304,10 @@ static int match_to_obj(SEXP arg, SEXP obj) {
    which should be explicitly converted when an S3 method is applied
    to an object from an S4 subclass.
 */
-attribute_hidden int isBasicClass(const char *ss) {
+int isBasicClass(const char *ss) {
     static SEXP s_S3table = NULL;
     if(!s_S3table) {
-      s_S3table = R_findVarInFrame(R_MethodsNamespace,
-				   install(".S3MethodsClasses"));
+      s_S3table = findVarInFrame3(R_MethodsNamespace, install(".S3MethodsClasses"), TRUE);
       if(s_S3table == R_UnboundValue)
 	error(_("no '.S3MethodsClass' table, cannot use S4 objects with S3 methods ('methods' package not attached?)"));
       if (TYPEOF(s_S3table) == PROMSXP)  /* findVar... ignores lazy data */
@@ -316,12 +315,12 @@ attribute_hidden int isBasicClass(const char *ss) {
     }
     if(s_S3table == R_UnboundValue)
       return FALSE; /* too screwed up to do conversions */
-    return R_existsVarInFrame(s_S3table, install(ss));
+    return findVarInFrame3(s_S3table, install(ss), FALSE) != R_UnboundValue;
 }
 
 /* Note that ./attrib.c 's S4_extends() has an alternative
    'sanity check for methods package available' */
-attribute_hidden Rboolean R_has_methods_attached(void) {
+Rboolean R_has_methods_attached(void) {
     return(
 	isMethodsDispatchOn() &&
 	// based on unlockBinding() in ../library/methods/R/zzz.R  {since 2003}:
@@ -536,7 +535,7 @@ int usemethod(const char *generic, SEXP obj, SEXP call, SEXP args,
 */
 
 /* This is a primitive SPECIALSXP */
-NORET attribute_hidden 
+attribute_hidden NORET
 SEXP do_usemethod(SEXP call, SEXP op, SEXP args, SEXP env)
 {
     static SEXP do_usemethod_formals = NULL;
@@ -770,7 +769,7 @@ attribute_hidden SEXP do_nextmethod(SEXP call, SEXP op, SEXP args, SEXP env)
 
     s = CADDR(args); /* this is ... and we need to see if it's bound */
     if (s == R_DotsSymbol) {
-	t = R_findVarInFrame(env, s);
+	t = findVarInFrame3(env, s, TRUE);
 	if (t != R_NilValue && t != R_MissingArg) {
 	    SET_TYPEOF(t, LISTSXP); /* a safe mutation */
 	    s = matchmethargs(matchedarg, t);
@@ -893,7 +892,7 @@ attribute_hidden SEXP do_nextmethod(SEXP call, SEXP op, SEXP args, SEXP env)
 	 */
 	if (!isFunction(nextfun)) {
 	    t = install(sg);
-	    nextfun = R_findVar(t, env);
+	    nextfun = findVar(t, env);
 	    if (TYPEOF(nextfun) == PROMSXP) {
 		PROTECT(nextfun);
 		nextfun = eval(nextfun, env);
@@ -980,7 +979,7 @@ attribute_hidden SEXP do_unclass(SEXP call, SEXP op, SEXP args, SEXP env)
     except there is no translation.
 */
 
-attribute_hidden Rboolean inherits2(SEXP x, const char *what) {
+Rboolean attribute_hidden inherits2(SEXP x, const char *what) {
     if (OBJECT(x)) {
 	SEXP klass;
 
@@ -1028,7 +1027,7 @@ static SEXP inherits3(SEXP x, SEXP what, SEXP which)
 
     if( !isLogical(which) || (LENGTH(which) != 1) )
 	error(_("'which' must be a length 1 logical vector"));
-    bool isvec = asRbool(which, R_NilValue);
+    Rboolean isvec = asLogical(which);
 
     if(isvec)
 	PROTECT(rval = allocVector(INTSXP, nwhat));
@@ -1114,10 +1113,8 @@ attribute_hidden SEXP do_inherits(SEXP call, SEXP op, SEXP args, SEXP env)
  *
  * @return index of match or -1 for no match
  */
-attribute_hidden
 int R_check_class_and_super(SEXP x, const char **valid, SEXP rho)
 {
-  if(isObject(x)) {
     int ans;
     SEXP clattr = getAttrib(x, R_ClassSymbol);
     SEXP cl = PROTECT(asChar(clattr));
@@ -1127,7 +1124,7 @@ int R_check_class_and_super(SEXP x, const char **valid, SEXP rho)
 	    UNPROTECT(1); /* cl */
 	    return ans;
 	}
-    /* if not found directly, then look for a match among the nonvirtual
+    /* if not found directly, then look for a match among the nonvirtual 
        superclasses, possibly after finding the environment 'rho' in which
        class(x) is defined */
     if(IS_S4_OBJECT(x)) {
@@ -1156,8 +1153,8 @@ int R_check_class_and_super(SEXP x, const char **valid, SEXP rho)
 	}
 	SEXP classDef = PROTECT(R_getClassDef(class));
 	PROTECT(classExts = R_do_slot(classDef, s_contains));
-	/* .selectSuperClasses(getClassDef(class)@contains,
-	 *                     dropVirtual = TRUE, namesOnly = TRUE,
+	/* .selectSuperClasses(getClassDef(class)@contains, 
+	 *                     dropVirtual = TRUE, namesOnly = TRUE, 
 	 *                     directOnly = FALSE, simpleOnly = TRUE):
 	 */
 	PROTECT(_call = lang6(s_selectSuperCl, classExts,
@@ -1177,8 +1174,7 @@ int R_check_class_and_super(SEXP x, const char **valid, SEXP rho)
 	UNPROTECT(2); /* superCl, rho */
     }
     UNPROTECT(1); /* cl */
-  } // only if isObject(x)
-  return -1;
+    return -1;
 }
 
 /**
@@ -1231,7 +1227,7 @@ static SEXP R_isMethodsDispatchOn(SEXP onOff)
     R_stdGen_ptr_t old = R_get_standardGeneric_ptr();
     int ival =  !NOT_METHODS_DISPATCH_PTR(old);
     if(length(onOff) > 0) {
-	bool onOffValue = asRbool(onOff, R_NilValue);
+	Rboolean onOffValue = asLogical(onOff);
 	if(onOffValue == NA_INTEGER)
 	    error(_("'onOff' must be TRUE or FALSE"));
 	else if(onOffValue == FALSE)
@@ -1283,11 +1279,11 @@ static SEXP dispatchNonGeneric(SEXP name, SEXP env, SEXP fdef)
     symbol = installTrChar(asChar(name));
     for(rho = ENCLOS(env); rho != R_EmptyEnv;
 	rho = ENCLOS(rho)) {
-	fun = R_findVarInFrame(rho, symbol);
+	fun = findVarInFrame3(rho, symbol, TRUE);
 	if(fun == R_UnboundValue) continue;
 	switch(TYPEOF(fun)) {
 	case CLOSXP:
-	    value = R_findVarInFrame(CLOENV(fun), R_dot_Generic);
+	    value = findVarInFrame3(CLOENV(fun), R_dot_Generic, TRUE);
 	    if(value == R_UnboundValue) break;
 	case BUILTINSXP:  case SPECIALSXP:
 	default:
@@ -1712,7 +1708,7 @@ SEXP R_do_MAKE_CLASS(const char *what)
 
 // similar, but gives NULL instead of an error for a non-existing class
 // and 'what' is never checked
-attribute_hidden SEXP R_getClassDef_R(SEXP what)
+SEXP R_getClassDef_R(SEXP what)
 {
     static SEXP s_getClassDef = NULL;
     if(!s_getClassDef) s_getClassDef = install("getClassDef");
@@ -1733,7 +1729,7 @@ SEXP R_getClassDef(const char *what)
     return ans;
 }
 
-attribute_hidden Rboolean R_isVirtualClass(SEXP class_def, SEXP env)
+Rboolean R_isVirtualClass(SEXP class_def, SEXP env)
 {
     if(!isMethodsDispatchOn()) return(FALSE);
     static SEXP isVCl_sym = NULL;
@@ -1747,7 +1743,7 @@ attribute_hidden Rboolean R_isVirtualClass(SEXP class_def, SEXP env)
     return ans;
 }
 
-attribute_hidden Rboolean R_extends(SEXP class1, SEXP class2, SEXP env)
+Rboolean R_extends(SEXP class1, SEXP class2, SEXP env)
 {
     if(!isMethodsDispatchOn()) return(FALSE);
     static SEXP extends_sym = NULL;
@@ -1782,7 +1778,7 @@ SEXP R_do_new_object(SEXP class_def)
     }
     PROTECT(e = R_do_slot(class_def, s_className));
     PROTECT(value = duplicate(R_do_slot(class_def, s_prototype)));
-    bool xDataType = TYPEOF(value) == ENVSXP || TYPEOF(value) == SYMSXP ||
+    Rboolean xDataType = TYPEOF(value) == ENVSXP || TYPEOF(value) == SYMSXP ||
 	TYPEOF(value) == EXTPTRSXP;
     if((TYPEOF(value) == OBJSXP || getAttrib(e, R_PackageSymbol) != R_NilValue) &&
        !xDataType)
@@ -1795,7 +1791,7 @@ SEXP R_do_new_object(SEXP class_def)
     return value;
 }
 
-attribute_hidden Rboolean R_seemsOldStyleS4Object(SEXP object)
+Rboolean attribute_hidden R_seemsOldStyleS4Object(SEXP object)
 {
     SEXP klass;
     if(!isObject(object) || IS_S4_OBJECT(object)) return FALSE;
@@ -1810,8 +1806,7 @@ attribute_hidden SEXP do_setS4Object(SEXP call, SEXP op, SEXP args, SEXP env)
 {
     checkArity(op, args);
     SEXP object = CAR(args);
-    Rboolean flag = asRbool(CADR(args), call);
-    int complete = asInteger(CADDR(args));
+    int flag = asLogical(CADR(args)), complete = asInteger(CADDR(args));
     if(length(CADR(args)) != 1 || flag == NA_INTEGER)
 	error("invalid '%s' argument", "flag");
     if(complete == NA_INTEGER)
@@ -1835,13 +1830,12 @@ SEXP R_get_primname(SEXP object)
 }
 #endif
 
-// in Rinternals.h
+
 Rboolean isS4(SEXP s)
 {
     return IS_S4_OBJECT(s);
 }
 
-// in Rinternals.h
 SEXP asS4(SEXP s, Rboolean flag, int complete)
 {
     if(flag == IS_S4_OBJECT(s))

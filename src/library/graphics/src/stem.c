@@ -1,7 +1,7 @@
 /*
  *  R : A Computer Language for Statistical Data Analysis
- *  Copyright (C) 1997--2025  The R Core Team
  *  Copyright (C) 1995, 1996  Robert Gentleman and Ross Ihaka
+ *  Copyright (C) 1997-2018   R Core Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -47,12 +47,7 @@ static void stem_print(int close, int dist, int ndigits)
 	Rprintf("  %*d | ", ndigits, close/10);
 }
 
-static double rnd(double u, double c)
-{
-    return ((u < 0) ? (u*c - .5) : (u*c + .5));
-}
-
-static void // was Rboolean but return value is discarded
+static Rboolean
 stem_leaf(double *x, int n, double scale, int width, double atom)
 {
     double r, c, x1, x2;
@@ -62,10 +57,8 @@ stem_leaf(double *x, int n, double scale, int width, double atom)
 
     R_rsort(x,n);
 
-#if 0
     if(n <= 1)
-	return;
-#endif
+	return FALSE;
 
     Rprintf("\n");
     mu = 10;
@@ -87,21 +80,16 @@ stem_leaf(double *x, int n, double scale, int width, double atom)
 	r = atom + fabs(x[0])/scale;
 	c = R_pow_di(10.0, (int)(1.0 - floor(log10(r))));
     }
-
+    
     /* Find the print width of the stem. */
-    double
-      xlow  = rnd(x[0], c),
-      xhigh = rnd(x[n-1], c),
-      lo_nd = floor(xlow/mu)*mu,
-      hi_nd = floor(xhigh/mu)*mu;
 
-    ldigits = (lo_nd < 0) ? (int) floor(log10(-lo_nd)) + 1 : 0;
-    hdigits = (hi_nd > 0) ? (int) floor(log10(hi_nd)): 0;
+    lo = floor(x[0]*c/mu)*mu;
+    hi = floor(x[n-1]*c/mu)*mu;
+    ldigits = (lo < 0) ? (int) floor(log10(-(double)lo)) + 1 : 0;
+    hdigits = (hi > 0) ? (int) floor(log10((double)hi)): 0;
     ndigits = (ldigits < hdigits) ? hdigits : ldigits;
 
     /* Starting cell */
-    lo = floor(x[0]*c/mu)*mu;
-    hi = floor(x[n-1]*c/mu)*mu;
 
     if(lo < 0 && floor(x[0]*c) == lo) lo = lo - mu;
     hi = lo + mu;
@@ -128,7 +116,8 @@ stem_leaf(double *x, int n, double scale, int width, double atom)
 	    stem_print((int)lo, (int)hi, ndigits);
 	j = 0;
 	do {
-	    xi = (int) rnd(x[i], c);
+	    if(x[i] < 0)xi = (int) (x[i]*c - .5);
+	    else	xi = (int) (x[i]*c + .5);
 
 	    if( (hi == 0 && x[i] >= 0)||
 		(lo <  0 && xi >  hi) ||
@@ -149,7 +138,7 @@ stem_leaf(double *x, int n, double scale, int width, double atom)
 	lo += mu;
     } while(1);
     Rprintf("\n");
-    return;
+    return TRUE;
 }
 
 /* The R wrapper has removed NAs from x */
@@ -180,8 +169,7 @@ C_bincount(double *x, R_xlen_t n, double *breaks, R_xlen_t nb, int *count,
     R_xlen_t i, lo, hi, nb1 = nb - 1, new;
 
     // for(i = 0; i < nb1; i++) count[i] = 0;
-    if (nb1)
-	memset(count, 0, nb1 * sizeof(int));
+    memset(count, 0, nb1 * sizeof(int));
 
     for(i = 0 ; i < n ; i++)
 	if(R_FINITE(x[i])) { // left in as a precaution

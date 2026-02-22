@@ -89,7 +89,7 @@ prettyNum(x, big.mark = "",   big.interval = 3L,
 
   \item{flag}{for \code{formatC}, a character string giving a
     format modifier as in
-    \bibcitet{|R:Kernighan+Ritchie:1988|page 243}
+    \bibcite{Kernighan and Ritchie (1988, page 243)} 
     or the C+99 standard.\describe{
       \item{\code{"0"}}{pads leading zeros;}
       \item{\code{"-"}}{does left adjustment,}
@@ -229,7 +229,8 @@ prettyNum(x, big.mark = "",   big.interval = 3L,
   %% Martin Maechler
 }
 \references{
-  \bibshow{*}
+  Kernighan, B. W. and Ritchie, D. M. (1988)
+  \emph{The C Programming Language.}  Second edition.  Prentice Hall.
 }
 \seealso{
   \code{\link{format}}.

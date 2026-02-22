@@ -36,7 +36,9 @@ max.col(m, ties.method = c("random", "first", "last"))
   of possibly several indices.
 }
 \references{
-  \bibshow{R:Venables+Ripley:2002}
+  Venables, W. N. and Ripley, B. D. (2002)
+  \emph{Modern Applied Statistics with S.}
+  New York: Springer (4th ed).
 }
 \seealso{\code{\link{which.max}} for vectors.
 }

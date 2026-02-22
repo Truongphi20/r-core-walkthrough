@@ -99,8 +99,8 @@ conflictRules(pkg, mask.ok = NULL, exclude = NULL)
   obtain just the names of all available packages, and
   \code{\link{installed.packages}()} for even more information.
 
-  \code{library(help = \var{pkgname})} computes basic information about the
-  package \pkg{\var{pkgname}}, and returns this in an object of class
+  \code{library(help = somename)} computes basic information about the
+  package \pkg{somename}, and returns this in an object of class
   \code{"packageInfo"}.  (The structure of this class may change in
   future versions.)  When used with the default value (\code{NULL}) for
   \code{lib.loc}, the attached packages are searched before the libraries.
@@ -219,7 +219,9 @@ conflictRules(pkg, mask.ok = NULL, exclude = NULL)
   \code{\link{options}(defaultPackages=)}: see also \code{\link{Startup}}.
 }
 \references{
-  \bibshow{R:Becker+Chambers+Wilks:1988}
+  Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+  \emph{The New S Language}.
+  Wadsworth & Brooks/Cole.
 }
 \examples{
 library()                   # list all available packages

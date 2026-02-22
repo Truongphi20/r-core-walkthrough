@@ -38,6 +38,6 @@ add_datalist(pkgpath, force = FALSE, small.size = 1024^2)
 \seealso{
   \code{\link{data}}.
 
-  \manual{R-exts}{}.
+  The \sQuote{Writing R Extensions} manual.
 }
 \keyword{utilities}

@@ -1,7 +1,7 @@
 #  File src/library/utils/R/unix/mac.install.R
 #  Part of the R package, https://www.R-project.org
 #
-#  Copyright (C) 1995-2025 The R Core Team
+#  Copyright (C) 1995-2017 The R Core Team
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -17,16 +17,27 @@
 #  https://www.R-project.org/Licenses/
 
 
+if(!startsWith(R.version$os, "darwin")) {
 .install.macbinary <-
     function(pkgs, lib, repos = getOption("repos"),
-             contriburl = contrib.url(repos, type=type),
+             contriburl = contrib.url(repos, type="mac.binary"),
              method, available = NULL, destdir = NULL,
              dependencies = FALSE,
              lock = getOption("install.lock", FALSE), quiet = FALSE,
-             type = .Platform$pkgType,
+             ...)
+    {}
+} else {
+## edited from windows/.install.winbinary
+##
+.install.macbinary <-
+    function(pkgs, lib, repos = getOption("repos"),
+             contriburl = contrib.url(repos, type="mac.binary"),
+             method, available = NULL, destdir = NULL,
+             dependencies = FALSE,
+             lock = getOption("install.lock", FALSE), quiet = FALSE,
              ...)
 {
-    untar0 <- function(what, where)
+    untar <- function(what, where)
     {
         ## FIXME: should this look for Sys.getenv('TAR')?
         ## Leopard has GNU tar, SL has BSD tar.
@@ -36,9 +47,6 @@
             warning(gettextf("'tar' returned non-zero exit code %d", xcode),
                     domain = NA, call. = FALSE)
     }
-
-    ## not sure why the above was used - possibly it pre-dates utils::untar()?
-    untar <- function(what, where) utils::untar(what, exdir=where)
 
     unpackPkg <- function(pkg, pkgname, lib, lock = FALSE)
     {
@@ -56,15 +64,15 @@
         setwd(tmpDir)
         ## sanity check: people have tried to install source .tgz files
         if (!file.exists(file <- file.path(pkgname, "Meta", "package.rds")))
-            stop(gettextf("file %s is not a binary package", sQuote(pkg)),
+            stop(gettextf("file %s is not a macOS binary package", sQuote(pkg)),
                  domain = NA, call. = FALSE)
         desc <- readRDS(file)$DESCRIPTION
         if (length(desc) < 1L)
-            stop(gettextf("file %s is not a binary package", sQuote(pkg)),
+            stop(gettextf("file %s is not a macOS binary package", sQuote(pkg)),
                  domain = NA, call. = FALSE)
         desc <- as.list(desc)
         if (is.null(desc$Built))
-            stop(gettextf("file %s is not a binary package", sQuote(pkg)),
+            stop(gettextf("file %s is not a macOS binary package", sQuote(pkg)),
                  domain = NA, call. = FALSE)
 
         res <- tools::checkMD5sums(pkgname, file.path(tmpDir, pkgname))
@@ -129,7 +137,7 @@
     if(is.null(contriburl)) {
         pkgnames <- basename(pkgs)
         pkgnames <- sub("\\.tgz$", "", pkgnames)
-        pkgnames <- sub("\\.tar\\.(gz|bzip2|bz2|xz|zstd|zst)$", "", pkgnames)
+        pkgnames <- sub("\\.tar\\.gz$", "", pkgnames)
         pkgnames <- sub("_.*$", "", pkgnames)
         ## there is no guarantee we have got the package name right:
         ## foo.zip might contain package bar or Foo or FOO or ....
@@ -152,12 +160,12 @@
 
     if(is.null(available))
         available <- available.packages(contriburl = contriburl,
-                                        method = method, type = type, ...)
+                                        method = method, ...)
     pkgs <- getDependencies(pkgs, dependencies, available, lib, binary = TRUE)
 
     foundpkgs <- download.packages(pkgs, destdir = tmpd, available = available,
                                    contriburl = contriburl, method = method,
-                                   type = type, quiet = quiet, ...)
+                                   type = "mac.binary", quiet = quiet, ...)
 
     if(length(foundpkgs)) {
         update <- unique(cbind(pkgs, lib))
@@ -178,4 +186,5 @@
     } else if(!is.null(tmpd) && is.null(destdir)) unlink(tmpd, recursive = TRUE)
 
     invisible()
+}
 }

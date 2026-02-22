@@ -18,15 +18,14 @@ pkg2HTML(package, dir = NULL, lib.loc = NULL,
          texmath = getOption("help.htmlmath"),
          prism = TRUE,
          out = NULL,
-         toc_entry = c("name", "title"),
+         toc_entry = c("title", "name"),
          ...,
          Rhtml = FALSE,
          mathjax_config = file.path(R.home("doc"), "html", "mathjax-config.js"),
-         include_description = TRUE,
-         concordance = FALSE)
+         include_description = TRUE)
 }
 \arguments{
-  \item{package}{ typically a character string giving the name of an
+  \item{package}{ a character string, typically giving the name of an
     installed package. Can also be a file path or URL pointing to a source
     tarball (this feature is experimental).
   }
@@ -50,7 +49,7 @@ pkg2HTML(package, dir = NULL, lib.loc = NULL,
     be used, either \code{"katex"} or \code{"mathjax"}. The default is
     to use \code{"katex"}, unless the package appears to use the
     \code{\link[mathjaxr]{mathjaxr}} package in at least one of its
-    documentation files. The support for \I{MathJax} is experimental and may
+    documentation files. The support for MathJax is experimental and may
     not work well.
   }
   \item{prism}{ logical flag controlling code highlighting, as described in
@@ -70,14 +69,12 @@ pkg2HTML(package, dir = NULL, lib.loc = NULL,
     examples section is wrapped inside a \code{rcode} block.
   }
   \item{mathjax_config}{ character string giving path of file containing
-    configuration instructions for \I{MathJax}. Relevant only if
+    configuration instructions for mathjax. Relevant only if
     \code{texmath = "mathjax"}.
   }
   \item{include_description}{ logical flag indicating whether the output
     should begin with the contents of the \code{DESCRIPTION} file.
   }
-  \item{concordance}{ logical flag indicating whether the output
-    should contain concordance information.}
 }
 
 \details{

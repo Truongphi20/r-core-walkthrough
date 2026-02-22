@@ -40,8 +40,8 @@
   appropriate sign.
 }
 \references{
-  \bibinfo{R:Bates+Watts:1988}{footer}{Chapter 6.}
-  \bibshow{R:Bates+Watts:1988}
+  Bates, D. M. and Watts, D. G. (1988), \emph{Nonlinear Regression Analysis
+    and Its Applications}, Wiley (chapter 6).
 }
 \author{
   Of the original version,

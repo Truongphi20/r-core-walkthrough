@@ -4,6 +4,7 @@
 % Distributed under GPL 2 or later
 
 \name{asOneSidedFormula}
+\encoding{UTF-8}
 \title{Convert to One-Sided Formula}
 \usage{
 asOneSidedFormula(object)

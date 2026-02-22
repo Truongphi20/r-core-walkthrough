@@ -34,7 +34,9 @@ rug(x, ticksize = 0.03, side = 1, lwd = 0.5, col = par("fg"),
   omitted silently.
 }
 \references{
-  \bibshow{R:Chambers+Hastie:1992}
+  Chambers, J. M. and Hastie, T. J. (1992)
+  \emph{Statistical Models in S.}
+  Wadsworth & Brooks/Cole.
 }
 \seealso{\code{\link{jitter}} which you may want for ties in \code{x}.}
 \examples{

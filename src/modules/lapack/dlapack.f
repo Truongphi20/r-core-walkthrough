@@ -325,8 +325,7 @@
 *> \ingroup bbcsd
 *
 *  =====================================================================
-      SUBROUTINE DBBCSD( JOBU1, JOBU2, JOBV1T, JOBV2T, TRANS, M, P,
-     $                   Q,
+      SUBROUTINE DBBCSD( JOBU1, JOBU2, JOBV1T, JOBV2T, TRANS, M, P, Q,
      $                   THETA, PHI, U1, LDU1, U2, LDU2, V1T, LDV1T,
      $                   V2T, LDV2T, B11D, B11E, B12D, B12E, B21D, B21E,
      $                   B22D, B22E, WORK, LWORK, INFO )
@@ -373,8 +372,7 @@
      $                   UNFL, X1, X2, Y1, Y2
 *
 *     .. External Subroutines ..
-      EXTERNAL           DLASR, DSCAL, DSWAP, DLARTGP, DLARTGS,
-     $                   DLAS2,
+      EXTERNAL           DLASR, DSCAL, DSWAP, DLARTGP, DLARTGS, DLAS2,
      $                   XERBLA
 *     ..
 *     .. External Functions ..
@@ -561,11 +559,9 @@
 *
 *           Compute shifts for B11 and B21 and use the lesser
 *
-            CALL DLAS2( B11D(IMAX-1), B11E(IMAX-1), B11D(IMAX),
-     $                  SIGMA11,
+            CALL DLAS2( B11D(IMAX-1), B11E(IMAX-1), B11D(IMAX), SIGMA11,
      $                  DUMMY )
-            CALL DLAS2( B21D(IMAX-1), B21E(IMAX-1), B21D(IMAX),
-     $                  SIGMA21,
+            CALL DLAS2( B21D(IMAX-1), B21E(IMAX-1), B21D(IMAX), SIGMA21,
      $                  DUMMY )
 *
             IF( SIGMA11 .LE. SIGMA21 ) THEN
@@ -701,8 +697,7 @@
 *           chasing by applying the original shift again.
 *
             IF( .NOT. RESTART11 .AND. .NOT. RESTART21 ) THEN
-               CALL DLARTGP( X2, X1, WORK(IV1TSN+I-1),
-     $                       WORK(IV1TCS+I-1),
+               CALL DLARTGP( X2, X1, WORK(IV1TSN+I-1), WORK(IV1TCS+I-1),
      $                       R )
             ELSE IF( .NOT. RESTART11 .AND. RESTART21 ) THEN
                CALL DLARTGP( B11BULGE, B11E(I-1), WORK(IV1TSN+I-1),
@@ -729,12 +724,10 @@
                CALL DLARTGP( B22BULGE, B22D(I-1), WORK(IV2TSN+I-1-1),
      $                       WORK(IV2TCS+I-1-1), R )
             ELSE IF( NU .LT. MU ) THEN
-               CALL DLARTGS( B12E(I-1), B12D(I), NU,
-     $                       WORK(IV2TCS+I-1-1),
+               CALL DLARTGS( B12E(I-1), B12D(I), NU, WORK(IV2TCS+I-1-1),
      $                       WORK(IV2TSN+I-1-1) )
             ELSE
-               CALL DLARTGS( B22E(I-1), B22D(I), MU,
-     $                       WORK(IV2TCS+I-1-1),
+               CALL DLARTGS( B22E(I-1), B22D(I), MU, WORK(IV2TCS+I-1-1),
      $                       WORK(IV2TSN+I-1-1) )
             END IF
 *
@@ -787,8 +780,7 @@
 *           chasing by applying the original shift again.
 *
             IF( .NOT. RESTART11 .AND. .NOT. RESTART12 ) THEN
-               CALL DLARTGP( X2, X1, WORK(IU1SN+I-1),
-     $                       WORK(IU1CS+I-1),
+               CALL DLARTGP( X2, X1, WORK(IU1SN+I-1), WORK(IU1CS+I-1),
      $                       R )
             ELSE IF( .NOT. RESTART11 .AND. RESTART12 ) THEN
                CALL DLARTGP( B11BULGE, B11D(I), WORK(IU1SN+I-1),
@@ -804,8 +796,7 @@
      $                       WORK(IU1SN+I-1) )
             END IF
             IF( .NOT. RESTART21 .AND. .NOT. RESTART22 ) THEN
-               CALL DLARTGP( Y2, Y1, WORK(IU2SN+I-1),
-     $                       WORK(IU2CS+I-1),
+               CALL DLARTGP( Y2, Y1, WORK(IU2SN+I-1), WORK(IU2CS+I-1),
      $                       R )
             ELSE IF( .NOT. RESTART21 .AND. RESTART22 ) THEN
                CALL DLARTGP( B21BULGE, B21D(I), WORK(IU2SN+I-1),
@@ -871,12 +862,10 @@
             CALL DLARTGP( Y2, Y1, WORK(IV2TSN+IMAX-1-1),
      $                    WORK(IV2TCS+IMAX-1-1), R )
          ELSE IF( .NOT. RESTART12 .AND. RESTART22 ) THEN
-            CALL DLARTGP( B12BULGE, B12D(IMAX-1),
-     $                    WORK(IV2TSN+IMAX-1-1),
+            CALL DLARTGP( B12BULGE, B12D(IMAX-1), WORK(IV2TSN+IMAX-1-1),
      $                    WORK(IV2TCS+IMAX-1-1), R )
          ELSE IF( RESTART12 .AND. .NOT. RESTART22 ) THEN
-            CALL DLARTGP( B22BULGE, B22D(IMAX-1),
-     $                    WORK(IV2TSN+IMAX-1-1),
+            CALL DLARTGP( B22BULGE, B22D(IMAX-1), WORK(IV2TSN+IMAX-1-1),
      $                    WORK(IV2TCS+IMAX-1-1), R )
          ELSE IF( NU .LT. MU ) THEN
             CALL DLARTGS( B12E(IMAX-1), B12D(IMAX), NU,
@@ -1063,8 +1052,7 @@
                IF( WANTU2 )
      $            CALL DSWAP( M-P, U2(1,I), 1, U2(1,MINI), 1 )
                IF( WANTV1T )
-     $            CALL DSWAP( Q, V1T(I,1), LDV1T, V1T(MINI,1),
-     $                        LDV1T )
+     $            CALL DSWAP( Q, V1T(I,1), LDV1T, V1T(MINI,1), LDV1T )
                IF( WANTV2T )
      $            CALL DSWAP( M-Q, V2T(I,1), LDV2T, V2T(MINI,1),
      $               LDV2T )
@@ -1283,8 +1271,7 @@
 *>     California at Berkeley, USA
 *>
 *  =====================================================================
-      SUBROUTINE DBDSDC( UPLO, COMPQ, N, D, E, U, LDU, VT, LDVT, Q,
-     $                   IQ,
+      SUBROUTINE DBDSDC( UPLO, COMPQ, N, D, E, U, LDU, VT, LDVT, Q, IQ,
      $                   WORK, IWORK, INFO )
 *
 *  -- LAPACK computational routine --
@@ -1324,8 +1311,7 @@
       EXTERNAL           LSAME, ILAENV, DLAMCH, DLANST
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DCOPY, DLARTG, DLASCL, DLASD0, DLASDA,
-     $                   DLASDQ,
+      EXTERNAL           DCOPY, DLARTG, DLASCL, DLASD0, DLASDA, DLASDQ,
      $                   DLASET, DLASR, DSWAP, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
@@ -1432,17 +1418,14 @@
          IF( ICOMPQ.EQ.2 ) THEN
             CALL DLASET( 'A', N, N, ZERO, ONE, U, LDU )
             CALL DLASET( 'A', N, N, ZERO, ONE, VT, LDVT )
-            CALL DLASDQ( 'U', 0, N, N, N, 0, D, E, VT, LDVT, U, LDU,
-     $                   U,
+            CALL DLASDQ( 'U', 0, N, N, N, 0, D, E, VT, LDVT, U, LDU, U,
      $                   LDU, WORK( WSTART ), INFO )
          ELSE IF( ICOMPQ.EQ.1 ) THEN
             IU = 1
             IVT = IU + N
-            CALL DLASET( 'A', N, N, ZERO, ONE,
-     $                   Q( IU+( QSTART-1 )*N ),
+            CALL DLASET( 'A', N, N, ZERO, ONE, Q( IU+( QSTART-1 )*N ),
      $                   N )
-            CALL DLASET( 'A', N, N, ZERO, ONE,
-     $                   Q( IVT+( QSTART-1 )*N ),
+            CALL DLASET( 'A', N, N, ZERO, ONE, Q( IVT+( QSTART-1 )*N ),
      $                   N )
             CALL DLASDQ( 'U', 0, N, N, N, 0, D, E,
      $                   Q( IVT+( QSTART-1 )*N ), N,
@@ -1600,8 +1583,7 @@
 *     which rotated B to be upper bidiagonal
 *
       IF( ( IUPLO.EQ.2 ) .AND. ( ICOMPQ.EQ.2 ) )
-     $   CALL DLASR( 'L', 'V', 'B', N, N, WORK( 1 ), WORK( N ), U,
-     $               LDU )
+     $   CALL DLASR( 'L', 'V', 'B', N, N, WORK( 1 ), WORK( N ), U, LDU )
 *
       RETURN
 *
@@ -1776,9 +1758,7 @@
 *>
 *> \param[out] WORK
 *> \verbatim
-*>          WORK is DOUBLE PRECISION array, dimension (LWORK)
-*>          LWORK = 4*N, if NCVT = NRU = NCC = 0, and
-*>          LWORK = 4*(N-1), otherwise
+*>          WORK is DOUBLE PRECISION array, dimension (4*(N-1))
 *> \endverbatim
 *>
 *> \param[out] INFO
@@ -1899,8 +1879,7 @@
       EXTERNAL           LSAME, DLAMCH
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DLARTG, DLAS2, DLASQ1, DLASR, DLASV2,
-     $                   DROT,
+      EXTERNAL           DLARTG, DLAS2, DLASQ1, DLASR, DLASV2, DROT,
      $                   DSCAL, DSWAP, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
@@ -1981,12 +1960,10 @@
 *        Update singular vectors if desired
 *
          IF( NRU.GT.0 )
-     $      CALL DLASR( 'R', 'V', 'F', NRU, N, WORK( 1 ), WORK( N ),
-     $                  U,
+     $      CALL DLASR( 'R', 'V', 'F', NRU, N, WORK( 1 ), WORK( N ), U,
      $                  LDU )
          IF( NCC.GT.0 )
-     $      CALL DLASR( 'L', 'V', 'F', N, NCC, WORK( 1 ), WORK( N ),
-     $                  C,
+     $      CALL DLASR( 'L', 'V', 'F', N, NCC, WORK( 1 ), WORK( N ), C,
      $                  LDC )
       END IF
 *
@@ -2108,12 +2085,10 @@
 *        Compute singular vectors, if desired
 *
          IF( NCVT.GT.0 )
-     $      CALL DROT( NCVT, VT( M-1, 1 ), LDVT, VT( M, 1 ), LDVT,
-     $                 COSR,
+     $      CALL DROT( NCVT, VT( M-1, 1 ), LDVT, VT( M, 1 ), LDVT, COSR,
      $                 SINR )
          IF( NRU.GT.0 )
-     $      CALL DROT( NRU, U( 1, M-1 ), 1, U( 1, M ), 1, COSL,
-     $                 SINL )
+     $      CALL DROT( NRU, U( 1, M-1 ), 1, U( 1, M ), 1, COSL, SINL )
          IF( NCC.GT.0 )
      $      CALL DROT( NCC, C( M-1, 1 ), LDC, C( M, 1 ), LDC, COSL,
      $                 SINL )
@@ -2246,8 +2221,7 @@
                CALL DLARTG( D( I )*CS, E( I ), CS, SN, R )
                IF( I.GT.LL )
      $            E( I-1 ) = OLDSN*R
-               CALL DLARTG( OLDCS*R, D( I+1 )*SN, OLDCS, OLDSN,
-     $                      D( I ) )
+               CALL DLARTG( OLDCS*R, D( I+1 )*SN, OLDCS, OLDSN, D( I ) )
                WORK( I-LL+1 ) = CS
                WORK( I-LL+1+NM1 ) = SN
                WORK( I-LL+1+NM12 ) = OLDCS
@@ -2263,12 +2237,10 @@
      $         CALL DLASR( 'L', 'V', 'F', M-LL+1, NCVT, WORK( 1 ),
      $                     WORK( N ), VT( LL, 1 ), LDVT )
             IF( NRU.GT.0 )
-     $         CALL DLASR( 'R', 'V', 'F', NRU, M-LL+1,
-     $                     WORK( NM12+1 ),
+     $         CALL DLASR( 'R', 'V', 'F', NRU, M-LL+1, WORK( NM12+1 ),
      $                     WORK( NM13+1 ), U( 1, LL ), LDU )
             IF( NCC.GT.0 )
-     $         CALL DLASR( 'L', 'V', 'F', M-LL+1, NCC,
-     $                     WORK( NM12+1 ),
+     $         CALL DLASR( 'L', 'V', 'F', M-LL+1, NCC, WORK( NM12+1 ),
      $                     WORK( NM13+1 ), C( LL, 1 ), LDC )
 *
 *           Test convergence
@@ -2287,8 +2259,7 @@
                CALL DLARTG( D( I )*CS, E( I-1 ), CS, SN, R )
                IF( I.LT.M )
      $            E( I ) = OLDSN*R
-               CALL DLARTG( OLDCS*R, D( I-1 )*SN, OLDCS, OLDSN,
-     $                      D( I ) )
+               CALL DLARTG( OLDCS*R, D( I-1 )*SN, OLDCS, OLDSN, D( I ) )
                WORK( I-LL ) = CS
                WORK( I-LL+NM1 ) = -SN
                WORK( I-LL+NM12 ) = OLDCS
@@ -2301,8 +2272,7 @@
 *           Update singular vectors
 *
             IF( NCVT.GT.0 )
-     $         CALL DLASR( 'L', 'V', 'B', M-LL+1, NCVT,
-     $                     WORK( NM12+1 ),
+     $         CALL DLASR( 'L', 'V', 'B', M-LL+1, NCVT, WORK( NM12+1 ),
      $                     WORK( NM13+1 ), VT( LL, 1 ), LDVT )
             IF( NRU.GT.0 )
      $         CALL DLASR( 'R', 'V', 'B', NRU, M-LL+1, WORK( 1 ),
@@ -2357,12 +2327,10 @@
      $         CALL DLASR( 'L', 'V', 'F', M-LL+1, NCVT, WORK( 1 ),
      $                     WORK( N ), VT( LL, 1 ), LDVT )
             IF( NRU.GT.0 )
-     $         CALL DLASR( 'R', 'V', 'F', NRU, M-LL+1,
-     $                     WORK( NM12+1 ),
+     $         CALL DLASR( 'R', 'V', 'F', NRU, M-LL+1, WORK( NM12+1 ),
      $                     WORK( NM13+1 ), U( 1, LL ), LDU )
             IF( NCC.GT.0 )
-     $         CALL DLASR( 'L', 'V', 'F', M-LL+1, NCC,
-     $                     WORK( NM12+1 ),
+     $         CALL DLASR( 'L', 'V', 'F', M-LL+1, NCC, WORK( NM12+1 ),
      $                     WORK( NM13+1 ), C( LL, 1 ), LDC )
 *
 *           Test convergence
@@ -2409,8 +2377,7 @@
 *           Update singular vectors if desired
 *
             IF( NCVT.GT.0 )
-     $         CALL DLASR( 'L', 'V', 'B', M-LL+1, NCVT,
-     $                     WORK( NM12+1 ),
+     $         CALL DLASR( 'L', 'V', 'B', M-LL+1, NCVT, WORK( NM12+1 ),
      $                     WORK( NM13+1 ), VT( LL, 1 ), LDVT )
             IF( NRU.GT.0 )
      $         CALL DLASR( 'R', 'V', 'B', NRU, M-LL+1, WORK( 1 ),
@@ -2429,12 +2396,6 @@
 *
   160 CONTINUE
       DO 170 I = 1, N
-         IF( D( I ).EQ.ZERO ) THEN
-*
-*           Avoid -ZERO
-*
-            D( I ) = ZERO
-         END IF
          IF( D( I ).LT.ZERO ) THEN
             D( I ) = -D( I )
 *
@@ -2472,8 +2433,7 @@
             IF( NRU.GT.0 )
      $         CALL DSWAP( NRU, U( 1, ISUB ), 1, U( 1, N+1-I ), 1 )
             IF( NCC.GT.0 )
-     $         CALL DSWAP( NCC, C( ISUB, 1 ), LDC, C( N+1-I, 1 ),
-     $                     LDC )
+     $         CALL DSWAP( NCC, C( ISUB, 1 ), LDC, C( N+1-I, 1 ), LDC )
          END IF
   190 CONTINUE
       GO TO 220
@@ -2947,8 +2907,7 @@
       DOUBLE PRECISION   RA, RB, RC, RS
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DLARGV, DLARTG, DLARTV, DLASET, DROT,
-     $                   XERBLA
+      EXTERNAL           DLARGV, DLARTG, DLARTV, DLASET, DROT, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MAX, MIN
@@ -2967,9 +2926,7 @@
       WANTC = NCC.GT.0
       KLU1 = KL + KU + 1
       INFO = 0
-      IF( .NOT.WANTQ .AND.
-     $    .NOT.WANTPT .AND.
-     $    .NOT.LSAME( VECT, 'N' ) )
+      IF( .NOT.WANTQ .AND. .NOT.WANTPT .AND. .NOT.LSAME( VECT, 'N' ) )
      $     THEN
          INFO = -1
       ELSE IF( M.LT.0 ) THEN
@@ -3066,8 +3023,7 @@
                      NRT = NR
                   END IF
                   IF( NRT.GT.0 )
-     $               CALL DLARTV( NRT, AB( KLU1-L, J1-KLM+L-1 ),
-     $                            INCA,
+     $               CALL DLARTV( NRT, AB( KLU1-L, J1-KLM+L-1 ), INCA,
      $                            AB( KLU1-L+1, J1-KLM+L-1 ), INCA,
      $                            WORK( MN+J1 ), WORK( J1 ), KB1 )
    10          CONTINUE
@@ -3107,8 +3063,7 @@
 *                 apply plane rotations to C
 *
                   DO 30 J = J1, J2, KB1
-                     CALL DROT( NCC, C( J-1, 1 ), LDC, C( J, 1 ),
-     $                          LDC,
+                     CALL DROT( NCC, C( J-1, 1 ), LDC, C( J, 1 ), LDC,
      $                          WORK( MN+J ), WORK( J ) )
    30             CONTINUE
                END IF
@@ -3426,8 +3381,7 @@
 *> \ingroup gbcon
 *
 *  =====================================================================
-      SUBROUTINE DGBCON( NORM, N, KL, KU, AB, LDAB, IPIV, ANORM,
-     $                   RCOND,
+      SUBROUTINE DGBCON( NORM, N, KL, KU, AB, LDAB, IPIV, ANORM, RCOND,
      $                   WORK, IWORK, INFO )
 *
 *  -- LAPACK computational routine --
@@ -3466,8 +3420,7 @@
       EXTERNAL           LSAME, IDAMAX, DDOT, DLAMCH
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DAXPY, DLACN2, DLATBS, DRSCL,
-     $                   XERBLA
+      EXTERNAL           DAXPY, DLACN2, DLATBS, DRSCL, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          ABS, MIN
@@ -3536,15 +3489,13 @@
                      WORK( JP ) = WORK( J )
                      WORK( J ) = T
                   END IF
-                  CALL DAXPY( LM, -T, AB( KD+1, J ), 1, WORK( J+1 ),
-     $                        1 )
+                  CALL DAXPY( LM, -T, AB( KD+1, J ), 1, WORK( J+1 ), 1 )
    20          CONTINUE
             END IF
 *
 *           Multiply by inv(U).
 *
-            CALL DLATBS( 'Upper', 'No transpose', 'Non-unit', NORMIN,
-     $                   N,
+            CALL DLATBS( 'Upper', 'No transpose', 'Non-unit', NORMIN, N,
      $                   KL+KU, AB, LDAB, WORK, SCALE, WORK( 2*N+1 ),
      $                   INFO )
          ELSE
@@ -3745,8 +3696,7 @@
 *> \ingroup gbequ
 *
 *  =====================================================================
-      SUBROUTINE DGBEQU( M, N, KL, KU, AB, LDAB, R, C, ROWCND,
-     $                   COLCND,
+      SUBROUTINE DGBEQU( M, N, KL, KU, AB, LDAB, R, C, ROWCND, COLCND,
      $                   AMAX, INFO )
 *
 *  -- LAPACK computational routine --
@@ -4074,8 +4024,7 @@
 *> \ingroup gbequb
 *
 *  =====================================================================
-      SUBROUTINE DGBEQUB( M, N, KL, KU, AB, LDAB, R, C, ROWCND,
-     $                    COLCND,
+      SUBROUTINE DGBEQUB( M, N, KL, KU, AB, LDAB, R, C, ROWCND, COLCND,
      $                    AMAX, INFO )
 *
 *  -- LAPACK computational routine --
@@ -4456,8 +4405,7 @@
 *> \ingroup gbrfs
 *
 *  =====================================================================
-      SUBROUTINE DGBRFS( TRANS, N, KL, KU, NRHS, AB, LDAB, AFB,
-     $                   LDAFB,
+      SUBROUTINE DGBRFS( TRANS, N, KL, KU, NRHS, AB, LDAB, AFB, LDAFB,
      $                   IPIV, B, LDB, X, LDX, FERR, BERR, WORK, IWORK,
      $                   INFO )
 *
@@ -4499,8 +4447,7 @@
       INTEGER            ISAVE( 3 )
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DAXPY, DCOPY, DGBMV, DGBTRS, DLACN2,
-     $                   XERBLA
+      EXTERNAL           DAXPY, DCOPY, DGBMV, DGBTRS, DLACN2, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          ABS, MAX, MIN
@@ -4579,8 +4526,7 @@
 *        where op(A) = A, A**T, or A**H, depending on TRANS.
 *
          CALL DCOPY( N, B( 1, J ), 1, WORK( N+1 ), 1 )
-         CALL DGBMV( TRANS, N, N, KL, KU, -ONE, AB, LDAB, X( 1, J ),
-     $               1,
+         CALL DGBMV( TRANS, N, N, KL, KU, -ONE, AB, LDAB, X( 1, J ), 1,
      $               ONE, WORK( N+1 ), 1 )
 *
 *        Compute componentwise relative backward error from formula
@@ -4678,8 +4624,7 @@
 *
          KASE = 0
   100    CONTINUE
-         CALL DLACN2( N, WORK( 2*N+1 ), WORK( N+1 ), IWORK,
-     $                FERR( J ),
+         CALL DLACN2( N, WORK( 2*N+1 ), WORK( N+1 ), IWORK, FERR( J ),
      $                KASE, ISAVE )
          IF( KASE.NE.0 ) THEN
             IF( KASE.EQ.1 ) THEN
@@ -4880,8 +4825,7 @@
 *> \endverbatim
 *>
 *  =====================================================================
-      SUBROUTINE DGBSV( N, KL, KU, NRHS, AB, LDAB, IPIV, B, LDB,
-     $                  INFO )
+      SUBROUTINE DGBSV( N, KL, KU, NRHS, AB, LDAB, IPIV, B, LDB, INFO )
 *
 *  -- LAPACK driver routine --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -4933,8 +4877,7 @@
 *
 *        Solve the system A*X = B, overwriting B with X.
 *
-         CALL DGBTRS( 'No transpose', N, KL, KU, NRHS, AB, LDAB,
-     $                IPIV,
+         CALL DGBTRS( 'No transpose', N, KL, KU, NRHS, AB, LDAB, IPIV,
      $                B, LDB, INFO )
       END IF
       RETURN
@@ -5346,8 +5289,7 @@
       EXTERNAL           LSAME, DLAMCH, DLANGB, DLANTB
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DCOPY, DGBCON, DGBEQU, DGBRFS, DGBTRF,
-     $                   DGBTRS,
+      EXTERNAL           DCOPY, DGBCON, DGBEQU, DGBRFS, DGBTRF, DGBTRS,
      $                   DLACPY, DLAQGB, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
@@ -5372,9 +5314,7 @@
 *
 *     Test the input parameters.
 *
-      IF( .NOT.NOFACT .AND.
-     $    .NOT.EQUIL .AND.
-     $    .NOT.LSAME( FACT, 'F' ) )
+      IF( .NOT.NOFACT .AND. .NOT.EQUIL .AND. .NOT.LSAME( FACT, 'F' ) )
      $     THEN
          INFO = -1
       ELSE IF( .NOT.NOTRAN .AND. .NOT.LSAME( TRANS, 'T' ) .AND. .NOT.
@@ -5450,8 +5390,7 @@
 *
 *           Equilibrate the matrix.
 *
-            CALL DLAQGB( N, N, KL, KU, AB, LDAB, R, C, ROWCND,
-     $                   COLCND,
+            CALL DLAQGB( N, N, KL, KU, AB, LDAB, R, C, ROWCND, COLCND,
      $                   AMAX, EQUED )
             ROWEQU = LSAME( EQUED, 'R' ) .OR. LSAME( EQUED, 'B' )
             COLEQU = LSAME( EQUED, 'C' ) .OR. LSAME( EQUED, 'B' )
@@ -5502,8 +5441,7 @@
                   ANORM = MAX( ANORM, ABS( AB( I, J ) ) )
    80          CONTINUE
    90       CONTINUE
-            RPVGRW = DLANTB( 'M', 'U', 'N', INFO, MIN( INFO-1,
-     $                       KL+KU ),
+            RPVGRW = DLANTB( 'M', 'U', 'N', INFO, MIN( INFO-1, KL+KU ),
      $                       AFB( MAX( 1, KL+KU+2-INFO ), 1 ), LDAFB,
      $                       WORK )
             IF( RPVGRW.EQ.ZERO ) THEN
@@ -5547,8 +5485,7 @@
 *     Use iterative refinement to improve the computed solution and
 *     compute error bounds and backward error estimates for it.
 *
-      CALL DGBRFS( TRANS, N, KL, KU, NRHS, AB, LDAB, AFB, LDAFB,
-     $             IPIV,
+      CALL DGBRFS( TRANS, N, KL, KU, NRHS, AB, LDAB, AFB, LDAFB, IPIV,
      $             B, LDB, X, LDX, FERR, BERR, WORK, IWORK, INFO )
 *
 *     Transform the solution matrix X to a solution of the original
@@ -5838,8 +5775,7 @@
 *
 *              Compute multipliers.
 *
-               CALL DSCAL( KM, ONE / AB( KV+1, J ), AB( KV+2, J ),
-     $                     1 )
+               CALL DSCAL( KM, ONE / AB( KV+1, J ), AB( KV+2, J ), 1 )
 *
 *              Update trailing submatrix within the band.
 *
@@ -6040,8 +5976,7 @@
       EXTERNAL           IDAMAX, ILAENV
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DCOPY, DGBTF2, DGEMM, DGER, DLASWP,
-     $                   DSCAL,
+      EXTERNAL           DCOPY, DGBTF2, DGEMM, DGER, DLASWP, DSCAL,
      $                   DSWAP, DTRSM, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
@@ -6189,8 +6124,7 @@
 *
 *                 Compute multipliers
 *
-                  CALL DSCAL( KM, ONE / AB( KV+1, JJ ), AB( KV+2,
-     $                        JJ ),
+                  CALL DSCAL( KM, ONE / AB( KV+1, JJ ), AB( KV+2, JJ ),
      $                        1 )
 *
 *                 Update trailing submatrix within the band and within
@@ -6259,8 +6193,7 @@
 *
 *                 Update A12
 *
-                  CALL DTRSM( 'Left', 'Lower', 'No transpose',
-     $                        'Unit',
+                  CALL DTRSM( 'Left', 'Lower', 'No transpose', 'Unit',
      $                        JB, J2, ONE, AB( KV+1, J ), LDAB-1,
      $                        AB( KV+1-JB, J+JB ), LDAB-1 )
 *
@@ -6268,8 +6201,7 @@
 *
 *                    Update A22
 *
-                     CALL DGEMM( 'No transpose', 'No transpose', I2,
-     $                           J2,
+                     CALL DGEMM( 'No transpose', 'No transpose', I2, J2,
      $                           JB, -ONE, AB( KV+1+JB, J ), LDAB-1,
      $                           AB( KV+1-JB, J+JB ), LDAB-1, ONE,
      $                           AB( KV+1, J+JB ), LDAB-1 )
@@ -6279,8 +6211,7 @@
 *
 *                    Update A32
 *
-                     CALL DGEMM( 'No transpose', 'No transpose', I3,
-     $                           J2,
+                     CALL DGEMM( 'No transpose', 'No transpose', I3, J2,
      $                           JB, -ONE, WORK31, LDWORK,
      $                           AB( KV+1-JB, J+JB ), LDAB-1, ONE,
      $                           AB( KV+KL+1-JB, J+JB ), LDAB-1 )
@@ -6300,8 +6231,7 @@
 *
 *                 Update A13 in the work array
 *
-                  CALL DTRSM( 'Left', 'Lower', 'No transpose',
-     $                        'Unit',
+                  CALL DTRSM( 'Left', 'Lower', 'No transpose', 'Unit',
      $                        JB, J3, ONE, AB( KV+1, J ), LDAB-1,
      $                        WORK13, LDWORK )
 *
@@ -6309,8 +6239,7 @@
 *
 *                    Update A23
 *
-                     CALL DGEMM( 'No transpose', 'No transpose', I2,
-     $                           J3,
+                     CALL DGEMM( 'No transpose', 'No transpose', I2, J3,
      $                           JB, -ONE, AB( KV+1+JB, J ), LDAB-1,
      $                           WORK13, LDWORK, ONE, AB( 1+JB, J+KV ),
      $                           LDAB-1 )
@@ -6320,8 +6249,7 @@
 *
 *                    Update A33
 *
-                     CALL DGEMM( 'No transpose', 'No transpose', I3,
-     $                           J3,
+                     CALL DGEMM( 'No transpose', 'No transpose', I3, J3,
      $                           JB, -ONE, WORK31, LDWORK, WORK13,
      $                           LDWORK, ONE, AB( 1+KL, J+KV ), LDAB-1 )
                   END IF
@@ -6518,8 +6446,7 @@
 *> \ingroup gbtrs
 *
 *  =====================================================================
-      SUBROUTINE DGBTRS( TRANS, N, KL, KU, NRHS, AB, LDAB, IPIV, B,
-     $                   LDB,
+      SUBROUTINE DGBTRS( TRANS, N, KL, KU, NRHS, AB, LDAB, IPIV, B, LDB,
      $                   INFO )
 *
 *  -- LAPACK computational routine --
@@ -6607,8 +6534,7 @@
                L = IPIV( J )
                IF( L.NE.J )
      $            CALL DSWAP( NRHS, B( L, 1 ), LDB, B( J, 1 ), LDB )
-               CALL DGER( LM, NRHS, -ONE, AB( KD+1, J ), 1, B( J,
-     $                    1 ),
+               CALL DGER( LM, NRHS, -ONE, AB( KD+1, J ), 1, B( J, 1 ),
      $                    LDB, B( J+1, 1 ), LDB )
    10       CONTINUE
          END IF
@@ -6617,8 +6543,7 @@
 *
 *           Solve U*X = B, overwriting B with X.
 *
-            CALL DTBSV( 'Upper', 'No transpose', 'Non-unit', N,
-     $                  KL+KU,
+            CALL DTBSV( 'Upper', 'No transpose', 'Non-unit', N, KL+KU,
      $                  AB, LDAB, B( 1, I ), 1 )
    20    CONTINUE
 *
@@ -6630,8 +6555,7 @@
 *
 *           Solve U**T*X = B, overwriting B with X.
 *
-            CALL DTBSV( 'Upper', 'Transpose', 'Non-unit', N, KL+KU,
-     $                  AB,
+            CALL DTBSV( 'Upper', 'Transpose', 'Non-unit', N, KL+KU, AB,
      $                  LDAB, B( 1, I ), 1 )
    30    CONTINUE
 *
@@ -6824,10 +6748,8 @@
       LEFTV = LSAME( SIDE, 'L' )
 *
       INFO = 0
-      IF( .NOT.LSAME( JOB, 'N' ) .AND.
-     $    .NOT.LSAME( JOB, 'P' ) .AND.
-     $    .NOT.LSAME( JOB, 'S' ) .AND.
-     $                .NOT.LSAME( JOB, 'B' ) ) THEN
+      IF( .NOT.LSAME( JOB, 'N' ) .AND. .NOT.LSAME( JOB, 'P' ) .AND.
+     $    .NOT.LSAME( JOB, 'S' ) .AND. .NOT.LSAME( JOB, 'B' ) ) THEN
          INFO = -1
       ELSE IF( .NOT.RIGHTV .AND. .NOT.LEFTV ) THEN
          INFO = -2
@@ -7115,8 +7037,7 @@
       LOGICAL            DISNAN, LSAME
       INTEGER            IDAMAX
       DOUBLE PRECISION   DLAMCH, DNRM2
-      EXTERNAL           DISNAN, LSAME, IDAMAX, DLAMCH,
-     $                   DNRM2
+      EXTERNAL           DISNAN, LSAME, IDAMAX, DLAMCH, DNRM2
 *     ..
 *     .. External Subroutines ..
       EXTERNAL           DSCAL, DSWAP, XERBLA
@@ -7127,10 +7048,8 @@
 *     Test the input parameters
 *
       INFO = 0
-      IF( .NOT.LSAME( JOB, 'N' ) .AND.
-     $    .NOT.LSAME( JOB, 'P' ) .AND.
-     $    .NOT.LSAME( JOB, 'S' ) .AND.
-     $                .NOT.LSAME( JOB, 'B' ) ) THEN
+      IF( .NOT.LSAME( JOB, 'N' ) .AND. .NOT.LSAME( JOB, 'P' ) .AND.
+     $    .NOT.LSAME( JOB, 'S' ) .AND. .NOT.LSAME( JOB, 'B' ) ) THEN
          INFO = -1
       ELSE IF( N.LT.0 ) THEN
          INFO = -2
@@ -7187,8 +7106,7 @@
                   SCALE( L ) = I
                   IF( I.NE.L ) THEN
                      CALL DSWAP( L, A( 1, I ), 1, A( 1, L ), 1 )
-                     CALL DSWAP( N-K+1, A( I, K ), LDA, A( L, K ),
-     $                           LDA )
+                     CALL DSWAP( N-K+1, A( I, K ), LDA, A( L, K ), LDA )
                   END IF
                   NOCONV = .TRUE.
 *
@@ -7223,8 +7141,7 @@
                   SCALE( K ) = J
                   IF( J.NE.K ) THEN
                      CALL DSWAP( L, A( 1, J ), 1, A( 1, K ), 1 )
-                     CALL DSWAP( N-K+1, A( J, K ), LDA, A( K, K ),
-     $                           LDA )
+                     CALL DSWAP( N-K+1, A( J, K ), LDA, A( K, K ), LDA )
                   END IF
                   NOCONV = .TRUE.
 *
@@ -7542,14 +7459,14 @@
 *  =====================================================================
 *
 *     .. Parameters ..
-      DOUBLE PRECISION   ZERO
-      PARAMETER          ( ZERO = 0.0D+0 )
+      DOUBLE PRECISION   ZERO, ONE
+      PARAMETER          ( ZERO = 0.0D+0, ONE = 1.0D+0 )
 *     ..
 *     .. Local Scalars ..
       INTEGER            I
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DLARF1F, DLARFG, XERBLA
+      EXTERNAL           DLARF, DLARFG, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MAX, MIN
@@ -7582,13 +7499,14 @@
             CALL DLARFG( M-I+1, A( I, I ), A( MIN( I+1, M ), I ), 1,
      $                   TAUQ( I ) )
             D( I ) = A( I, I )
+            A( I, I ) = ONE
 *
 *           Apply H(i) to A(i:m,i+1:n) from the left
 *
             IF( I.LT.N )
-     $         CALL DLARF1F( 'Left', M-I+1, N-I, A( I, I ), 1,
-     $                     TAUQ( I ),
+     $         CALL DLARF( 'Left', M-I+1, N-I, A( I, I ), 1, TAUQ( I ),
      $                     A( I, I+1 ), LDA, WORK )
+            A( I, I ) = D( I )
 *
             IF( I.LT.N ) THEN
 *
@@ -7598,11 +7516,13 @@
                CALL DLARFG( N-I, A( I, I+1 ), A( I, MIN( I+2, N ) ),
      $                      LDA, TAUP( I ) )
                E( I ) = A( I, I+1 )
+               A( I, I+1 ) = ONE
 *
 *              Apply G(i) to A(i+1:m,i+1:n) from the right
 *
-               CALL DLARF1F( 'Right', M-I, N-I, A( I, I+1 ), LDA,
+               CALL DLARF( 'Right', M-I, N-I, A( I, I+1 ), LDA,
      $                     TAUP( I ), A( I+1, I+1 ), LDA, WORK )
+               A( I, I+1 ) = E( I )
             ELSE
                TAUP( I ) = ZERO
             END IF
@@ -7615,32 +7535,33 @@
 *
 *           Generate elementary reflector G(i) to annihilate A(i,i+1:n)
 *
-            CALL DLARFG( N-I+1, A( I, I ), A( I, MIN( I+1, N ) ),
-     $                   LDA,
+            CALL DLARFG( N-I+1, A( I, I ), A( I, MIN( I+1, N ) ), LDA,
      $                   TAUP( I ) )
             D( I ) = A( I, I )
+            A( I, I ) = ONE
 *
 *           Apply G(i) to A(i+1:m,i:n) from the right
 *
             IF( I.LT.M )
-     $         CALL DLARF1F( 'Right', M-I, N-I+1, A( I, I ), LDA,
+     $         CALL DLARF( 'Right', M-I, N-I+1, A( I, I ), LDA,
      $                     TAUP( I ), A( I+1, I ), LDA, WORK )
+            A( I, I ) = D( I )
 *
             IF( I.LT.M ) THEN
 *
 *              Generate elementary reflector H(i) to annihilate
 *              A(i+2:m,i)
 *
-               CALL DLARFG( M-I, A( I+1, I ), A( MIN( I+2, M ), I ),
-     $                      1,
+               CALL DLARFG( M-I, A( I+1, I ), A( MIN( I+2, M ), I ), 1,
      $                      TAUQ( I ) )
                E( I ) = A( I+1, I )
+               A( I+1, I ) = ONE
 *
 *              Apply H(i) to A(i+1:m,i+1:n) from the left
 *
-               CALL DLARF1F( 'Left', M-I, N-I, A( I+1, I ), 1,
-     $                     TAUQ( I ),
+               CALL DLARF( 'Left', M-I, N-I, A( I+1, I ), 1, TAUQ( I ),
      $                     A( I+1, I+1 ), LDA, WORK )
+               A( I+1, I ) = E( I )
             ELSE
                TAUQ( I ) = ZERO
             END IF
@@ -7775,8 +7696,7 @@
 *> \param[in] LWORK
 *> \verbatim
 *>          LWORK is INTEGER
-*>          The length of the array WORK.
-*>          LWORK >= 1, if MIN(M,N) = 0, and LWORK >= MAX(M,N), otherwise.
+*>          The length of the array WORK.  LWORK >= max(1,M,N).
 *>          For optimum performance LWORK >= (M+N)*NB, where NB
 *>          is the optimal blocksize.
 *>
@@ -7877,8 +7797,8 @@
 *     ..
 *     .. Local Scalars ..
       LOGICAL            LQUERY
-      INTEGER            I, IINFO, J, LDWRKX, LDWRKY, LWKMIN, LWKOPT,
-     $                   MINMN, NB, NBMIN, NX, WS
+      INTEGER            I, IINFO, J, LDWRKX, LDWRKY, LWKOPT, MINMN, NB,
+     $                   NBMIN, NX, WS
 *     ..
 *     .. External Subroutines ..
       EXTERNAL           DGEBD2, DGEMM, DLABRD, XERBLA
@@ -7895,17 +7815,9 @@
 *     Test the input parameters
 *
       INFO = 0
-      MINMN = MIN( M, N )
-      IF( MINMN.EQ.0 ) THEN
-         LWKMIN = 1
-         LWKOPT = 1
-      ELSE
-         LWKMIN = MAX( M, N )
-         NB = MAX( 1, ILAENV( 1, 'DGEBRD', ' ', M, N, -1, -1 ) )
-         LWKOPT = ( M+N )*NB
-      ENDIF
+      NB = MAX( 1, ILAENV( 1, 'DGEBRD', ' ', M, N, -1, -1 ) )
+      LWKOPT = ( M+N )*NB
       WORK( 1 ) = DBLE( LWKOPT )
-*
       LQUERY = ( LWORK.EQ.-1 )
       IF( M.LT.0 ) THEN
          INFO = -1
@@ -7913,7 +7825,7 @@
          INFO = -2
       ELSE IF( LDA.LT.MAX( 1, M ) ) THEN
          INFO = -4
-      ELSE IF( LWORK.LT.LWKMIN .AND. .NOT.LQUERY ) THEN
+      ELSE IF( LWORK.LT.MAX( 1, M, N ) .AND. .NOT.LQUERY ) THEN
          INFO = -10
       END IF
       IF( INFO.LT.0 ) THEN
@@ -7925,6 +7837,7 @@
 *
 *     Quick return if possible
 *
+      MINMN = MIN( M, N )
       IF( MINMN.EQ.0 ) THEN
          WORK( 1 ) = 1
          RETURN
@@ -7943,7 +7856,7 @@
 *        Determine when to switch from blocked to unblocked code.
 *
          IF( NX.LT.MINMN ) THEN
-            WS = LWKOPT
+            WS = ( M+N )*NB
             IF( LWORK.LT.WS ) THEN
 *
 *              Not enough work space for the optimal NB, consider using
@@ -7968,8 +7881,7 @@
 *        the matrices X and Y which are needed to update the unreduced
 *        part of the matrix
 *
-         CALL DLABRD( M-I+1, N-I+1, NB, A( I, I ), LDA, D( I ),
-     $                E( I ),
+         CALL DLABRD( M-I+1, N-I+1, NB, A( I, I ), LDA, D( I ), E( I ),
      $                TAUQ( I ), TAUP( I ), WORK, LDWRKX,
      $                WORK( LDWRKX*NB+1 ), LDWRKY )
 *
@@ -7980,8 +7892,7 @@
      $               NB, -ONE, A( I+NB, I ), LDA,
      $               WORK( LDWRKX*NB+NB+1 ), LDWRKY, ONE,
      $               A( I+NB, I+NB ), LDA )
-         CALL DGEMM( 'No transpose', 'No transpose', M-I-NB+1,
-     $               N-I-NB+1,
+         CALL DGEMM( 'No transpose', 'No transpose', M-I-NB+1, N-I-NB+1,
      $               NB, -ONE, WORK( NB+1 ), LDWRKX, A( I, I+NB ), LDA,
      $               ONE, A( I+NB, I+NB ), LDA )
 *
@@ -8241,21 +8152,18 @@
 *
 *           Multiply by inv(L).
 *
-            CALL DLATRS( 'Lower', 'No transpose', 'Unit', NORMIN, N,
-     $                   A,
+            CALL DLATRS( 'Lower', 'No transpose', 'Unit', NORMIN, N, A,
      $                   LDA, WORK, SL, WORK( 2*N+1 ), INFO )
 *
 *           Multiply by inv(U).
 *
-            CALL DLATRS( 'Upper', 'No transpose', 'Non-unit', NORMIN,
-     $                   N,
+            CALL DLATRS( 'Upper', 'No transpose', 'Non-unit', NORMIN, N,
      $                   A, LDA, WORK, SU, WORK( 3*N+1 ), INFO )
          ELSE
 *
 *           Multiply by inv(U**T).
 *
-            CALL DLATRS( 'Upper', 'Transpose', 'Non-unit', NORMIN, N,
-     $                   A,
+            CALL DLATRS( 'Upper', 'Transpose', 'Non-unit', NORMIN, N, A,
      $                   LDA, WORK, SU, WORK( 3*N+1 ), INFO )
 *
 *           Multiply by inv(L**T).
@@ -9168,8 +9076,7 @@
       DOUBLE PRECISION   DUM( 1 )
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DCOPY, DGEBAK, DGEBAL, DGEHRD, DHSEQR,
-     $                   DLACPY,
+      EXTERNAL           DCOPY, DGEBAK, DGEBAL, DGEHRD, DHSEQR, DLACPY,
      $                   DLASCL, DORGHR, DSWAP, DTRSEN, XERBLA
 *     ..
 *     .. External Functions ..
@@ -9191,8 +9098,7 @@
       WANTST = LSAME( SORT, 'S' )
       IF( ( .NOT.WANTVS ) .AND. ( .NOT.LSAME( JOBVS, 'N' ) ) ) THEN
          INFO = -1
-      ELSE IF( ( .NOT.WANTST ) .AND.
-     $         ( .NOT.LSAME( SORT, 'N' ) ) ) THEN
+      ELSE IF( ( .NOT.WANTST ) .AND. ( .NOT.LSAME( SORT, 'N' ) ) ) THEN
          INFO = -2
       ELSE IF( N.LT.0 ) THEN
          INFO = -4
@@ -9220,8 +9126,7 @@
             MAXWRK = 2*N + N*ILAENV( 1, 'DGEHRD', ' ', N, 1, N, 0 )
             MINWRK = 3*N
 *
-            CALL DHSEQR( 'S', JOBVS, N, 1, N, A, LDA, WR, WI, VS,
-     $                   LDVS,
+            CALL DHSEQR( 'S', JOBVS, N, 1, N, A, LDA, WR, WI, VS, LDVS,
      $             WORK, -1, IEVAL )
             HSWORK = INT( WORK( 1 ) )
 *
@@ -9299,8 +9204,7 @@
 *        Generate orthogonal matrix in VS
 *        (Workspace: need 3*N-1, prefer 2*N+(N-1)*NB)
 *
-         CALL DORGHR( N, ILO, IHI, VS, LDVS, WORK( ITAU ),
-     $                WORK( IWRK ),
+         CALL DORGHR( N, ILO, IHI, VS, LDVS, WORK( ITAU ), WORK( IWRK ),
      $                LWORK-IWRK+1, IERR )
       END IF
 *
@@ -9341,8 +9245,7 @@
 *        Undo balancing
 *        (Workspace: need N)
 *
-         CALL DGEBAK( 'P', 'R', N, ILO, IHI, WORK( IBAL ), N, VS,
-     $                LDVS,
+         CALL DGEBAK( 'P', 'R', N, ILO, IHI, WORK( IBAL ), N, VS, LDVS,
      $                IERR )
       END IF
 *
@@ -9385,14 +9288,12 @@
                      WI( I ) = ZERO
                      WI( I+1 ) = ZERO
                      IF( I.GT.1 )
-     $                  CALL DSWAP( I-1, A( 1, I ), 1, A( 1, I+1 ),
-     $                              1 )
+     $                  CALL DSWAP( I-1, A( 1, I ), 1, A( 1, I+1 ), 1 )
                      IF( N.GT.I+1 )
      $                  CALL DSWAP( N-I-1, A( I, I+2 ), LDA,
      $                              A( I+1, I+2 ), LDA )
                      IF( WANTVS ) THEN
-                        CALL DSWAP( N, VS( 1, I ), 1, VS( 1, I+1 ),
-     $                              1 )
+                        CALL DSWAP( N, VS( 1, I ), 1, VS( 1, I+1 ), 1 )
                      END IF
                      A( I, I+1 ) = A( I+1, I )
                      A( I+1, I ) = ZERO
@@ -9773,8 +9674,7 @@
       DOUBLE PRECISION   DUM( 1 )
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DCOPY, DGEBAK, DGEBAL, DGEHRD, DHSEQR,
-     $                   DLACPY,
+      EXTERNAL           DCOPY, DGEBAK, DGEBAL, DGEHRD, DHSEQR, DLACPY,
      $                   DLASCL, DORGHR, DSWAP, DTRSEN, XERBLA
 *     ..
 *     .. External Functions ..
@@ -9801,8 +9701,7 @@
 *
       IF( ( .NOT.WANTVS ) .AND. ( .NOT.LSAME( JOBVS, 'N' ) ) ) THEN
          INFO = -1
-      ELSE IF( ( .NOT.WANTST ) .AND.
-     $         ( .NOT.LSAME( SORT, 'N' ) ) ) THEN
+      ELSE IF( ( .NOT.WANTST ) .AND. ( .NOT.LSAME( SORT, 'N' ) ) ) THEN
          INFO = -2
       ELSE IF( .NOT.( WANTSN .OR. WANTSE .OR. WANTSV .OR. WANTSB ) .OR.
      $         ( .NOT.WANTST .AND. .NOT.WANTSN ) ) THEN
@@ -9838,8 +9737,7 @@
             MAXWRK = 2*N + N*ILAENV( 1, 'DGEHRD', ' ', N, 1, N, 0 )
             MINWRK = 3*N
 *
-            CALL DHSEQR( 'S', JOBVS, N, 1, N, A, LDA, WR, WI, VS,
-     $                   LDVS,
+            CALL DHSEQR( 'S', JOBVS, N, 1, N, A, LDA, WR, WI, VS, LDVS,
      $             WORK, -1, IEVAL )
             HSWORK = INT( WORK( 1 ) )
 *
@@ -9925,8 +9823,7 @@
 *        Generate orthogonal matrix in VS
 *        (RWorkspace: need 3*N-1, prefer 2*N+(N-1)*NB)
 *
-         CALL DORGHR( N, ILO, IHI, VS, LDVS, WORK( ITAU ),
-     $                WORK( IWRK ),
+         CALL DORGHR( N, ILO, IHI, VS, LDVS, WORK( ITAU ), WORK( IWRK ),
      $                LWORK-IWRK+1, IERR )
       END IF
 *
@@ -9959,8 +9856,7 @@
 *        (IWorkspace: if SENSE is 'V' or 'B', need SDIM*(N-SDIM)
 *                     otherwise, need 0 )
 *
-         CALL DTRSEN( SENSE, JOBVS, BWORK, N, A, LDA, VS, LDVS, WR,
-     $                WI,
+         CALL DTRSEN( SENSE, JOBVS, BWORK, N, A, LDA, VS, LDVS, WR, WI,
      $                SDIM, RCONDE, RCONDV, WORK( IWRK ), LWORK-IWRK+1,
      $                IWORK, LIWORK, ICOND )
          IF( .NOT.WANTSN )
@@ -9988,8 +9884,7 @@
 *        Undo balancing
 *        (RWorkspace: need N)
 *
-         CALL DGEBAK( 'P', 'R', N, ILO, IHI, WORK( IBAL ), N, VS,
-     $                LDVS,
+         CALL DGEBAK( 'P', 'R', N, ILO, IHI, WORK( IBAL ), N, VS, LDVS,
      $                IERR )
       END IF
 *
@@ -10001,8 +9896,7 @@
          CALL DCOPY( N, A, LDA+1, WR, 1 )
          IF( ( WANTSV .OR. WANTSB ) .AND. INFO.EQ.0 ) THEN
             DUM( 1 ) = RCONDV
-            CALL DLASCL( 'G', 0, 0, CSCALE, ANRM, 1, 1, DUM, 1,
-     $                   IERR )
+            CALL DLASCL( 'G', 0, 0, CSCALE, ANRM, 1, 1, DUM, 1, IERR )
             RCONDV = DUM( 1 )
          END IF
          IF( CSCALE.EQ.SMLNUM ) THEN
@@ -10038,14 +9932,12 @@
                      WI( I ) = ZERO
                      WI( I+1 ) = ZERO
                      IF( I.GT.1 )
-     $                  CALL DSWAP( I-1, A( 1, I ), 1, A( 1, I+1 ),
-     $                              1 )
+     $                  CALL DSWAP( I-1, A( 1, I ), 1, A( 1, I+1 ), 1 )
                      IF( N.GT.I+1 )
      $                  CALL DSWAP( N-I-1, A( I, I+2 ), LDA,
      $                              A( I+1, I+2 ), LDA )
                      IF( WANTVS ) THEN
-                       CALL DSWAP( N, VS( 1, I ), 1, VS( 1, I+1 ),
-     $                             1 )
+                       CALL DSWAP( N, VS( 1, I ), 1, VS( 1, I+1 ), 1 )
                      END IF
                      A( I, I+1 ) = A( I+1, I )
                      A( I+1, I ) = ZERO
@@ -10299,8 +10191,7 @@
 *> \ingroup geev
 *
 *  =====================================================================
-      SUBROUTINE DGEEV( JOBVL, JOBVR, N, A, LDA, WR, WI, VL, LDVL,
-     $                  VR,
+      SUBROUTINE DGEEV( JOBVL, JOBVR, N, A, LDA, WR, WI, VL, LDVL, VR,
      $                  LDVR, WORK, LWORK, INFO )
       implicit none
 *
@@ -10336,16 +10227,14 @@
       DOUBLE PRECISION   DUM( 1 )
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DGEBAK, DGEBAL, DGEHRD, DHSEQR, DLACPY,
-     $                   DLARTG,
+      EXTERNAL           DGEBAK, DGEBAL, DGEHRD, DHSEQR, DLACPY, DLARTG,
      $                   DLASCL, DORGHR, DROT, DSCAL, DTREVC3, XERBLA
 *     ..
 *     .. External Functions ..
       LOGICAL            LSAME
       INTEGER            IDAMAX, ILAENV
       DOUBLE PRECISION   DLAMCH, DLANGE, DLAPY2, DNRM2
-      EXTERNAL           LSAME, IDAMAX, ILAENV, DLAMCH, DLANGE,
-     $                   DLAPY2,
+      EXTERNAL           LSAME, IDAMAX, ILAENV, DLAMCH, DLANGE, DLAPY2,
      $                   DNRM2
 *     ..
 *     .. Intrinsic Functions ..
@@ -10361,8 +10250,7 @@
       WANTVR = LSAME( JOBVR, 'V' )
       IF( ( .NOT.WANTVL ) .AND. ( .NOT.LSAME( JOBVL, 'N' ) ) ) THEN
          INFO = -1
-      ELSE IF( ( .NOT.WANTVR ) .AND.
-     $         ( .NOT.LSAME( JOBVR, 'N' ) ) ) THEN
+      ELSE IF( ( .NOT.WANTVR ) .AND. ( .NOT.LSAME( JOBVR, 'N' ) ) ) THEN
          INFO = -2
       ELSE IF( N.LT.0 ) THEN
          INFO = -3
@@ -10394,8 +10282,7 @@
                MINWRK = 4*N
                MAXWRK = MAX( MAXWRK, 2*N + ( N - 1 )*ILAENV( 1,
      $                       'DORGHR', ' ', N, 1, N, -1 ) )
-               CALL DHSEQR( 'S', 'V', N, 1, N, A, LDA, WR, WI, VL,
-     $                      LDVL,
+               CALL DHSEQR( 'S', 'V', N, 1, N, A, LDA, WR, WI, VL, LDVL,
      $                      WORK, -1, INFO )
                HSWORK = INT( WORK(1) )
                MAXWRK = MAX( MAXWRK, N + 1, N + HSWORK )
@@ -10409,8 +10296,7 @@
                MINWRK = 4*N
                MAXWRK = MAX( MAXWRK, 2*N + ( N - 1 )*ILAENV( 1,
      $                       'DORGHR', ' ', N, 1, N, -1 ) )
-               CALL DHSEQR( 'S', 'V', N, 1, N, A, LDA, WR, WI, VR,
-     $                      LDVR,
+               CALL DHSEQR( 'S', 'V', N, 1, N, A, LDA, WR, WI, VR, LDVR,
      $                      WORK, -1, INFO )
                HSWORK = INT( WORK(1) )
                MAXWRK = MAX( MAXWRK, N + 1, N + HSWORK )
@@ -10422,8 +10308,7 @@
                MAXWRK = MAX( MAXWRK, 4*N )
             ELSE
                MINWRK = 3*N
-               CALL DHSEQR( 'E', 'N', N, 1, N, A, LDA, WR, WI, VR,
-     $                      LDVR,
+               CALL DHSEQR( 'E', 'N', N, 1, N, A, LDA, WR, WI, VR, LDVR,
      $                      WORK, -1, INFO )
                HSWORK = INT( WORK(1) )
                MAXWRK = MAX( MAXWRK, N + 1, N + HSWORK )
@@ -10496,16 +10381,14 @@
 *        Generate orthogonal matrix in VL
 *        (Workspace: need 3*N-1, prefer 2*N+(N-1)*NB)
 *
-         CALL DORGHR( N, ILO, IHI, VL, LDVL, WORK( ITAU ),
-     $                WORK( IWRK ),
+         CALL DORGHR( N, ILO, IHI, VL, LDVL, WORK( ITAU ), WORK( IWRK ),
      $                LWORK-IWRK+1, IERR )
 *
 *        Perform QR iteration, accumulating Schur vectors in VL
 *        (Workspace: need N+1, prefer N+HSWORK (see comments) )
 *
          IWRK = ITAU
-         CALL DHSEQR( 'S', 'V', N, ILO, IHI, A, LDA, WR, WI, VL,
-     $                LDVL,
+         CALL DHSEQR( 'S', 'V', N, ILO, IHI, A, LDA, WR, WI, VL, LDVL,
      $                WORK( IWRK ), LWORK-IWRK+1, INFO )
 *
          IF( WANTVR ) THEN
@@ -10528,16 +10411,14 @@
 *        Generate orthogonal matrix in VR
 *        (Workspace: need 3*N-1, prefer 2*N+(N-1)*NB)
 *
-         CALL DORGHR( N, ILO, IHI, VR, LDVR, WORK( ITAU ),
-     $                WORK( IWRK ),
+         CALL DORGHR( N, ILO, IHI, VR, LDVR, WORK( ITAU ), WORK( IWRK ),
      $                LWORK-IWRK+1, IERR )
 *
 *        Perform QR iteration, accumulating Schur vectors in VR
 *        (Workspace: need N+1, prefer N+HSWORK (see comments) )
 *
          IWRK = ITAU
-         CALL DHSEQR( 'S', 'V', N, ILO, IHI, A, LDA, WR, WI, VR,
-     $                LDVR,
+         CALL DHSEQR( 'S', 'V', N, ILO, IHI, A, LDA, WR, WI, VR, LDVR,
      $                WORK( IWRK ), LWORK-IWRK+1, INFO )
 *
       ELSE
@@ -10546,8 +10427,7 @@
 *        (Workspace: need N+1, prefer N+HSWORK (see comments) )
 *
          IWRK = ITAU
-         CALL DHSEQR( 'E', 'N', N, ILO, IHI, A, LDA, WR, WI, VR,
-     $                LDVR,
+         CALL DHSEQR( 'E', 'N', N, ILO, IHI, A, LDA, WR, WI, VR, LDVR,
      $                WORK( IWRK ), LWORK-IWRK+1, INFO )
       END IF
 *
@@ -10561,8 +10441,7 @@
 *        Compute left and/or right eigenvectors
 *        (Workspace: need 4*N, prefer N + N + 2*N*NB)
 *
-         CALL DTREVC3( SIDE, 'B', SELECT, N, A, LDA, VL, LDVL, VR,
-     $                 LDVR,
+         CALL DTREVC3( SIDE, 'B', SELECT, N, A, LDA, VL, LDVL, VR, LDVR,
      $                 N, NOUT, WORK( IWRK ), LWORK-IWRK+1, IERR )
       END IF
 *
@@ -10571,8 +10450,7 @@
 *        Undo balancing of left eigenvectors
 *        (Workspace: need N)
 *
-         CALL DGEBAK( 'B', 'L', N, ILO, IHI, WORK( IBAL ), N, VL,
-     $                LDVL,
+         CALL DGEBAK( 'B', 'L', N, ILO, IHI, WORK( IBAL ), N, VL, LDVL,
      $                IERR )
 *
 *        Normalize left eigenvectors and make largest component real
@@ -10602,8 +10480,7 @@
 *        Undo balancing of right eigenvectors
 *        (Workspace: need N)
 *
-         CALL DGEBAK( 'B', 'R', N, ILO, IHI, WORK( IBAL ), N, VR,
-     $                LDVR,
+         CALL DGEBAK( 'B', 'R', N, ILO, IHI, WORK( IBAL ), N, VR, LDVR,
      $                IERR )
 *
 *        Normalize right eigenvectors and make largest component real
@@ -10632,11 +10509,9 @@
 *
    50 CONTINUE
       IF( SCALEA ) THEN
-         CALL DLASCL( 'G', 0, 0, CSCALE, ANRM, N-INFO, 1,
-     $                WR( INFO+1 ),
+         CALL DLASCL( 'G', 0, 0, CSCALE, ANRM, N-INFO, 1, WR( INFO+1 ),
      $                MAX( N-INFO, 1 ), IERR )
-         CALL DLASCL( 'G', 0, 0, CSCALE, ANRM, N-INFO, 1,
-     $                WI( INFO+1 ),
+         CALL DLASCL( 'G', 0, 0, CSCALE, ANRM, N-INFO, 1, WI( INFO+1 ),
      $                MAX( N-INFO, 1 ), IERR )
          IF( INFO.GT.0 ) THEN
             CALL DLASCL( 'G', 0, 0, CSCALE, ANRM, ILO-1, 1, WR, N,
@@ -10954,8 +10829,7 @@
 *> \ingroup geevx
 *
 *  =====================================================================
-      SUBROUTINE DGEEVX( BALANC, JOBVL, JOBVR, SENSE, N, A, LDA, WR,
-     $                   WI,
+      SUBROUTINE DGEEVX( BALANC, JOBVL, JOBVR, SENSE, N, A, LDA, WR, WI,
      $                   VL, LDVL, VR, LDVR, ILO, IHI, SCALE, ABNRM,
      $                   RCONDE, RCONDV, WORK, LWORK, IWORK, INFO )
       implicit none
@@ -10996,8 +10870,7 @@
       DOUBLE PRECISION   DUM( 1 )
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DGEBAK, DGEBAL, DGEHRD, DHSEQR, DLACPY,
-     $                   DLARTG,
+      EXTERNAL           DGEBAK, DGEBAL, DGEHRD, DHSEQR, DLACPY, DLARTG,
      $                   DLASCL, DORGHR, DROT, DSCAL, DTREVC3, DTRSNA,
      $                   XERBLA
 *     ..
@@ -11005,8 +10878,7 @@
       LOGICAL            LSAME
       INTEGER            IDAMAX, ILAENV
       DOUBLE PRECISION   DLAMCH, DLANGE, DLAPY2, DNRM2
-      EXTERNAL           LSAME, IDAMAX, ILAENV, DLAMCH, DLANGE,
-     $                   DLAPY2,
+      EXTERNAL           LSAME, IDAMAX, ILAENV, DLAMCH, DLANGE, DLAPY2,
      $                   DNRM2
 *     ..
 *     .. Intrinsic Functions ..
@@ -11025,16 +10897,12 @@
       WNTSNV = LSAME( SENSE, 'V' )
       WNTSNB = LSAME( SENSE, 'B' )
       IF( .NOT.( LSAME( BALANC, 'N' ) .OR. LSAME( BALANC, 'S' )
-     $      .OR.
-     $                  LSAME( BALANC, 'P' ) .OR.
-     $                  LSAME( BALANC, 'B' ) ) )
+     $      .OR. LSAME( BALANC, 'P' ) .OR. LSAME( BALANC, 'B' ) ) )
      $     THEN
          INFO = -1
-      ELSE IF( ( .NOT.WANTVL ) .AND.
-     $         ( .NOT.LSAME( JOBVL, 'N' ) ) ) THEN
+      ELSE IF( ( .NOT.WANTVL ) .AND. ( .NOT.LSAME( JOBVL, 'N' ) ) ) THEN
          INFO = -2
-      ELSE IF( ( .NOT.WANTVR ) .AND.
-     $         ( .NOT.LSAME( JOBVR, 'N' ) ) ) THEN
+      ELSE IF( ( .NOT.WANTVR ) .AND. ( .NOT.LSAME( JOBVR, 'N' ) ) ) THEN
          INFO = -3
       ELSE IF( .NOT.( WNTSNN .OR. WNTSNE .OR. WNTSNB .OR. WNTSNV ) .OR.
      $         ( ( WNTSNE .OR. WNTSNB ) .AND. .NOT.( WANTVL .AND.
@@ -11073,8 +10941,7 @@
      $                       N, NOUT, WORK, -1, IERR )
                LWORK_TREVC = INT( WORK(1) )
                MAXWRK = MAX( MAXWRK, N + LWORK_TREVC )
-               CALL DHSEQR( 'S', 'V', N, 1, N, A, LDA, WR, WI, VL,
-     $                      LDVL,
+               CALL DHSEQR( 'S', 'V', N, 1, N, A, LDA, WR, WI, VL, LDVL,
      $                WORK, -1, INFO )
             ELSE IF( WANTVR ) THEN
                CALL DTREVC3( 'R', 'B', SELECT, N, A, LDA,
@@ -11082,8 +10949,7 @@
      $                       N, NOUT, WORK, -1, IERR )
                LWORK_TREVC = INT( WORK(1) )
                MAXWRK = MAX( MAXWRK, N + LWORK_TREVC )
-               CALL DHSEQR( 'S', 'V', N, 1, N, A, LDA, WR, WI, VR,
-     $                      LDVR,
+               CALL DHSEQR( 'S', 'V', N, 1, N, A, LDA, WR, WI, VR, LDVR,
      $                WORK, -1, INFO )
             ELSE
                IF( WNTSNN ) THEN
@@ -11108,8 +10974,7 @@
                IF( ( .NOT.WNTSNN ) .AND. ( .NOT.WNTSNE ) )
      $            MINWRK = MAX( MINWRK, N*N + 6*N )
                MAXWRK = MAX( MAXWRK, HSWORK )
-               MAXWRK = MAX( MAXWRK, N + ( N - 1 )*ILAENV( 1,
-     $                       'DORGHR',
+               MAXWRK = MAX( MAXWRK, N + ( N - 1 )*ILAENV( 1, 'DORGHR',
      $                       ' ', N, 1, N, -1 ) )
                IF( ( .NOT.WNTSNN ) .AND. ( .NOT.WNTSNE ) )
      $            MAXWRK = MAX( MAXWRK, N*N + 6*N )
@@ -11188,16 +11053,14 @@
 *        Generate orthogonal matrix in VL
 *        (Workspace: need 2*N-1, prefer N+(N-1)*NB)
 *
-         CALL DORGHR( N, ILO, IHI, VL, LDVL, WORK( ITAU ),
-     $                WORK( IWRK ),
+         CALL DORGHR( N, ILO, IHI, VL, LDVL, WORK( ITAU ), WORK( IWRK ),
      $                LWORK-IWRK+1, IERR )
 *
 *        Perform QR iteration, accumulating Schur vectors in VL
 *        (Workspace: need 1, prefer HSWORK (see comments) )
 *
          IWRK = ITAU
-         CALL DHSEQR( 'S', 'V', N, ILO, IHI, A, LDA, WR, WI, VL,
-     $                LDVL,
+         CALL DHSEQR( 'S', 'V', N, ILO, IHI, A, LDA, WR, WI, VL, LDVL,
      $                WORK( IWRK ), LWORK-IWRK+1, INFO )
 *
          IF( WANTVR ) THEN
@@ -11220,16 +11083,14 @@
 *        Generate orthogonal matrix in VR
 *        (Workspace: need 2*N-1, prefer N+(N-1)*NB)
 *
-         CALL DORGHR( N, ILO, IHI, VR, LDVR, WORK( ITAU ),
-     $                WORK( IWRK ),
+         CALL DORGHR( N, ILO, IHI, VR, LDVR, WORK( ITAU ), WORK( IWRK ),
      $                LWORK-IWRK+1, IERR )
 *
 *        Perform QR iteration, accumulating Schur vectors in VR
 *        (Workspace: need 1, prefer HSWORK (see comments) )
 *
          IWRK = ITAU
-         CALL DHSEQR( 'S', 'V', N, ILO, IHI, A, LDA, WR, WI, VR,
-     $                LDVR,
+         CALL DHSEQR( 'S', 'V', N, ILO, IHI, A, LDA, WR, WI, VR, LDVR,
      $                WORK( IWRK ), LWORK-IWRK+1, INFO )
 *
       ELSE
@@ -11246,8 +11107,7 @@
 *        (Workspace: need 1, prefer HSWORK (see comments) )
 *
          IWRK = ITAU
-         CALL DHSEQR( JOB, 'N', N, ILO, IHI, A, LDA, WR, WI, VR,
-     $                LDVR,
+         CALL DHSEQR( JOB, 'N', N, ILO, IHI, A, LDA, WR, WI, VR, LDVR,
      $                WORK( IWRK ), LWORK-IWRK+1, INFO )
       END IF
 *
@@ -11261,8 +11121,7 @@
 *        Compute left and/or right eigenvectors
 *        (Workspace: need 3*N, prefer N + 2*N*NB)
 *
-         CALL DTREVC3( SIDE, 'B', SELECT, N, A, LDA, VL, LDVL, VR,
-     $                 LDVR,
+         CALL DTREVC3( SIDE, 'B', SELECT, N, A, LDA, VL, LDVL, VR, LDVR,
      $                 N, NOUT, WORK( IWRK ), LWORK-IWRK+1, IERR )
       END IF
 *
@@ -11270,8 +11129,7 @@
 *     (Workspace: need N*N+6*N unless SENSE = 'E')
 *
       IF( .NOT.WNTSNN ) THEN
-         CALL DTRSNA( SENSE, 'A', SELECT, N, A, LDA, VL, LDVL, VR,
-     $                LDVR,
+         CALL DTRSNA( SENSE, 'A', SELECT, N, A, LDA, VL, LDVL, VR, LDVR,
      $                RCONDE, RCONDV, N, NOUT, WORK( IWRK ), N, IWORK,
      $                ICOND )
       END IF
@@ -11338,11 +11196,9 @@
 *
    50 CONTINUE
       IF( SCALEA ) THEN
-         CALL DLASCL( 'G', 0, 0, CSCALE, ANRM, N-INFO, 1,
-     $                WR( INFO+1 ),
+         CALL DLASCL( 'G', 0, 0, CSCALE, ANRM, N-INFO, 1, WR( INFO+1 ),
      $                MAX( N-INFO, 1 ), IERR )
-         CALL DLASCL( 'G', 0, 0, CSCALE, ANRM, N-INFO, 1,
-     $                WI( INFO+1 ),
+         CALL DLASCL( 'G', 0, 0, CSCALE, ANRM, N-INFO, 1, WI( INFO+1 ),
      $                MAX( N-INFO, 1 ), IERR )
          IF( INFO.EQ.0 ) THEN
             IF( ( WNTSNV .OR. WNTSNB ) .AND. ICOND.EQ.0 )
@@ -11722,8 +11578,7 @@
       END IF
 *
       IF( ILASCL ) THEN
-         CALL DLASCL( 'G', -1, -1, ANRM, ANRMTO, N, N, A, LDA,
-     $                IINFO )
+         CALL DLASCL( 'G', -1, -1, ANRM, ANRMTO, N, N, A, LDA, IINFO )
          IF( IINFO.NE.0 ) THEN
             INFO = N + 9
             RETURN
@@ -11743,8 +11598,7 @@
       END IF
 *
       IF( ILBSCL ) THEN
-         CALL DLASCL( 'G', -1, -1, BNRM, BNRMTO, N, N, B, LDB,
-     $                IINFO )
+         CALL DLASCL( 'G', -1, -1, BNRM, BNRMTO, N, N, B, LDB, IINFO )
          IF( IINFO.NE.0 ) THEN
             INFO = N + 9
             RETURN
@@ -11862,8 +11716,7 @@
 *     Undo scaling
 *
       IF( ILASCL ) THEN
-         CALL DLASCL( 'H', -1, -1, ANRMTO, ANRM, N, N, A, LDA,
-     $                IINFO )
+         CALL DLASCL( 'H', -1, -1, ANRMTO, ANRM, N, N, A, LDA, IINFO )
          IF( IINFO.NE.0 ) THEN
             INFO = N + 9
             RETURN
@@ -11883,14 +11736,12 @@
       END IF
 *
       IF( ILBSCL ) THEN
-         CALL DLASCL( 'U', -1, -1, BNRMTO, BNRM, N, N, B, LDB,
-     $                IINFO )
+         CALL DLASCL( 'U', -1, -1, BNRMTO, BNRM, N, N, B, LDB, IINFO )
          IF( IINFO.NE.0 ) THEN
             INFO = N + 9
             RETURN
          END IF
-         CALL DLASCL( 'G', -1, -1, BNRMTO, BNRM, N, 1, BETA, N,
-     $                IINFO )
+         CALL DLASCL( 'G', -1, -1, BNRMTO, BNRM, N, 1, BETA, N, IINFO )
          IF( IINFO.NE.0 ) THEN
             INFO = N + 9
             RETURN
@@ -12208,9 +12059,8 @@
 *> \endverbatim
 *>
 *  =====================================================================
-      SUBROUTINE DGEGV( JOBVL, JOBVR, N, A, LDA, B, LDB, ALPHAR,
-     $                  ALPHAI, BETA, VL, LDVL, VR, LDVR, WORK, LWORK,
-     $                  INFO )
+      SUBROUTINE DGEGV( JOBVL, JOBVR, N, A, LDA, B, LDB, ALPHAR, ALPHAI,
+     $                  BETA, VL, LDVL, VR, LDVR, WORK, LWORK, INFO )
 *
 *  -- LAPACK driver routine --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -12840,9 +12690,10 @@
 *     ..
 *     .. Local Scalars ..
       INTEGER            I
+      DOUBLE PRECISION   AII
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DLARF1F, DLARFG, XERBLA
+      EXTERNAL           DLARF, DLARFG, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MAX, MIN
@@ -12872,17 +12723,20 @@
 *
          CALL DLARFG( IHI-I, A( I+1, I ), A( MIN( I+2, N ), I ), 1,
      $                TAU( I ) )
+         AII = A( I+1, I )
+         A( I+1, I ) = ONE
 *
 *        Apply H(i) to A(1:ihi,i+1:ihi) from the right
 *
-         CALL DLARF1F( 'Right', IHI, IHI-I, A( I+1, I ), 1, TAU( I ),
+         CALL DLARF( 'Right', IHI, IHI-I, A( I+1, I ), 1, TAU( I ),
      $               A( 1, I+1 ), LDA, WORK )
 *
 *        Apply H(i) to A(i+1:ihi,i+1:n) from the left
 *
-         CALL DLARF1F( 'Left', IHI-I, N-I, A( I+1, I ), 1, TAU( I ),
+         CALL DLARF( 'Left', IHI-I, N-I, A( I+1, I ), 1, TAU( I ),
      $               A( I+1, I+1 ), LDA, WORK )
 *
+         A( I+1, I ) = AII
    10 CONTINUE
 *
       RETURN
@@ -12981,7 +12835,7 @@
 *>
 *> \param[out] WORK
 *> \verbatim
-*>          WORK is DOUBLE PRECISION array, dimension (MAX(1,LWORK))
+*>          WORK is DOUBLE PRECISION array, dimension (LWORK)
 *>          On exit, if INFO = 0, WORK(1) returns the optimal LWORK.
 *> \endverbatim
 *>
@@ -13055,8 +12909,7 @@
 *> \endverbatim
 *>
 *  =====================================================================
-      SUBROUTINE DGEHRD( N, ILO, IHI, A, LDA, TAU, WORK, LWORK,
-     $                   INFO )
+      SUBROUTINE DGEHRD( N, ILO, IHI, A, LDA, TAU, WORK, LWORK, INFO )
 *
 *  -- LAPACK computational routine --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -13066,7 +12919,7 @@
       INTEGER            IHI, ILO, INFO, LDA, LWORK, N
 *     ..
 *     .. Array Arguments ..
-      DOUBLE PRECISION   A( LDA, * ), TAU( * ), WORK( * )
+      DOUBLE PRECISION  A( LDA, * ), TAU( * ), WORK( * )
 *     ..
 *
 *  =====================================================================
@@ -13075,7 +12928,7 @@
       INTEGER            NBMAX, LDT, TSIZE
       PARAMETER          ( NBMAX = 64, LDT = NBMAX+1,
      $                     TSIZE = LDT*NBMAX )
-      DOUBLE PRECISION   ZERO, ONE
+      DOUBLE PRECISION  ZERO, ONE
       PARAMETER          ( ZERO = 0.0D+0,
      $                     ONE = 1.0D+0 )
 *     ..
@@ -13083,11 +12936,10 @@
       LOGICAL            LQUERY
       INTEGER            I, IB, IINFO, IWT, J, LDWORK, LWKOPT, NB,
      $                   NBMIN, NH, NX
-      DOUBLE PRECISION   EI
+      DOUBLE PRECISION  EI
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DAXPY, DGEHD2, DGEMM, DLAHR2, DLARFB,
-     $                   DTRMM,
+      EXTERNAL           DAXPY, DGEHD2, DGEMM, DLAHR2, DLARFB, DTRMM,
      $                   XERBLA
 *     ..
 *     .. Intrinsic Functions ..
@@ -13115,18 +12967,12 @@
          INFO = -8
       END IF
 *
-      NH = IHI - ILO + 1
       IF( INFO.EQ.0 ) THEN
 *
 *        Compute the workspace requirements
 *
-         IF( NH.LE.1 ) THEN
-            LWKOPT = 1
-         ELSE
-            NB = MIN( NBMAX, ILAENV( 1, 'DGEHRD', ' ', N, ILO, IHI,
-     $                              -1 ) )
-            LWKOPT = N*NB + TSIZE
-         ENDIF
+         NB = MIN( NBMAX, ILAENV( 1, 'DGEHRD', ' ', N, ILO, IHI, -1 ) )
+         LWKOPT = N*NB + TSIZE
          WORK( 1 ) = LWKOPT
       END IF
 *
@@ -13148,6 +12994,7 @@
 *
 *     Quick return if possible
 *
+      NH = IHI - ILO + 1
       IF( NH.LE.1 ) THEN
          WORK( 1 ) = 1
          RETURN
@@ -13167,7 +13014,7 @@
 *
 *           Determine if workspace is large enough for blocked code
 *
-            IF( LWORK.LT.LWKOPT ) THEN
+            IF( LWORK.LT.N*NB+TSIZE ) THEN
 *
 *              Not enough workspace to use optimal NB:  determine the
 *              minimum value of NB, and reduce NB or force use of
@@ -13243,7 +13090,6 @@
 *     Use unblocked code to reduce the rest of the matrix
 *
       CALL DGEHD2( N, I, IHI, A, LDA, TAU, WORK, IINFO )
-*
       WORK( 1 ) = LWKOPT
 *
       RETURN
@@ -13767,8 +13613,7 @@
       EXTERNAL  IDAMAX, LSAME, DLAMCH, DNRM2
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL  DCOPY,  DGELQF, DGEQP3, DGEQRF, DLACPY,
-     $                   DLASCL,
+      EXTERNAL  DCOPY,  DGELQF, DGEQP3, DGEQRF, DLACPY, DLASCL,
      $          DLASET, DLASSQ, DLASWP, DORGQR, DORMLQ,
      $          DORMQR, DPOCON, DSCAL,  DSWAP,  DTRSM,  XERBLA
 *
@@ -13946,10 +13791,8 @@
             CALL DLACPY( 'A', M, 1, A, LDA, U, LDU )
 *           computing all M left singular vectors of the M x 1 matrix
             IF ( N1 .NE. N  ) THEN
-               CALL DGEQRF( M, N, U,LDU, WORK, WORK(N+1),LWORK-N,
-     $                      IERR )
-               CALL DORGQR( M,N1,1, U,LDU,WORK,WORK(N+1),LWORK-N,
-     $                      IERR )
+               CALL DGEQRF( M, N, U,LDU, WORK, WORK(N+1),LWORK-N,IERR )
+               CALL DORGQR( M,N1,1, U,LDU,WORK,WORK(N+1),LWORK-N,IERR )
                CALL DCOPY( M, A(1,1), 1, U(1,1), 1 )
             END IF
          END IF
@@ -14371,8 +14214,7 @@
  1949             CONTINUE
  1947          CONTINUE
             ELSE
-               CALL DLASET( 'U', NR-1, NR-1, ZERO, ZERO, A(1,2),
-     $                      LDA )
+               CALL DLASET( 'U', NR-1, NR-1, ZERO, ZERO, A(1,2), LDA )
             END IF
 *
 *           .. and one-sided Jacobi rotations are started on a lower
@@ -14396,8 +14238,7 @@
             DO 1998 p = 1, NR
                CALL DCOPY( N-p+1, A(p,p), LDA, V(p,p), 1 )
  1998       CONTINUE
-            CALL DLASET( 'Upper', NR-1, NR-1, ZERO, ZERO, V(1,2),
-     $                   LDV )
+            CALL DLASET( 'Upper', NR-1, NR-1, ZERO, ZERO, V(1,2), LDV )
 *
             CALL DGESVJ( 'L','U','N', N, NR, V,LDV, SVA, NR, A,LDA,
      $                  WORK, LWORK, INFO )
@@ -14409,32 +14250,25 @@
 *        .. two more QR factorizations ( one QRF is not enough, two require
 *        accumulated product of Jacobi rotations, three are perfect )
 *
-            CALL DLASET( 'Lower', NR-1, NR-1, ZERO, ZERO, A(2,1),
-     $                   LDA )
-            CALL DGELQF( NR, N, A, LDA, WORK, WORK(N+1), LWORK-N,
-     $                   IERR)
+            CALL DLASET( 'Lower', NR-1, NR-1, ZERO, ZERO, A(2,1), LDA )
+            CALL DGELQF( NR, N, A, LDA, WORK, WORK(N+1), LWORK-N, IERR)
             CALL DLACPY( 'Lower', NR, NR, A, LDA, V, LDV )
-            CALL DLASET( 'Upper', NR-1, NR-1, ZERO, ZERO, V(1,2),
-     $                   LDV )
+            CALL DLASET( 'Upper', NR-1, NR-1, ZERO, ZERO, V(1,2), LDV )
             CALL DGEQRF( NR, NR, V, LDV, WORK(N+1), WORK(2*N+1),
      $                   LWORK-2*N, IERR )
             DO 8998 p = 1, NR
                CALL DCOPY( NR-p+1, V(p,p), LDV, V(p,p), 1 )
  8998       CONTINUE
-            CALL DLASET( 'Upper', NR-1, NR-1, ZERO, ZERO, V(1,2),
-     $                   LDV )
+            CALL DLASET( 'Upper', NR-1, NR-1, ZERO, ZERO, V(1,2), LDV )
 *
             CALL DGESVJ( 'Lower', 'U','N', NR, NR, V,LDV, SVA, NR, U,
      $                  LDU, WORK(N+1), LWORK, INFO )
             SCALEM  = WORK(N+1)
             NUMRANK = IDNINT(WORK(N+2))
             IF ( NR .LT. N ) THEN
-               CALL DLASET( 'A',N-NR, NR, ZERO,ZERO, V(NR+1,1),
-     $                      LDV )
-               CALL DLASET( 'A',NR, N-NR, ZERO,ZERO, V(1,NR+1),
-     $                      LDV )
-               CALL DLASET( 'A',N-NR,N-NR,ZERO,ONE, V(NR+1,NR+1),
-     $                      LDV )
+               CALL DLASET( 'A',N-NR, NR, ZERO,ZERO, V(NR+1,1),   LDV )
+               CALL DLASET( 'A',NR, N-NR, ZERO,ZERO, V(1,NR+1),   LDV )
+               CALL DLASET( 'A',N-NR,N-NR,ZERO,ONE, V(NR+1,NR+1), LDV )
             END IF
 *
          CALL DORMLQ( 'Left', 'Transpose', N, N, NR, A, LDA, WORK,
@@ -14478,10 +14312,8 @@
          IF ( NR .LT. M ) THEN
             CALL DLASET( 'A',  M-NR, NR,ZERO, ZERO, U(NR+1,1), LDU )
             IF ( NR .LT. N1 ) THEN
-               CALL DLASET( 'A',NR, N1-NR, ZERO, ZERO, U(1,NR+1),
-     $                      LDU )
-               CALL DLASET( 'A',M-NR,N1-NR,ZERO,ONE,U(NR+1,NR+1),
-     $                      LDU )
+               CALL DLASET( 'A',NR, N1-NR, ZERO, ZERO, U(1,NR+1), LDU )
+               CALL DLASET( 'A',M-NR,N1-NR,ZERO,ONE,U(NR+1,NR+1), LDU )
             END IF
          END IF
 *
@@ -14543,8 +14375,7 @@
  2968             CONTINUE
  2969          CONTINUE
             ELSE
-               CALL DLASET( 'U', NR-1, NR-1, ZERO, ZERO, V(1,2),
-     $                      LDV )
+               CALL DLASET( 'U', NR-1, NR-1, ZERO, ZERO, V(1,2), LDV )
             END IF
 *
 *           Estimate the row scaled condition number of R1
@@ -14700,8 +14531,7 @@
 *                 equation is Q2*V2 = the product of the Jacobi rotations
 *                 used in DGESVJ, premultiplied with the orthogonal matrix
 *                 from the second QR factorization.
-                  CALL DTRSM( 'L','U','N','N', NR,NR,ONE, A,LDA, V,
-     $                        LDV )
+                  CALL DTRSM( 'L','U','N','N', NR,NR,ONE, A,LDA, V,LDV )
                ELSE
 *                 .. R1 is well conditioned, but non-square. Transpose(R2)
 *                 is inverted to get the product of the Jacobi rotations
@@ -14712,8 +14542,7 @@
                   IF ( NR .LT. N ) THEN
                     CALL DLASET('A',N-NR,NR,ZERO,ZERO,V(NR+1,1),LDV)
                     CALL DLASET('A',NR,N-NR,ZERO,ZERO,V(1,NR+1),LDV)
-                    CALL DLASET('A',N-NR,N-NR,ZERO,ONE,V(NR+1,NR+1),
-     $                           LDV)
+                    CALL DLASET('A',N-NR,N-NR,ZERO,ONE,V(NR+1,NR+1),LDV)
                   END IF
                   CALL DORMQR('L','N',N,N,NR,WORK(2*N+1),N,WORK(N+1),
      $                 V,LDV,WORK(2*N+N*NR+NR+1),LWORK-2*N-N*NR-NR,IERR)
@@ -14727,8 +14556,7 @@
 *              is Q3^T*V3 = the product of the Jacobi rotations (applied to
 *              the lower triangular L3 from the LQ factorization of
 *              R2=L3*Q3), pre-multiplied with the transposed Q3.
-               CALL DGESVJ( 'L', 'U', 'N', NR, NR, V, LDV, SVA, NR,
-     $                      U,
+               CALL DGESVJ( 'L', 'U', 'N', NR, NR, V, LDV, SVA, NR, U,
      $              LDU, WORK(2*N+N*NR+NR+1), LWORK-2*N-N*NR-NR, INFO )
                SCALEM  = WORK(2*N+N*NR+NR+1)
                NUMRANK = IDNINT(WORK(2*N+N*NR+NR+2))
@@ -14736,8 +14564,7 @@
                   CALL DCOPY( NR, V(1,p), 1, U(1,p), 1 )
                   CALL DSCAL( NR, SVA(p),    U(1,p), 1 )
  3870          CONTINUE
-               CALL DTRSM('L','U','N','N',NR,NR,ONE,WORK(2*N+1),N,U,
-     $                     LDU)
+               CALL DTRSM('L','U','N','N',NR,NR,ONE,WORK(2*N+1),N,U,LDU)
 *              .. apply the permutation from the second QR factorization
                DO 873 q = 1, NR
                   DO 872 p = 1, NR
@@ -14750,8 +14577,7 @@
                IF ( NR .LT. N ) THEN
                   CALL DLASET( 'A',N-NR,NR,ZERO,ZERO,V(NR+1,1),LDV )
                   CALL DLASET( 'A',NR,N-NR,ZERO,ZERO,V(1,NR+1),LDV )
-                  CALL DLASET( 'A',N-NR,N-NR,ZERO,ONE,V(NR+1,NR+1),
-     $                         LDV )
+                  CALL DLASET( 'A',N-NR,N-NR,ZERO,ONE,V(NR+1,NR+1),LDV )
                END IF
                CALL DORMQR( 'L','N',N,N,NR,WORK(2*N+1),N,WORK(N+1),
      $              V,LDV,WORK(2*N+N*NR+NR+1),LWORK-2*N-N*NR-NR,IERR )
@@ -14767,16 +14593,14 @@
 *              defense ensures that DGEJSV completes the task.
 *              Compute the full SVD of L3 using DGESVJ with explicit
 *              accumulation of Jacobi rotations.
-               CALL DGESVJ( 'L', 'U', 'V', NR, NR, V, LDV, SVA, NR,
-     $                      U,
+               CALL DGESVJ( 'L', 'U', 'V', NR, NR, V, LDV, SVA, NR, U,
      $              LDU, WORK(2*N+N*NR+NR+1), LWORK-2*N-N*NR-NR, INFO )
                SCALEM  = WORK(2*N+N*NR+NR+1)
                NUMRANK = IDNINT(WORK(2*N+N*NR+NR+2))
                IF ( NR .LT. N ) THEN
                   CALL DLASET( 'A',N-NR,NR,ZERO,ZERO,V(NR+1,1),LDV )
                   CALL DLASET( 'A',NR,N-NR,ZERO,ZERO,V(1,NR+1),LDV )
-                  CALL DLASET( 'A',N-NR,N-NR,ZERO,ONE,V(NR+1,NR+1),
-     $                         LDV )
+                  CALL DLASET( 'A',N-NR,N-NR,ZERO,ONE,V(NR+1,NR+1),LDV )
                END IF
                CALL DORMQR( 'L','N',N,N,NR,WORK(2*N+1),N,WORK(N+1),
      $              V,LDV,WORK(2*N+N*NR+NR+1),LWORK-2*N-N*NR-NR,IERR )
@@ -14814,12 +14638,10 @@
 *           At this moment, V contains the right singular vectors of A.
 *           Next, assemble the left singular vector matrix U (M x N).
             IF ( NR .LT. M ) THEN
-               CALL DLASET( 'A', M-NR, NR, ZERO, ZERO, U(NR+1,1),
-     $                      LDU )
+               CALL DLASET( 'A', M-NR, NR, ZERO, ZERO, U(NR+1,1), LDU )
                IF ( NR .LT. N1 ) THEN
                   CALL DLASET('A',NR,N1-NR,ZERO,ZERO,U(1,NR+1),LDU)
-                  CALL DLASET('A',M-NR,N1-NR,ZERO,ONE,U(NR+1,NR+1),
-     $                         LDU)
+                  CALL DLASET('A',M-NR,N1-NR,ZERO,ONE,U(NR+1,NR+1),LDU)
                END IF
             END IF
 *
@@ -14888,10 +14710,8 @@
             IF ( N .LT. M ) THEN
                CALL DLASET( 'A',  M-N, N, ZERO, ZERO, U(N+1,1), LDU )
                IF ( N .LT. N1 ) THEN
-                  CALL DLASET( 'A',N,  N1-N, ZERO, ZERO,  U(1,N+1),
-     $                         LDU )
-                  CALL DLASET( 'A',M-N,N1-N, ZERO, ONE,U(N+1,N+1),
-     $                         LDU )
+                  CALL DLASET( 'A',N,  N1-N, ZERO, ZERO,  U(1,N+1),LDU )
+                  CALL DLASET( 'A',M-N,N1-N, ZERO, ONE,U(N+1,N+1),LDU )
                END IF
             END IF
             CALL DORMQR( 'Left', 'No Tr', M, N1, N, A, LDA, WORK, U,
@@ -14998,10 +14818,8 @@
          IF ( NR .LT. M ) THEN
             CALL DLASET( 'A',  M-NR, NR, ZERO, ZERO, U(NR+1,1), LDU )
             IF ( NR .LT. N1 ) THEN
-               CALL DLASET( 'A',NR,  N1-NR, ZERO, ZERO,  U(1,NR+1),
-     $                      LDU )
-               CALL DLASET( 'A',M-NR,N1-NR, ZERO, ONE,U(NR+1,NR+1),
-     $                      LDU )
+               CALL DLASET( 'A',NR,  N1-NR, ZERO, ZERO,  U(1,NR+1),LDU )
+               CALL DLASET( 'A',M-NR,N1-NR, ZERO, ONE,U(NR+1,NR+1),LDU )
             END IF
          END IF
 *
@@ -15026,8 +14844,7 @@
 *     Undo scaling, if necessary (and possible)
 *
       IF ( USCAL2 .LE. (BIG/SVA(1))*USCAL1 ) THEN
-         CALL DLASCL( 'G', 0, 0, USCAL1, USCAL2, NR, 1, SVA, N,
-     $                IERR )
+         CALL DLASCL( 'G', 0, 0, USCAL1, USCAL2, NR, 1, SVA, N, IERR )
          USCAL1 = ONE
          USCAL2 = ONE
       END IF
@@ -15208,9 +15025,10 @@
 *     ..
 *     .. Local Scalars ..
       INTEGER            I, K
+      DOUBLE PRECISION   AII
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DLARF1F, DLARFG, XERBLA
+      EXTERNAL           DLARF, DLARFG, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MAX, MIN
@@ -15244,9 +15062,11 @@
 *
 *           Apply H(i) to A(i+1:m,i:n) from the right
 *
-            CALL DLARF1F( 'Right', M-I, N-I+1, A( I, I ), LDA,
-     $                  TAU( I ),
+            AII = A( I, I )
+            A( I, I ) = ONE
+            CALL DLARF( 'Right', M-I, N-I+1, A( I, I ), LDA, TAU( I ),
      $                  A( I+1, I ), LDA, WORK )
+            A( I, I ) = AII
          END IF
    10 CONTINUE
       RETURN
@@ -15349,8 +15169,7 @@
 *> \param[in] LWORK
 *> \verbatim
 *>          LWORK is INTEGER
-*>          The dimension of the array WORK.
-*>          LWORK >= 1, if MIN(M,N) = 0, and LWORK >= M, otherwise.
+*>          The dimension of the array WORK.  LWORK >= max(1,M).
 *>          For optimum performance LWORK >= M*NB, where NB is the
 *>          optimal blocksize.
 *>
@@ -15431,8 +15250,9 @@
 *     Test the input arguments
 *
       INFO = 0
-      K = MIN( M, N )
       NB = ILAENV( 1, 'DGELQF', ' ', M, N, -1, -1 )
+      LWKOPT = M*NB
+      WORK( 1 ) = LWKOPT
       LQUERY = ( LWORK.EQ.-1 )
       IF( M.LT.0 ) THEN
          INFO = -1
@@ -15440,25 +15260,19 @@
          INFO = -2
       ELSE IF( LDA.LT.MAX( 1, M ) ) THEN
          INFO = -4
-      ELSE IF( .NOT.LQUERY ) THEN
-         IF( LWORK.LE.0 .OR. ( N.GT.0 .AND. LWORK.LT.MAX( 1, M ) ) )
-     $      INFO = -7
+      ELSE IF( LWORK.LT.MAX( 1, M ) .AND. .NOT.LQUERY ) THEN
+         INFO = -7
       END IF
       IF( INFO.NE.0 ) THEN
          CALL XERBLA( 'DGELQF', -INFO )
          RETURN
       ELSE IF( LQUERY ) THEN
-         IF( K.EQ.0 ) THEN
-            LWKOPT = 1
-         ELSE
-            LWKOPT = M*NB
-         END IF
-         WORK( 1 ) = LWKOPT
          RETURN
       END IF
 *
 *     Quick return if possible
 *
+      K = MIN( M, N )
       IF( K.EQ.0 ) THEN
          WORK( 1 ) = 1
          RETURN
@@ -15507,8 +15321,7 @@
 *              Form the triangular factor of the block reflector
 *              H = H(i) H(i+1) . . . H(i+ib-1)
 *
-               CALL DLARFT( 'Forward', 'Rowwise', N-I+1, IB, A( I,
-     $                      I ),
+               CALL DLARFT( 'Forward', 'Rowwise', N-I+1, IB, A( I, I ),
      $                      LDA, TAU( I ), WORK, LDWORK )
 *
 *              Apply H to A(i+ib:m,i:n) from the right
@@ -15574,17 +15387,7 @@
 *>
 *> DGELS solves overdetermined or underdetermined real linear systems
 *> involving an M-by-N matrix A, or its transpose, using a QR or LQ
-*> factorization of A.
-*>
-*> It is assumed that A has full rank, and only a rudimentary protection
-*> against rank-deficient matrices is provided. This subroutine only detects
-*> exact rank-deficiency, where a diagonal element of the triangular factor
-*> of A is exactly zero.
-*>
-*> It is conceivable for one (or more) of the diagonal elements of the triangular
-*> factor of A to be subnormally tiny numbers without this subroutine signalling
-*> an error. The solutions computed for such almost-rank-deficient matrices may
-*> be less accurate due to a loss of numerical precision.
+*> factorization of A.  It is assumed that A has full rank.
 *>
 *> The following options are provided:
 *>
@@ -15709,7 +15512,7 @@
 *>          = 0:  successful exit
 *>          < 0:  if INFO = -i, the i-th argument had an illegal value
 *>          > 0:  if INFO =  i, the i-th diagonal element of the
-*>                triangular factor of A is exactly zero, so that A does not have
+*>                triangular factor of A is zero, so that A does not have
 *>                full rank; the least squares solution could not be
 *>                computed.
 *> \endverbatim
@@ -15725,8 +15528,7 @@
 *> \ingroup gels
 *
 *  =====================================================================
-      SUBROUTINE DGELS( TRANS, M, N, NRHS, A, LDA, B, LDB, WORK,
-     $                  LWORK,
+      SUBROUTINE DGELS( TRANS, M, N, NRHS, A, LDA, B, LDB, WORK, LWORK,
      $                  INFO )
 *
 *  -- LAPACK driver routine --
@@ -15762,8 +15564,7 @@
       EXTERNAL           LSAME, ILAENV, DLAMCH, DLANGE
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DGELQF, DGEQRF, DLASCL, DLASET, DORMLQ,
-     $                   DORMQR,
+      EXTERNAL           DGELQF, DGEQRF, DLASCL, DLASET, DORMLQ, DORMQR,
      $                   DTRTRS, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
@@ -15776,8 +15577,7 @@
       INFO = 0
       MN = MIN( M, N )
       LQUERY = ( LWORK.EQ.-1 )
-      IF( .NOT.( LSAME( TRANS, 'N' ) .OR.
-     $    LSAME( TRANS, 'T' ) ) ) THEN
+      IF( .NOT.( LSAME( TRANS, 'N' ) .OR. LSAME( TRANS, 'T' ) ) ) THEN
          INFO = -1
       ELSE IF( M.LT.0 ) THEN
          INFO = -2
@@ -15895,8 +15695,7 @@
 *
 *        compute QR factorization of A
 *
-         CALL DGEQRF( M, N, A, LDA, WORK( 1 ), WORK( MN+1 ),
-     $                LWORK-MN,
+         CALL DGEQRF( M, N, A, LDA, WORK( 1 ), WORK( MN+1 ), LWORK-MN,
      $                INFO )
 *
 *        workspace at least N, optimally N*NB
@@ -15915,8 +15714,7 @@
 *
 *           B(1:N,1:NRHS) := inv(R) * B(1:N,1:NRHS)
 *
-            CALL DTRTRS( 'Upper', 'No transpose', 'Non-unit', N,
-     $                   NRHS,
+            CALL DTRTRS( 'Upper', 'No transpose', 'Non-unit', N, NRHS,
      $                   A, LDA, B, LDB, INFO )
 *
             IF( INFO.GT.0 ) THEN
@@ -15962,8 +15760,7 @@
 *
 *        Compute LQ factorization of A
 *
-         CALL DGELQF( M, N, A, LDA, WORK( 1 ), WORK( MN+1 ),
-     $                LWORK-MN,
+         CALL DGELQF( M, N, A, LDA, WORK( 1 ), WORK( MN+1 ), LWORK-MN,
      $                INFO )
 *
 *        workspace at least M, optimally M*NB.
@@ -15974,8 +15771,7 @@
 *
 *           B(1:M,1:NRHS) := inv(L) * B(1:M,1:NRHS)
 *
-            CALL DTRTRS( 'Lower', 'No transpose', 'Non-unit', M,
-     $                   NRHS,
+            CALL DTRTRS( 'Lower', 'No transpose', 'Non-unit', M, NRHS,
      $                   A, LDA, B, LDB, INFO )
 *
             IF( INFO.GT.0 ) THEN
@@ -16282,8 +16078,7 @@
       DOUBLE PRECISION   ANRM, BIGNUM, BNRM, EPS, SFMIN, SMLNUM
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DGEBRD, DGELQF, DGEQRF, DLACPY,
-     $                   DLALSD,
+      EXTERNAL           DGEBRD, DGELQF, DGEQRF, DLACPY, DLALSD,
      $                   DLASCL, DLASET, DORMBR, DORMLQ, DORMQR, XERBLA
 *     ..
 *     .. External Functions ..
@@ -16331,7 +16126,7 @@
      $       LOG( TWO ) ) + 1, 0 )
 *
       IF( INFO.EQ.0 ) THEN
-         MAXWRK = 1
+         MAXWRK = 0
          LIWORK = 3*MINMN*NLVL + 11*MINMN
          MM = M
          IF( M.GE.N .AND. M.GE.MNTHR ) THEN
@@ -16365,16 +16160,13 @@
 *              Path 2a - underdetermined, with many more columns
 *              than rows.
 *
-               MAXWRK = M + M*ILAENV( 1, 'DGELQF', ' ', M, N, -1,
-     $                                -1 )
+               MAXWRK = M + M*ILAENV( 1, 'DGELQF', ' ', M, N, -1, -1 )
                MAXWRK = MAX( MAXWRK, M*M+4*M+2*M*
      $                  ILAENV( 1, 'DGEBRD', ' ', M, M, -1, -1 ) )
                MAXWRK = MAX( MAXWRK, M*M+4*M+NRHS*
-     $                  ILAENV( 1, 'DORMBR', 'QLT', M, NRHS, M,
-     $                          -1 ) )
+     $                  ILAENV( 1, 'DORMBR', 'QLT', M, NRHS, M, -1 ) )
                MAXWRK = MAX( MAXWRK, M*M+4*M+( M-1 )*
-     $                  ILAENV( 1, 'DORMBR', 'PLN', M, NRHS, M,
-     $                          -1 ) )
+     $                  ILAENV( 1, 'DORMBR', 'PLN', M, NRHS, M, -1 ) )
                IF( NRHS.GT.1 ) THEN
                   MAXWRK = MAX( MAXWRK, M*M+M+M*NRHS )
                ELSE
@@ -16394,11 +16186,9 @@
                MAXWRK = 3*M + ( N+M )*ILAENV( 1, 'DGEBRD', ' ', M, N,
      $                  -1, -1 )
                MAXWRK = MAX( MAXWRK, 3*M+NRHS*
-     $                  ILAENV( 1, 'DORMBR', 'QLT', M, NRHS, N,
-     $                          -1 ) )
+     $                  ILAENV( 1, 'DORMBR', 'QLT', M, NRHS, N, -1 ) )
                MAXWRK = MAX( MAXWRK, 3*M+M*
-     $                  ILAENV( 1, 'DORMBR', 'PLN', N, NRHS, M,
-     $                          -1 ) )
+     $                  ILAENV( 1, 'DORMBR', 'PLN', N, NRHS, M, -1 ) )
                MAXWRK = MAX( MAXWRK, 3*M+WLALSD )
             END IF
             MINWRK = MAX( 3*M+NRHS, 3*M+M, 3*M+WLALSD )
@@ -16467,15 +16257,13 @@
 *
 *        Scale matrix norm up to SMLNUM.
 *
-         CALL DLASCL( 'G', 0, 0, BNRM, SMLNUM, M, NRHS, B, LDB,
-     $                INFO )
+         CALL DLASCL( 'G', 0, 0, BNRM, SMLNUM, M, NRHS, B, LDB, INFO )
          IBSCL = 1
       ELSE IF( BNRM.GT.BIGNUM ) THEN
 *
 *        Scale matrix norm down to BIGNUM.
 *
-         CALL DLASCL( 'G', 0, 0, BNRM, BIGNUM, M, NRHS, B, LDB,
-     $                INFO )
+         CALL DLASCL( 'G', 0, 0, BNRM, BIGNUM, M, NRHS, B, LDB, INFO )
          IBSCL = 2
       END IF
 *
@@ -16508,15 +16296,13 @@
 *           Multiply B by transpose(Q).
 *           (Workspace: need N+NRHS, prefer N+NRHS*NB)
 *
-            CALL DORMQR( 'L', 'T', M, NRHS, N, A, LDA, WORK( ITAU ),
-     $                   B,
+            CALL DORMQR( 'L', 'T', M, NRHS, N, A, LDA, WORK( ITAU ), B,
      $                   LDB, WORK( NWORK ), LWORK-NWORK+1, INFO )
 *
 *           Zero out below R.
 *
             IF( N.GT.1 ) THEN
-               CALL DLASET( 'L', N-1, N-1, ZERO, ZERO, A( 2, 1 ),
-     $                      LDA )
+               CALL DLASET( 'L', N-1, N-1, ZERO, ZERO, A( 2, 1 ), LDA )
             END IF
          END IF
 *
@@ -16535,8 +16321,7 @@
 *        Multiply B by transpose of left bidiagonalizing vectors of R.
 *        (Workspace: need 3*N+NRHS, prefer 3*N+NRHS*NB)
 *
-         CALL DORMBR( 'Q', 'L', 'T', MM, NRHS, N, A, LDA,
-     $                WORK( ITAUQ ),
+         CALL DORMBR( 'Q', 'L', 'T', MM, NRHS, N, A, LDA, WORK( ITAUQ ),
      $                B, LDB, WORK( NWORK ), LWORK-NWORK+1, INFO )
 *
 *        Solve the bidiagonal least squares problem.
@@ -16549,8 +16334,7 @@
 *
 *        Multiply B by right bidiagonalizing vectors of R.
 *
-         CALL DORMBR( 'P', 'L', 'N', N, NRHS, N, A, LDA,
-     $                WORK( ITAUP ),
+         CALL DORMBR( 'P', 'L', 'N', N, NRHS, N, A, LDA, WORK( ITAUP ),
      $                B, LDB, WORK( NWORK ), LWORK-NWORK+1, INFO )
 *
       ELSE IF( N.GE.MNTHR .AND. LWORK.GE.4*M+M*M+
@@ -16640,8 +16424,7 @@
 *        Multiply B by transpose of left bidiagonalizing vectors.
 *        (Workspace: need 3*M+NRHS, prefer 3*M+NRHS*NB)
 *
-         CALL DORMBR( 'Q', 'L', 'T', M, NRHS, N, A, LDA,
-     $                WORK( ITAUQ ),
+         CALL DORMBR( 'Q', 'L', 'T', M, NRHS, N, A, LDA, WORK( ITAUQ ),
      $                B, LDB, WORK( NWORK ), LWORK-NWORK+1, INFO )
 *
 *        Solve the bidiagonal least squares problem.
@@ -16654,8 +16437,7 @@
 *
 *        Multiply B by right bidiagonalizing vectors of A.
 *
-         CALL DORMBR( 'P', 'L', 'N', N, NRHS, M, A, LDA,
-     $                WORK( ITAUP ),
+         CALL DORMBR( 'P', 'L', 'N', N, NRHS, M, A, LDA, WORK( ITAUP ),
      $                B, LDB, WORK( NWORK ), LWORK-NWORK+1, INFO )
 *
       END IF
@@ -16663,22 +16445,18 @@
 *     Undo scaling.
 *
       IF( IASCL.EQ.1 ) THEN
-         CALL DLASCL( 'G', 0, 0, ANRM, SMLNUM, N, NRHS, B, LDB,
-     $                INFO )
+         CALL DLASCL( 'G', 0, 0, ANRM, SMLNUM, N, NRHS, B, LDB, INFO )
          CALL DLASCL( 'G', 0, 0, SMLNUM, ANRM, MINMN, 1, S, MINMN,
      $                INFO )
       ELSE IF( IASCL.EQ.2 ) THEN
-         CALL DLASCL( 'G', 0, 0, ANRM, BIGNUM, N, NRHS, B, LDB,
-     $                INFO )
+         CALL DLASCL( 'G', 0, 0, ANRM, BIGNUM, N, NRHS, B, LDB, INFO )
          CALL DLASCL( 'G', 0, 0, BIGNUM, ANRM, MINMN, 1, S, MINMN,
      $                INFO )
       END IF
       IF( IBSCL.EQ.1 ) THEN
-         CALL DLASCL( 'G', 0, 0, SMLNUM, BNRM, N, NRHS, B, LDB,
-     $                INFO )
+         CALL DLASCL( 'G', 0, 0, SMLNUM, BNRM, N, NRHS, B, LDB, INFO )
       ELSE IF( IBSCL.EQ.2 ) THEN
-         CALL DLASCL( 'G', 0, 0, BIGNUM, BNRM, N, NRHS, B, LDB,
-     $                INFO )
+         CALL DLASCL( 'G', 0, 0, BIGNUM, BNRM, N, NRHS, B, LDB, INFO )
       END IF
 *
    10 CONTINUE
@@ -16893,8 +16671,7 @@
       DOUBLE PRECISION   DUM( 1 )
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DBDSQR, DCOPY, DGEBRD, DGELQF, DGEMM,
-     $                   DGEMV,
+      EXTERNAL           DBDSQR, DCOPY, DGEBRD, DGELQF, DGEMM, DGEMV,
      $                   DGEQRF, DLACPY, DLASCL, DLASET, DORGBR,
      $                   DORMBR, DORMLQ, DORMQR, DRSCL, XERBLA
 *     ..
@@ -16967,8 +16744,7 @@
      $                      DUM(1), DUM(1), -1, INFO )
                LWORK_DGEBRD = INT( DUM(1) )
 *              Compute space needed for DORMBR
-               CALL DORMBR( 'Q', 'L', 'T', MM, NRHS, N, A, LDA,
-     $                      DUM(1),
+               CALL DORMBR( 'Q', 'L', 'T', MM, NRHS, N, A, LDA, DUM(1),
      $                B, LDB, DUM(1), -1, INFO )
                LWORK_DORMBR = INT( DUM(1) )
 *              Compute space needed for DORGBR
@@ -17113,15 +16889,13 @@
 *
 *        Scale matrix norm up to SMLNUM
 *
-         CALL DLASCL( 'G', 0, 0, BNRM, SMLNUM, M, NRHS, B, LDB,
-     $                INFO )
+         CALL DLASCL( 'G', 0, 0, BNRM, SMLNUM, M, NRHS, B, LDB, INFO )
          IBSCL = 1
       ELSE IF( BNRM.GT.BIGNUM ) THEN
 *
 *        Scale matrix norm down to BIGNUM
 *
-         CALL DLASCL( 'G', 0, 0, BNRM, BIGNUM, M, NRHS, B, LDB,
-     $                INFO )
+         CALL DLASCL( 'G', 0, 0, BNRM, BIGNUM, M, NRHS, B, LDB, INFO )
          IBSCL = 2
       END IF
 *
@@ -17149,15 +16923,13 @@
 *           Multiply B by transpose(Q)
 *           (Workspace: need N+NRHS, prefer N+NRHS*NB)
 *
-            CALL DORMQR( 'L', 'T', M, NRHS, N, A, LDA, WORK( ITAU ),
-     $                   B,
+            CALL DORMQR( 'L', 'T', M, NRHS, N, A, LDA, WORK( ITAU ), B,
      $                   LDB, WORK( IWORK ), LWORK-IWORK+1, INFO )
 *
 *           Zero out below R
 *
             IF( N.GT.1 )
-     $         CALL DLASET( 'L', N-1, N-1, ZERO, ZERO, A( 2, 1 ),
-     $                      LDA )
+     $         CALL DLASET( 'L', N-1, N-1, ZERO, ZERO, A( 2, 1 ), LDA )
          END IF
 *
          IE = 1
@@ -17175,8 +16947,7 @@
 *        Multiply B by transpose of left bidiagonalizing vectors of R
 *        (Workspace: need 3*N+NRHS, prefer 3*N+NRHS*NB)
 *
-         CALL DORMBR( 'Q', 'L', 'T', MM, NRHS, N, A, LDA,
-     $                WORK( ITAUQ ),
+         CALL DORMBR( 'Q', 'L', 'T', MM, NRHS, N, A, LDA, WORK( ITAUQ ),
      $                B, LDB, WORK( IWORK ), LWORK-IWORK+1, INFO )
 *
 *        Generate right bidiagonalizing vectors of R in A
@@ -17207,8 +16978,7 @@
                CALL DRSCL( NRHS, S( I ), B( I, 1 ), LDB )
                RANK = RANK + 1
             ELSE
-               CALL DLASET( 'F', 1, NRHS, ZERO, ZERO, B( I, 1 ),
-     $                      LDB )
+               CALL DLASET( 'F', 1, NRHS, ZERO, ZERO, B( I, 1 ), LDB )
             END IF
    10    CONTINUE
 *
@@ -17216,16 +16986,14 @@
 *        (Workspace: need N, prefer N*NRHS)
 *
          IF( LWORK.GE.LDB*NRHS .AND. NRHS.GT.1 ) THEN
-            CALL DGEMM( 'T', 'N', N, NRHS, N, ONE, A, LDA, B, LDB,
-     $                  ZERO,
+            CALL DGEMM( 'T', 'N', N, NRHS, N, ONE, A, LDA, B, LDB, ZERO,
      $                  WORK, LDB )
             CALL DLACPY( 'G', N, NRHS, WORK, LDB, B, LDB )
          ELSE IF( NRHS.GT.1 ) THEN
             CHUNK = LWORK / N
             DO 20 I = 1, NRHS, CHUNK
                BL = MIN( NRHS-I+1, CHUNK )
-               CALL DGEMM( 'T', 'N', N, BL, N, ONE, A, LDA, B( 1,
-     $                     I ),
+               CALL DGEMM( 'T', 'N', N, BL, N, ONE, A, LDA, B( 1, I ),
      $                     LDB, ZERO, WORK, N )
                CALL DLACPY( 'G', N, BL, WORK, N, B( 1, I ), LDB )
    20       CONTINUE
@@ -17280,8 +17048,7 @@
 *        Generate right bidiagonalizing vectors of R in WORK(IL)
 *        (Workspace: need M*M+5*M-1, prefer M*M+4*M+(M-1)*NB)
 *
-         CALL DORGBR( 'P', M, M, M, WORK( IL ), LDWORK,
-     $                WORK( ITAUP ),
+         CALL DORGBR( 'P', M, M, M, WORK( IL ), LDWORK, WORK( ITAUP ),
      $                WORK( IWORK ), LWORK-IWORK+1, INFO )
          IWORK = IE + M
 *
@@ -17306,8 +17073,7 @@
                CALL DRSCL( NRHS, S( I ), B( I, 1 ), LDB )
                RANK = RANK + 1
             ELSE
-               CALL DLASET( 'F', 1, NRHS, ZERO, ZERO, B( I, 1 ),
-     $                      LDB )
+               CALL DLASET( 'F', 1, NRHS, ZERO, ZERO, B( I, 1 ), LDB )
             END IF
    30    CONTINUE
          IWORK = IE
@@ -17316,23 +17082,21 @@
 *        (Workspace: need M*M+2*M, prefer M*M+M+M*NRHS)
 *
          IF( LWORK.GE.LDB*NRHS+IWORK-1 .AND. NRHS.GT.1 ) THEN
-            CALL DGEMM( 'T', 'N', M, NRHS, M, ONE, WORK( IL ),
-     $                  LDWORK,
+            CALL DGEMM( 'T', 'N', M, NRHS, M, ONE, WORK( IL ), LDWORK,
      $                  B, LDB, ZERO, WORK( IWORK ), LDB )
             CALL DLACPY( 'G', M, NRHS, WORK( IWORK ), LDB, B, LDB )
          ELSE IF( NRHS.GT.1 ) THEN
             CHUNK = ( LWORK-IWORK+1 ) / M
             DO 40 I = 1, NRHS, CHUNK
                BL = MIN( NRHS-I+1, CHUNK )
-               CALL DGEMM( 'T', 'N', M, BL, M, ONE, WORK( IL ),
-     $                     LDWORK,
+               CALL DGEMM( 'T', 'N', M, BL, M, ONE, WORK( IL ), LDWORK,
      $                     B( 1, I ), LDB, ZERO, WORK( IWORK ), M )
                CALL DLACPY( 'G', M, BL, WORK( IWORK ), M, B( 1, I ),
      $                      LDB )
    40       CONTINUE
          ELSE IF( NRHS.EQ.1 ) THEN
-            CALL DGEMV( 'T', M, M, ONE, WORK( IL ), LDWORK, B( 1,
-     $                  1 ),1, ZERO, WORK( IWORK ), 1 )
+            CALL DGEMV( 'T', M, M, ONE, WORK( IL ), LDWORK, B( 1, 1 ),
+     $                  1, ZERO, WORK( IWORK ), 1 )
             CALL DCOPY( M, WORK( IWORK ), 1, B( 1, 1 ), 1 )
          END IF
 *
@@ -17366,8 +17130,7 @@
 *        Multiply B by transpose of left bidiagonalizing vectors
 *        (Workspace: need 3*M+NRHS, prefer 3*M+NRHS*NB)
 *
-         CALL DORMBR( 'Q', 'L', 'T', M, NRHS, N, A, LDA,
-     $                WORK( ITAUQ ),
+         CALL DORMBR( 'Q', 'L', 'T', M, NRHS, N, A, LDA, WORK( ITAUQ ),
      $                B, LDB, WORK( IWORK ), LWORK-IWORK+1, INFO )
 *
 *        Generate right bidiagonalizing vectors in A
@@ -17398,8 +17161,7 @@
                CALL DRSCL( NRHS, S( I ), B( I, 1 ), LDB )
                RANK = RANK + 1
             ELSE
-               CALL DLASET( 'F', 1, NRHS, ZERO, ZERO, B( I, 1 ),
-     $                      LDB )
+               CALL DLASET( 'F', 1, NRHS, ZERO, ZERO, B( I, 1 ), LDB )
             END IF
    50    CONTINUE
 *
@@ -17407,16 +17169,14 @@
 *        (Workspace: need N, prefer N*NRHS)
 *
          IF( LWORK.GE.LDB*NRHS .AND. NRHS.GT.1 ) THEN
-            CALL DGEMM( 'T', 'N', N, NRHS, M, ONE, A, LDA, B, LDB,
-     $                  ZERO,
+            CALL DGEMM( 'T', 'N', N, NRHS, M, ONE, A, LDA, B, LDB, ZERO,
      $                  WORK, LDB )
             CALL DLACPY( 'F', N, NRHS, WORK, LDB, B, LDB )
          ELSE IF( NRHS.GT.1 ) THEN
             CHUNK = LWORK / N
             DO 60 I = 1, NRHS, CHUNK
                BL = MIN( NRHS-I+1, CHUNK )
-               CALL DGEMM( 'T', 'N', N, BL, M, ONE, A, LDA, B( 1,
-     $                     I ),
+               CALL DGEMM( 'T', 'N', N, BL, M, ONE, A, LDA, B( 1, I ),
      $                     LDB, ZERO, WORK, N )
                CALL DLACPY( 'F', N, BL, WORK, N, B( 1, I ), LDB )
    60       CONTINUE
@@ -17429,22 +17189,18 @@
 *     Undo scaling
 *
       IF( IASCL.EQ.1 ) THEN
-         CALL DLASCL( 'G', 0, 0, ANRM, SMLNUM, N, NRHS, B, LDB,
-     $                INFO )
+         CALL DLASCL( 'G', 0, 0, ANRM, SMLNUM, N, NRHS, B, LDB, INFO )
          CALL DLASCL( 'G', 0, 0, SMLNUM, ANRM, MINMN, 1, S, MINMN,
      $                INFO )
       ELSE IF( IASCL.EQ.2 ) THEN
-         CALL DLASCL( 'G', 0, 0, ANRM, BIGNUM, N, NRHS, B, LDB,
-     $                INFO )
+         CALL DLASCL( 'G', 0, 0, ANRM, BIGNUM, N, NRHS, B, LDB, INFO )
          CALL DLASCL( 'G', 0, 0, BIGNUM, ANRM, MINMN, 1, S, MINMN,
      $                INFO )
       END IF
       IF( IBSCL.EQ.1 ) THEN
-         CALL DLASCL( 'G', 0, 0, SMLNUM, BNRM, N, NRHS, B, LDB,
-     $                INFO )
+         CALL DLASCL( 'G', 0, 0, SMLNUM, BNRM, N, NRHS, B, LDB, INFO )
       ELSE IF( IBSCL.EQ.2 ) THEN
-         CALL DLASCL( 'G', 0, 0, BIGNUM, BNRM, N, NRHS, B, LDB,
-     $                INFO )
+         CALL DLASCL( 'G', 0, 0, BIGNUM, BNRM, N, NRHS, B, LDB, INFO )
       END IF
 *
    70 CONTINUE
@@ -17629,8 +17385,8 @@
 *> \ingroup doubleGEsolve
 *
 *  =====================================================================
-      SUBROUTINE DGELSX( M, N, NRHS, A, LDA, B, LDB, JPVT, RCOND,
-     $                   RANK, WORK, INFO )
+      SUBROUTINE DGELSX( M, N, NRHS, A, LDA, B, LDB, JPVT, RCOND, RANK,
+     $                   WORK, INFO )
 *
 *  -- LAPACK driver routine --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -17739,23 +17495,20 @@
 *
 *        Scale matrix norm up to SMLNUM
 *
-         CALL DLASCL( 'G', 0, 0, BNRM, SMLNUM, M, NRHS, B, LDB,
-     $                INFO )
+         CALL DLASCL( 'G', 0, 0, BNRM, SMLNUM, M, NRHS, B, LDB, INFO )
          IBSCL = 1
       ELSE IF( BNRM.GT.BIGNUM ) THEN
 *
 *        Scale matrix norm down to BIGNUM
 *
-         CALL DLASCL( 'G', 0, 0, BNRM, BIGNUM, M, NRHS, B, LDB,
-     $                INFO )
+         CALL DLASCL( 'G', 0, 0, BNRM, BIGNUM, M, NRHS, B, LDB, INFO )
          IBSCL = 2
       END IF
 *
 *     Compute QR factorization with column pivoting of A:
 *        A * P = Q * R
 *
-      CALL DGEQPF( M, N, A, LDA, JPVT, WORK( 1 ), WORK( MN+1 ),
-     $             INFO )
+      CALL DGEQPF( M, N, A, LDA, JPVT, WORK( 1 ), WORK( MN+1 ), INFO )
 *
 *     workspace 3*N. Details of Householder rotations stored
 *     in WORK(1:MN).
@@ -17809,8 +17562,8 @@
 *
 *     B(1:M,1:NRHS) := Q**T * B(1:M,1:NRHS)
 *
-      CALL DORM2R( 'Left', 'Transpose', M, NRHS, MN, A, LDA,
-     $             WORK( 1 ), B, LDB, WORK( 2*MN+1 ), INFO )
+      CALL DORM2R( 'Left', 'Transpose', M, NRHS, MN, A, LDA, WORK( 1 ),
+     $             B, LDB, WORK( 2*MN+1 ), INFO )
 *
 *     workspace NRHS
 *
@@ -17867,22 +17620,18 @@
 *     Undo scaling
 *
       IF( IASCL.EQ.1 ) THEN
-         CALL DLASCL( 'G', 0, 0, ANRM, SMLNUM, N, NRHS, B, LDB,
-     $                INFO )
+         CALL DLASCL( 'G', 0, 0, ANRM, SMLNUM, N, NRHS, B, LDB, INFO )
          CALL DLASCL( 'U', 0, 0, SMLNUM, ANRM, RANK, RANK, A, LDA,
      $                INFO )
       ELSE IF( IASCL.EQ.2 ) THEN
-         CALL DLASCL( 'G', 0, 0, ANRM, BIGNUM, N, NRHS, B, LDB,
-     $                INFO )
+         CALL DLASCL( 'G', 0, 0, ANRM, BIGNUM, N, NRHS, B, LDB, INFO )
          CALL DLASCL( 'U', 0, 0, BIGNUM, ANRM, RANK, RANK, A, LDA,
      $                INFO )
       END IF
       IF( IBSCL.EQ.1 ) THEN
-         CALL DLASCL( 'G', 0, 0, SMLNUM, BNRM, N, NRHS, B, LDB,
-     $                INFO )
+         CALL DLASCL( 'G', 0, 0, SMLNUM, BNRM, N, NRHS, B, LDB, INFO )
       ELSE IF( IBSCL.EQ.2 ) THEN
-         CALL DLASCL( 'G', 0, 0, BIGNUM, BNRM, N, NRHS, B, LDB,
-     $                INFO )
+         CALL DLASCL( 'G', 0, 0, BIGNUM, BNRM, N, NRHS, B, LDB, INFO )
       END IF
 *
   100 CONTINUE
@@ -18095,8 +17844,7 @@
 *>    G. Quintana-Orti, Depto. de Informatica, Universidad Jaime I, Spain \n
 *>
 *  =====================================================================
-      SUBROUTINE DGELSY( M, N, NRHS, A, LDA, B, LDB, JPVT, RCOND,
-     $                   RANK,
+      SUBROUTINE DGELSY( M, N, NRHS, A, LDA, B, LDB, JPVT, RCOND, RANK,
      $                   WORK, LWORK, INFO )
 *
 *  -- LAPACK driver routine --
@@ -18133,8 +17881,7 @@
       EXTERNAL           ILAENV, DLAMCH, DLANGE
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DCOPY, DGEQP3, DLAIC1, DLASCL,
-     $                   DLASET,
+      EXTERNAL           DCOPY, DGEQP3, DLAIC1, DLASCL, DLASET,
      $                   DORMQR, DORMRZ, DTRSM, DTZRZF, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
@@ -18235,15 +17982,13 @@
 *
 *        Scale matrix norm up to SMLNUM
 *
-         CALL DLASCL( 'G', 0, 0, BNRM, SMLNUM, M, NRHS, B, LDB,
-     $                INFO )
+         CALL DLASCL( 'G', 0, 0, BNRM, SMLNUM, M, NRHS, B, LDB, INFO )
          IBSCL = 1
       ELSE IF( BNRM.GT.BIGNUM ) THEN
 *
 *        Scale matrix norm down to BIGNUM
 *
-         CALL DLASCL( 'G', 0, 0, BNRM, BIGNUM, M, NRHS, B, LDB,
-     $                INFO )
+         CALL DLASCL( 'G', 0, 0, BNRM, BIGNUM, M, NRHS, B, LDB, INFO )
          IBSCL = 2
       END IF
 *
@@ -18310,8 +18055,7 @@
 *
 *     B(1:M,1:NRHS) := Q**T * B(1:M,1:NRHS)
 *
-      CALL DORMQR( 'Left', 'Transpose', M, NRHS, MN, A, LDA,
-     $             WORK( 1 ),
+      CALL DORMQR( 'Left', 'Transpose', M, NRHS, MN, A, LDA, WORK( 1 ),
      $             B, LDB, WORK( 2*MN+1 ), LWORK-2*MN, INFO )
       WSIZE = MAX( WSIZE, 2*MN+WORK( 2*MN+1 ) )
 *
@@ -18352,22 +18096,18 @@
 *     Undo scaling
 *
       IF( IASCL.EQ.1 ) THEN
-         CALL DLASCL( 'G', 0, 0, ANRM, SMLNUM, N, NRHS, B, LDB,
-     $                INFO )
+         CALL DLASCL( 'G', 0, 0, ANRM, SMLNUM, N, NRHS, B, LDB, INFO )
          CALL DLASCL( 'U', 0, 0, SMLNUM, ANRM, RANK, RANK, A, LDA,
      $                INFO )
       ELSE IF( IASCL.EQ.2 ) THEN
-         CALL DLASCL( 'G', 0, 0, ANRM, BIGNUM, N, NRHS, B, LDB,
-     $                INFO )
+         CALL DLASCL( 'G', 0, 0, ANRM, BIGNUM, N, NRHS, B, LDB, INFO )
          CALL DLASCL( 'U', 0, 0, BIGNUM, ANRM, RANK, RANK, A, LDA,
      $                INFO )
       END IF
       IF( IBSCL.EQ.1 ) THEN
-         CALL DLASCL( 'G', 0, 0, SMLNUM, BNRM, N, NRHS, B, LDB,
-     $                INFO )
+         CALL DLASCL( 'G', 0, 0, SMLNUM, BNRM, N, NRHS, B, LDB, INFO )
       ELSE IF( IBSCL.EQ.2 ) THEN
-         CALL DLASCL( 'G', 0, 0, BIGNUM, BNRM, N, NRHS, B, LDB,
-     $                INFO )
+         CALL DLASCL( 'G', 0, 0, BIGNUM, BNRM, N, NRHS, B, LDB, INFO )
       END IF
 *
    70 CONTINUE
@@ -18808,9 +18548,10 @@
 *     ..
 *     .. Local Scalars ..
       INTEGER            I, K
+      DOUBLE PRECISION   AII
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DLARF1L, DLARFG, XERBLA
+      EXTERNAL           DLARF, DLARFG, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MAX, MIN
@@ -18844,9 +18585,11 @@
 *
 *        Apply H(i) to A(1:m-k+i,1:n-k+i-1) from the left
 *
-         CALL DLARF1L( 'Left', M-K+I, N-K+I-1, A( 1, N-K+I ), 1,
-     $               TAU( I ),
+         AII = A( M-K+I, N-K+I )
+         A( M-K+I, N-K+I ) = ONE
+         CALL DLARF( 'Left', M-K+I, N-K+I-1, A( 1, N-K+I ), 1, TAU( I ),
      $               A, LDA, WORK )
+         A( M-K+I, N-K+I ) = AII
    10 CONTINUE
       RETURN
 *
@@ -18943,8 +18686,7 @@
 *> \param[in] LWORK
 *> \verbatim
 *>          LWORK is INTEGER
-*>          The dimension of the array WORK.
-*>          LWORK >= 1, if MIN(M,N) = 0, and LWORK >= N, otherwise.
+*>          The dimension of the array WORK.  LWORK >= max(1,N).
 *>          For optimum performance LWORK >= N*NB, where NB is the
 *>          optimal blocksize.
 *>
@@ -19044,9 +18786,8 @@
          END IF
          WORK( 1 ) = LWKOPT
 *
-         IF( .NOT.LQUERY ) THEN
-            IF( LWORK.LE.0 .OR. ( M.GT.0 .AND. LWORK.LT.MAX( 1, N ) ) )
-     $         INFO = -7
+         IF( LWORK.LT.MAX( 1, N ) .AND. .NOT.LQUERY ) THEN
+            INFO = -7
          END IF
       END IF
 *
@@ -19103,8 +18844,7 @@
 *           Compute the QL factorization of the current block
 *           A(1:m-k+i+ib-1,n-k+i:n-k+i+ib-1)
 *
-            CALL DGEQL2( M-K+I+IB-1, IB, A( 1, N-K+I ), LDA,
-     $                   TAU( I ),
+            CALL DGEQL2( M-K+I+IB-1, IB, A( 1, N-K+I ), LDA, TAU( I ),
      $                   WORK, IINFO )
             IF( N-K+I.GT.1 ) THEN
 *
@@ -19315,8 +19055,7 @@
      $                   NBMIN, NFXD, NX, SM, SMINMN, SN, TOPBMN
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DGEQRF, DLAQP2, DLAQPS, DORMQR, DSWAP,
-     $                   XERBLA
+      EXTERNAL           DGEQRF, DLAQP2, DLAQPS, DORMQR, DSWAP, XERBLA
 *     ..
 *     .. External Functions ..
       INTEGER            ILAENV
@@ -19398,8 +19137,7 @@
          IF( NA.LT.N ) THEN
 *CC         CALL DORM2R( 'Left', 'Transpose', M, N-NA, NA, A, LDA,
 *CC  $                   TAU, A( 1, NA+1 ), LDA, WORK, INFO )
-            CALL DORMQR( 'Left', 'Transpose', M, N-NA, NA, A, LDA,
-     $                   TAU,
+            CALL DORMQR( 'Left', 'Transpose', M, N-NA, NA, A, LDA, TAU,
      $                   A( 1, NA+1 ), LDA, WORK, LWORK, INFO )
             IWS = MAX( IWS, INT( WORK( 1 ) ) )
          END IF
@@ -19440,8 +19178,7 @@
 *                 determine the minimum value of NB.
 *
                   NB = ( LWORK-2*SN ) / ( SN+1 )
-                  NBMIN = MAX( 2, ILAENV( INBMIN, 'DGEQRF', ' ', SM,
-     $                         SN,
+                  NBMIN = MAX( 2, ILAENV( INBMIN, 'DGEQRF', ' ', SM, SN,
      $                    -1, -1 ) )
 *
 *
@@ -19756,8 +19493,7 @@
 *           Generate elementary reflector H(i)
 *
             IF( I.LT.M ) THEN
-               CALL DLARFG( M-I+1, A( I, I ), A( I+1, I ), 1,
-     $                      TAU( I ) )
+               CALL DLARFG( M-I+1, A( I, I ), A( I+1, I ), 1, TAU( I ) )
             ELSE
                CALL DLARFG( 1, A( M, M ), A( M, M ), 1, TAU( M ) )
             END IF
@@ -19768,8 +19504,8 @@
 *
                AII = A( I, I )
                A( I, I ) = ONE
-               CALL DLARF( 'LEFT', M-I+1, N-I, A( I, I ), 1,
-     $                     TAU( I ), A( I, I+1 ), LDA, WORK( 2*N+1 ) )
+               CALL DLARF( 'LEFT', M-I+1, N-I, A( I, I ), 1, TAU( I ),
+     $                     A( I, I+1 ), LDA, WORK( 2*N+1 ) )
                A( I, I ) = AII
             END IF
 *
@@ -19954,9 +19690,10 @@
 *     ..
 *     .. Local Scalars ..
       INTEGER            I, K
+      DOUBLE PRECISION   AII
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DLARF1F, DLARFG, XERBLA
+      EXTERNAL           DLARF, DLARFG, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MAX, MIN
@@ -19990,8 +19727,11 @@
 *
 *           Apply H(i) to A(i:m,i+1:n) from the left
 *
-            CALL DLARF1F( 'Left', M-I+1, N-I, A( I, I ), 1, TAU( I ),
+            AII = A( I, I )
+            A( I, I ) = ONE
+            CALL DLARF( 'Left', M-I+1, N-I, A( I, I ), 1, TAU( I ),
      $                  A( I, I+1 ), LDA, WORK )
+            A( I, I ) = AII
          END IF
    10 CONTINUE
       RETURN
@@ -20152,9 +19892,10 @@
 *     ..
 *     .. Local Scalars ..
       INTEGER            I, K
+      DOUBLE PRECISION   AII
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DLARF1F, DLARFGP, XERBLA
+      EXTERNAL           DLARF, DLARFGP, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MAX, MIN
@@ -20188,8 +19929,11 @@
 *
 *           Apply H(i) to A(i:m,i+1:n) from the left
 *
-            CALL DLARF1F( 'Left', M-I+1, N-I, A( I, I ), 1, TAU( I ),
+            AII = A( I, I )
+            A( I, I ) = ONE
+            CALL DLARF( 'Left', M-I+1, N-I, A( I, I ), 1, TAU( I ),
      $                  A( I, I+1 ), LDA, WORK )
+            A( I, I ) = AII
          END IF
    10 CONTINUE
       RETURN
@@ -20578,8 +20322,7 @@
 *> \param[in] LWORK
 *> \verbatim
 *>          LWORK is INTEGER
-*>          The dimension of the array WORK.
-*>          LWORK >= 1, if MIN(M,N) = 0, and LWORK >= N, otherwise.
+*>          The dimension of the array WORK.  LWORK >= max(1,N).
 *>          For optimum performance LWORK >= N*NB, where NB is
 *>          the optimal blocksize.
 *>
@@ -20644,8 +20387,8 @@
 *
 *     .. Local Scalars ..
       LOGICAL            LQUERY
-      INTEGER            I, IB, IINFO, IWS, K, LDWORK, LWKMIN, LWKOPT,
-     $                   NB, NBMIN, NX
+      INTEGER            I, IB, IINFO, IWS, K, LDWORK, LWKOPT, NB,
+     $                   NBMIN, NX
 *     ..
 *     .. External Subroutines ..
       EXTERNAL           DGEQR2P, DLARFB, DLARFT, XERBLA
@@ -20663,16 +20406,8 @@
 *
       INFO = 0
       NB = ILAENV( 1, 'DGEQRF', ' ', M, N, -1, -1 )
-      K = MIN( M, N )
-      IF( K.EQ.0 ) THEN
-         LWKMIN = 1
-         LWKOPT = 1
-      ELSE
-         LWKMIN = N
-         LWKOPT = N*NB
-      END IF
+      LWKOPT = N*NB
       WORK( 1 ) = LWKOPT
-*
       LQUERY = ( LWORK.EQ.-1 )
       IF( M.LT.0 ) THEN
          INFO = -1
@@ -20680,7 +20415,7 @@
          INFO = -2
       ELSE IF( LDA.LT.MAX( 1, M ) ) THEN
          INFO = -4
-      ELSE IF( LWORK.LT.LWKMIN .AND. .NOT.LQUERY ) THEN
+      ELSE IF( LWORK.LT.MAX( 1, N ) .AND. .NOT.LQUERY ) THEN
          INFO = -7
       END IF
       IF( INFO.NE.0 ) THEN
@@ -20692,6 +20427,7 @@
 *
 *     Quick return if possible
 *
+      K = MIN( M, N )
       IF( K.EQ.0 ) THEN
          WORK( 1 ) = 1
          RETURN
@@ -20699,7 +20435,7 @@
 *
       NBMIN = 2
       NX = 0
-      IWS = LWKMIN
+      IWS = N
       IF( NB.GT.1 .AND. NB.LT.K ) THEN
 *
 *        Determine when to cross over from blocked to unblocked code.
@@ -20964,11 +20700,9 @@
 *     Compute the QR factorization of the current block A(I:M,I:I+IB-1)
 *
          IF( USE_RECURSIVE_QR ) THEN
-            CALL DGEQRT3( M-I+1, IB, A(I,I), LDA, T(1,I), LDT,
-     $                    IINFO )
+            CALL DGEQRT3( M-I+1, IB, A(I,I), LDA, T(1,I), LDT, IINFO )
          ELSE
-            CALL DGEQRT2( M-I+1, IB, A(I,I), LDA, T(1,I), LDT,
-     $                    IINFO )
+            CALL DGEQRT2( M-I+1, IB, A(I,I), LDA, T(1,I), LDT, IINFO )
          END IF
          IF( I+IB.LE.N ) THEN
 *
@@ -21644,8 +21378,7 @@
 *> \ingroup gerfs
 *
 *  =====================================================================
-      SUBROUTINE DGERFS( TRANS, N, NRHS, A, LDA, AF, LDAF, IPIV, B,
-     $                   LDB,
+      SUBROUTINE DGERFS( TRANS, N, NRHS, A, LDA, AF, LDAF, IPIV, B, LDB,
      $                   X, LDX, FERR, BERR, WORK, IWORK, INFO )
 *
 *  -- LAPACK computational routine --
@@ -21686,8 +21419,7 @@
       INTEGER            ISAVE( 3 )
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DAXPY, DCOPY, DGEMV, DGETRS, DLACN2,
-     $                   XERBLA
+      EXTERNAL           DAXPY, DCOPY, DGEMV, DGETRS, DLACN2, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          ABS, MAX
@@ -21858,16 +21590,14 @@
 *
          KASE = 0
   100    CONTINUE
-         CALL DLACN2( N, WORK( 2*N+1 ), WORK( N+1 ), IWORK,
-     $                FERR( J ),
+         CALL DLACN2( N, WORK( 2*N+1 ), WORK( N+1 ), IWORK, FERR( J ),
      $                KASE, ISAVE )
          IF( KASE.NE.0 ) THEN
             IF( KASE.EQ.1 ) THEN
 *
 *              Multiply by diag(W)*inv(op(A)**T).
 *
-               CALL DGETRS( TRANST, N, 1, AF, LDAF, IPIV,
-     $                      WORK( N+1 ),
+               CALL DGETRS( TRANST, N, 1, AF, LDAF, IPIV, WORK( N+1 ),
      $                      N, INFO )
                DO 110 I = 1, N
                   WORK( N+I ) = WORK( I )*WORK( N+I )
@@ -21879,8 +21609,7 @@
                DO 120 I = 1, N
                   WORK( N+I ) = WORK( I )*WORK( N+I )
   120          CONTINUE
-               CALL DGETRS( TRANS, N, 1, AF, LDAF, IPIV, WORK( N+1 ),
-     $                      N,
+               CALL DGETRS( TRANS, N, 1, AF, LDAF, IPIV, WORK( N+1 ), N,
      $                      INFO )
             END IF
             GO TO 100
@@ -22044,9 +21773,10 @@
 *     ..
 *     .. Local Scalars ..
       INTEGER            I, K
+      DOUBLE PRECISION   AII
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DLARF1L, DLARFG, XERBLA
+      EXTERNAL           DLARF, DLARFG, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MAX, MIN
@@ -22080,8 +21810,11 @@
 *
 *        Apply H(i) to A(1:m-k+i-1,1:n-k+i) from the right
 *
-         CALL DLARF1L( 'Right', M-K+I-1, N-K+I, A( M-K+I, 1 ), LDA,
+         AII = A( M-K+I, N-K+I )
+         A( M-K+I, N-K+I ) = ONE
+         CALL DLARF( 'Right', M-K+I-1, N-K+I, A( M-K+I, 1 ), LDA,
      $               TAU( I ), A, LDA, WORK )
+         A( M-K+I, N-K+I ) = AII
    10 CONTINUE
       RETURN
 *
@@ -22279,7 +22012,7 @@
          END IF
          WORK( 1 ) = LWKOPT
 *
-         IF( .NOT.LQUERY ) THEN
+         IF ( .NOT.LQUERY ) THEN
             IF( LWORK.LE.0 .OR. ( N.GT.0 .AND. LWORK.LT.MAX( 1, M ) ) )
      $         INFO = -7
          END IF
@@ -22338,8 +22071,7 @@
 *           Compute the RQ factorization of the current block
 *           A(m-k+i:m-k+i+ib-1,1:n-k+i+ib-1)
 *
-            CALL DGERQ2( IB, N-K+I+IB-1, A( M-K+I, 1 ), LDA,
-     $                   TAU( I ),
+            CALL DGERQ2( IB, N-K+I+IB-1, A( M-K+I, 1 ), LDA, TAU( I ),
      $                   WORK, IINFO )
             IF( M-K+I.GT.1 ) THEN
 *
@@ -22828,8 +22560,7 @@
       DOUBLE PRECISION   DUM( 1 )
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DBDSDC, DGEBRD, DGELQF, DGEMM, DGEQRF,
-     $                   DLACPY,
+      EXTERNAL           DBDSDC, DGEBRD, DGELQF, DGEMM, DGEQRF, DLACPY,
      $                   DLASCL, DLASET, DORGBR, DORGLQ, DORGQR, DORMBR,
      $                   XERBLA
 *     ..
@@ -22912,12 +22643,10 @@
      $                   IERR )
             LWORK_DORGBR_Q_NN = INT( DUM(1) )
 *
-            CALL DORGQR( M, M, N, DUM(1), M, DUM(1), DUM(1), -1,
-     $                   IERR )
+            CALL DORGQR( M, M, N, DUM(1), M, DUM(1), DUM(1), -1, IERR )
             LWORK_DORGQR_MM = INT( DUM(1) )
 *
-            CALL DORGQR( M, N, N, DUM(1), M, DUM(1), DUM(1), -1,
-     $                   IERR )
+            CALL DORGQR( M, N, N, DUM(1), M, DUM(1), DUM(1), -1, IERR )
             LWORK_DORGQR_MN = INT( DUM(1) )
 *
             CALL DORMBR( 'P', 'R', 'T', N, N, N, DUM(1), N,
@@ -23036,15 +22765,13 @@
             CALL DGELQF( M, N, A, M, DUM(1), DUM(1), -1, IERR )
             LWORK_DGELQF_MN = INT( DUM(1) )
 *
-            CALL DORGLQ( N, N, M, DUM(1), N, DUM(1), DUM(1), -1,
-     $                   IERR )
+            CALL DORGLQ( N, N, M, DUM(1), N, DUM(1), DUM(1), -1, IERR )
             LWORK_DORGLQ_NN = INT( DUM(1) )
 *
             CALL DORGLQ( M, N, M, A, M, DUM(1), DUM(1), -1, IERR )
             LWORK_DORGLQ_MN = INT( DUM(1) )
 *
-            CALL DORGBR( 'P', M, M, M, A, N, DUM(1), DUM(1), -1,
-     $                   IERR )
+            CALL DORGBR( 'P', M, M, M, A, N, DUM(1), DUM(1), -1, IERR )
             LWORK_DORGBR_P_MM = INT( DUM(1) )
 *
             CALL DORMBR( 'P', 'R', 'T', M, M, M, DUM(1), M,
@@ -23204,14 +22931,12 @@
 *              Workspace: need   N [tau] + N    [work]
 *              Workspace: prefer N [tau] + N*NB [work]
 *
-               CALL DGEQRF( M, N, A, LDA, WORK( ITAU ),
-     $                      WORK( NWORK ),
+               CALL DGEQRF( M, N, A, LDA, WORK( ITAU ), WORK( NWORK ),
      $                      LWORK - NWORK + 1, IERR )
 *
 *              Zero out below R
 *
-               CALL DLASET( 'L', N-1, N-1, ZERO, ZERO, A( 2, 1 ),
-     $                      LDA )
+               CALL DLASET( 'L', N-1, N-1, ZERO, ZERO, A( 2, 1 ), LDA )
                IE = 1
                ITAUQ = IE + N
                ITAUP = ITAUQ + N
@@ -23221,8 +22946,7 @@
 *              Workspace: need   3*N [e, tauq, taup] + N      [work]
 *              Workspace: prefer 3*N [e, tauq, taup] + 2*N*NB [work]
 *
-               CALL DGEBRD( N, N, A, LDA, S, WORK( IE ),
-     $                      WORK( ITAUQ ),
+               CALL DGEBRD( N, N, A, LDA, S, WORK( IE ), WORK( ITAUQ ),
      $                      WORK( ITAUP ), WORK( NWORK ), LWORK-NWORK+1,
      $                      IERR )
                NWORK = IE + N
@@ -23230,8 +22954,7 @@
 *              Perform bidiagonal SVD, computing singular values only
 *              Workspace: need   N [e] + BDSPAC
 *
-               CALL DBDSDC( 'U', 'N', N, S, WORK( IE ), DUM, 1, DUM,
-     $                      1,
+               CALL DBDSDC( 'U', 'N', N, S, WORK( IE ), DUM, 1, DUM, 1,
      $                      DUM, IDUM, WORK( NWORK ), IWORK, INFO )
 *
             ELSE IF( WNTQO ) THEN
@@ -23256,15 +22979,13 @@
 *              Workspace: need   N*N [R] + N [tau] + N    [work]
 *              Workspace: prefer N*N [R] + N [tau] + N*NB [work]
 *
-               CALL DGEQRF( M, N, A, LDA, WORK( ITAU ),
-     $                      WORK( NWORK ),
+               CALL DGEQRF( M, N, A, LDA, WORK( ITAU ), WORK( NWORK ),
      $                      LWORK - NWORK + 1, IERR )
 *
 *              Copy R to WORK(IR), zeroing out below it
 *
                CALL DLACPY( 'U', N, N, A, LDA, WORK( IR ), LDWRKR )
-               CALL DLASET( 'L', N - 1, N - 1, ZERO, ZERO,
-     $                      WORK(IR+1),
+               CALL DLASET( 'L', N - 1, N - 1, ZERO, ZERO, WORK(IR+1),
      $                      LDWRKR )
 *
 *              Generate Q in A
@@ -23296,8 +23017,7 @@
 *              singular vectors of bidiagonal matrix in VT
 *              Workspace: need   N*N [R] + 3*N [e, tauq, taup] + N*N [U] + BDSPAC
 *
-               CALL DBDSDC( 'U', 'I', N, S, WORK( IE ), WORK( IU ),
-     $                      N,
+               CALL DBDSDC( 'U', 'I', N, S, WORK( IE ), WORK( IU ), N,
      $                      VT, LDVT, DUM, IDUM, WORK( NWORK ), IWORK,
      $                      INFO )
 *
@@ -23306,12 +23026,10 @@
 *              Workspace: need   N*N [R] + 3*N [e, tauq, taup] + N*N [U] + N    [work]
 *              Workspace: prefer N*N [R] + 3*N [e, tauq, taup] + N*N [U] + N*NB [work]
 *
-               CALL DORMBR( 'Q', 'L', 'N', N, N, N, WORK( IR ),
-     $                      LDWRKR,
+               CALL DORMBR( 'Q', 'L', 'N', N, N, N, WORK( IR ), LDWRKR,
      $                      WORK( ITAUQ ), WORK( IU ), N, WORK( NWORK ),
      $                      LWORK - NWORK + 1, IERR )
-               CALL DORMBR( 'P', 'R', 'T', N, N, N, WORK( IR ),
-     $                      LDWRKR,
+               CALL DORMBR( 'P', 'R', 'T', N, N, N, WORK( IR ), LDWRKR,
      $                      WORK( ITAUP ), VT, LDVT, WORK( NWORK ),
      $                      LWORK - NWORK + 1, IERR )
 *
@@ -23347,15 +23065,13 @@
 *              Workspace: need   N*N [R] + N [tau] + N    [work]
 *              Workspace: prefer N*N [R] + N [tau] + N*NB [work]
 *
-               CALL DGEQRF( M, N, A, LDA, WORK( ITAU ),
-     $                      WORK( NWORK ),
+               CALL DGEQRF( M, N, A, LDA, WORK( ITAU ), WORK( NWORK ),
      $                      LWORK - NWORK + 1, IERR )
 *
 *              Copy R to WORK(IR), zeroing out below it
 *
                CALL DLACPY( 'U', N, N, A, LDA, WORK( IR ), LDWRKR )
-               CALL DLASET( 'L', N - 1, N - 1, ZERO, ZERO,
-     $                      WORK(IR+1),
+               CALL DLASET( 'L', N - 1, N - 1, ZERO, ZERO, WORK(IR+1),
      $                      LDWRKR )
 *
 *              Generate Q in A
@@ -23391,13 +23107,11 @@
 *              Workspace: need   N*N [R] + 3*N [e, tauq, taup] + N    [work]
 *              Workspace: prefer N*N [R] + 3*N [e, tauq, taup] + N*NB [work]
 *
-               CALL DORMBR( 'Q', 'L', 'N', N, N, N, WORK( IR ),
-     $                      LDWRKR,
+               CALL DORMBR( 'Q', 'L', 'N', N, N, N, WORK( IR ), LDWRKR,
      $                      WORK( ITAUQ ), U, LDU, WORK( NWORK ),
      $                      LWORK - NWORK + 1, IERR )
 *
-               CALL DORMBR( 'P', 'R', 'T', N, N, N, WORK( IR ),
-     $                      LDWRKR,
+               CALL DORMBR( 'P', 'R', 'T', N, N, N, WORK( IR ), LDWRKR,
      $                      WORK( ITAUP ), VT, LDVT, WORK( NWORK ),
      $                      LWORK - NWORK + 1, IERR )
 *
@@ -23406,8 +23120,7 @@
 *              Workspace: need   N*N [R]
 *
                CALL DLACPY( 'F', N, N, U, LDU, WORK( IR ), LDWRKR )
-               CALL DGEMM( 'N', 'N', M, N, N, ONE, A, LDA,
-     $                     WORK( IR ),
+               CALL DGEMM( 'N', 'N', M, N, N, ONE, A, LDA, WORK( IR ),
      $                     LDWRKR, ZERO, U, LDU )
 *
             ELSE IF( WNTQA ) THEN
@@ -23428,8 +23141,7 @@
 *              Workspace: need   N*N [U] + N [tau] + N    [work]
 *              Workspace: prefer N*N [U] + N [tau] + N*NB [work]
 *
-               CALL DGEQRF( M, N, A, LDA, WORK( ITAU ),
-     $                      WORK( NWORK ),
+               CALL DGEQRF( M, N, A, LDA, WORK( ITAU ), WORK( NWORK ),
      $                      LWORK - NWORK + 1, IERR )
                CALL DLACPY( 'L', M, N, A, LDA, U, LDU )
 *
@@ -23441,8 +23153,7 @@
 *
 *              Produce R in A, zeroing out other entries
 *
-               CALL DLASET( 'L', N-1, N-1, ZERO, ZERO, A( 2, 1 ),
-     $                      LDA )
+               CALL DLASET( 'L', N-1, N-1, ZERO, ZERO, A( 2, 1 ), LDA )
                IE = ITAU
                ITAUQ = IE + N
                ITAUP = ITAUQ + N
@@ -23452,8 +23163,7 @@
 *              Workspace: need   N*N [U] + 3*N [e, tauq, taup] + N      [work]
 *              Workspace: prefer N*N [U] + 3*N [e, tauq, taup] + 2*N*NB [work]
 *
-               CALL DGEBRD( N, N, A, LDA, S, WORK( IE ),
-     $                      WORK( ITAUQ ),
+               CALL DGEBRD( N, N, A, LDA, S, WORK( IE ), WORK( ITAUQ ),
      $                      WORK( ITAUP ), WORK( NWORK ), LWORK-NWORK+1,
      $                      IERR )
 *
@@ -23462,8 +23172,7 @@
 *              singular vectors of bidiagonal matrix in VT
 *              Workspace: need   N*N [U] + 3*N [e, tauq, taup] + BDSPAC
 *
-               CALL DBDSDC( 'U', 'I', N, S, WORK( IE ), WORK( IU ),
-     $                      N,
+               CALL DBDSDC( 'U', 'I', N, S, WORK( IE ), WORK( IU ), N,
      $                      VT, LDVT, DUM, IDUM, WORK( NWORK ), IWORK,
      $                      INFO )
 *
@@ -23483,8 +23192,7 @@
 *              WORK(IU), storing result in A
 *              Workspace: need   N*N [U]
 *
-               CALL DGEMM( 'N', 'N', M, N, N, ONE, U, LDU,
-     $                     WORK( IU ),
+               CALL DGEMM( 'N', 'N', M, N, N, ONE, U, LDU, WORK( IU ),
      $                     LDWRKU, ZERO, A, LDA )
 *
 *              Copy left singular vectors of A from A to U
@@ -23518,8 +23226,7 @@
 *              Perform bidiagonal SVD, only computing singular values
 *              Workspace: need   3*N [e, tauq, taup] + BDSPAC
 *
-               CALL DBDSDC( 'U', 'N', N, S, WORK( IE ), DUM, 1, DUM,
-     $                      1,
+               CALL DBDSDC( 'U', 'N', N, S, WORK( IE ), DUM, 1, DUM, 1,
      $                      DUM, IDUM, WORK( NWORK ), IWORK, INFO )
             ELSE IF( WNTQO ) THEN
 *              Path 5o (M >= N, JOBZ='O')
@@ -23578,8 +23285,7 @@
 *
 *                 Copy left singular vectors of A from WORK(IU) to A
 *
-                  CALL DLACPY( 'F', M, N, WORK( IU ), LDWRKU, A,
-     $                         LDA )
+                  CALL DLACPY( 'F', M, N, WORK( IU ), LDWRKU, A, LDA )
                ELSE
 *
 *                 Path 5o-slow
@@ -23598,8 +23304,7 @@
 *
                   DO 20 I = 1, M, LDWRKR
                      CHUNK = MIN( M - I + 1, LDWRKR )
-                     CALL DGEMM( 'N', 'N', CHUNK, N, N, ONE, A( I,
-     $                           1 ),
+                     CALL DGEMM( 'N', 'N', CHUNK, N, N, ONE, A( I, 1 ),
      $                           LDA, WORK( IU ), LDWRKU, ZERO,
      $                           WORK( IR ), LDWRKR )
                      CALL DLACPY( 'F', CHUNK, N, WORK( IR ), LDWRKR,
@@ -23647,8 +23352,7 @@
 *              Set the right corner of U to identity matrix
 *
                IF( M.GT.N ) THEN
-                  CALL DLASET( 'F', M - N, M - N, ZERO, ONE, U(N+1,
-     $                         N+1),
+                  CALL DLASET( 'F', M - N, M - N, ZERO, ONE, U(N+1,N+1),
      $                         LDU )
                END IF
 *
@@ -23687,14 +23391,12 @@
 *              Workspace: need   M [tau] + M [work]
 *              Workspace: prefer M [tau] + M*NB [work]
 *
-               CALL DGELQF( M, N, A, LDA, WORK( ITAU ),
-     $                      WORK( NWORK ),
+               CALL DGELQF( M, N, A, LDA, WORK( ITAU ), WORK( NWORK ),
      $                      LWORK - NWORK + 1, IERR )
 *
 *              Zero out above L
 *
-               CALL DLASET( 'U', M-1, M-1, ZERO, ZERO, A( 1, 2 ),
-     $                      LDA )
+               CALL DLASET( 'U', M-1, M-1, ZERO, ZERO, A( 1, 2 ), LDA )
                IE = 1
                ITAUQ = IE + M
                ITAUP = ITAUQ + M
@@ -23704,8 +23406,7 @@
 *              Workspace: need   3*M [e, tauq, taup] + M      [work]
 *              Workspace: prefer 3*M [e, tauq, taup] + 2*M*NB [work]
 *
-               CALL DGEBRD( M, M, A, LDA, S, WORK( IE ),
-     $                      WORK( ITAUQ ),
+               CALL DGEBRD( M, M, A, LDA, S, WORK( IE ), WORK( ITAUQ ),
      $                      WORK( ITAUP ), WORK( NWORK ), LWORK-NWORK+1,
      $                      IERR )
                NWORK = IE + M
@@ -23713,8 +23414,7 @@
 *              Perform bidiagonal SVD, computing singular values only
 *              Workspace: need   M [e] + BDSPAC
 *
-               CALL DBDSDC( 'U', 'N', M, S, WORK( IE ), DUM, 1, DUM,
-     $                      1,
+               CALL DBDSDC( 'U', 'N', M, S, WORK( IE ), DUM, 1, DUM, 1,
      $                      DUM, IDUM, WORK( NWORK ), IWORK, INFO )
 *
             ELSE IF( WNTQO ) THEN
@@ -23743,8 +23443,7 @@
 *              Workspace: need   M*M [VT] + M*M [L] + M [tau] + M    [work]
 *              Workspace: prefer M*M [VT] + M*M [L] + M [tau] + M*NB [work]
 *
-               CALL DGELQF( M, N, A, LDA, WORK( ITAU ),
-     $                      WORK( NWORK ),
+               CALL DGELQF( M, N, A, LDA, WORK( ITAU ), WORK( NWORK ),
      $                      LWORK - NWORK + 1, IERR )
 *
 *              Copy L to WORK(IL), zeroing about above it
@@ -23786,12 +23485,10 @@
 *              Workspace: need   M*M [VT] + M*M [L] + 3*M [e, tauq, taup] + M    [work]
 *              Workspace: prefer M*M [VT] + M*M [L] + 3*M [e, tauq, taup] + M*NB [work]
 *
-               CALL DORMBR( 'Q', 'L', 'N', M, M, M, WORK( IL ),
-     $                      LDWRKL,
+               CALL DORMBR( 'Q', 'L', 'N', M, M, M, WORK( IL ), LDWRKL,
      $                      WORK( ITAUQ ), U, LDU, WORK( NWORK ),
      $                      LWORK - NWORK + 1, IERR )
-               CALL DORMBR( 'P', 'R', 'T', M, M, M, WORK( IL ),
-     $                      LDWRKL,
+               CALL DORMBR( 'P', 'R', 'T', M, M, M, WORK( IL ), LDWRKL,
      $                      WORK( ITAUP ), WORK( IVT ), M,
      $                      WORK( NWORK ), LWORK - NWORK + 1, IERR )
 *
@@ -23803,8 +23500,7 @@
 *
                DO 30 I = 1, N, CHUNK
                   BLK = MIN( N - I + 1, CHUNK )
-                  CALL DGEMM( 'N', 'N', M, BLK, M, ONE, WORK( IVT ),
-     $                        M,
+                  CALL DGEMM( 'N', 'N', M, BLK, M, ONE, WORK( IVT ), M,
      $                        A( 1, I ), LDA, ZERO, WORK( IL ), LDWRKL )
                   CALL DLACPY( 'F', M, BLK, WORK( IL ), LDWRKL,
      $                         A( 1, I ), LDA )
@@ -23828,8 +23524,7 @@
 *              Workspace: need   M*M [L] + M [tau] + M    [work]
 *              Workspace: prefer M*M [L] + M [tau] + M*NB [work]
 *
-               CALL DGELQF( M, N, A, LDA, WORK( ITAU ),
-     $                      WORK( NWORK ),
+               CALL DGELQF( M, N, A, LDA, WORK( ITAU ), WORK( NWORK ),
      $                      LWORK - NWORK + 1, IERR )
 *
 *              Copy L to WORK(IL), zeroing out above it
@@ -23871,12 +23566,10 @@
 *              Workspace: need   M*M [L] + 3*M [e, tauq, taup] + M    [work]
 *              Workspace: prefer M*M [L] + 3*M [e, tauq, taup] + M*NB [work]
 *
-               CALL DORMBR( 'Q', 'L', 'N', M, M, M, WORK( IL ),
-     $                      LDWRKL,
+               CALL DORMBR( 'Q', 'L', 'N', M, M, M, WORK( IL ), LDWRKL,
      $                      WORK( ITAUQ ), U, LDU, WORK( NWORK ),
      $                      LWORK - NWORK + 1, IERR )
-               CALL DORMBR( 'P', 'R', 'T', M, M, M, WORK( IL ),
-     $                      LDWRKL,
+               CALL DORMBR( 'P', 'R', 'T', M, M, M, WORK( IL ), LDWRKL,
      $                      WORK( ITAUP ), VT, LDVT, WORK( NWORK ),
      $                      LWORK - NWORK + 1, IERR )
 *
@@ -23885,8 +23578,7 @@
 *              Workspace: need   M*M [L]
 *
                CALL DLACPY( 'F', M, M, VT, LDVT, WORK( IL ), LDWRKL )
-               CALL DGEMM( 'N', 'N', M, N, M, ONE, WORK( IL ),
-     $                     LDWRKL,
+               CALL DGEMM( 'N', 'N', M, N, M, ONE, WORK( IL ), LDWRKL,
      $                     A, LDA, ZERO, VT, LDVT )
 *
             ELSE IF( WNTQA ) THEN
@@ -23907,8 +23599,7 @@
 *              Workspace: need   M*M [VT] + M [tau] + M    [work]
 *              Workspace: prefer M*M [VT] + M [tau] + M*NB [work]
 *
-               CALL DGELQF( M, N, A, LDA, WORK( ITAU ),
-     $                      WORK( NWORK ),
+               CALL DGELQF( M, N, A, LDA, WORK( ITAU ), WORK( NWORK ),
      $                      LWORK - NWORK + 1, IERR )
                CALL DLACPY( 'U', M, N, A, LDA, VT, LDVT )
 *
@@ -23921,8 +23612,7 @@
 *
 *              Produce L in A, zeroing out other entries
 *
-               CALL DLASET( 'U', M-1, M-1, ZERO, ZERO, A( 1, 2 ),
-     $                      LDA )
+               CALL DLASET( 'U', M-1, M-1, ZERO, ZERO, A( 1, 2 ), LDA )
                IE = ITAU
                ITAUQ = IE + M
                ITAUP = ITAUQ + M
@@ -23932,8 +23622,7 @@
 *              Workspace: need   M*M [VT] + 3*M [e, tauq, taup] + M      [work]
 *              Workspace: prefer M*M [VT] + 3*M [e, tauq, taup] + 2*M*NB [work]
 *
-               CALL DGEBRD( M, M, A, LDA, S, WORK( IE ),
-     $                      WORK( ITAUQ ),
+               CALL DGEBRD( M, M, A, LDA, S, WORK( IE ), WORK( ITAUQ ),
      $                      WORK( ITAUP ), WORK( NWORK ), LWORK-NWORK+1,
      $                      IERR )
 *
@@ -23962,8 +23651,7 @@
 *              Q in VT, storing result in A
 *              Workspace: need   M*M [VT]
 *
-               CALL DGEMM( 'N', 'N', M, N, M, ONE, WORK( IVT ),
-     $                     LDWKVT,
+               CALL DGEMM( 'N', 'N', M, N, M, ONE, WORK( IVT ), LDWKVT,
      $                     VT, LDVT, ZERO, A, LDA )
 *
 *              Copy right singular vectors of A from A to VT
@@ -23997,8 +23685,7 @@
 *              Perform bidiagonal SVD, only computing singular values
 *              Workspace: need   3*M [e, tauq, taup] + BDSPAC
 *
-               CALL DBDSDC( 'L', 'N', M, S, WORK( IE ), DUM, 1, DUM,
-     $                      1,
+               CALL DBDSDC( 'L', 'N', M, S, WORK( IE ), DUM, 1, DUM, 1,
      $                      DUM, IDUM, WORK( NWORK ), IWORK, INFO )
             ELSE IF( WNTQO ) THEN
 *              Path 5to (N > M, JOBZ='O')
@@ -24055,8 +23742,7 @@
 *
 *                 Copy right singular vectors of A from WORK(IVT) to A
 *
-                  CALL DLACPY( 'F', M, N, WORK( IVT ), LDWKVT, A,
-     $                         LDA )
+                  CALL DLACPY( 'F', M, N, WORK( IVT ), LDWKVT, A, LDA )
                ELSE
 *
 *                 Path 5to-slow
@@ -24075,12 +23761,10 @@
 *
                   DO 40 I = 1, N, CHUNK
                      BLK = MIN( N - I + 1, CHUNK )
-                     CALL DGEMM( 'N', 'N', M, BLK, M, ONE,
-     $                           WORK( IVT ),
+                     CALL DGEMM( 'N', 'N', M, BLK, M, ONE, WORK( IVT ),
      $                           LDWKVT, A( 1, I ), LDA, ZERO,
      $                           WORK( IL ), M )
-                     CALL DLACPY( 'F', M, BLK, WORK( IL ), M, A( 1,
-     $                            I ),
+                     CALL DLACPY( 'F', M, BLK, WORK( IL ), M, A( 1, I ),
      $                            LDA )
    40             CONTINUE
                END IF
@@ -24589,8 +24273,7 @@
       DOUBLE PRECISION   DUM( 1 )
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DBDSQR, DGEBRD, DGELQF, DGEMM, DGEQRF,
-     $                   DLACPY,
+      EXTERNAL           DBDSQR, DGEBRD, DGELQF, DGEMM, DGEQRF, DLACPY,
      $                   DLASCL, DLASET, DORGBR, DORGLQ, DORGQR, DORMBR,
      $                   XERBLA
 *     ..
@@ -24820,8 +24503,7 @@
             CALL DGELQF( M, N, A, LDA, DUM(1), DUM(1), -1, IERR )
             LWORK_DGELQF = INT( DUM(1) )
 *           Compute space needed for DORGLQ
-            CALL DORGLQ( N, N, M, DUM(1), N, DUM(1), DUM(1), -1,
-     $                   IERR )
+            CALL DORGLQ( N, N, M, DUM(1), N, DUM(1), DUM(1), -1, IERR )
             LWORK_DORGLQ_N = INT( DUM(1) )
             CALL DORGLQ( M, N, M, A, LDA, DUM(1), DUM(1), -1, IERR )
             LWORK_DORGLQ_M = INT( DUM(1) )
@@ -25031,8 +24713,7 @@
 *              Compute A=Q*R
 *              (Workspace: need 2*N, prefer N + N*NB)
 *
-               CALL DGEQRF( M, N, A, LDA, WORK( ITAU ),
-     $                      WORK( IWORK ),
+               CALL DGEQRF( M, N, A, LDA, WORK( ITAU ), WORK( IWORK ),
      $                      LWORK-IWORK+1, IERR )
 *
 *              Zero out below R
@@ -25049,8 +24730,7 @@
 *              Bidiagonalize R in A
 *              (Workspace: need 4*N, prefer 3*N + 2*N*NB)
 *
-               CALL DGEBRD( N, N, A, LDA, S, WORK( IE ),
-     $                      WORK( ITAUQ ),
+               CALL DGEBRD( N, N, A, LDA, S, WORK( IE ), WORK( ITAUQ ),
      $                      WORK( ITAUP ), WORK( IWORK ), LWORK-IWORK+1,
      $                      IERR )
                NCVT = 0
@@ -25069,8 +24749,7 @@
 *              singular vectors of A in A if desired
 *              (Workspace: need BDSPAC)
 *
-               CALL DBDSQR( 'U', N, NCVT, 0, 0, S, WORK( IE ), A,
-     $                      LDA,
+               CALL DBDSQR( 'U', N, NCVT, 0, 0, S, WORK( IE ), A, LDA,
      $                      DUM, 1, DUM, 1, WORK( IWORK ), INFO )
 *
 *              If right singular vectors desired in VT, copy them there
@@ -25119,10 +24798,8 @@
 *
 *                 Copy R to WORK(IR) and zero out below it
 *
-                  CALL DLACPY( 'U', N, N, A, LDA, WORK( IR ),
-     $                         LDWRKR )
-                  CALL DLASET( 'L', N-1, N-1, ZERO, ZERO,
-     $                         WORK( IR+1 ),
+                  CALL DLACPY( 'U', N, N, A, LDA, WORK( IR ), LDWRKR )
+                  CALL DLASET( 'L', N-1, N-1, ZERO, ZERO, WORK( IR+1 ),
      $                         LDWRKR )
 *
 *                 Generate Q in A
@@ -25138,8 +24815,7 @@
 *                 Bidiagonalize R in WORK(IR)
 *                 (Workspace: need N*N + 4*N, prefer N*N + 3*N + 2*N*NB)
 *
-                  CALL DGEBRD( N, N, WORK( IR ), LDWRKR, S,
-     $                         WORK( IE ),
+                  CALL DGEBRD( N, N, WORK( IR ), LDWRKR, S, WORK( IE ),
      $                         WORK( ITAUQ ), WORK( ITAUP ),
      $                         WORK( IWORK ), LWORK-IWORK+1, IERR )
 *
@@ -25155,8 +24831,7 @@
 *                 singular vectors of R in WORK(IR)
 *                 (Workspace: need N*N + BDSPAC)
 *
-                  CALL DBDSQR( 'U', N, 0, N, 0, S, WORK( IE ), DUM,
-     $                         1,
+                  CALL DBDSQR( 'U', N, 0, N, 0, S, WORK( IE ), DUM, 1,
      $                         WORK( IR ), LDWRKR, DUM, 1,
      $                         WORK( IWORK ), INFO )
                   IU = IE + N
@@ -25167,8 +24842,7 @@
 *
                   DO 10 I = 1, M, LDWRKU
                      CHUNK = MIN( M-I+1, LDWRKU )
-                     CALL DGEMM( 'N', 'N', CHUNK, N, N, ONE, A( I,
-     $                           1 ),
+                     CALL DGEMM( 'N', 'N', CHUNK, N, N, ONE, A( I, 1 ),
      $                           LDA, WORK( IR ), LDWRKR, ZERO,
      $                           WORK( IU ), LDWRKU )
                      CALL DLACPY( 'F', CHUNK, N, WORK( IU ), LDWRKU,
@@ -25202,8 +24876,7 @@
 *                 singular vectors of A in A
 *                 (Workspace: need BDSPAC)
 *
-                  CALL DBDSQR( 'U', N, 0, M, 0, S, WORK( IE ), DUM,
-     $                         1,
+                  CALL DBDSQR( 'U', N, 0, M, 0, S, WORK( IE ), DUM, 1,
      $                         A, LDA, DUM, 1, WORK( IWORK ), INFO )
 *
                END IF
@@ -25270,8 +24943,7 @@
                   CALL DGEBRD( N, N, VT, LDVT, S, WORK( IE ),
      $                         WORK( ITAUQ ), WORK( ITAUP ),
      $                         WORK( IWORK ), LWORK-IWORK+1, IERR )
-                  CALL DLACPY( 'L', N, N, VT, LDVT, WORK( IR ),
-     $                         LDWRKR )
+                  CALL DLACPY( 'L', N, N, VT, LDVT, WORK( IR ), LDWRKR )
 *
 *                 Generate left vectors bidiagonalizing R in WORK(IR)
 *                 (Workspace: need N*N + 4*N, prefer N*N + 3*N + N*NB)
@@ -25292,8 +24964,7 @@
 *                 singular vectors of R in VT
 *                 (Workspace: need N*N + BDSPAC)
 *
-                  CALL DBDSQR( 'U', N, N, N, 0, S, WORK( IE ), VT,
-     $                         LDVT,
+                  CALL DBDSQR( 'U', N, N, N, 0, S, WORK( IE ), VT, LDVT,
      $                         WORK( IR ), LDWRKR, DUM, 1,
      $                         WORK( IWORK ), INFO )
                   IU = IE + N
@@ -25304,8 +24975,7 @@
 *
                   DO 20 I = 1, M, LDWRKU
                      CHUNK = MIN( M-I+1, LDWRKU )
-                     CALL DGEMM( 'N', 'N', CHUNK, N, N, ONE, A( I,
-     $                           1 ),
+                     CALL DGEMM( 'N', 'N', CHUNK, N, N, ONE, A( I, 1 ),
      $                           LDA, WORK( IR ), LDWRKR, ZERO,
      $                           WORK( IU ), LDWRKU )
                      CALL DLACPY( 'F', CHUNK, N, WORK( IU ), LDWRKU,
@@ -25368,8 +25038,7 @@
 *                 singular vectors of A in VT
 *                 (Workspace: need BDSPAC)
 *
-                  CALL DBDSQR( 'U', N, N, M, 0, S, WORK( IE ), VT,
-     $                         LDVT,
+                  CALL DBDSQR( 'U', N, N, M, 0, S, WORK( IE ), VT, LDVT,
      $                         A, LDA, DUM, 1, WORK( IWORK ), INFO )
 *
                END IF
@@ -25444,8 +25113,7 @@
 *                    singular vectors of R in WORK(IR)
 *                    (Workspace: need N*N + BDSPAC)
 *
-                     CALL DBDSQR( 'U', N, 0, N, 0, S, WORK( IE ),
-     $                            DUM,
+                     CALL DBDSQR( 'U', N, 0, N, 0, S, WORK( IE ), DUM,
      $                            1, WORK( IR ), LDWRKR, DUM, 1,
      $                            WORK( IWORK ), INFO )
 *
@@ -25506,8 +25174,7 @@
 *                    singular vectors of A in U
 *                    (Workspace: need BDSPAC)
 *
-                     CALL DBDSQR( 'U', N, 0, M, 0, S, WORK( IE ),
-     $                            DUM,
+                     CALL DBDSQR( 'U', N, 0, M, 0, S, WORK( IE ), DUM,
      $                            1, U, LDU, DUM, 1, WORK( IWORK ),
      $                            INFO )
 *
@@ -25670,8 +25337,7 @@
 *                    Generate right vectors bidiagonalizing R in A
 *                    (Workspace: need 4*N-1, prefer 3*N + (N-1)*NB)
 *
-                     CALL DORGBR( 'P', N, N, N, A, LDA,
-     $                            WORK( ITAUP ),
+                     CALL DORGBR( 'P', N, N, N, A, LDA, WORK( ITAUP ),
      $                            WORK( IWORK ), LWORK-IWORK+1, IERR )
                      IWORK = IE + N
 *
@@ -25756,8 +25422,7 @@
 *                    (Workspace: need N*N + 4*N-1,
 *                                prefer N*N+3*N+(N-1)*NB)
 *
-                     CALL DORGBR( 'P', N, N, N, VT, LDVT,
-     $                            WORK( ITAUP ),
+                     CALL DORGBR( 'P', N, N, N, VT, LDVT, WORK( ITAUP ),
      $                            WORK( IWORK ), LWORK-IWORK+1, IERR )
                      IWORK = IE + N
 *
@@ -25826,8 +25491,7 @@
 *                    Generate right bidiagonalizing vectors in VT
 *                    (Workspace: need 4*N-1, prefer 3*N + (N-1)*NB)
 *
-                     CALL DORGBR( 'P', N, N, N, VT, LDVT,
-     $                            WORK( ITAUP ),
+                     CALL DORGBR( 'P', N, N, N, VT, LDVT, WORK( ITAUP ),
      $                            WORK( IWORK ), LWORK-IWORK+1, IERR )
                      IWORK = IE + N
 *
@@ -25915,8 +25579,7 @@
 *                    singular vectors of R in WORK(IR)
 *                    (Workspace: need N*N + BDSPAC)
 *
-                     CALL DBDSQR( 'U', N, 0, N, 0, S, WORK( IE ),
-     $                            DUM,
+                     CALL DBDSQR( 'U', N, 0, N, 0, S, WORK( IE ), DUM,
      $                            1, WORK( IR ), LDWRKR, DUM, 1,
      $                            WORK( IWORK ), INFO )
 *
@@ -25982,8 +25645,7 @@
 *                    singular vectors of A in U
 *                    (Workspace: need BDSPAC)
 *
-                     CALL DBDSQR( 'U', N, 0, M, 0, S, WORK( IE ),
-     $                            DUM,
+                     CALL DBDSQR( 'U', N, 0, M, 0, S, WORK( IE ), DUM,
      $                            1, U, LDU, DUM, 1, WORK( IWORK ),
      $                            INFO )
 *
@@ -26151,8 +25813,7 @@
 *                    Generate right bidiagonalizing vectors in A
 *                    (Workspace: need 4*N-1, prefer 3*N + (N-1)*NB)
 *
-                     CALL DORGBR( 'P', N, N, N, A, LDA,
-     $                            WORK( ITAUP ),
+                     CALL DORGBR( 'P', N, N, N, A, LDA, WORK( ITAUP ),
      $                            WORK( IWORK ), LWORK-IWORK+1, IERR )
                      IWORK = IE + N
 *
@@ -26238,8 +25899,7 @@
 *                    (Workspace: need N*N + 4*N-1,
 *                                prefer N*N+3*N+(N-1)*NB)
 *
-                     CALL DORGBR( 'P', N, N, N, VT, LDVT,
-     $                            WORK( ITAUP ),
+                     CALL DORGBR( 'P', N, N, N, VT, LDVT, WORK( ITAUP ),
      $                            WORK( IWORK ), LWORK-IWORK+1, IERR )
                      IWORK = IE + N
 *
@@ -26312,8 +25972,7 @@
 *                    Generate right bidiagonalizing vectors in VT
 *                    (Workspace: need 4*N-1, prefer 3*N + (N-1)*NB)
 *
-                     CALL DORGBR( 'P', N, N, N, VT, LDVT,
-     $                            WORK( ITAUP ),
+                     CALL DORGBR( 'P', N, N, N, VT, LDVT, WORK( ITAUP ),
      $                            WORK( IWORK ), LWORK-IWORK+1, IERR )
                      IWORK = IE + N
 *
@@ -26417,8 +26076,7 @@
 *              vectors in A
 *              (Workspace: need BDSPAC)
 *
-               CALL DBDSQR( 'U', N, NCVT, NRU, 0, S, WORK( IE ), A,
-     $                      LDA,
+               CALL DBDSQR( 'U', N, NCVT, NRU, 0, S, WORK( IE ), A, LDA,
      $                      U, LDU, DUM, 1, WORK( IWORK ), INFO )
             ELSE
 *
@@ -26452,14 +26110,12 @@
 *              Compute A=L*Q
 *              (Workspace: need 2*M, prefer M + M*NB)
 *
-               CALL DGELQF( M, N, A, LDA, WORK( ITAU ),
-     $                      WORK( IWORK ),
+               CALL DGELQF( M, N, A, LDA, WORK( ITAU ), WORK( IWORK ),
      $                      LWORK-IWORK+1, IERR )
 *
 *              Zero out above L
 *
-               CALL DLASET( 'U', M-1, M-1, ZERO, ZERO, A( 1, 2 ),
-     $                      LDA )
+               CALL DLASET( 'U', M-1, M-1, ZERO, ZERO, A( 1, 2 ), LDA )
                IE = 1
                ITAUQ = IE + M
                ITAUP = ITAUQ + M
@@ -26468,8 +26124,7 @@
 *              Bidiagonalize L in A
 *              (Workspace: need 4*M, prefer 3*M + 2*M*NB)
 *
-               CALL DGEBRD( M, M, A, LDA, S, WORK( IE ),
-     $                      WORK( ITAUQ ),
+               CALL DGEBRD( M, M, A, LDA, S, WORK( IE ), WORK( ITAUQ ),
      $                      WORK( ITAUP ), WORK( IWORK ), LWORK-IWORK+1,
      $                      IERR )
                IF( WNTUO .OR. WNTUAS ) THEN
@@ -26489,8 +26144,7 @@
 *              vectors of A in A if desired
 *              (Workspace: need BDSPAC)
 *
-               CALL DBDSQR( 'U', M, 0, NRU, 0, S, WORK( IE ), DUM, 1,
-     $                      A,
+               CALL DBDSQR( 'U', M, 0, NRU, 0, S, WORK( IE ), DUM, 1, A,
      $                      LDA, DUM, 1, WORK( IWORK ), INFO )
 *
 *              If left singular vectors desired in U, copy them there
@@ -26542,8 +26196,7 @@
 *
 *                 Copy L to WORK(IR) and zero out above it
 *
-                  CALL DLACPY( 'L', M, M, A, LDA, WORK( IR ),
-     $                         LDWRKR )
+                  CALL DLACPY( 'L', M, M, A, LDA, WORK( IR ), LDWRKR )
                   CALL DLASET( 'U', M-1, M-1, ZERO, ZERO,
      $                         WORK( IR+LDWRKR ), LDWRKR )
 *
@@ -26560,8 +26213,7 @@
 *                 Bidiagonalize L in WORK(IR)
 *                 (Workspace: need M*M + 4*M, prefer M*M + 3*M + 2*M*NB)
 *
-                  CALL DGEBRD( M, M, WORK( IR ), LDWRKR, S,
-     $                         WORK( IE ),
+                  CALL DGEBRD( M, M, WORK( IR ), LDWRKR, S, WORK( IE ),
      $                         WORK( ITAUQ ), WORK( ITAUP ),
      $                         WORK( IWORK ), LWORK-IWORK+1, IERR )
 *
@@ -26588,8 +26240,7 @@
 *
                   DO 30 I = 1, N, CHUNK
                      BLK = MIN( N-I+1, CHUNK )
-                     CALL DGEMM( 'N', 'N', M, BLK, M, ONE,
-     $                           WORK( IR ),
+                     CALL DGEMM( 'N', 'N', M, BLK, M, ONE, WORK( IR ),
      $                           LDWRKR, A( 1, I ), LDA, ZERO,
      $                           WORK( IU ), LDWRKU )
                      CALL DLACPY( 'F', M, BLK, WORK( IU ), LDWRKU,
@@ -26623,8 +26274,7 @@
 *                 singular vectors of A in A
 *                 (Workspace: need BDSPAC)
 *
-                  CALL DBDSQR( 'L', M, N, 0, 0, S, WORK( IE ), A,
-     $                         LDA,
+                  CALL DBDSQR( 'L', M, N, 0, 0, S, WORK( IE ), A, LDA,
      $                         DUM, 1, DUM, 1, WORK( IWORK ), INFO )
 *
                END IF
@@ -26693,8 +26343,7 @@
                   CALL DGEBRD( M, M, U, LDU, S, WORK( IE ),
      $                         WORK( ITAUQ ), WORK( ITAUP ),
      $                         WORK( IWORK ), LWORK-IWORK+1, IERR )
-                  CALL DLACPY( 'U', M, M, U, LDU, WORK( IR ),
-     $                         LDWRKR )
+                  CALL DLACPY( 'U', M, M, U, LDU, WORK( IR ), LDWRKR )
 *
 *                 Generate right vectors bidiagonalizing L in WORK(IR)
 *                 (Workspace: need M*M + 4*M-1, prefer M*M + 3*M + (M-1)*NB)
@@ -26726,8 +26375,7 @@
 *
                   DO 40 I = 1, N, CHUNK
                      BLK = MIN( N-I+1, CHUNK )
-                     CALL DGEMM( 'N', 'N', M, BLK, M, ONE,
-     $                           WORK( IR ),
+                     CALL DGEMM( 'N', 'N', M, BLK, M, ONE, WORK( IR ),
      $                           LDWRKR, A( 1, I ), LDA, ZERO,
      $                           WORK( IU ), LDWRKU )
                      CALL DLACPY( 'F', M, BLK, WORK( IU ), LDWRKU,
@@ -26789,8 +26437,7 @@
 *                 singular vectors of A in A
 *                 (Workspace: need BDSPAC)
 *
-                  CALL DBDSQR( 'U', M, N, M, 0, S, WORK( IE ), A,
-     $                         LDA,
+                  CALL DBDSQR( 'U', M, N, M, 0, S, WORK( IE ), A, LDA,
      $                         U, LDU, DUM, 1, WORK( IWORK ), INFO )
 *
                END IF
@@ -26906,8 +26553,7 @@
 *
 *                    Zero out above L in A
 *
-                     CALL DLASET( 'U', M-1, M-1, ZERO, ZERO, A( 1,
-     $                            2 ),
+                     CALL DLASET( 'U', M-1, M-1, ZERO, ZERO, A( 1, 2 ),
      $                            LDA )
 *
 *                    Bidiagonalize L in A
@@ -27070,8 +26716,7 @@
 *
 *                    Zero out above L in A
 *
-                     CALL DLASET( 'U', M-1, M-1, ZERO, ZERO, A( 1,
-     $                            2 ),
+                     CALL DLASET( 'U', M-1, M-1, ZERO, ZERO, A( 1, 2 ),
      $                            LDA )
 *
 *                    Bidiagonalize L in A
@@ -27091,8 +26736,7 @@
 *                    Generate left bidiagonalizing vectors of L in A
 *                    (Workspace: need 4*M, prefer 3*M + M*NB)
 *
-                     CALL DORGBR( 'Q', M, M, M, A, LDA,
-     $                            WORK( ITAUQ ),
+                     CALL DORGBR( 'Q', M, M, M, A, LDA, WORK( ITAUQ ),
      $                            WORK( IWORK ), LWORK-IWORK+1, IERR )
                      IWORK = IE + M
 *
@@ -27177,8 +26821,7 @@
 *                    Generate left bidiagonalizing vectors in U
 *                    (Workspace: need M*M + 4*M, prefer M*M + 3*M + M*NB)
 *
-                     CALL DORGBR( 'Q', M, M, M, U, LDU,
-     $                            WORK( ITAUQ ),
+                     CALL DORGBR( 'Q', M, M, M, U, LDU, WORK( ITAUQ ),
      $                            WORK( IWORK ), LWORK-IWORK+1, IERR )
                      IWORK = IE + M
 *
@@ -27221,8 +26864,7 @@
 *                    Copy L to U, zeroing out above it
 *
                      CALL DLACPY( 'L', M, M, A, LDA, U, LDU )
-                     CALL DLASET( 'U', M-1, M-1, ZERO, ZERO, U( 1,
-     $                            2 ),
+                     CALL DLASET( 'U', M-1, M-1, ZERO, ZERO, U( 1, 2 ),
      $                            LDU )
                      IE = ITAU
                      ITAUQ = IE + M
@@ -27247,8 +26889,7 @@
 *                    Generate left bidiagonalizing vectors in U
 *                    (Workspace: need 4*M, prefer 3*M + M*NB)
 *
-                     CALL DORGBR( 'Q', M, M, M, U, LDU,
-     $                            WORK( ITAUQ ),
+                     CALL DORGBR( 'Q', M, M, M, U, LDU, WORK( ITAUQ ),
      $                            WORK( IWORK ), LWORK-IWORK+1, IERR )
                      IWORK = IE + M
 *
@@ -27378,8 +27019,7 @@
 *
 *                    Zero out above L in A
 *
-                     CALL DLASET( 'U', M-1, M-1, ZERO, ZERO, A( 1,
-     $                            2 ),
+                     CALL DLASET( 'U', M-1, M-1, ZERO, ZERO, A( 1, 2 ),
      $                            LDA )
 *
 *                    Bidiagonalize L in A
@@ -27547,8 +27187,7 @@
 *
 *                    Zero out above L in A
 *
-                     CALL DLASET( 'U', M-1, M-1, ZERO, ZERO, A( 1,
-     $                            2 ),
+                     CALL DLASET( 'U', M-1, M-1, ZERO, ZERO, A( 1, 2 ),
      $                            LDA )
 *
 *                    Bidiagonalize L in A
@@ -27569,8 +27208,7 @@
 *                    Generate left bidiagonalizing vectors in A
 *                    (Workspace: need 4*M, prefer 3*M + M*NB)
 *
-                     CALL DORGBR( 'Q', M, M, M, A, LDA,
-     $                            WORK( ITAUQ ),
+                     CALL DORGBR( 'Q', M, M, M, A, LDA, WORK( ITAUQ ),
      $                            WORK( IWORK ), LWORK-IWORK+1, IERR )
                      IWORK = IE + M
 *
@@ -27655,8 +27293,7 @@
 *                    Generate left bidiagonalizing vectors in U
 *                    (Workspace: need M*M + 4*M, prefer M*M + 3*M + M*NB)
 *
-                     CALL DORGBR( 'Q', M, M, M, U, LDU,
-     $                            WORK( ITAUQ ),
+                     CALL DORGBR( 'Q', M, M, M, U, LDU, WORK( ITAUQ ),
      $                            WORK( IWORK ), LWORK-IWORK+1, IERR )
                      IWORK = IE + M
 *
@@ -27703,8 +27340,7 @@
 *                    Copy L to U, zeroing out above it
 *
                      CALL DLACPY( 'L', M, M, A, LDA, U, LDU )
-                     CALL DLASET( 'U', M-1, M-1, ZERO, ZERO, U( 1,
-     $                            2 ),
+                     CALL DLASET( 'U', M-1, M-1, ZERO, ZERO, U( 1, 2 ),
      $                            LDU )
                      IE = ITAU
                      ITAUQ = IE + M
@@ -27729,8 +27365,7 @@
 *                    Generate left bidiagonalizing vectors in U
 *                    (Workspace: need 4*M, prefer 3*M + M*NB)
 *
-                     CALL DORGBR( 'Q', M, M, M, U, LDU,
-     $                            WORK( ITAUQ ),
+                     CALL DORGBR( 'Q', M, M, M, U, LDU, WORK( ITAUQ ),
      $                            WORK( IWORK ), LWORK-IWORK+1, IERR )
                      IWORK = IE + M
 *
@@ -27834,8 +27469,7 @@
 *              vectors in A
 *              (Workspace: need BDSPAC)
 *
-               CALL DBDSQR( 'L', M, NCVT, NRU, 0, S, WORK( IE ), A,
-     $                      LDA,
+               CALL DBDSQR( 'L', M, NCVT, NRU, 0, S, WORK( IE ), A, LDA,
      $                      U, LDU, DUM, 1, WORK( IWORK ), INFO )
             ELSE
 *
@@ -27875,15 +27509,13 @@
      $      CALL DLASCL( 'G', 0, 0, BIGNUM, ANRM, MINMN, 1, S, MINMN,
      $                   IERR )
          IF( INFO.NE.0 .AND. ANRM.GT.BIGNUM )
-     $      CALL DLASCL( 'G', 0, 0, BIGNUM, ANRM, MINMN-1, 1,
-     $                   WORK( 2 ),
+     $      CALL DLASCL( 'G', 0, 0, BIGNUM, ANRM, MINMN-1, 1, WORK( 2 ),
      $                   MINMN, IERR )
          IF( ANRM.LT.SMLNUM )
      $      CALL DLASCL( 'G', 0, 0, SMLNUM, ANRM, MINMN, 1, S, MINMN,
      $                   IERR )
          IF( INFO.NE.0 .AND. ANRM.LT.SMLNUM )
-     $      CALL DLASCL( 'G', 0, 0, SMLNUM, ANRM, MINMN-1, 1,
-     $                   WORK( 2 ),
+     $      CALL DLASCL( 'G', 0, 0, SMLNUM, ANRM, MINMN-1, 1, WORK( 2 ),
      $                   MINMN, IERR )
       END IF
 *
@@ -28106,7 +27738,7 @@
 *>
 *> \param[in,out] WORK
 *> \verbatim
-*>          WORK is DOUBLE PRECISION array, dimension (MAX(1,LWORK))
+*>          WORK is DOUBLE PRECISION array, dimension (LWORK)
 *>          On entry :
 *>          If JOBU = 'C' :
 *>          WORK(1) = CTOL, where CTOL defines the threshold for convergence.
@@ -28137,12 +27769,7 @@
 *> \param[in] LWORK
 *> \verbatim
 *>          LWORK is INTEGER
-*>          The length of the array WORK.
-*>          LWORK >= 1, if MIN(M,N) = 0, and LWORK >= MAX(6,M+N), otherwise.
-*>
-*>          If on entry LWORK = -1, then a workspace query is assumed and
-*>          no computation is done; WORK(1) is set to the minial (and optimal)
-*>          length of WORK.
+*>          length of WORK, WORK >= MAX(6,M+N)
 *> \endverbatim
 *>
 *> \param[out] INFO
@@ -28268,9 +27895,9 @@
       INTEGER            BLSKIP, EMPTSW, i, ibr, IERR, igl, IJBLSK, ir1,
      $                   ISWROT, jbc, jgl, KBL, LKAHEAD, MVL, N2, N34,
      $                   N4, NBL, NOTROT, p, PSKIPPED, q, ROWSKIP,
-     $                   SWBAND, MINMN, LWMIN
-      LOGICAL            APPLV, GOSCALE, LOWER, LQUERY, LSVEC, NOSCALE,
-     $                   ROTOK, RSVEC, UCTOL, UPPER
+     $                   SWBAND
+      LOGICAL            APPLV, GOSCALE, LOWER, LSVEC, NOSCALE, ROTOK,
+     $                   RSVEC, UCTOL, UPPER
 *     ..
 *     .. Local Arrays ..
       DOUBLE PRECISION   FASTR( 5 )
@@ -28311,23 +27938,11 @@
       UPPER = LSAME( JOBA, 'U' )
       LOWER = LSAME( JOBA, 'L' )
 *
-      MINMN = MIN( M, N )
-      IF( MINMN.EQ.0 ) THEN
-         LWMIN = 1
-      ELSE
-         LWMIN = MAX( 6, M+N )
-      END IF
-*
-      LQUERY = ( LWORK.EQ.-1 )
       IF( .NOT.( UPPER .OR. LOWER .OR. LSAME( JOBA, 'G' ) ) ) THEN
          INFO = -1
-      ELSE IF( .NOT.( LSVEC .OR.
-     $         UCTOL .OR.
-     $         LSAME( JOBU, 'N' ) ) ) THEN
+      ELSE IF( .NOT.( LSVEC .OR. UCTOL .OR. LSAME( JOBU, 'N' ) ) ) THEN
          INFO = -2
-      ELSE IF( .NOT.( RSVEC .OR.
-     $         APPLV .OR.
-     $         LSAME( JOBV, 'N' ) ) ) THEN
+      ELSE IF( .NOT.( RSVEC .OR. APPLV .OR. LSAME( JOBV, 'N' ) ) ) THEN
          INFO = -3
       ELSE IF( M.LT.0 ) THEN
          INFO = -4
@@ -28342,7 +27957,7 @@
          INFO = -11
       ELSE IF( UCTOL .AND. ( WORK( 1 ).LE.ONE ) ) THEN
          INFO = -12
-      ELSE IF( LWORK.LT.LWMIN .AND. ( .NOT.LQUERY ) ) THEN
+      ELSE IF( LWORK.LT.MAX( M+N, 6 ) ) THEN
          INFO = -13
       ELSE
          INFO = 0
@@ -28352,14 +27967,11 @@
       IF( INFO.NE.0 ) THEN
          CALL XERBLA( 'DGESVJ', -INFO )
          RETURN
-      ELSE IF( LQUERY ) THEN
-         WORK( 1 ) = LWMIN
-         RETURN
       END IF
 *
 * #:) Quick return for void matrix
 *
-      IF( MINMN.EQ.0 ) RETURN
+      IF( ( M.EQ.0 ) .OR. ( N.EQ.0 ) )RETURN
 *
 *     Set numerical parameters
 *     The stopping criterion for Jacobi rotations is
@@ -28683,13 +28295,11 @@
          ELSE IF( UPPER ) THEN
 *
 *
-            CALL DGSVJ0( JOBV, N4, N4, A, LDA, WORK, SVA, MVL, V,
-     $                   LDV,
+            CALL DGSVJ0( JOBV, N4, N4, A, LDA, WORK, SVA, MVL, V, LDV,
      $                   EPSLN, SFMIN, TOL, 2, WORK( N+1 ), LWORK-N,
      $                   IERR )
 *
-            CALL DGSVJ0( JOBV, N2, N4, A( 1, N4+1 ), LDA,
-     $                   WORK( N4+1 ),
+            CALL DGSVJ0( JOBV, N2, N4, A( 1, N4+1 ), LDA, WORK( N4+1 ),
      $                   SVA( N4+1 ), MVL, V( N4*q+1, N4+1 ), LDV,
      $                   EPSLN, SFMIN, TOL, 1, WORK( N+1 ), LWORK-N,
      $                   IERR )
@@ -28792,8 +28402,7 @@
                            IF( AAQQ.GE.ONE ) THEN
                               ROTOK = ( SMALL*AAPP ).LE.AAQQ
                               IF( AAPP.LT.( BIG / AAQQ ) ) THEN
-                                 AAPQ = ( DDOT( M, A( 1, p ), 1,
-     $                                    A( 1,
+                                 AAPQ = ( DDOT( M, A( 1, p ), 1, A( 1,
      $                                  q ), 1 )*WORK( p )*WORK( q ) /
      $                                  AAQQ ) / AAPP
                               ELSE
@@ -28808,8 +28417,7 @@
                            ELSE
                               ROTOK = AAPP.LE.( AAQQ / SMALL )
                               IF( AAPP.GT.( SMALL / AAQQ ) ) THEN
-                                 AAPQ = ( DDOT( M, A( 1, p ), 1,
-     $                                    A( 1,
+                                 AAPQ = ( DDOT( M, A( 1, p ), 1, A( 1,
      $                                  q ), 1 )*WORK( p )*WORK( q ) /
      $                                  AAQQ ) / AAPP
                               ELSE
@@ -28886,8 +28494,7 @@
                                           FASTR( 4 ) = -T*AQOAP
                                           WORK( p ) = WORK( p )*CS
                                           WORK( q ) = WORK( q )*CS
-                                          CALL DROTM( M, A( 1, p ),
-     $                                                1,
+                                          CALL DROTM( M, A( 1, p ), 1,
      $                                                A( 1, q ), 1,
      $                                                FASTR )
                                           IF( RSVEC )CALL DROTM( MVL,
@@ -28903,8 +28510,7 @@
                                           WORK( p ) = WORK( p )*CS
                                           WORK( q ) = WORK( q ) / CS
                                           IF( RSVEC ) THEN
-                                             CALL DAXPY( MVL,
-     $                                                   -T*AQOAP,
+                                             CALL DAXPY( MVL, -T*AQOAP,
      $                                                   V( 1, q ), 1,
      $                                                   V( 1, p ), 1 )
                                              CALL DAXPY( MVL,
@@ -28918,15 +28524,13 @@
                                           CALL DAXPY( M, T*APOAQ,
      $                                                A( 1, p ), 1,
      $                                                A( 1, q ), 1 )
-                                          CALL DAXPY( M,
-     $                                                -CS*SN*AQOAP,
+                                          CALL DAXPY( M, -CS*SN*AQOAP,
      $                                                A( 1, q ), 1,
      $                                                A( 1, p ), 1 )
                                           WORK( p ) = WORK( p ) / CS
                                           WORK( q ) = WORK( q )*CS
                                           IF( RSVEC ) THEN
-                                             CALL DAXPY( MVL,
-     $                                                   T*APOAQ,
+                                             CALL DAXPY( MVL, T*APOAQ,
      $                                                   V( 1, p ), 1,
      $                                                   V( 1, q ), 1 )
                                              CALL DAXPY( MVL,
@@ -28940,8 +28544,7 @@
                                              CALL DAXPY( M, -T*AQOAP,
      $                                                   A( 1, q ), 1,
      $                                                   A( 1, p ), 1 )
-                                             CALL DAXPY( M,
-     $                                                   CS*SN*APOAQ,
+                                             CALL DAXPY( M, CS*SN*APOAQ,
      $                                                   A( 1, p ), 1,
      $                                                   A( 1, q ), 1 )
                                              WORK( p ) = WORK( p )*CS
@@ -28984,19 +28587,15 @@
 *              .. have to use modified Gram-Schmidt like transformation
                                  CALL DCOPY( M, A( 1, p ), 1,
      $                                       WORK( N+1 ), 1 )
-                                 CALL DLASCL( 'G', 0, 0, AAPP, ONE,
-     $                                        M,
+                                 CALL DLASCL( 'G', 0, 0, AAPP, ONE, M,
      $                                        1, WORK( N+1 ), LDA,
      $                                        IERR )
-                                 CALL DLASCL( 'G', 0, 0, AAQQ, ONE,
-     $                                        M,
+                                 CALL DLASCL( 'G', 0, 0, AAQQ, ONE, M,
      $                                        1, A( 1, q ), LDA, IERR )
                                  TEMP1 = -AAPQ*WORK( p ) / WORK( q )
-                                 CALL DAXPY( M, TEMP1, WORK( N+1 ),
-     $                                       1,
+                                 CALL DAXPY( M, TEMP1, WORK( N+1 ), 1,
      $                                       A( 1, q ), 1 )
-                                 CALL DLASCL( 'G', 0, 0, ONE, AAQQ,
-     $                                        M,
+                                 CALL DLASCL( 'G', 0, 0, ONE, AAQQ, M,
      $                                        1, A( 1, q ), LDA, IERR )
                                  SVA( q ) = AAQQ*DSQRT( MAX( ZERO,
      $                                      ONE-AAPQ*AAPQ ) )
@@ -29011,8 +28610,7 @@
      $                            THEN
                                  IF( ( AAQQ.LT.ROOTBIG ) .AND.
      $                               ( AAQQ.GT.ROOTSFMIN ) ) THEN
-                                    SVA( q ) = DNRM2( M, A( 1, q ),
-     $                                   1 )*
+                                    SVA( q ) = DNRM2( M, A( 1, q ), 1 )*
      $                                         WORK( q )
                                  ELSE
                                     T = ZERO
@@ -29111,8 +28709,7 @@
                                  ROTOK = ( SMALL*AAQQ ).LE.AAPP
                               END IF
                               IF( AAPP.LT.( BIG / AAQQ ) ) THEN
-                                 AAPQ = ( DDOT( M, A( 1, p ), 1,
-     $                                    A( 1,
+                                 AAPQ = ( DDOT( M, A( 1, p ), 1, A( 1,
      $                                  q ), 1 )*WORK( p )*WORK( q ) /
      $                                  AAQQ ) / AAPP
                               ELSE
@@ -29131,8 +28728,7 @@
                                  ROTOK = AAQQ.LE.( AAPP / SMALL )
                               END IF
                               IF( AAPP.GT.( SMALL / AAQQ ) ) THEN
-                                 AAPQ = ( DDOT( M, A( 1, p ), 1,
-     $                                    A( 1,
+                                 AAPQ = ( DDOT( M, A( 1, p ), 1, A( 1,
      $                                  q ), 1 )*WORK( p )*WORK( q ) /
      $                                  AAQQ ) / AAPP
                               ELSE
@@ -29204,8 +28800,7 @@
                                           FASTR( 4 ) = -T*AQOAP
                                           WORK( p ) = WORK( p )*CS
                                           WORK( q ) = WORK( q )*CS
-                                          CALL DROTM( M, A( 1, p ),
-     $                                                1,
+                                          CALL DROTM( M, A( 1, p ), 1,
      $                                                A( 1, q ), 1,
      $                                                FASTR )
                                           IF( RSVEC )CALL DROTM( MVL,
@@ -29219,8 +28814,7 @@
      $                                                A( 1, p ), 1,
      $                                                A( 1, q ), 1 )
                                           IF( RSVEC ) THEN
-                                             CALL DAXPY( MVL,
-     $                                                   -T*AQOAP,
+                                             CALL DAXPY( MVL, -T*AQOAP,
      $                                                   V( 1, q ), 1,
      $                                                   V( 1, p ), 1 )
                                              CALL DAXPY( MVL,
@@ -29236,13 +28830,11 @@
                                           CALL DAXPY( M, T*APOAQ,
      $                                                A( 1, p ), 1,
      $                                                A( 1, q ), 1 )
-                                          CALL DAXPY( M,
-     $                                                -CS*SN*AQOAP,
+                                          CALL DAXPY( M, -CS*SN*AQOAP,
      $                                                A( 1, q ), 1,
      $                                                A( 1, p ), 1 )
                                           IF( RSVEC ) THEN
-                                             CALL DAXPY( MVL,
-     $                                                   T*APOAQ,
+                                             CALL DAXPY( MVL, T*APOAQ,
      $                                                   V( 1, p ), 1,
      $                                                   V( 1, q ), 1 )
                                              CALL DAXPY( MVL,
@@ -29258,8 +28850,7 @@
                                              CALL DAXPY( M, -T*AQOAP,
      $                                                   A( 1, q ), 1,
      $                                                   A( 1, p ), 1 )
-                                             CALL DAXPY( M,
-     $                                                   CS*SN*APOAQ,
+                                             CALL DAXPY( M, CS*SN*APOAQ,
      $                                                   A( 1, p ), 1,
      $                                                   A( 1, q ), 1 )
                                              WORK( p ) = WORK( p )*CS
@@ -29302,20 +28893,16 @@
                                  IF( AAPP.GT.AAQQ ) THEN
                                     CALL DCOPY( M, A( 1, p ), 1,
      $                                          WORK( N+1 ), 1 )
-                                    CALL DLASCL( 'G', 0, 0, AAPP,
-     $                                           ONE,
+                                    CALL DLASCL( 'G', 0, 0, AAPP, ONE,
      $                                           M, 1, WORK( N+1 ), LDA,
      $                                           IERR )
-                                    CALL DLASCL( 'G', 0, 0, AAQQ,
-     $                                           ONE,
+                                    CALL DLASCL( 'G', 0, 0, AAQQ, ONE,
      $                                           M, 1, A( 1, q ), LDA,
      $                                           IERR )
                                     TEMP1 = -AAPQ*WORK( p ) / WORK( q )
-                                    CALL DAXPY( M, TEMP1,
-     $                                          WORK( N+1 ),
+                                    CALL DAXPY( M, TEMP1, WORK( N+1 ),
      $                                          1, A( 1, q ), 1 )
-                                    CALL DLASCL( 'G', 0, 0, ONE,
-     $                                           AAQQ,
+                                    CALL DLASCL( 'G', 0, 0, ONE, AAQQ,
      $                                           M, 1, A( 1, q ), LDA,
      $                                           IERR )
                                     SVA( q ) = AAQQ*DSQRT( MAX( ZERO,
@@ -29324,20 +28911,16 @@
                                  ELSE
                                     CALL DCOPY( M, A( 1, q ), 1,
      $                                          WORK( N+1 ), 1 )
-                                    CALL DLASCL( 'G', 0, 0, AAQQ,
-     $                                           ONE,
+                                    CALL DLASCL( 'G', 0, 0, AAQQ, ONE,
      $                                           M, 1, WORK( N+1 ), LDA,
      $                                           IERR )
-                                    CALL DLASCL( 'G', 0, 0, AAPP,
-     $                                           ONE,
+                                    CALL DLASCL( 'G', 0, 0, AAPP, ONE,
      $                                           M, 1, A( 1, p ), LDA,
      $                                           IERR )
                                     TEMP1 = -AAPQ*WORK( q ) / WORK( p )
-                                    CALL DAXPY( M, TEMP1,
-     $                                          WORK( N+1 ),
+                                    CALL DAXPY( M, TEMP1, WORK( N+1 ),
      $                                          1, A( 1, p ), 1 )
-                                    CALL DLASCL( 'G', 0, 0, ONE,
-     $                                           AAPP,
+                                    CALL DLASCL( 'G', 0, 0, ONE, AAPP,
      $                                           M, 1, A( 1, p ), LDA,
      $                                           IERR )
                                     SVA( p ) = AAPP*DSQRT( MAX( ZERO,
@@ -29353,8 +28936,7 @@
      $                            THEN
                                  IF( ( AAQQ.LT.ROOTBIG ) .AND.
      $                               ( AAQQ.GT.ROOTSFMIN ) ) THEN
-                                    SVA( q ) = DNRM2( M, A( 1, q ),
-     $                                   1 )*
+                                    SVA( q ) = DNRM2( M, A( 1, q ), 1 )*
      $                                         WORK( q )
                                  ELSE
                                     T = ZERO
@@ -29903,8 +29485,7 @@
 *> \ingroup gesvx
 *
 *  =====================================================================
-      SUBROUTINE DGESVX( FACT, TRANS, N, NRHS, A, LDA, AF, LDAF,
-     $                   IPIV,
+      SUBROUTINE DGESVX( FACT, TRANS, N, NRHS, A, LDA, AF, LDAF, IPIV,
      $                   EQUED, R, C, B, LDB, X, LDX, RCOND, FERR, BERR,
      $                   WORK, IWORK, INFO )
 *
@@ -29943,8 +29524,7 @@
       EXTERNAL           LSAME, DLAMCH, DLANGE, DLANTR
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DGECON, DGEEQU, DGERFS, DGETRF, DGETRS,
-     $                   DLACPY,
+      EXTERNAL           DGECON, DGEEQU, DGERFS, DGETRF, DGETRS, DLACPY,
      $                   DLAQGE, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
@@ -29969,9 +29549,7 @@
 *
 *     Test the input parameters.
 *
-      IF( .NOT.NOFACT .AND.
-     $    .NOT.EQUIL .AND.
-     $    .NOT.LSAME( FACT, 'F' ) )
+      IF( .NOT.NOFACT .AND. .NOT.EQUIL .AND. .NOT.LSAME( FACT, 'F' ) )
      $     THEN
          INFO = -1
       ELSE IF( .NOT.NOTRAN .AND. .NOT.LSAME( TRANS, 'T' ) .AND. .NOT.
@@ -30037,8 +29615,7 @@
 *
 *        Compute row and column scalings to equilibrate the matrix A.
 *
-         CALL DGEEQU( N, N, A, LDA, R, C, ROWCND, COLCND, AMAX,
-     $                INFEQU )
+         CALL DGEEQU( N, N, A, LDA, R, C, ROWCND, COLCND, AMAX, INFEQU )
          IF( INFEQU.EQ.0 ) THEN
 *
 *           Equilibrate the matrix.
@@ -30113,8 +29690,7 @@
 *
 *     Compute the reciprocal of the condition number of A.
 *
-      CALL DGECON( NORM, N, AF, LDAF, ANORM, RCOND, WORK, IWORK,
-     $             INFO )
+      CALL DGECON( NORM, N, AF, LDAF, ANORM, RCOND, WORK, IWORK, INFO )
 *
 *     Compute the solution matrix X.
 *
@@ -30341,8 +29917,8 @@
 *        Find max element in matrix A
 *
          XMAX = ZERO
-         DO 20 JP = I, N
-            DO 10 IP = I, N
+         DO 20 IP = I, N
+            DO 10 JP = I, N
                IF( ABS( A( IP, JP ) ).GE.XMAX ) THEN
                   XMAX = ABS( A( IP, JP ) )
                   IPV = IP
@@ -30594,8 +30170,7 @@
 *
 *           Update trailing submatrix.
 *
-            CALL DGER( M-J, N-J, -ONE, A( J+1, J ), 1, A( J, J+1 ),
-     $                 LDA,
+            CALL DGER( M-J, N-J, -ONE, A( J+1, J ), 1, A( J, J+1 ), LDA,
      $                 A( J+1, J+1 ), LDA )
          END IF
    10 CONTINUE
@@ -30734,8 +30309,7 @@
       INTEGER            I, IINFO, J, JB, NB
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DGEMM, DGETRF2, DLASWP, DTRSM,
-     $                   XERBLA
+      EXTERNAL           DGEMM, DGETRF2, DLASWP, DTRSM, XERBLA
 *     ..
 *     .. External Functions ..
       INTEGER            ILAENV
@@ -30784,8 +30358,7 @@
 *           Factor diagonal and subdiagonal blocks and test for exact
 *           singularity.
 *
-            CALL DGETRF2( M-J+1, JB, A( J, J ), LDA, IPIV( J ),
-     $                    IINFO )
+            CALL DGETRF2( M-J+1, JB, A( J, J ), LDA, IPIV( J ), IINFO )
 *
 *           Adjust INFO and the pivot indices.
 *
@@ -30808,16 +30381,14 @@
 *
 *              Compute block row of U.
 *
-               CALL DTRSM( 'Left', 'Lower', 'No transpose', 'Unit',
-     $                     JB,
+               CALL DTRSM( 'Left', 'Lower', 'No transpose', 'Unit', JB,
      $                     N-J-JB+1, ONE, A( J, J ), LDA, A( J, J+JB ),
      $                     LDA )
                IF( J+JB.LE.M ) THEN
 *
 *                 Update trailing submatrix.
 *
-                  CALL DGEMM( 'No transpose', 'No transpose',
-     $                        M-J-JB+1,
+                  CALL DGEMM( 'No transpose', 'No transpose', M-J-JB+1,
      $                        N-J-JB+1, JB, -ONE, A( J+JB, J ), LDA,
      $                        A( J, J+JB ), LDA, ONE, A( J+JB, J+JB ),
      $                        LDA )
@@ -31241,8 +30812,7 @@
       EXTERNAL           ILAENV
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DGEMM, DGEMV, DSWAP, DTRSM, DTRTRI,
-     $                   XERBLA
+      EXTERNAL           DGEMM, DGEMV, DSWAP, DTRSM, DTRTRI, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MAX, MIN
@@ -31253,9 +30823,8 @@
 *
       INFO = 0
       NB = ILAENV( 1, 'DGETRI', ' ', N, -1, -1, -1 )
-      LWKOPT = MAX( 1, N*NB )
+      LWKOPT = N*NB
       WORK( 1 ) = LWKOPT
-*
       LQUERY = ( LWORK.EQ.-1 )
       IF( N.LT.0 ) THEN
          INFO = -1
@@ -31289,8 +30858,7 @@
          IWS = MAX( LDWORK*NB, 1 )
          IF( LWORK.LT.IWS ) THEN
             NB = LWORK / LDWORK
-            NBMIN = MAX( 2, ILAENV( 2, 'DGETRI', ' ', N, -1, -1,
-     $                   -1 ) )
+            NBMIN = MAX( 2, ILAENV( 2, 'DGETRI', ' ', N, -1, -1, -1 ) )
          END IF
       ELSE
          IWS = N
@@ -31341,8 +30909,7 @@
      $         CALL DGEMM( 'No transpose', 'No transpose', N, JB,
      $                     N-J-JB+1, -ONE, A( 1, J+JB ), LDA,
      $                     WORK( J+JB ), LDWORK, ONE, A( 1, J ), LDA )
-            CALL DTRSM( 'Right', 'Lower', 'No transpose', 'Unit', N,
-     $                  JB,
+            CALL DTRSM( 'Right', 'Lower', 'No transpose', 'Unit', N, JB,
      $                  ONE, WORK( J ), LDWORK, A( 1, J ), LDA )
    50    CONTINUE
       END IF
@@ -31552,8 +31119,7 @@
 *
 *        Solve L*X = B, overwriting B with X.
 *
-         CALL DTRSM( 'Left', 'Lower', 'No transpose', 'Unit', N,
-     $               NRHS,
+         CALL DTRSM( 'Left', 'Lower', 'No transpose', 'Unit', N, NRHS,
      $               ONE, A, LDA, B, LDB )
 *
 *        Solve U*X = B, overwriting B with X.
@@ -31566,14 +31132,12 @@
 *
 *        Solve U**T *X = B, overwriting B with X.
 *
-         CALL DTRSM( 'Left', 'Upper', 'Transpose', 'Non-unit', N,
-     $               NRHS,
+         CALL DTRSM( 'Left', 'Upper', 'Transpose', 'Non-unit', N, NRHS,
      $               ONE, A, LDA, B, LDB )
 *
 *        Solve L**T *X = B, overwriting B with X.
 *
-         CALL DTRSM( 'Left', 'Lower', 'Transpose', 'Unit', N, NRHS,
-     $               ONE,
+         CALL DTRSM( 'Left', 'Lower', 'Transpose', 'Unit', N, NRHS, ONE,
      $               A, LDA, B, LDB )
 *
 *        Apply row interchanges to the solution vectors.
@@ -31730,8 +31294,7 @@
 *> \endverbatim
 *>
 *  =====================================================================
-      SUBROUTINE DGGBAK( JOB, SIDE, N, ILO, IHI, LSCALE, RSCALE, M,
-     $                   V,
+      SUBROUTINE DGGBAK( JOB, SIDE, N, ILO, IHI, LSCALE, RSCALE, M, V,
      $                   LDV, INFO )
 *
 *  -- LAPACK computational routine --
@@ -31770,10 +31333,8 @@
       LEFTV = LSAME( SIDE, 'L' )
 *
       INFO = 0
-      IF( .NOT.LSAME( JOB, 'N' ) .AND.
-     $    .NOT.LSAME( JOB, 'P' ) .AND.
-     $    .NOT.LSAME( JOB, 'S' ) .AND.
-     $                .NOT.LSAME( JOB, 'B' ) ) THEN
+      IF( .NOT.LSAME( JOB, 'N' ) .AND. .NOT.LSAME( JOB, 'P' ) .AND.
+     $    .NOT.LSAME( JOB, 'S' ) .AND. .NOT.LSAME( JOB, 'B' ) ) THEN
          INFO = -1
       ELSE IF( .NOT.RIGHTV .AND. .NOT.LEFTV ) THEN
          INFO = -2
@@ -32115,10 +31676,8 @@
 *     Test the input parameters
 *
       INFO = 0
-      IF( .NOT.LSAME( JOB, 'N' ) .AND.
-     $    .NOT.LSAME( JOB, 'P' ) .AND.
-     $    .NOT.LSAME( JOB, 'S' ) .AND.
-     $                .NOT.LSAME( JOB, 'B' ) ) THEN
+      IF( .NOT.LSAME( JOB, 'N' ) .AND. .NOT.LSAME( JOB, 'P' ) .AND.
+     $    .NOT.LSAME( JOB, 'S' ) .AND. .NOT.LSAME( JOB, 'B' ) ) THEN
          INFO = -1
       ELSE IF( N.LT.0 ) THEN
          INFO = -2
@@ -32397,10 +31956,8 @@
       IF( CMAX.LT.HALF )
      $   GO TO 350
 *
-      CALL DAXPY( NR, -ALPHA, WORK( ILO+2*N ), 1, WORK( ILO+4*N ),
-     $            1 )
-      CALL DAXPY( NR, -ALPHA, WORK( ILO+3*N ), 1, WORK( ILO+5*N ),
-     $            1 )
+      CALL DAXPY( NR, -ALPHA, WORK( ILO+2*N ), 1, WORK( ILO+4*N ), 1 )
+      CALL DAXPY( NR, -ALPHA, WORK( ILO+3*N ), 1, WORK( ILO+5*N ), 1 )
 *
       PGAMMA = GAMMA
       IT = IT + 1
@@ -32688,8 +32245,8 @@
 *> \verbatim
 *>          LWORK is INTEGER
 *>          The dimension of the array WORK.
-*>          If N = 0, LWORK >= 1, else LWORK >= MAX(8*N,6*N+16).
-*>          For good performance, LWORK must generally be larger.
+*>          If N = 0, LWORK >= 1, else LWORK >= 8*N+16.
+*>          For good performance , LWORK must generally be larger.
 *>
 *>          If LWORK = -1, then a workspace query is assumed; the routine
 *>          only calculates the optimal size of the WORK array, returns
@@ -32732,8 +32289,7 @@
 *> \ingroup gges
 *
 *  =====================================================================
-      SUBROUTINE DGGES( JOBVSL, JOBVSR, SORT, SELCTG, N, A, LDA, B,
-     $                  LDB,
+      SUBROUTINE DGGES( JOBVSL, JOBVSR, SORT, SELCTG, N, A, LDA, B, LDB,
      $                  SDIM, ALPHAR, ALPHAI, BETA, VSL, LDVSL, VSR,
      $                  LDVSR, WORK, LWORK, BWORK, INFO )
 *
@@ -32776,8 +32332,7 @@
       DOUBLE PRECISION   DIF( 2 )
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DGEQRF, DGGBAK, DGGBAL, DGGHRD, DHGEQZ,
-     $                   DLACPY,
+      EXTERNAL           DGEQRF, DGGBAK, DGGBAL, DGGHRD, DHGEQZ, DLACPY,
      $                   DLASCL, DLASET, DORGQR, DORMQR, DTGSEN, XERBLA
 *     ..
 *     .. External Functions ..
@@ -32825,8 +32380,7 @@
          INFO = -1
       ELSE IF( IJOBVR.LE.0 ) THEN
          INFO = -2
-      ELSE IF( ( .NOT.WANTST ) .AND.
-     $         ( .NOT.LSAME( SORT, 'N' ) ) ) THEN
+      ELSE IF( ( .NOT.WANTST ) .AND. ( .NOT.LSAME( SORT, 'N' ) ) ) THEN
          INFO = -3
       ELSE IF( N.LT.0 ) THEN
          INFO = -5
@@ -32856,8 +32410,7 @@
      $                    N*ILAENV( 1, 'DORMQR', ' ', N, 1, N, -1 ) )
             IF( ILVSL ) THEN
                MAXWRK = MAX( MAXWRK, MINWRK - N +
-     $                       N*ILAENV( 1, 'DORGQR', ' ', N, 1, N,
-     $                                 -1 ) )
+     $                       N*ILAENV( 1, 'DORGQR', ' ', N, 1, N, -1 ) )
             END IF
          ELSE
             MINWRK = 1
@@ -33002,18 +32555,15 @@
      $                   IERR )
          END IF
          IF( ILBSCL )
-     $      CALL DLASCL( 'G', 0, 0, BNRMTO, BNRM, N, 1, BETA, N,
-     $                   IERR )
+     $      CALL DLASCL( 'G', 0, 0, BNRMTO, BNRM, N, 1, BETA, N, IERR )
 *
 *        Select eigenvalues
 *
          DO 10 I = 1, N
-            BWORK( I ) = SELCTG( ALPHAR( I ), ALPHAI( I ),
-     $             BETA( I ) )
+            BWORK( I ) = SELCTG( ALPHAR( I ), ALPHAI( I ), BETA( I ) )
    10    CONTINUE
 *
-         CALL DTGSEN( 0, ILVSL, ILVSR, BWORK, N, A, LDA, B, LDB,
-     $                ALPHAR,
+         CALL DTGSEN( 0, ILVSL, ILVSR, BWORK, N, A, LDA, B, LDB, ALPHAR,
      $                ALPHAI, BETA, VSL, LDVSL, VSR, LDVSR, SDIM, PVSL,
      $                PVSR, DIF, WORK( IWRK ), LWORK-IWRK+1, IDUM, 1,
      $                IERR )
@@ -33077,10 +32627,8 @@
 *
       IF( ILASCL ) THEN
          CALL DLASCL( 'H', 0, 0, ANRMTO, ANRM, N, N, A, LDA, IERR )
-         CALL DLASCL( 'G', 0, 0, ANRMTO, ANRM, N, 1, ALPHAR, N,
-     $                IERR )
-         CALL DLASCL( 'G', 0, 0, ANRMTO, ANRM, N, 1, ALPHAI, N,
-     $                IERR )
+         CALL DLASCL( 'G', 0, 0, ANRMTO, ANRM, N, 1, ALPHAR, N, IERR )
+         CALL DLASCL( 'G', 0, 0, ANRMTO, ANRM, N, 1, ALPHAI, N, IERR )
       END IF
 *
       IF( ILBSCL ) THEN
@@ -33498,8 +33046,7 @@
 *> \endverbatim
 *>
 *  =====================================================================
-      SUBROUTINE DGGESX( JOBVSL, JOBVSR, SORT, SELCTG, SENSE, N, A,
-     $                   LDA,
+      SUBROUTINE DGGESX( JOBVSL, JOBVSR, SORT, SELCTG, SENSE, N, A, LDA,
      $                   B, LDB, SDIM, ALPHAR, ALPHAI, BETA, VSL, LDVSL,
      $                   VSR, LDVSR, RCONDE, RCONDV, WORK, LWORK, IWORK,
      $                   LIWORK, BWORK, INFO )
@@ -33546,8 +33093,7 @@
       DOUBLE PRECISION   DIF( 2 )
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DGEQRF, DGGBAK, DGGBAL, DGGHRD, DHGEQZ,
-     $                   DLACPY,
+      EXTERNAL           DGEQRF, DGGBAK, DGGBAL, DGGHRD, DHGEQZ, DLACPY,
      $                   DLASCL, DLASET, DORGQR, DORMQR, DTGSEN, XERBLA
 *     ..
 *     .. External Functions ..
@@ -33608,8 +33154,7 @@
          INFO = -1
       ELSE IF( IJOBVR.LE.0 ) THEN
          INFO = -2
-      ELSE IF( ( .NOT.WANTST ) .AND.
-     $         ( .NOT.LSAME( SORT, 'N' ) ) ) THEN
+      ELSE IF( ( .NOT.WANTST ) .AND. ( .NOT.LSAME( SORT, 'N' ) ) ) THEN
          INFO = -3
       ELSE IF( .NOT.( WANTSN .OR. WANTSE .OR. WANTSV .OR. WANTSB ) .OR.
      $         ( .NOT.WANTST .AND. .NOT.WANTSN ) ) THEN
@@ -33803,14 +33348,12 @@
      $                   IERR )
          END IF
          IF( ILBSCL )
-     $      CALL DLASCL( 'G', 0, 0, BNRMTO, BNRM, N, 1, BETA, N,
-     $                   IERR )
+     $      CALL DLASCL( 'G', 0, 0, BNRMTO, BNRM, N, 1, BETA, N, IERR )
 *
 *        Select eigenvalues
 *
          DO 10 I = 1, N
-            BWORK( I ) = SELCTG( ALPHAR( I ), ALPHAI( I ),
-     $             BETA( I ) )
+            BWORK( I ) = SELCTG( ALPHAR( I ), ALPHAI( I ), BETA( I ) )
    10    CONTINUE
 *
 *        Reorder eigenvalues, transform Generalized Schur vectors, and
@@ -33898,10 +33441,8 @@
 *
       IF( ILASCL ) THEN
          CALL DLASCL( 'H', 0, 0, ANRMTO, ANRM, N, N, A, LDA, IERR )
-         CALL DLASCL( 'G', 0, 0, ANRMTO, ANRM, N, 1, ALPHAR, N,
-     $                IERR )
-         CALL DLASCL( 'G', 0, 0, ANRMTO, ANRM, N, 1, ALPHAI, N,
-     $                IERR )
+         CALL DLASCL( 'G', 0, 0, ANRMTO, ANRM, N, 1, ALPHAR, N, IERR )
+         CALL DLASCL( 'G', 0, 0, ANRMTO, ANRM, N, 1, ALPHAI, N, IERR )
       END IF
 *
       IF( ILBSCL ) THEN
@@ -34183,8 +33724,7 @@
 *> \ingroup ggev
 *
 *  =====================================================================
-      SUBROUTINE DGGEV( JOBVL, JOBVR, N, A, LDA, B, LDB, ALPHAR,
-     $                  ALPHAI,
+      SUBROUTINE DGGEV( JOBVL, JOBVR, N, A, LDA, B, LDB, ALPHAR, ALPHAI,
      $                  BETA, VL, LDVL, VR, LDVR, WORK, LWORK, INFO )
 *
 *  -- LAPACK driver routine --
@@ -34220,8 +33760,7 @@
       LOGICAL            LDUMMA( 1 )
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DGEQRF, DGGBAK, DGGBAL, DGGHRD, DHGEQZ,
-     $                   DLACPY,
+      EXTERNAL           DGEQRF, DGGBAK, DGGBAL, DGGHRD, DHGEQZ, DLACPY,
      $                   DLASCL, DLASET, DORGQR, DORMQR, DTGEVC, XERBLA
 *     ..
 *     .. External Functions ..
@@ -34451,8 +33990,7 @@
          ELSE
             CHTEMP = 'R'
          END IF
-         CALL DTGEVC( CHTEMP, 'B', LDUMMA, N, A, LDA, B, LDB, VL,
-     $                LDVL,
+         CALL DTGEVC( CHTEMP, 'B', LDUMMA, N, A, LDA, B, LDB, VL, LDVL,
      $                VR, LDVR, N, IN, WORK( IWRK ), IERR )
          IF( IERR.NE.0 ) THEN
             INFO = N + 2
@@ -34536,10 +34074,8 @@
   110 CONTINUE
 *
       IF( ILASCL ) THEN
-         CALL DLASCL( 'G', 0, 0, ANRMTO, ANRM, N, 1, ALPHAR, N,
-     $                IERR )
-         CALL DLASCL( 'G', 0, 0, ANRMTO, ANRM, N, 1, ALPHAI, N,
-     $                IERR )
+         CALL DLASCL( 'G', 0, 0, ANRMTO, ANRM, N, 1, ALPHAR, N, IERR )
+         CALL DLASCL( 'G', 0, 0, ANRMTO, ANRM, N, 1, ALPHAI, N, IERR )
       END IF
 *
       IF( ILBSCL ) THEN
@@ -34938,8 +34474,7 @@
 *> \endverbatim
 *>
 *  =====================================================================
-      SUBROUTINE DGGEVX( BALANC, JOBVL, JOBVR, SENSE, N, A, LDA, B,
-     $                   LDB,
+      SUBROUTINE DGGEVX( BALANC, JOBVL, JOBVR, SENSE, N, A, LDA, B, LDB,
      $                   ALPHAR, ALPHAI, BETA, VL, LDVL, VR, LDVR, ILO,
      $                   IHI, LSCALE, RSCALE, ABNRM, BBNRM, RCONDE,
      $                   RCONDV, WORK, LWORK, IWORK, BWORK, INFO )
@@ -34982,8 +34517,7 @@
       LOGICAL            LDUMMA( 1 )
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DGEQRF, DGGBAK, DGGBAL, DGGHRD, DHGEQZ,
-     $                   DLACPY,
+      EXTERNAL           DGEQRF, DGGBAK, DGGBAL, DGGHRD, DHGEQZ, DLACPY,
      $                   DLASCL, DLASET, DORGQR, DORMQR, DTGEVC, DTGSNA,
      $                   XERBLA
 *     ..
@@ -35034,9 +34568,7 @@
       INFO = 0
       LQUERY = ( LWORK.EQ.-1 )
       IF( .NOT.( LSAME( BALANC, 'N' ) .OR. LSAME( BALANC,
-     $    'S' ) .OR.
-     $                      LSAME( BALANC, 'P' ) .OR.
-     $                      LSAME( BALANC, 'B' ) ) )
+     $    'S' ) .OR. LSAME( BALANC, 'P' ) .OR. LSAME( BALANC, 'B' ) ) )
      $     THEN
          INFO = -1
       ELSE IF( IJOBVL.LE.0 ) THEN
@@ -35084,15 +34616,12 @@
             END IF
             MAXWRK = MINWRK
             MAXWRK = MAX( MAXWRK,
-     $                    N + N*ILAENV( 1, 'DGEQRF', ' ', N, 1, N,
-     $                                  0 ) )
+     $                    N + N*ILAENV( 1, 'DGEQRF', ' ', N, 1, N, 0 ) )
             MAXWRK = MAX( MAXWRK,
-     $                    N + N*ILAENV( 1, 'DORMQR', ' ', N, 1, N,
-     $                                  0 ) )
+     $                    N + N*ILAENV( 1, 'DORMQR', ' ', N, 1, N, 0 ) )
             IF( ILVL ) THEN
                MAXWRK = MAX( MAXWRK, N +
-     $                       N*ILAENV( 1, 'DORGQR', ' ', N, 1, N,
-     $                                 0 ) )
+     $                       N*ILAENV( 1, 'DORGQR', ' ', N, 1, N, 0 ) )
             END IF
          END IF
          WORK( 1 ) = MAXWRK
@@ -35154,8 +34683,7 @@
 *     Permute and/or balance the matrix pair (A,B)
 *     (Workspace: need 6*N if BALANC = 'S' or 'B', 1 otherwise)
 *
-      CALL DGGBAL( BALANC, N, A, LDA, B, LDB, ILO, IHI, LSCALE,
-     $             RSCALE,
+      CALL DGGBAL( BALANC, N, A, LDA, B, LDB, ILO, IHI, LSCALE, RSCALE,
      $             WORK, IERR )
 *
 *     Compute ABNRM and BBNRM
@@ -35340,8 +34868,7 @@
 *     (Workspace: none needed)
 *
       IF( ILVL ) THEN
-         CALL DGGBAK( BALANC, 'L', N, ILO, IHI, LSCALE, RSCALE, N,
-     $                VL,
+         CALL DGGBAK( BALANC, 'L', N, ILO, IHI, LSCALE, RSCALE, N, VL,
      $                LDVL, IERR )
 *
          DO 70 JC = 1, N
@@ -35374,8 +34901,7 @@
    70    CONTINUE
       END IF
       IF( ILVR ) THEN
-         CALL DGGBAK( BALANC, 'R', N, ILO, IHI, LSCALE, RSCALE, N,
-     $                VR,
+         CALL DGGBAK( BALANC, 'R', N, ILO, IHI, LSCALE, RSCALE, N, VR,
      $                LDVR, IERR )
          DO 120 JC = 1, N
             IF( ALPHAI( JC ).LT.ZERO )
@@ -35412,10 +34938,8 @@
   130 CONTINUE
 *
       IF( ILASCL ) THEN
-         CALL DLASCL( 'G', 0, 0, ANRMTO, ANRM, N, 1, ALPHAR, N,
-     $                IERR )
-         CALL DLASCL( 'G', 0, 0, ANRMTO, ANRM, N, 1, ALPHAI, N,
-     $                IERR )
+         CALL DLASCL( 'G', 0, 0, ANRMTO, ANRM, N, 1, ALPHAR, N, IERR )
+         CALL DLASCL( 'G', 0, 0, ANRMTO, ANRM, N, 1, ALPHAI, N, IERR )
       END IF
 *
       IF( ILBSCL ) THEN
@@ -35491,16 +35015,6 @@
 *>                  x
 *>
 *> where inv(B) denotes the inverse of B.
-*>
-*> Callers of this subroutine should note that the singularity/rank-deficiency checks
-*> implemented in this subroutine are rudimentary. The DTRTRS subroutine called by this
-*> subroutine only signals a failure due to singularity if the problem is exactly singular.
-*>
-*> It is conceivable for one (or more) of the factors involved in the generalized QR
-*> factorization of the pair (A, B) to be subnormally close to singularity without this
-*> subroutine signalling an error. The solutions computed for such almost-rank-deficient
-*> problems may be less accurate due to a loss of numerical precision.
-*> 
 *> \endverbatim
 *
 *  Arguments:
@@ -35599,12 +35113,12 @@
 *>          = 0:  successful exit.
 *>          < 0:  if INFO = -i, the i-th argument had an illegal value.
 *>          = 1:  the upper triangular factor R associated with A in the
-*>                generalized QR factorization of the pair (A, B) is exactly
+*>                generalized QR factorization of the pair (A, B) is
 *>                singular, so that rank(A) < M; the least squares
 *>                solution could not be computed.
 *>          = 2:  the bottom (N-M) by (N-M) part of the upper trapezoidal
 *>                factor T associated with B in the generalized QR
-*>                factorization of the pair (A, B) is exactly singular, so that
+*>                factorization of the pair (A, B) is singular, so that
 *>                rank( A B ) < N; the least squares solution could not
 *>                be computed.
 *> \endverbatim
@@ -35620,8 +35134,7 @@
 *> \ingroup ggglm
 *
 *  =====================================================================
-      SUBROUTINE DGGGLM( N, M, P, A, LDA, B, LDB, D, X, Y, WORK,
-     $                   LWORK,
+      SUBROUTINE DGGGLM( N, M, P, A, LDA, B, LDB, D, X, Y, WORK, LWORK,
      $                   INFO )
 *
 *  -- LAPACK driver routine --
@@ -35648,8 +35161,7 @@
      $                   NB4, NP
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DCOPY, DGEMV, DGGQRF, DORMQR, DORMRQ,
-     $                   DTRTRS,
+      EXTERNAL           DCOPY, DGEMV, DGGQRF, DORMQR, DORMRQ, DTRTRS,
      $                   XERBLA
 *     ..
 *     .. External Functions ..
@@ -35767,8 +35279,7 @@
 *     Solve triangular system: R11*x = d1
 *
       IF( M.GT.0 ) THEN
-         CALL DTRTRS( 'Upper', 'No Transpose', 'Non unit', M, 1, A,
-     $                LDA,
+         CALL DTRTRS( 'Upper', 'No Transpose', 'Non unit', M, 1, A, LDA,
      $                D, M, INFO )
 *
          IF( INFO.GT.0 ) THEN
@@ -35997,8 +35508,7 @@
 *> \endverbatim
 *>
 *  =====================================================================
-      SUBROUTINE DGGHRD( COMPQ, COMPZ, N, ILO, IHI, A, LDA, B, LDB,
-     $                   Q,
+      SUBROUTINE DGGHRD( COMPQ, COMPZ, N, ILO, IHI, A, LDA, B, LDB, Q,
      $                   LDQ, Z, LDZ, INFO )
 *
 *  -- LAPACK computational routine --
@@ -36131,8 +35641,7 @@
             CALL DROT( N+2-JROW, B( JROW-1, JROW-1 ), LDB,
      $                 B( JROW, JROW-1 ), LDB, C, S )
             IF( ILQ )
-     $         CALL DROT( N, Q( 1, JROW-1 ), 1, Q( 1, JROW ), 1, C,
-     $                    S )
+     $         CALL DROT( N, Q( 1, JROW-1 ), 1, Q( 1, JROW ), 1, C, S )
 *
 *           Step 2: rotate columns JROW, JROW-1 to kill B(JROW,JROW-1)
 *
@@ -36140,13 +35649,11 @@
             CALL DLARTG( TEMP, B( JROW, JROW-1 ), C, S,
      $                   B( JROW, JROW ) )
             B( JROW, JROW-1 ) = ZERO
-            CALL DROT( IHI, A( 1, JROW ), 1, A( 1, JROW-1 ), 1, C,
-     $                 S )
+            CALL DROT( IHI, A( 1, JROW ), 1, A( 1, JROW-1 ), 1, C, S )
             CALL DROT( JROW-1, B( 1, JROW ), 1, B( 1, JROW-1 ), 1, C,
      $                 S )
             IF( ILZ )
-     $         CALL DROT( N, Z( 1, JROW ), 1, Z( 1, JROW-1 ), 1, C,
-     $                    S )
+     $         CALL DROT( N, Z( 1, JROW ), 1, Z( 1, JROW-1 ), 1, C, S )
    30    CONTINUE
    40 CONTINUE
 *
@@ -36209,16 +35716,6 @@
 *> matrices (B, A) given by
 *>
 *>    B = (0 R)*Q,   A = Z*T*Q.
-*>
-*> Callers of this subroutine should note that the singularity/rank-deficiency checks
-*> implemented in this subroutine are rudimentary. The DTRTRS subroutine called by this
-*> subroutine only signals a failure due to singularity if the problem is exactly singular.
-*>
-*> It is conceivable for one (or more) of the factors involved in the generalized RQ
-*> factorization of the pair (B, A) to be subnormally close to singularity without this
-*> subroutine signalling an error. The solutions computed for such almost-rank-deficient
-*> problems may be less accurate due to a loss of numerical precision.
-*> 
 *> \endverbatim
 *
 *  Arguments:
@@ -36320,12 +35817,12 @@
 *>          = 0:  successful exit.
 *>          < 0:  if INFO = -i, the i-th argument had an illegal value.
 *>          = 1:  the upper triangular factor R associated with B in the
-*>                generalized RQ factorization of the pair (B, A) is exactly
+*>                generalized RQ factorization of the pair (B, A) is
 *>                singular, so that rank(B) < P; the least squares
 *>                solution could not be computed.
 *>          = 2:  the (N-P) by (N-P) part of the upper trapezoidal factor
 *>                T associated with A in the generalized RQ factorization
-*>                of the pair (B, A) is exactly singular, so that
+*>                of the pair (B, A) is singular, so that
 *>                rank( (A) ) < N; the least squares solution could not
 *>                    ( (B) )
 *>                be computed.
@@ -36342,8 +35839,7 @@
 *> \ingroup gglse
 *
 *  =====================================================================
-      SUBROUTINE DGGLSE( M, N, P, A, LDA, B, LDB, C, D, X, WORK,
-     $                   LWORK,
+      SUBROUTINE DGGLSE( M, N, P, A, LDA, B, LDB, C, D, X, WORK, LWORK,
      $                   INFO )
 *
 *  -- LAPACK driver routine --
@@ -36370,8 +35866,7 @@
      $                   NB4, NR
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DAXPY, DCOPY, DGEMV, DGGRQF, DORMQR,
-     $                   DORMRQ,
+      EXTERNAL           DAXPY, DCOPY, DGEMV, DGGRQF, DORMQR, DORMRQ,
      $                   DTRMV, DTRTRS, XERBLA
 *     ..
 *     .. External Functions ..
@@ -36450,8 +35945,7 @@
 *     Update c = Z**T *c = ( c1 ) N-P
 *                          ( c2 ) M+P-N
 *
-      CALL DORMQR( 'Left', 'Transpose', M, 1, MN, A, LDA,
-     $             WORK( P+1 ),
+      CALL DORMQR( 'Left', 'Transpose', M, 1, MN, A, LDA, WORK( P+1 ),
      $             C, MAX( 1, M ), WORK( P+MN+1 ), LWORK-P-MN, INFO )
       LOPT = MAX( LOPT, INT( WORK( P+MN+1 ) ) )
 *
@@ -36472,8 +35966,7 @@
 *
 *        Update c1
 *
-         CALL DGEMV( 'No transpose', N-P, P, -ONE, A( 1, N-P+1 ),
-     $               LDA,
+         CALL DGEMV( 'No transpose', N-P, P, -ONE, A( 1, N-P+1 ), LDA,
      $               D, 1, ONE, C, 1 )
       END IF
 *
@@ -36498,8 +35991,7 @@
       IF( M.LT.N ) THEN
          NR = M + P - N
          IF( NR.GT.0 )
-     $      CALL DGEMV( 'No transpose', NR, N-M, -ONE, A( N-P+1,
-     $                  M+1 ),
+     $      CALL DGEMV( 'No transpose', NR, N-M, -ONE, A( N-P+1, M+1 ),
      $                  LDA, D( NR+1 ), 1, ONE, C( N-P+1 ), 1 )
       ELSE
          NR = P
@@ -36512,8 +36004,7 @@
 *
 *     Backward transformation x = Q**T*x
 *
-      CALL DORMRQ( 'Left', 'Transpose', N, 1, P, B, LDB, WORK( 1 ),
-     $             X,
+      CALL DORMRQ( 'Left', 'Transpose', N, 1, P, B, LDB, WORK( 1 ), X,
      $             N, WORK( P+MN+1 ), LWORK-P-MN, INFO )
       WORK( 1 ) = P + MN + MAX( LOPT, INT( WORK( P+MN+1 ) ) )
 *
@@ -36774,7 +36265,7 @@
       NB2 = ILAENV( 1, 'DGERQF', ' ', N, P, -1, -1 )
       NB3 = ILAENV( 1, 'DORMQR', ' ', N, M, P, -1 )
       NB = MAX( NB1, NB2, NB3 )
-      LWKOPT = MAX( 1, MAX( N, M, P )*NB )
+      LWKOPT = MAX( N, M, P )*NB
       WORK( 1 ) = LWKOPT
       LQUERY = ( LWORK.EQ.-1 )
       IF( N.LT.0 ) THEN
@@ -36804,15 +36295,13 @@
 *
 *     Update B := Q**T*B.
 *
-      CALL DORMQR( 'Left', 'Transpose', N, P, MIN( N, M ), A, LDA,
-     $             TAUA,
+      CALL DORMQR( 'Left', 'Transpose', N, P, MIN( N, M ), A, LDA, TAUA,
      $             B, LDB, WORK, LWORK, INFO )
       LOPT = MAX( LOPT, INT( WORK( 1 ) ) )
 *
 *     RQ factorization of N-by-P matrix B: B = T*Z.
 *
       CALL DGERQF( N, P, B, LDB, TAUB, WORK, LWORK, INFO )
-*
       WORK( 1 ) = MAX( LOPT, INT( WORK( 1 ) ) )
 *
       RETURN
@@ -37071,7 +36560,7 @@
       NB2 = ILAENV( 1, 'DGEQRF', ' ', P, N, -1, -1 )
       NB3 = ILAENV( 1, 'DORMRQ', ' ', M, N, P, -1 )
       NB = MAX( NB1, NB2, NB3 )
-      LWKOPT = MAX( 1, MAX( N, M, P )*NB )
+      LWKOPT = MAX( N, M, P )*NB
       WORK( 1 ) = LWKOPT
       LQUERY = ( LWORK.EQ.-1 )
       IF( M.LT.0 ) THEN
@@ -37971,8 +37460,8 @@
 *
 *           Update Q := Q*Z**T
 *
-            CALL DORMR2( 'Right', 'Transpose', N, N, L, B, LDB, TAU,
-     $                   Q, LDQ, WORK, INFO )
+            CALL DORMR2( 'Right', 'Transpose', N, N, L, B, LDB, TAU, Q,
+     $                   LDQ, WORK, INFO )
          END IF
 *
 *        Clean up B
@@ -38018,10 +37507,9 @@
 *
          CALL DLASET( 'Full', M, M, ZERO, ZERO, U, LDU )
          IF( M.GT.1 )
-     $      CALL DLACPY( 'Lower', M-1, N-L, A( 2, 1 ), LDA,
-     $                   U( 2, 1 ), LDU )
-         CALL DORG2R( M, M, MIN( M, N-L ), U, LDU, TAU, WORK,
-     $                INFO )
+     $      CALL DLACPY( 'Lower', M-1, N-L, A( 2, 1 ), LDA, U( 2, 1 ),
+     $                   LDU )
+         CALL DORG2R( M, M, MIN( M, N-L ), U, LDU, TAU, WORK, INFO )
       END IF
 *
       IF( WANTQ ) THEN
@@ -38040,8 +37528,7 @@
    90    CONTINUE
   100 CONTINUE
       IF( M.GT.K )
-     $   CALL DLASET( 'Full', M-K, N-L, ZERO, ZERO, A( K+1, 1 ),
-     $                LDA )
+     $   CALL DLASET( 'Full', M-K, N-L, ZERO, ZERO, A( K+1, 1 ), LDA )
 *
       IF( N-L.GT.K ) THEN
 *
@@ -38053,8 +37540,8 @@
 *
 *           Update Q( 1:N,1:N-L ) = Q( 1:N,1:N-L )*Z1**T
 *
-            CALL DORMR2( 'Right', 'Transpose', N, N-L, K, A, LDA,
-     $                   TAU, Q, LDQ, WORK, INFO )
+            CALL DORMR2( 'Right', 'Transpose', N, N-L, K, A, LDA, TAU,
+     $                   Q, LDQ, WORK, INFO )
          END IF
 *
 *        Clean up A
@@ -38078,9 +37565,9 @@
 *
 *           Update U(:,K+1:M) := U(:,K+1:M)*U1
 *
-            CALL DORM2R( 'Right', 'No transpose', M, M-K,
-     $                   MIN( M-K, L ), A( K+1, N-L+1 ), LDA, TAU,
-     $                   U( 1, K+1 ), LDU, WORK, INFO )
+            CALL DORM2R( 'Right', 'No transpose', M, M-K, MIN( M-K, L ),
+     $                   A( K+1, N-L+1 ), LDA, TAU, U( 1, K+1 ), LDU,
+     $                   WORK, INFO )
          END IF
 *
 *        Clean up
@@ -38359,8 +37846,7 @@
       EXTERNAL           IDAMAX, LSAME, DDOT, DNRM2
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DAXPY, DCOPY, DLASCL, DLASSQ, DROTM,
-     $                   DSWAP,
+      EXTERNAL           DAXPY, DCOPY, DLASCL, DLASSQ, DROTM, DSWAP,
      $                   XERBLA
 *     ..
 *     .. Executable Statements ..
@@ -38525,15 +38011,12 @@
                            IF( AAQQ.GE.ONE ) THEN
                               ROTOK = ( SMALL*AAPP ).LE.AAQQ
                               IF( AAPP.LT.( BIG / AAQQ ) ) THEN
-                                 AAPQ = ( DDOT( M, A( 1, p ), 1,
-     $                                    A( 1,
+                                 AAPQ = ( DDOT( M, A( 1, p ), 1, A( 1,
      $                                  q ), 1 )*D( p )*D( q ) / AAQQ )
      $                                  / AAPP
                               ELSE
-                                 CALL DCOPY( M, A( 1, p ), 1, WORK,
-     $                                       1 )
-                                 CALL DLASCL( 'G', 0, 0, AAPP,
-     $                                        D( p ),
+                                 CALL DCOPY( M, A( 1, p ), 1, WORK, 1 )
+                                 CALL DLASCL( 'G', 0, 0, AAPP, D( p ),
      $                                        M, 1, WORK, LDA, IERR )
                                  AAPQ = DDOT( M, WORK, 1, A( 1, q ),
      $                                  1 )*D( q ) / AAQQ
@@ -38541,15 +38024,12 @@
                            ELSE
                               ROTOK = AAPP.LE.( AAQQ / SMALL )
                               IF( AAPP.GT.( SMALL / AAQQ ) ) THEN
-                                 AAPQ = ( DDOT( M, A( 1, p ), 1,
-     $                                    A( 1,
+                                 AAPQ = ( DDOT( M, A( 1, p ), 1, A( 1,
      $                                  q ), 1 )*D( p )*D( q ) / AAQQ )
      $                                  / AAPP
                               ELSE
-                                 CALL DCOPY( M, A( 1, q ), 1, WORK,
-     $                                       1 )
-                                 CALL DLASCL( 'G', 0, 0, AAQQ,
-     $                                        D( q ),
+                                 CALL DCOPY( M, A( 1, q ), 1, WORK, 1 )
+                                 CALL DLASCL( 'G', 0, 0, AAQQ, D( q ),
      $                                        M, 1, WORK, LDA, IERR )
                                  AAPQ = DDOT( M, WORK, 1, A( 1, p ),
      $                                  1 )*D( p ) / AAPP
@@ -38618,8 +38098,7 @@
                                           FASTR( 4 ) = -T*AQOAP
                                           D( p ) = D( p )*CS
                                           D( q ) = D( q )*CS
-                                          CALL DROTM( M, A( 1, p ),
-     $                                                1,
+                                          CALL DROTM( M, A( 1, p ), 1,
      $                                                A( 1, q ), 1,
      $                                                FASTR )
                                           IF( RSVEC )CALL DROTM( MVL,
@@ -38635,8 +38114,7 @@
                                           D( p ) = D( p )*CS
                                           D( q ) = D( q ) / CS
                                           IF( RSVEC ) THEN
-                                             CALL DAXPY( MVL,
-     $                                                   -T*AQOAP,
+                                             CALL DAXPY( MVL, -T*AQOAP,
      $                                                   V( 1, q ), 1,
      $                                                   V( 1, p ), 1 )
                                              CALL DAXPY( MVL,
@@ -38650,15 +38128,13 @@
                                           CALL DAXPY( M, T*APOAQ,
      $                                                A( 1, p ), 1,
      $                                                A( 1, q ), 1 )
-                                          CALL DAXPY( M,
-     $                                                -CS*SN*AQOAP,
+                                          CALL DAXPY( M, -CS*SN*AQOAP,
      $                                                A( 1, q ), 1,
      $                                                A( 1, p ), 1 )
                                           D( p ) = D( p ) / CS
                                           D( q ) = D( q )*CS
                                           IF( RSVEC ) THEN
-                                             CALL DAXPY( MVL,
-     $                                                   T*APOAQ,
+                                             CALL DAXPY( MVL, T*APOAQ,
      $                                                   V( 1, p ), 1,
      $                                                   V( 1, q ), 1 )
                                              CALL DAXPY( MVL,
@@ -38671,8 +38147,7 @@
                                              CALL DAXPY( M, -T*AQOAP,
      $                                                   A( 1, q ), 1,
      $                                                   A( 1, p ), 1 )
-                                             CALL DAXPY( M,
-     $                                                   CS*SN*APOAQ,
+                                             CALL DAXPY( M, CS*SN*APOAQ,
      $                                                   A( 1, p ), 1,
      $                                                   A( 1, q ), 1 )
                                              D( p ) = D( p )*CS
@@ -38713,19 +38188,15 @@
 *
                               ELSE
 *              .. have to use modified Gram-Schmidt like transformation
-                                 CALL DCOPY( M, A( 1, p ), 1, WORK,
-     $                                       1 )
-                                 CALL DLASCL( 'G', 0, 0, AAPP, ONE,
-     $                                        M,
+                                 CALL DCOPY( M, A( 1, p ), 1, WORK, 1 )
+                                 CALL DLASCL( 'G', 0, 0, AAPP, ONE, M,
      $                                        1, WORK, LDA, IERR )
-                                 CALL DLASCL( 'G', 0, 0, AAQQ, ONE,
-     $                                        M,
+                                 CALL DLASCL( 'G', 0, 0, AAQQ, ONE, M,
      $                                        1, A( 1, q ), LDA, IERR )
                                  TEMP1 = -AAPQ*D( p ) / D( q )
                                  CALL DAXPY( M, TEMP1, WORK, 1,
      $                                       A( 1, q ), 1 )
-                                 CALL DLASCL( 'G', 0, 0, ONE, AAQQ,
-     $                                        M,
+                                 CALL DLASCL( 'G', 0, 0, ONE, AAQQ, M,
      $                                        1, A( 1, q ), LDA, IERR )
                                  SVA( q ) = AAQQ*DSQRT( MAX( ZERO,
      $                                      ONE-AAPQ*AAPQ ) )
@@ -38739,8 +38210,7 @@
      $                            THEN
                                  IF( ( AAQQ.LT.ROOTBIG ) .AND.
      $                               ( AAQQ.GT.ROOTSFMIN ) ) THEN
-                                    SVA( q ) = DNRM2( M, A( 1, q ),
-     $                                   1 )*
+                                    SVA( q ) = DNRM2( M, A( 1, q ), 1 )*
      $                                         D( q )
                                  ELSE
                                     T = ZERO
@@ -38841,15 +38311,12 @@
                                  ROTOK = ( SMALL*AAQQ ).LE.AAPP
                               END IF
                               IF( AAPP.LT.( BIG / AAQQ ) ) THEN
-                                 AAPQ = ( DDOT( M, A( 1, p ), 1,
-     $                                    A( 1,
+                                 AAPQ = ( DDOT( M, A( 1, p ), 1, A( 1,
      $                                  q ), 1 )*D( p )*D( q ) / AAQQ )
      $                                  / AAPP
                               ELSE
-                                 CALL DCOPY( M, A( 1, p ), 1, WORK,
-     $                                       1 )
-                                 CALL DLASCL( 'G', 0, 0, AAPP,
-     $                                        D( p ),
+                                 CALL DCOPY( M, A( 1, p ), 1, WORK, 1 )
+                                 CALL DLASCL( 'G', 0, 0, AAPP, D( p ),
      $                                        M, 1, WORK, LDA, IERR )
                                  AAPQ = DDOT( M, WORK, 1, A( 1, q ),
      $                                  1 )*D( q ) / AAQQ
@@ -38861,15 +38328,12 @@
                                  ROTOK = AAQQ.LE.( AAPP / SMALL )
                               END IF
                               IF( AAPP.GT.( SMALL / AAQQ ) ) THEN
-                                 AAPQ = ( DDOT( M, A( 1, p ), 1,
-     $                                    A( 1,
+                                 AAPQ = ( DDOT( M, A( 1, p ), 1, A( 1,
      $                                  q ), 1 )*D( p )*D( q ) / AAQQ )
      $                                  / AAPP
                               ELSE
-                                 CALL DCOPY( M, A( 1, q ), 1, WORK,
-     $                                       1 )
-                                 CALL DLASCL( 'G', 0, 0, AAQQ,
-     $                                        D( q ),
+                                 CALL DCOPY( M, A( 1, q ), 1, WORK, 1 )
+                                 CALL DLASCL( 'G', 0, 0, AAQQ, D( q ),
      $                                        M, 1, WORK, LDA, IERR )
                                  AAPQ = DDOT( M, WORK, 1, A( 1, p ),
      $                                  1 )*D( p ) / AAPP
@@ -38933,8 +38397,7 @@
                                           FASTR( 4 ) = -T*AQOAP
                                           D( p ) = D( p )*CS
                                           D( q ) = D( q )*CS
-                                          CALL DROTM( M, A( 1, p ),
-     $                                                1,
+                                          CALL DROTM( M, A( 1, p ), 1,
      $                                                A( 1, q ), 1,
      $                                                FASTR )
                                           IF( RSVEC )CALL DROTM( MVL,
@@ -38948,8 +38411,7 @@
      $                                                A( 1, p ), 1,
      $                                                A( 1, q ), 1 )
                                           IF( RSVEC ) THEN
-                                             CALL DAXPY( MVL,
-     $                                                   -T*AQOAP,
+                                             CALL DAXPY( MVL, -T*AQOAP,
      $                                                   V( 1, q ), 1,
      $                                                   V( 1, p ), 1 )
                                              CALL DAXPY( MVL,
@@ -38965,13 +38427,11 @@
                                           CALL DAXPY( M, T*APOAQ,
      $                                                A( 1, p ), 1,
      $                                                A( 1, q ), 1 )
-                                          CALL DAXPY( M,
-     $                                                -CS*SN*AQOAP,
+                                          CALL DAXPY( M, -CS*SN*AQOAP,
      $                                                A( 1, q ), 1,
      $                                                A( 1, p ), 1 )
                                           IF( RSVEC ) THEN
-                                             CALL DAXPY( MVL,
-     $                                                   T*APOAQ,
+                                             CALL DAXPY( MVL, T*APOAQ,
      $                                                   V( 1, p ), 1,
      $                                                   V( 1, q ), 1 )
                                              CALL DAXPY( MVL,
@@ -38986,8 +38446,7 @@
                                              CALL DAXPY( M, -T*AQOAP,
      $                                                   A( 1, q ), 1,
      $                                                   A( 1, p ), 1 )
-                                             CALL DAXPY( M,
-     $                                                   CS*SN*APOAQ,
+                                             CALL DAXPY( M, CS*SN*APOAQ,
      $                                                   A( 1, p ), 1,
      $                                                   A( 1, q ), 1 )
                                              D( p ) = D( p )*CS
@@ -39028,42 +38487,34 @@
 *
                               ELSE
                                  IF( AAPP.GT.AAQQ ) THEN
-                                    CALL DCOPY( M, A( 1, p ), 1,
-     $                                          WORK,
+                                    CALL DCOPY( M, A( 1, p ), 1, WORK,
      $                                          1 )
-                                    CALL DLASCL( 'G', 0, 0, AAPP,
-     $                                           ONE,
+                                    CALL DLASCL( 'G', 0, 0, AAPP, ONE,
      $                                           M, 1, WORK, LDA, IERR )
-                                    CALL DLASCL( 'G', 0, 0, AAQQ,
-     $                                           ONE,
+                                    CALL DLASCL( 'G', 0, 0, AAQQ, ONE,
      $                                           M, 1, A( 1, q ), LDA,
      $                                           IERR )
                                     TEMP1 = -AAPQ*D( p ) / D( q )
                                     CALL DAXPY( M, TEMP1, WORK, 1,
      $                                          A( 1, q ), 1 )
-                                    CALL DLASCL( 'G', 0, 0, ONE,
-     $                                           AAQQ,
+                                    CALL DLASCL( 'G', 0, 0, ONE, AAQQ,
      $                                           M, 1, A( 1, q ), LDA,
      $                                           IERR )
                                     SVA( q ) = AAQQ*DSQRT( MAX( ZERO,
      $                                         ONE-AAPQ*AAPQ ) )
                                     MXSINJ = MAX( MXSINJ, SFMIN )
                                  ELSE
-                                    CALL DCOPY( M, A( 1, q ), 1,
-     $                                          WORK,
+                                    CALL DCOPY( M, A( 1, q ), 1, WORK,
      $                                          1 )
-                                    CALL DLASCL( 'G', 0, 0, AAQQ,
-     $                                           ONE,
+                                    CALL DLASCL( 'G', 0, 0, AAQQ, ONE,
      $                                           M, 1, WORK, LDA, IERR )
-                                    CALL DLASCL( 'G', 0, 0, AAPP,
-     $                                           ONE,
+                                    CALL DLASCL( 'G', 0, 0, AAPP, ONE,
      $                                           M, 1, A( 1, p ), LDA,
      $                                           IERR )
                                     TEMP1 = -AAPQ*D( q ) / D( p )
                                     CALL DAXPY( M, TEMP1, WORK, 1,
      $                                          A( 1, p ), 1 )
-                                    CALL DLASCL( 'G', 0, 0, ONE,
-     $                                           AAPP,
+                                    CALL DLASCL( 'G', 0, 0, ONE, AAPP,
      $                                           M, 1, A( 1, p ), LDA,
      $                                           IERR )
                                     SVA( p ) = AAPP*DSQRT( MAX( ZERO,
@@ -39079,8 +38530,7 @@
      $                            THEN
                                  IF( ( AAQQ.LT.ROOTBIG ) .AND.
      $                               ( AAQQ.GT.ROOTSFMIN ) ) THEN
-                                    SVA( q ) = DNRM2( M, A( 1, q ),
-     $                                   1 )*
+                                    SVA( q ) = DNRM2( M, A( 1, q ), 1 )*
      $                                         D( q )
                                  ELSE
                                     T = ZERO
@@ -39490,8 +38940,7 @@
       EXTERNAL           IDAMAX, LSAME, DDOT, DNRM2
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DAXPY, DCOPY, DLASCL, DLASSQ, DROTM,
-     $                   DSWAP,
+      EXTERNAL           DAXPY, DCOPY, DLASCL, DLASSQ, DROTM, DSWAP,
      $                   XERBLA
 *     ..
 *     .. Executable Statements ..
@@ -39637,15 +39086,12 @@
                                  ROTOK = ( SMALL*AAQQ ).LE.AAPP
                               END IF
                               IF( AAPP.LT.( BIG / AAQQ ) ) THEN
-                                 AAPQ = ( DDOT( M, A( 1, p ), 1,
-     $                                    A( 1,
+                                 AAPQ = ( DDOT( M, A( 1, p ), 1, A( 1,
      $                                  q ), 1 )*D( p )*D( q ) / AAQQ )
      $                                  / AAPP
                               ELSE
-                                 CALL DCOPY( M, A( 1, p ), 1, WORK,
-     $                                       1 )
-                                 CALL DLASCL( 'G', 0, 0, AAPP,
-     $                                        D( p ),
+                                 CALL DCOPY( M, A( 1, p ), 1, WORK, 1 )
+                                 CALL DLASCL( 'G', 0, 0, AAPP, D( p ),
      $                                        M, 1, WORK, LDA, IERR )
                                  AAPQ = DDOT( M, WORK, 1, A( 1, q ),
      $                                  1 )*D( q ) / AAQQ
@@ -39657,15 +39103,12 @@
                                  ROTOK = AAQQ.LE.( AAPP / SMALL )
                               END IF
                               IF( AAPP.GT.( SMALL / AAQQ ) ) THEN
-                                 AAPQ = ( DDOT( M, A( 1, p ), 1,
-     $                                    A( 1,
+                                 AAPQ = ( DDOT( M, A( 1, p ), 1, A( 1,
      $                                  q ), 1 )*D( p )*D( q ) / AAQQ )
      $                                  / AAPP
                               ELSE
-                                 CALL DCOPY( M, A( 1, q ), 1, WORK,
-     $                                       1 )
-                                 CALL DLASCL( 'G', 0, 0, AAQQ,
-     $                                        D( q ),
+                                 CALL DCOPY( M, A( 1, q ), 1, WORK, 1 )
+                                 CALL DLASCL( 'G', 0, 0, AAQQ, D( q ),
      $                                        M, 1, WORK, LDA, IERR )
                                  AAPQ = DDOT( M, WORK, 1, A( 1, p ),
      $                                  1 )*D( p ) / AAPP
@@ -39729,8 +39172,7 @@
                                           FASTR( 4 ) = -T*AQOAP
                                           D( p ) = D( p )*CS
                                           D( q ) = D( q )*CS
-                                          CALL DROTM( M, A( 1, p ),
-     $                                                1,
+                                          CALL DROTM( M, A( 1, p ), 1,
      $                                                A( 1, q ), 1,
      $                                                FASTR )
                                           IF( RSVEC )CALL DROTM( MVL,
@@ -39744,8 +39186,7 @@
      $                                                A( 1, p ), 1,
      $                                                A( 1, q ), 1 )
                                           IF( RSVEC ) THEN
-                                             CALL DAXPY( MVL,
-     $                                                   -T*AQOAP,
+                                             CALL DAXPY( MVL, -T*AQOAP,
      $                                                   V( 1, q ), 1,
      $                                                   V( 1, p ), 1 )
                                              CALL DAXPY( MVL,
@@ -39761,13 +39202,11 @@
                                           CALL DAXPY( M, T*APOAQ,
      $                                                A( 1, p ), 1,
      $                                                A( 1, q ), 1 )
-                                          CALL DAXPY( M,
-     $                                                -CS*SN*AQOAP,
+                                          CALL DAXPY( M, -CS*SN*AQOAP,
      $                                                A( 1, q ), 1,
      $                                                A( 1, p ), 1 )
                                           IF( RSVEC ) THEN
-                                             CALL DAXPY( MVL,
-     $                                                   T*APOAQ,
+                                             CALL DAXPY( MVL, T*APOAQ,
      $                                                   V( 1, p ), 1,
      $                                                   V( 1, q ), 1 )
                                              CALL DAXPY( MVL,
@@ -39782,8 +39221,7 @@
                                              CALL DAXPY( M, -T*AQOAP,
      $                                                   A( 1, q ), 1,
      $                                                   A( 1, p ), 1 )
-                                             CALL DAXPY( M,
-     $                                                   CS*SN*APOAQ,
+                                             CALL DAXPY( M, CS*SN*APOAQ,
      $                                                   A( 1, p ), 1,
      $                                                   A( 1, q ), 1 )
                                              D( p ) = D( p )*CS
@@ -39824,42 +39262,34 @@
 
                               ELSE
                                  IF( AAPP.GT.AAQQ ) THEN
-                                    CALL DCOPY( M, A( 1, p ), 1,
-     $                                          WORK,
+                                    CALL DCOPY( M, A( 1, p ), 1, WORK,
      $                                          1 )
-                                    CALL DLASCL( 'G', 0, 0, AAPP,
-     $                                           ONE,
+                                    CALL DLASCL( 'G', 0, 0, AAPP, ONE,
      $                                           M, 1, WORK, LDA, IERR )
-                                    CALL DLASCL( 'G', 0, 0, AAQQ,
-     $                                           ONE,
+                                    CALL DLASCL( 'G', 0, 0, AAQQ, ONE,
      $                                           M, 1, A( 1, q ), LDA,
      $                                           IERR )
                                     TEMP1 = -AAPQ*D( p ) / D( q )
                                     CALL DAXPY( M, TEMP1, WORK, 1,
      $                                          A( 1, q ), 1 )
-                                    CALL DLASCL( 'G', 0, 0, ONE,
-     $                                           AAQQ,
+                                    CALL DLASCL( 'G', 0, 0, ONE, AAQQ,
      $                                           M, 1, A( 1, q ), LDA,
      $                                           IERR )
                                     SVA( q ) = AAQQ*DSQRT( MAX( ZERO,
      $                                         ONE-AAPQ*AAPQ ) )
                                     MXSINJ = MAX( MXSINJ, SFMIN )
                                  ELSE
-                                    CALL DCOPY( M, A( 1, q ), 1,
-     $                                          WORK,
+                                    CALL DCOPY( M, A( 1, q ), 1, WORK,
      $                                          1 )
-                                    CALL DLASCL( 'G', 0, 0, AAQQ,
-     $                                           ONE,
+                                    CALL DLASCL( 'G', 0, 0, AAQQ, ONE,
      $                                           M, 1, WORK, LDA, IERR )
-                                    CALL DLASCL( 'G', 0, 0, AAPP,
-     $                                           ONE,
+                                    CALL DLASCL( 'G', 0, 0, AAPP, ONE,
      $                                           M, 1, A( 1, p ), LDA,
      $                                           IERR )
                                     TEMP1 = -AAPQ*D( q ) / D( p )
                                     CALL DAXPY( M, TEMP1, WORK, 1,
      $                                          A( 1, p ), 1 )
-                                    CALL DLASCL( 'G', 0, 0, ONE,
-     $                                           AAPP,
+                                    CALL DLASCL( 'G', 0, 0, ONE, AAPP,
      $                                           M, 1, A( 1, p ), LDA,
      $                                           IERR )
                                     SVA( p ) = AAPP*DSQRT( MAX( ZERO,
@@ -39875,8 +39305,7 @@
      $                            THEN
                                  IF( ( AAQQ.LT.ROOTBIG ) .AND.
      $                               ( AAQQ.GT.ROOTSFMIN ) ) THEN
-                                    SVA( q ) = DNRM2( M, A( 1, q ),
-     $                                   1 )*
+                                    SVA( q ) = DNRM2( M, A( 1, q ), 1 )*
      $                                         D( q )
                                  ELSE
                                     T = ZERO
@@ -40249,8 +39678,7 @@
 *
 *           Multiply by inv(L**T)*inv(U**T).
 *
-            CALL DGTTRS( 'Transpose', N, 1, DL, D, DU, DU2, IPIV,
-     $                   WORK,
+            CALL DGTTRS( 'Transpose', N, 1, DL, D, DU, DU2, IPIV, WORK,
      $                   N, INFO )
          END IF
          GO TO 20
@@ -40471,8 +39899,7 @@
 *> \ingroup gtrfs
 *
 *  =====================================================================
-      SUBROUTINE DGTRFS( TRANS, N, NRHS, DL, D, DU, DLF, DF, DUF,
-     $                   DU2,
+      SUBROUTINE DGTRFS( TRANS, N, NRHS, DL, D, DU, DLF, DF, DUF, DU2,
      $                   IPIV, B, LDB, X, LDX, FERR, BERR, WORK, IWORK,
      $                   INFO )
 *
@@ -40513,8 +39940,7 @@
       INTEGER            ISAVE( 3 )
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DAXPY, DCOPY, DGTTRS, DLACN2, DLAGTM,
-     $                   XERBLA
+      EXTERNAL           DAXPY, DCOPY, DGTTRS, DLACN2, DLAGTM, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          ABS, MAX
@@ -40587,8 +40013,7 @@
 *        where op(A) = A, A**T, or A**H, depending on TRANS.
 *
          CALL DCOPY( N, B( 1, J ), 1, WORK( N+1 ), 1 )
-         CALL DLAGTM( TRANS, N, 1, -ONE, DL, D, DU, X( 1, J ), LDX,
-     $                ONE,
+         CALL DLAGTM( TRANS, N, 1, -ONE, DL, D, DU, X( 1, J ), LDX, ONE,
      $                WORK( N+1 ), N )
 *
 *        Compute abs(op(A))*abs(x) + abs(b) for use in the backward
@@ -40699,8 +40124,7 @@
 *
          KASE = 0
    70    CONTINUE
-         CALL DLACN2( N, WORK( 2*N+1 ), WORK( N+1 ), IWORK,
-     $                FERR( J ),
+         CALL DLACN2( N, WORK( 2*N+1 ), WORK( N+1 ), IWORK, FERR( J ),
      $                KASE, ISAVE )
          IF( KASE.NE.0 ) THEN
             IF( KASE.EQ.1 ) THEN
@@ -41360,8 +40784,7 @@
 *> \ingroup gtsvx
 *
 *  =====================================================================
-      SUBROUTINE DGTSVX( FACT, TRANS, N, NRHS, DL, D, DU, DLF, DF,
-     $                   DUF,
+      SUBROUTINE DGTSVX( FACT, TRANS, N, NRHS, DL, D, DU, DLF, DF, DUF,
      $                   DU2, IPIV, B, LDB, X, LDX, RCOND, FERR, BERR,
      $                   WORK, IWORK, INFO )
 *
@@ -41398,8 +40821,7 @@
       EXTERNAL           LSAME, DLAMCH, DLANGT
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DCOPY, DGTCON, DGTRFS, DGTTRF, DGTTRS,
-     $                   DLACPY,
+      EXTERNAL           DCOPY, DGTCON, DGTRFS, DGTTRF, DGTTRS, DLACPY,
      $                   XERBLA
 *     ..
 *     .. Intrinsic Functions ..
@@ -41459,8 +40881,7 @@
 *
 *     Compute the reciprocal of the condition number of A.
 *
-      CALL DGTCON( NORM, N, DLF, DF, DUF, DU2, IPIV, ANORM, RCOND,
-     $             WORK,
+      CALL DGTCON( NORM, N, DLF, DF, DUF, DU2, IPIV, ANORM, RCOND, WORK,
      $             IWORK, INFO )
 *
 *     Compute the solution vectors X.
@@ -41472,8 +40893,7 @@
 *     Use iterative refinement to improve the computed solutions and
 *     compute error bounds and backward error estimates for them.
 *
-      CALL DGTRFS( TRANS, N, NRHS, DL, D, DU, DLF, DF, DUF, DU2,
-     $             IPIV,
+      CALL DGTRFS( TRANS, N, NRHS, DL, D, DU, DLF, DF, DUF, DU2, IPIV,
      $             B, LDB, X, LDX, FERR, BERR, WORK, IWORK, INFO )
 *
 *     Set INFO = N+1 if the matrix is singular to working precision.
@@ -41855,8 +41275,7 @@
 *> \ingroup gttrs
 *
 *  =====================================================================
-      SUBROUTINE DGTTRS( TRANS, N, NRHS, DL, D, DU, DU2, IPIV, B,
-     $                   LDB,
+      SUBROUTINE DGTTRS( TRANS, N, NRHS, DL, D, DU, DU2, IPIV, B, LDB,
      $                   INFO )
 *
 *  -- LAPACK computational routine --
@@ -41933,8 +41352,7 @@
       ELSE
          DO 10 J = 1, NRHS, NB
             JB = MIN( NRHS-J+1, NB )
-            CALL DGTTS2( ITRANS, N, JB, DL, D, DU, DU2, IPIV, B( 1,
-     $                   J ),
+            CALL DGTTS2( ITRANS, N, JB, DL, D, DU, DU2, IPIV, B( 1, J ),
      $                   LDB )
    10    CONTINUE
       END IF
@@ -42068,8 +41486,7 @@
 *> \ingroup gtts2
 *
 *  =====================================================================
-      SUBROUTINE DGTTS2( ITRANS, N, NRHS, DL, D, DU, DU2, IPIV, B,
-     $                   LDB )
+      SUBROUTINE DGTTS2( ITRANS, N, NRHS, DL, D, DU, DU2, IPIV, B, LDB )
 *
 *  -- LAPACK computational routine --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -42514,8 +41931,7 @@
 *> \endverbatim
 *>
 *  =====================================================================
-      SUBROUTINE DHGEQZ( JOB, COMPQ, COMPZ, N, ILO, IHI, H, LDH, T,
-     $                   LDT,
+      SUBROUTINE DHGEQZ( JOB, COMPQ, COMPZ, N, ILO, IHI, H, LDH, T, LDT,
      $                   ALPHAR, ALPHAI, BETA, Q, LDQ, Z, LDZ, WORK,
      $                   LWORK, INFO )
 *
@@ -42564,12 +41980,10 @@
 *     .. External Functions ..
       LOGICAL            LSAME
       DOUBLE PRECISION   DLAMCH, DLANHS, DLAPY2, DLAPY3
-      EXTERNAL           LSAME, DLAMCH, DLANHS, DLAPY2,
-     $                   DLAPY3
+      EXTERNAL           LSAME, DLAMCH, DLANHS, DLAPY2, DLAPY3
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DLAG2, DLARFG, DLARTG, DLASET, DLASV2,
-     $                   DROT,
+      EXTERNAL           DLAG2, DLARFG, DLARTG, DLASET, DLASV2, DROT,
      $                   XERBLA
 *     ..
 *     .. Intrinsic Functions ..
@@ -42816,8 +42230,7 @@
                      CALL DROT( ILASTM-JCH, T( JCH, JCH+1 ), LDT,
      $                          T( JCH+1, JCH+1 ), LDT, C, S )
                      IF( ILQ )
-     $                  CALL DROT( N, Q( 1, JCH ), 1, Q( 1, JCH+1 ),
-     $                             1,
+     $                  CALL DROT( N, Q( 1, JCH ), 1, Q( 1, JCH+1 ), 1,
      $                             C, S )
                      IF( ILAZR2 )
      $                  H( JCH, JCH-1 ) = H( JCH, JCH-1 )*C
@@ -42844,14 +42257,12 @@
      $                            T( JCH, JCH+1 ) )
                      T( JCH+1, JCH+1 ) = ZERO
                      IF( JCH.LT.ILASTM-1 )
-     $                  CALL DROT( ILASTM-JCH-1, T( JCH, JCH+2 ),
-     $                             LDT,
+     $                  CALL DROT( ILASTM-JCH-1, T( JCH, JCH+2 ), LDT,
      $                             T( JCH+1, JCH+2 ), LDT, C, S )
                      CALL DROT( ILASTM-JCH+2, H( JCH, JCH-1 ), LDH,
      $                          H( JCH+1, JCH-1 ), LDH, C, S )
                      IF( ILQ )
-     $                  CALL DROT( N, Q( 1, JCH ), 1, Q( 1, JCH+1 ),
-     $                             1,
+     $                  CALL DROT( N, Q( 1, JCH ), 1, Q( 1, JCH+1 ), 1,
      $                             C, S )
                      TEMP = H( JCH+1, JCH )
                      CALL DLARTG( TEMP, H( JCH+1, JCH-1 ), C, S,
@@ -42862,8 +42273,7 @@
                      CALL DROT( JCH-IFRSTM, T( IFRSTM, JCH ), 1,
      $                          T( IFRSTM, JCH-1 ), 1, C, S )
                      IF( ILZ )
-     $                  CALL DROT( N, Z( 1, JCH ), 1, Z( 1, JCH-1 ),
-     $                             1,
+     $                  CALL DROT( N, Z( 1, JCH ), 1, Z( 1, JCH-1 ), 1,
      $                             C, S )
    50             CONTINUE
                   GO TO 70
@@ -42898,8 +42308,7 @@
          CALL DROT( ILAST-IFRSTM, T( IFRSTM, ILAST ), 1,
      $              T( IFRSTM, ILAST-1 ), 1, C, S )
          IF( ILZ )
-     $      CALL DROT( N, Z( 1, ILAST ), 1, Z( 1, ILAST-1 ), 1, C,
-     $                 S )
+     $      CALL DROT( N, Z( 1, ILAST ), 1, Z( 1, ILAST-1 ), 1, C, S )
 *
 *        H(ILAST,ILAST-1)=0 -- Standardize B, set ALPHAR, ALPHAI,
 *                              and BETA
@@ -43131,12 +42540,10 @@
      $                    T( IFRSTM, ILAST ), 1, CR, SR )
 *
             IF( ILQ )
-     $         CALL DROT( N, Q( 1, ILAST-1 ), 1, Q( 1, ILAST ), 1,
-     $                    CL,
+     $         CALL DROT( N, Q( 1, ILAST-1 ), 1, Q( 1, ILAST ), 1, CL,
      $                    SL )
             IF( ILZ )
-     $         CALL DROT( N, Z( 1, ILAST-1 ), 1, Z( 1, ILAST ), 1,
-     $                    CR,
+     $         CALL DROT( N, Z( 1, ILAST-1 ), 1, Z( 1, ILAST ), 1, CR,
      $                    SR )
 *
             T( ILAST-1, ILAST-1 ) = B11
@@ -43855,8 +43262,7 @@
 *> \endverbatim
 *>
 *  =====================================================================
-      SUBROUTINE DHSEIN( SIDE, EIGSRC, INITV, SELECT, N, H, LDH, WR,
-     $                   WI,
+      SUBROUTINE DHSEIN( SIDE, EIGSRC, INITV, SELECT, N, H, LDH, WR, WI,
      $                   VL, LDVL, VR, LDVR, MM, M, WORK, IFAILL,
      $                   IFAILR, INFO )
 *
@@ -44056,8 +43462,7 @@
 *
 *              Compute left eigenvector.
 *
-               CALL DLAEIN( .FALSE., NOINIT, N-KL+1, H( KL, KL ),
-     $                      LDH,
+               CALL DLAEIN( .FALSE., NOINIT, N-KL+1, H( KL, KL ), LDH,
      $                      WKR, WKI, VL( KL, KSR ), VL( KL, KSI ),
      $                      WORK, LDWORK, WORK( N*N+N+1 ), EPS3, SMLNUM,
      $                      BIGNUM, IINFO )
@@ -44488,8 +43893,7 @@
       EXTERNAL           ILAENV, LSAME
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DLACPY, DLAHQR, DLAQR0, DLASET,
-     $                   XERBLA
+      EXTERNAL           DLACPY, DLAHQR, DLAQR0, DLASET, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          DBLE, MAX, MIN
@@ -44582,15 +43986,13 @@
 *        ==== DLAQR0 for big matrices; DLAHQR for small ones ====
 *
          IF( N.GT.NMIN ) THEN
-            CALL DLAQR0( WANTT, WANTZ, N, ILO, IHI, H, LDH, WR, WI,
-     $                   ILO,
+            CALL DLAQR0( WANTT, WANTZ, N, ILO, IHI, H, LDH, WR, WI, ILO,
      $                   IHI, Z, LDZ, WORK, LWORK, INFO )
          ELSE
 *
 *           ==== Small matrix ====
 *
-            CALL DLAHQR( WANTT, WANTZ, N, ILO, IHI, H, LDH, WR, WI,
-     $                   ILO,
+            CALL DLAHQR( WANTT, WANTZ, N, ILO, IHI, H, LDH, WR, WI, ILO,
      $                   IHI, Z, LDZ, INFO )
 *
             IF( INFO.GT.0 ) THEN
@@ -44605,8 +44007,7 @@
 *                 ==== Larger matrices have enough subdiagonal scratch
 *                 .    space to call DLAQR0 directly. ====
 *
-                  CALL DLAQR0( WANTT, WANTZ, N, ILO, KBOT, H, LDH,
-     $                         WR,
+                  CALL DLAQR0( WANTT, WANTZ, N, ILO, KBOT, H, LDH, WR,
      $                         WI, ILO, IHI, Z, LDZ, WORK, LWORK, INFO )
 *
                ELSE
@@ -44618,11 +44019,9 @@
 *
                   CALL DLACPY( 'A', N, N, H, LDH, HL, NL )
                   HL( N+1, N ) = ZERO
-                  CALL DLASET( 'A', NL, NL-N, ZERO, ZERO, HL( 1,
-     $                         N+1 ),
+                  CALL DLASET( 'A', NL, NL-N, ZERO, ZERO, HL( 1, N+1 ),
      $                         NL )
-                  CALL DLAQR0( WANTT, WANTZ, NL, ILO, KBOT, HL, NL,
-     $                         WR,
+                  CALL DLAQR0( WANTT, WANTZ, NL, ILO, KBOT, HL, NL, WR,
      $                         WI, ILO, IHI, Z, LDZ, WORKL, NL, INFO )
                   IF( WANTT .OR. INFO.NE.0 )
      $               CALL DLACPY( 'A', N, N, HL, NL, H, LDH )
@@ -45024,8 +44423,7 @@
 *> \endverbatim
 *>
 *  =====================================================================
-      SUBROUTINE DLABRD( M, N, NB, A, LDA, D, E, TAUQ, TAUP, X, LDX,
-     $                   Y,
+      SUBROUTINE DLABRD( M, N, NB, A, LDA, D, E, TAUQ, TAUP, X, LDX, Y,
      $                   LDY )
 *
 *  -- LAPACK auxiliary routine --
@@ -45087,14 +44485,11 @@
 *
                CALL DGEMV( 'Transpose', M-I+1, N-I, ONE, A( I, I+1 ),
      $                     LDA, A( I, I ), 1, ZERO, Y( I+1, I ), 1 )
-               CALL DGEMV( 'Transpose', M-I+1, I-1, ONE, A( I, 1 ),
-     $                     LDA,
+               CALL DGEMV( 'Transpose', M-I+1, I-1, ONE, A( I, 1 ), LDA,
      $                     A( I, I ), 1, ZERO, Y( 1, I ), 1 )
-               CALL DGEMV( 'No transpose', N-I, I-1, -ONE, Y( I+1,
-     $                     1 ),
+               CALL DGEMV( 'No transpose', N-I, I-1, -ONE, Y( I+1, 1 ),
      $                     LDY, Y( 1, I ), 1, ONE, Y( I+1, I ), 1 )
-               CALL DGEMV( 'Transpose', M-I+1, I-1, ONE, X( I, 1 ),
-     $                     LDX,
+               CALL DGEMV( 'Transpose', M-I+1, I-1, ONE, X( I, 1 ), LDX,
      $                     A( I, I ), 1, ZERO, Y( 1, I ), 1 )
                CALL DGEMV( 'Transpose', I-1, N-I, -ONE, A( 1, I+1 ),
      $                     LDA, Y( 1, I ), 1, ONE, Y( I+1, I ), 1 )
@@ -45116,19 +44511,15 @@
 *
 *              Compute X(i+1:m,i)
 *
-               CALL DGEMV( 'No transpose', M-I, N-I, ONE, A( I+1,
-     $                     I+1 ),
+               CALL DGEMV( 'No transpose', M-I, N-I, ONE, A( I+1, I+1 ),
      $                     LDA, A( I, I+1 ), LDA, ZERO, X( I+1, I ), 1 )
-               CALL DGEMV( 'Transpose', N-I, I, ONE, Y( I+1, 1 ),
-     $                     LDY,
+               CALL DGEMV( 'Transpose', N-I, I, ONE, Y( I+1, 1 ), LDY,
      $                     A( I, I+1 ), LDA, ZERO, X( 1, I ), 1 )
                CALL DGEMV( 'No transpose', M-I, I, -ONE, A( I+1, 1 ),
      $                     LDA, X( 1, I ), 1, ONE, X( I+1, I ), 1 )
-               CALL DGEMV( 'No transpose', I-1, N-I, ONE, A( 1,
-     $                     I+1 ),
+               CALL DGEMV( 'No transpose', I-1, N-I, ONE, A( 1, I+1 ),
      $                     LDA, A( I, I+1 ), LDA, ZERO, X( 1, I ), 1 )
-               CALL DGEMV( 'No transpose', M-I, I-1, -ONE, X( I+1,
-     $                     1 ),
+               CALL DGEMV( 'No transpose', M-I, I-1, -ONE, X( I+1, 1 ),
      $                     LDX, X( 1, I ), 1, ONE, X( I+1, I ), 1 )
                CALL DSCAL( M-I, TAUP( I ), X( I+1, I ), 1 )
             END IF
@@ -45143,14 +44534,12 @@
 *
             CALL DGEMV( 'No transpose', N-I+1, I-1, -ONE, Y( I, 1 ),
      $                  LDY, A( I, 1 ), LDA, ONE, A( I, I ), LDA )
-            CALL DGEMV( 'Transpose', I-1, N-I+1, -ONE, A( 1, I ),
-     $                  LDA,
+            CALL DGEMV( 'Transpose', I-1, N-I+1, -ONE, A( 1, I ), LDA,
      $                  X( I, 1 ), LDX, ONE, A( I, I ), LDA )
 *
 *           Generate reflection P(i) to annihilate A(i,i+1:n)
 *
-            CALL DLARFG( N-I+1, A( I, I ), A( I, MIN( I+1, N ) ),
-     $                   LDA,
+            CALL DLARFG( N-I+1, A( I, I ), A( I, MIN( I+1, N ) ), LDA,
      $                   TAUP( I ) )
             D( I ) = A( I, I )
             IF( I.LT.M ) THEN
@@ -45158,35 +44547,28 @@
 *
 *              Compute X(i+1:m,i)
 *
-               CALL DGEMV( 'No transpose', M-I, N-I+1, ONE, A( I+1,
-     $                     I ),
+               CALL DGEMV( 'No transpose', M-I, N-I+1, ONE, A( I+1, I ),
      $                     LDA, A( I, I ), LDA, ZERO, X( I+1, I ), 1 )
-               CALL DGEMV( 'Transpose', N-I+1, I-1, ONE, Y( I, 1 ),
-     $                     LDY,
+               CALL DGEMV( 'Transpose', N-I+1, I-1, ONE, Y( I, 1 ), LDY,
      $                     A( I, I ), LDA, ZERO, X( 1, I ), 1 )
-               CALL DGEMV( 'No transpose', M-I, I-1, -ONE, A( I+1,
-     $                     1 ),
+               CALL DGEMV( 'No transpose', M-I, I-1, -ONE, A( I+1, 1 ),
      $                     LDA, X( 1, I ), 1, ONE, X( I+1, I ), 1 )
-               CALL DGEMV( 'No transpose', I-1, N-I+1, ONE, A( 1,
-     $                     I ),
+               CALL DGEMV( 'No transpose', I-1, N-I+1, ONE, A( 1, I ),
      $                     LDA, A( I, I ), LDA, ZERO, X( 1, I ), 1 )
-               CALL DGEMV( 'No transpose', M-I, I-1, -ONE, X( I+1,
-     $                     1 ),
+               CALL DGEMV( 'No transpose', M-I, I-1, -ONE, X( I+1, 1 ),
      $                     LDX, X( 1, I ), 1, ONE, X( I+1, I ), 1 )
                CALL DSCAL( M-I, TAUP( I ), X( I+1, I ), 1 )
 *
 *              Update A(i+1:m,i)
 *
-               CALL DGEMV( 'No transpose', M-I, I-1, -ONE, A( I+1,
-     $                     1 ),
+               CALL DGEMV( 'No transpose', M-I, I-1, -ONE, A( I+1, 1 ),
      $                     LDA, Y( I, 1 ), LDY, ONE, A( I+1, I ), 1 )
                CALL DGEMV( 'No transpose', M-I, I, -ONE, X( I+1, 1 ),
      $                     LDX, A( 1, I ), 1, ONE, A( I+1, I ), 1 )
 *
 *              Generate reflection Q(i) to annihilate A(i+2:m,i)
 *
-               CALL DLARFG( M-I, A( I+1, I ), A( MIN( I+2, M ), I ),
-     $                      1,
+               CALL DLARFG( M-I, A( I+1, I ), A( MIN( I+2, M ), I ), 1,
      $                      TAUQ( I ) )
                E( I ) = A( I+1, I )
                A( I+1, I ) = ONE
@@ -45195,17 +44577,13 @@
 *
                CALL DGEMV( 'Transpose', M-I, N-I, ONE, A( I+1, I+1 ),
      $                     LDA, A( I+1, I ), 1, ZERO, Y( I+1, I ), 1 )
-               CALL DGEMV( 'Transpose', M-I, I-1, ONE, A( I+1, 1 ),
-     $                     LDA,
+               CALL DGEMV( 'Transpose', M-I, I-1, ONE, A( I+1, 1 ), LDA,
      $                     A( I+1, I ), 1, ZERO, Y( 1, I ), 1 )
-               CALL DGEMV( 'No transpose', N-I, I-1, -ONE, Y( I+1,
-     $                     1 ),
+               CALL DGEMV( 'No transpose', N-I, I-1, -ONE, Y( I+1, 1 ),
      $                     LDY, Y( 1, I ), 1, ONE, Y( I+1, I ), 1 )
-               CALL DGEMV( 'Transpose', M-I, I, ONE, X( I+1, 1 ),
-     $                     LDX,
+               CALL DGEMV( 'Transpose', M-I, I, ONE, X( I+1, 1 ), LDX,
      $                     A( I+1, I ), 1, ZERO, Y( 1, I ), 1 )
-               CALL DGEMV( 'Transpose', I, N-I, -ONE, A( 1, I+1 ),
-     $                     LDA,
+               CALL DGEMV( 'Transpose', I, N-I, -ONE, A( 1, I+1 ), LDA,
      $                     Y( 1, I ), 1, ONE, Y( I+1, I ), 1 )
                CALL DSCAL( N-I, TAUQ( I ), Y( I+1, I ), 1 )
             END IF
@@ -47223,8 +46601,7 @@
       DOUBLE PRECISION   TEMP
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DCOPY, DGEMM, DLACPY, DLAED1, DLAED7,
-     $                   DSTEQR,
+      EXTERNAL           DCOPY, DGEMM, DLACPY, DLAED1, DLAED7, DSTEQR,
      $                   XERBLA
 *     ..
 *     .. External Functions ..
@@ -47400,8 +46777,7 @@
      $                      E( SUBMAT+MSD2-1 ), MSD2, WORK,
      $                      IWORK( SUBPBS+1 ), INFO )
             ELSE
-               CALL DLAED7( ICOMPQ, MATSIZ, QSIZ, TLVLS, CURLVL,
-     $                      CURPRB,
+               CALL DLAED7( ICOMPQ, MATSIZ, QSIZ, TLVLS, CURLVL, CURPRB,
      $                      D( SUBMAT ), QSTORE( 1, SUBMAT ), LDQS,
      $                      IWORK( INDXQ+SUBMAT ), E( SUBMAT+MSD2-1 ),
      $                      MSD2, WORK( IQ ), IWORK( IQPTR ),
@@ -47617,8 +46993,7 @@
 *>  Modified by Francoise Tisseur, University of Tennessee
 *>
 *  =====================================================================
-      SUBROUTINE DLAED1( N, D, Q, LDQ, INDXQ, RHO, CUTPNT, WORK,
-     $                   IWORK,
+      SUBROUTINE DLAED1( N, D, Q, LDQ, INDXQ, RHO, CUTPNT, WORK, IWORK,
      $                   INFO )
 *
 *  -- LAPACK computational routine --
@@ -47641,8 +47016,7 @@
      $                   IW, IZ, K, N1, N2, ZPP1
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DCOPY, DLAED2, DLAED3, DLAMRG,
-     $                   XERBLA
+      EXTERNAL           DCOPY, DLAED2, DLAED3, DLAMRG, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MAX, MIN
@@ -47690,8 +47064,7 @@
 *
       CALL DCOPY( CUTPNT, Q( CUTPNT, 1 ), LDQ, WORK( IZ ), 1 )
       ZPP1 = CUTPNT + 1
-      CALL DCOPY( N-CUTPNT, Q( ZPP1, ZPP1 ), LDQ, WORK( IZ+CUTPNT ),
-     $            1 )
+      CALL DCOPY( N-CUTPNT, Q( ZPP1, ZPP1 ), LDQ, WORK( IZ+CUTPNT ), 1 )
 *
 *     Deflate eigenvalues.
 *
@@ -47940,8 +47313,7 @@
 *>  Modified by Francoise Tisseur, University of Tennessee
 *>
 *  =====================================================================
-      SUBROUTINE DLAED2( K, N, N1, D, Q, LDQ, INDXQ, RHO, Z, DLAMBDA,
-     $                   W,
+      SUBROUTINE DLAED2( K, N, N1, D, Q, LDQ, INDXQ, RHO, Z, DLAMBDA, W,
      $                   Q2, INDX, INDXC, INDXP, COLTYP, INFO )
 *
 *  -- LAPACK computational routine --
@@ -47980,8 +47352,7 @@
       EXTERNAL           IDAMAX, DLAMCH, DLAPY2
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DCOPY, DLACPY, DLAMRG, DROT, DSCAL,
-     $                   XERBLA
+      EXTERNAL           DCOPY, DLACPY, DLAMRG, DROT, DSCAL, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          ABS, MAX, MIN, SQRT
@@ -48475,8 +47846,7 @@
       EXTERNAL           DNRM2
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DCOPY, DGEMM, DLACPY, DLAED4, DLASET,
-     $                   XERBLA
+      EXTERNAL           DCOPY, DGEMM, DLACPY, DLAED4, DLASET, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MAX, SIGN, SQRT
@@ -48506,8 +47876,7 @@
 *
 *
       DO 20 J = 1, K
-         CALL DLAED4( K, J, DLAMBDA, W, Q( 1, J ), RHO, D( J ),
-     $                INFO )
+         CALL DLAED4( K, J, DLAMBDA, W, Q( 1, J ), RHO, D( J ), INFO )
 *
 *        If the zero finder fails, the computation is terminated.
 *
@@ -48572,8 +47941,7 @@
       CALL DLACPY( 'A', N23, K, Q( CTOT( 1 )+1, 1 ), LDQ, S, N23 )
       IQ2 = N1*N12 + 1
       IF( N23.NE.0 ) THEN
-         CALL DGEMM( 'N', 'N', N2, K, N23, ONE, Q2( IQ2 ), N2, S,
-     $               N23,
+         CALL DGEMM( 'N', 'N', N2, K, N23, ONE, Q2( IQ2 ), N2, S, N23,
      $               ZERO, Q( N1+1, 1 ), LDQ )
       ELSE
          CALL DLASET( 'A', N2, K, ZERO, ZERO, Q( N1+1, 1 ), LDQ )
@@ -48581,8 +47949,7 @@
 *
       CALL DLACPY( 'A', N12, K, Q, LDQ, S, N12 )
       IF( N12.NE.0 ) THEN
-         CALL DGEMM( 'N', 'N', N1, K, N12, ONE, Q2, N1, S, N12, ZERO,
-     $               Q,
+         CALL DGEMM( 'N', 'N', N1, K, N12, ONE, Q2, N1, S, N12, ZERO, Q,
      $               LDQ )
       ELSE
          CALL DLASET( 'A', N1, K, ZERO, ZERO, Q( 1, 1 ), LDQ )
@@ -49429,8 +48796,7 @@
                      ZZ( 3 ) = Z( IIP1 )*Z( IIP1 )
                   END IF
                END IF
-               CALL DLAED6( NITER, ORGATI, C, DELTA( IIM1 ), ZZ, W,
-     $                      ETA,
+               CALL DLAED6( NITER, ORGATI, C, DELTA( IIM1 ), ZZ, W, ETA,
      $                      INFO )
                IF( INFO.NE.0 )
      $            GO TO 250
@@ -49837,8 +49203,7 @@
 *>     at Berkeley, USA
 *>
 *  =====================================================================
-      SUBROUTINE DLAED6( KNITER, ORGATI, RHO, D, Z, FINIT, TAU,
-     $                   INFO )
+      SUBROUTINE DLAED6( KNITER, ORGATI, RHO, D, Z, FINIT, TAU, INFO )
 *
 *  -- LAPACK computational routine --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -50362,8 +49727,7 @@
 *> at Berkeley, USA
 *
 *  =====================================================================
-      SUBROUTINE DLAED7( ICOMPQ, N, QSIZ, TLVLS, CURLVL, CURPBM, D,
-     $                   Q,
+      SUBROUTINE DLAED7( ICOMPQ, N, QSIZ, TLVLS, CURLVL, CURPBM, D, Q,
      $                   LDQ, INDXQ, RHO, CUTPNT, QSTORE, QPTR, PRMPTR,
      $                   PERM, GIVPTR, GIVCOL, GIVNUM, WORK, IWORK,
      $                   INFO )
@@ -50395,8 +49759,7 @@
      $                   IQ2, IS, IW, IZ, K, LDQ2, N1, N2, PTR
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DGEMM, DLAED8, DLAED9, DLAEDA, DLAMRG,
-     $                   XERBLA
+      EXTERNAL           DGEMM, DLAED8, DLAED9, DLAEDA, DLAMRG, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MAX, MIN
@@ -50485,8 +49848,7 @@
 *     Solve Secular Equation.
 *
       IF( K.NE.0 ) THEN
-         CALL DLAED9( K, 1, K, N, D, WORK( IS ), K, RHO,
-     $                WORK( IDLMDA ),
+         CALL DLAED9( K, 1, K, N, D, WORK( IS ), K, RHO, WORK( IDLMDA ),
      $                WORK( IW ), QSTORE( QPTR( CURR ) ), K, INFO )
          IF( INFO.NE.0 )
      $      GO TO 30
@@ -50791,8 +50153,7 @@
       EXTERNAL           IDAMAX, DLAMCH, DLAPY2
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DCOPY, DLACPY, DLAMRG, DROT, DSCAL,
-     $                   XERBLA
+      EXTERNAL           DCOPY, DLACPY, DLAMRG, DROT, DSCAL, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          ABS, MAX, MIN, SQRT
@@ -50887,8 +50248,7 @@
          ELSE
             DO 60 J = 1, N
                PERM( J ) = INDXQ( INDX( J ) )
-               CALL DCOPY( QSIZ, Q( 1, PERM( J ) ), 1, Q2( 1, J ),
-     $                     1 )
+               CALL DCOPY( QSIZ, Q( 1, PERM( J ) ), 1, Q2( 1, J ), 1 )
    60       CONTINUE
             CALL DLACPY( 'A', QSIZ, N, Q2( 1, 1 ), LDQ2, Q( 1, 1 ),
      $                   LDQ )
@@ -51190,8 +50550,7 @@
 *> at Berkeley, USA
 *
 *  =====================================================================
-      SUBROUTINE DLAED9( K, KSTART, KSTOP, N, D, Q, LDQ, RHO,
-     $                   DLAMBDA,
+      SUBROUTINE DLAED9( K, KSTART, KSTOP, N, D, Q, LDQ, RHO, DLAMBDA,
      $                   W, S, LDS, INFO )
 *
 *  -- LAPACK computational routine --
@@ -51254,8 +50613,7 @@
      $   RETURN
 *
       DO 20 J = KSTART, KSTOP
-         CALL DLAED4( K, J, DLAMBDA, W, Q( 1, J ), RHO, D( J ),
-     $                INFO )
+         CALL DLAED4( K, J, DLAMBDA, W, Q( 1, J ), RHO, D( J ), INFO )
 *
 *        If the zero finder fails, the computation is terminated.
 *
@@ -51472,8 +50830,7 @@
 *> at Berkeley, USA
 *
 *  =====================================================================
-      SUBROUTINE DLAEDA( N, TLVLS, CURLVL, CURPBM, PRMPTR, PERM,
-     $                   GIVPTR,
+      SUBROUTINE DLAEDA( N, TLVLS, CURLVL, CURPBM, PRMPTR, PERM, GIVPTR,
      $                   GIVCOL, GIVNUM, Q, QPTR, Z, ZTEMP, INFO )
 *
 *  -- LAPACK computational routine --
@@ -51598,8 +50955,7 @@
             CALL DGEMV( 'T', BSIZ1, BSIZ1, ONE, Q( QPTR( CURR ) ),
      $                  BSIZ1, ZTEMP( 1 ), 1, ZERO, Z( ZPTR1 ), 1 )
          END IF
-         CALL DCOPY( PSIZ1-BSIZ1, ZTEMP( BSIZ1+1 ), 1,
-     $               Z( ZPTR1+BSIZ1 ),
+         CALL DCOPY( PSIZ1-BSIZ1, ZTEMP( BSIZ1+1 ), 1, Z( ZPTR1+BSIZ1 ),
      $               1 )
          IF( BSIZ2.GT.0 ) THEN
             CALL DGEMV( 'T', BSIZ2, BSIZ2, ONE, Q( QPTR( CURR+1 ) ),
@@ -51785,8 +51141,7 @@
 *> \ingroup laein
 *
 *  =====================================================================
-      SUBROUTINE DLAEIN( RIGHTV, NOINIT, N, H, LDH, WR, WI, VR, VI,
-     $                   B,
+      SUBROUTINE DLAEIN( RIGHTV, NOINIT, N, H, LDH, WR, WI, VR, VI, B,
      $                   LDB, WORK, EPS3, SMLNUM, BIGNUM, INFO )
 *
 *  -- LAPACK auxiliary routine --
@@ -51951,8 +51306,7 @@
 *             or U**T*x = scale*v for a left eigenvector,
 *           overwriting x on v.
 *
-            CALL DLATRS( 'Upper', TRANS, 'Nonunit', NORMIN, N, B,
-     $                   LDB,
+            CALL DLATRS( 'Upper', TRANS, 'Nonunit', NORMIN, N, B, LDB,
      $                   VR, SCALE, WORK, IERR )
             NORMIN = 'Y'
 *
@@ -51998,8 +51352,7 @@
 *
 *           Scale supplied initial vector.
 *
-            NORM = DLAPY2( DNRM2( N, VR, 1 ),
-     $                     DNRM2( N, VI, 1 ) )
+            NORM = DLAPY2( DNRM2( N, VR, 1 ), DNRM2( N, VI, 1 ) )
             REC = ( EPS3*ROOTN ) / MAX( NORM, NRMSML )
             CALL DSCAL( N, REC, VR, 1 )
             CALL DSCAL( N, REC, VI, 1 )
@@ -52190,8 +51543,7 @@
 *
 *                 Divide by diagonal element of B.
 *
-                  CALL DLADIV( XR, XI, B( I, I ), B( I+1, I ),
-     $                         VR( I ),
+                  CALL DLADIV( XR, XI, B( I, I ), B( I+1, I ), VR( I ),
      $                         VI( I ) )
                   VMAX = MAX( ABS( VR( I ) )+ABS( VI( I ) ), VMAX )
                   VCRIT = BIGNUM / VMAX
@@ -52659,8 +52011,7 @@
       EXTERNAL           DLAMCH, DLANGE
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DLACPY, DLANV2, DLARFG, DLARFX, DLARTG,
-     $                   DLASY2,
+      EXTERNAL           DLACPY, DLANV2, DLARFG, DLARFX, DLARTG, DLASY2,
      $                   DROT
 *     ..
 *     .. Intrinsic Functions ..
@@ -52695,8 +52046,7 @@
 *        Apply transformation to the matrix T.
 *
          IF( J3.LE.N )
-     $      CALL DROT( N-J1-1, T( J1, J3 ), LDT, T( J2, J3 ), LDT,
-     $                 CS,
+     $      CALL DROT( N-J1-1, T( J1, J3 ), LDT, T( J2, J3 ), LDT, CS,
      $                 SN )
          CALL DROT( J1-1, T( 1, J1 ), 1, T( 1, J2 ), 1, CS, SN )
 *
@@ -52764,8 +52114,7 @@
 *
 *        Accept swap: apply transformation to the entire matrix T.
 *
-         CALL DLARFX( 'L', 3, N-J1+1, U, TAU, T( J1, J1 ), LDT,
-     $                WORK )
+         CALL DLARFX( 'L', 3, N-J1+1, U, TAU, T( J1, J1 ), LDT, WORK )
          CALL DLARFX( 'R', J2, 3, U, TAU, T( 1, J1 ), LDT, WORK )
 *
          T( J3, J1 ) = ZERO
@@ -52859,11 +52208,9 @@
 *
 *        Accept swap: apply transformation to the entire matrix T.
 *
-         CALL DLARFX( 'L', 3, N-J1+1, U1, TAU1, T( J1, J1 ), LDT,
-     $                WORK )
+         CALL DLARFX( 'L', 3, N-J1+1, U1, TAU1, T( J1, J1 ), LDT, WORK )
          CALL DLARFX( 'R', J4, 3, U1, TAU1, T( 1, J1 ), LDT, WORK )
-         CALL DLARFX( 'L', 3, N-J1+1, U2, TAU2, T( J2, J1 ), LDT,
-     $                WORK )
+         CALL DLARFX( 'L', 3, N-J1+1, U2, TAU2, T( J2, J1 ), LDT, WORK )
          CALL DLARFX( 'R', J4, 3, U2, TAU2, T( 1, J2 ), LDT, WORK )
 *
          T( J3, J1 ) = ZERO
@@ -52887,8 +52234,7 @@
 *
             CALL DLANV2( T( J1, J1 ), T( J1, J2 ), T( J2, J1 ),
      $                   T( J2, J2 ), WR1, WI1, WR2, WI2, CS, SN )
-            CALL DROT( N-J1-1, T( J1, J1+2 ), LDT, T( J2, J1+2 ),
-     $                 LDT,
+            CALL DROT( N-J1-1, T( J1, J1+2 ), LDT, T( J2, J1+2 ), LDT,
      $                 CS, SN )
             CALL DROT( J1-1, T( 1, J1 ), 1, T( 1, J2 ), 1, CS, SN )
             IF( WANTQ )
@@ -53448,8 +52794,7 @@
 *> \ingroup lags2
 *
 *  =====================================================================
-      SUBROUTINE DLAGS2( UPPER, A1, A2, A3, B1, B2, B3, CSU, SNU,
-     $                   CSV,
+      SUBROUTINE DLAGS2( UPPER, A1, A2, A3, B1, B2, B3, CSU, SNU, CSV,
      $                   SNV, CSQ, SNQ )
 *
 *  -- LAPACK auxiliary routine --
@@ -54064,8 +53409,7 @@
 *> \ingroup lagtm
 *
 *  =====================================================================
-      SUBROUTINE DLAGTM( TRANS, N, NRHS, ALPHA, DL, D, DU, X, LDX,
-     $                   BETA,
+      SUBROUTINE DLAGTM( TRANS, N, NRHS, ALPHA, DL, D, DU, X, LDX, BETA,
      $                   B, LDB )
 *
 *  -- LAPACK auxiliary routine --
@@ -54734,8 +54078,7 @@
 *>     Mark Fahey, Department of Mathematics, Univ. of Kentucky, USA
 *
 *  =====================================================================
-      SUBROUTINE DLAGV2( A, LDA, B, LDB, ALPHAR, ALPHAI, BETA, CSL,
-     $                   SNL,
+      SUBROUTINE DLAGV2( A, LDA, B, LDB, ALPHAR, ALPHAI, BETA, CSL, SNL,
      $                   CSR, SNR )
 *
 *  -- LAPACK auxiliary routine --
@@ -54836,8 +54179,7 @@
 *
 *        B is nonsingular, first compute the eigenvalues of (A,B)
 *
-         CALL DLAG2( A, LDA, B, LDB, SAFMIN, SCALE1, SCALE2, WR1,
-     $               WR2,
+         CALL DLAG2( A, LDA, B, LDB, SAFMIN, SCALE1, SCALE2, WR1, WR2,
      $               WI )
 *
          IF( WI.EQ.ZERO ) THEN
@@ -55550,15 +54892,13 @@
             IF( I2.GT.I )
      $         CALL DROT( I2-I, H( I-1, I+1 ), LDH, H( I, I+1 ), LDH,
      $                    CS, SN )
-            CALL DROT( I-I1-1, H( I1, I-1 ), 1, H( I1, I ), 1, CS,
-     $                 SN )
+            CALL DROT( I-I1-1, H( I1, I-1 ), 1, H( I1, I ), 1, CS, SN )
          END IF
          IF( WANTZ ) THEN
 *
 *           Apply the transformation to Z.
 *
-            CALL DROT( NZ, Z( ILOZ, I-1 ), 1, Z( ILOZ, I ), 1, CS,
-     $                 SN )
+            CALL DROT( NZ, Z( ILOZ, I-1 ), 1, Z( ILOZ, I ), 1, CS, SN )
          END IF
       END IF
 *     reset deflation counter
@@ -55800,8 +55140,7 @@
 *
 *           Update I-th column of A - Y * V**T
 *
-            CALL DGEMV( 'NO TRANSPOSE', N-K, I-1, -ONE, Y(K+1,1),
-     $                  LDY,
+            CALL DGEMV( 'NO TRANSPOSE', N-K, I-1, -ONE, Y(K+1,1), LDY,
      $                  A( K+I-1, 1 ), LDA, ONE, A( K+1, I ), 1 )
 *
 *           Apply I - V * T**T * V**T to this column (call it b) from the
@@ -55850,8 +55189,7 @@
 *        Generate the elementary reflector H(I) to annihilate
 *        A(K+I+1:N,I)
 *
-         CALL DLARFG( N-K-I+1, A( K+I, I ), A( MIN( K+I+1, N ), I ),
-     $                1,
+         CALL DLARFG( N-K-I+1, A( K+I, I ), A( MIN( K+I+1, N ), I ), 1,
      $                TAU( I ) )
          EI = A( K+I, I )
          A( K+I, I ) = ONE
@@ -56123,8 +55461,8 @@
 *           w := V1**T * b1
 *
             CALL DCOPY( I-1, A( K+1, I ), 1, T( 1, NB ), 1 )
-            CALL DTRMV( 'Lower', 'Transpose', 'Unit', I-1,
-     $                  A( K+1, 1 ), LDA, T( 1, NB ), 1 )
+            CALL DTRMV( 'Lower', 'Transpose', 'Unit', I-1, A( K+1, 1 ),
+     $                  LDA, T( 1, NB ), 1 )
 *
 *           w := w + V2**T *b2
 *
@@ -56138,9 +55476,8 @@
 *
 *           b2 := b2 - V2*w
 *
-            CALL DGEMV( 'No transpose', N-K-I+1, I-1, -ONE,
-     $                  A( K+I, 1 ), LDA, T( 1, NB ), 1, ONE,
-     $                  A( K+I, I ), 1 )
+            CALL DGEMV( 'No transpose', N-K-I+1, I-1, -ONE, A( K+I, 1 ),
+     $                  LDA, T( 1, NB ), 1, ONE, A( K+I, I ), 1 )
 *
 *           b1 := b1 - V1*w
 *
@@ -56161,12 +55498,12 @@
 *
 *        Compute  Y(1:n,i)
 *
-         CALL DGEMV( 'No transpose', N, N-K-I+1, ONE, A( 1, I+1 ),
-     $               LDA, A( K+I, I ), 1, ZERO, Y( 1, I ), 1 )
-         CALL DGEMV( 'Transpose', N-K-I+1, I-1, ONE, A( K+I, 1 ),
-     $               LDA, A( K+I, I ), 1, ZERO, T( 1, I ), 1 )
-         CALL DGEMV( 'No transpose', N, I-1, -ONE, Y, LDY, T( 1, I ),
-     $               1, ONE, Y( 1, I ), 1 )
+         CALL DGEMV( 'No transpose', N, N-K-I+1, ONE, A( 1, I+1 ), LDA,
+     $               A( K+I, I ), 1, ZERO, Y( 1, I ), 1 )
+         CALL DGEMV( 'Transpose', N-K-I+1, I-1, ONE, A( K+I, 1 ), LDA,
+     $               A( K+I, I ), 1, ZERO, T( 1, I ), 1 )
+         CALL DGEMV( 'No transpose', N, I-1, -ONE, Y, LDY, T( 1, I ), 1,
+     $               ONE, Y( 1, I ), 1 )
          CALL DSCAL( N, TAU( I ), Y( 1, I ), 1 )
 *
 *        Compute T(1:i,i)
@@ -57508,8 +56845,7 @@
 *>     Osni Marques, LBNL/NERSC, USA \n
 *
 *  =====================================================================
-      SUBROUTINE DLALS0( ICOMPQ, NL, NR, SQRE, NRHS, B, LDB, BX,
-     $                   LDBX,
+      SUBROUTINE DLALS0( ICOMPQ, NL, NR, SQRE, NRHS, B, LDB, BX, LDBX,
      $                   PERM, GIVPTR, GIVCOL, LDGCOL, GIVNUM, LDGNUM,
      $                   POLES, DIFL, DIFR, Z, K, C, S, WORK, INFO )
 *
@@ -57540,8 +56876,7 @@
       DOUBLE PRECISION   DIFLJ, DIFRJ, DJ, DSIGJ, DSIGJP, TEMP
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DCOPY, DGEMV, DLACPY, DLASCL, DROT,
-     $                   DSCAL,
+      EXTERNAL           DCOPY, DGEMV, DLACPY, DLASCL, DROT, DSCAL,
      $                   XERBLA
 *     ..
 *     .. External Functions ..
@@ -57605,8 +56940,7 @@
 *
          CALL DCOPY( NRHS, B( NLP1, 1 ), LDB, BX( 1, 1 ), LDBX )
          DO 20 I = 2, N
-            CALL DCOPY( NRHS, B( PERM( I ), 1 ), LDB, BX( I, 1 ),
-     $                  LDBX )
+            CALL DCOPY( NRHS, B( PERM( I ), 1 ), LDB, BX( I, 1 ), LDBX )
    20    CONTINUE
 *
 *        Step (3L): apply the inverse of the left singular vector
@@ -57660,8 +56994,7 @@
    40          CONTINUE
                WORK( 1 ) = NEGONE
                TEMP = DNRM2( K, WORK, 1 )
-               CALL DGEMV( 'T', K, NRHS, ONE, BX, LDBX, WORK, 1,
-     $                     ZERO,
+               CALL DGEMV( 'T', K, NRHS, ONE, BX, LDBX, WORK, 1, ZERO,
      $                     B( J, 1 ), LDB )
                CALL DLASCL( 'G', 0, 0, TEMP, ONE, 1, NRHS, B( J, 1 ),
      $                      LDB, INFO )
@@ -57700,8 +57033,7 @@
 *                    parentheses (x+y)+z. The goal is to prevent
 *                    optimizing compilers from doing x+(y+z).
 *
-                     WORK( I ) = Z( J ) / ( DLAMC3( DSIGJ,
-     $                     -POLES( I+1,
+                     WORK( I ) = Z( J ) / ( DLAMC3( DSIGJ, -POLES( I+1,
      $                           2 ) )-DIFR( I, 1 ) ) /
      $                           ( DSIGJ+POLES( I, 1 ) ) / DIFR( I, 2 )
                   END IF
@@ -57725,12 +57057,10 @@
 *
          IF( SQRE.EQ.1 ) THEN
             CALL DCOPY( NRHS, B( M, 1 ), LDB, BX( M, 1 ), LDBX )
-            CALL DROT( NRHS, BX( 1, 1 ), LDBX, BX( M, 1 ), LDBX, C,
-     $                 S )
+            CALL DROT( NRHS, BX( 1, 1 ), LDBX, BX( M, 1 ), LDBX, C, S )
          END IF
          IF( K.LT.MAX( M, N ) )
-     $      CALL DLACPY( 'A', N-K, NRHS, B( K+1, 1 ), LDB, BX( K+1,
-     $                   1 ),
+     $      CALL DLACPY( 'A', N-K, NRHS, B( K+1, 1 ), LDB, BX( K+1, 1 ),
      $                   LDBX )
 *
 *        Step (3R): permute rows of B.
@@ -57740,8 +57070,7 @@
             CALL DCOPY( NRHS, BX( M, 1 ), LDBX, B( M, 1 ), LDB )
          END IF
          DO 90 I = 2, N
-            CALL DCOPY( NRHS, BX( I, 1 ), LDBX, B( PERM( I ), 1 ),
-     $                  LDB )
+            CALL DCOPY( NRHS, BX( I, 1 ), LDBX, B( PERM( I ), 1 ), LDB )
    90    CONTINUE
 *
 *        Step (4R): apply back the Givens rotations performed.
@@ -58020,8 +57349,7 @@
 *>     Osni Marques, LBNL/NERSC, USA \n
 *
 *  =====================================================================
-      SUBROUTINE DLALSA( ICOMPQ, SMLSIZ, N, NRHS, B, LDB, BX, LDBX,
-     $                   U,
+      SUBROUTINE DLALSA( ICOMPQ, SMLSIZ, N, NRHS, B, LDB, BX, LDBX, U,
      $                   LDU, VT, K, DIFL, DIFR, Z, POLES, GIVPTR,
      $                   GIVCOL, LDGCOL, PERM, GIVNUM, C, S, WORK,
      $                   IWORK, INFO )
@@ -58056,8 +57384,7 @@
      $                   NR, NRF, NRP1, SQRE
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DCOPY, DGEMM, DLALS0, DLASDT,
-     $                   XERBLA
+      EXTERNAL           DCOPY, DGEMM, DLALS0, DLASDT, XERBLA
 *     ..
 *     .. Executable Statements ..
 *
@@ -58164,8 +57491,7 @@
             NLF = IC - NL
             NRF = IC + 1
             J = J - 1
-            CALL DLALS0( ICOMPQ, NL, NR, SQRE, NRHS, BX( NLF, 1 ),
-     $                   LDBX,
+            CALL DLALS0( ICOMPQ, NL, NR, SQRE, NRHS, BX( NLF, 1 ), LDBX,
      $                   B( NLF, 1 ), LDB, PERM( NLF, LVL ),
      $                   GIVPTR( J ), GIVCOL( NLF, LVL2 ), LDGCOL,
      $                   GIVNUM( NLF, LVL2 ), LDU, POLES( NLF, LVL2 ),
@@ -58210,8 +57536,7 @@
                SQRE = 1
             END IF
             J = J + 1
-            CALL DLALS0( ICOMPQ, NL, NR, SQRE, NRHS, B( NLF, 1 ),
-     $                   LDB,
+            CALL DLALS0( ICOMPQ, NL, NR, SQRE, NRHS, B( NLF, 1 ), LDB,
      $                   BX( NLF, 1 ), LDBX, PERM( NLF, LVL ),
      $                   GIVPTR( J ), GIVCOL( NLF, LVL2 ), LDGCOL,
      $                   GIVNUM( NLF, LVL2 ), LDU, POLES( NLF, LVL2 ),
@@ -58239,11 +57564,9 @@
          END IF
          NLF = IC - NL
          NRF = IC + 1
-         CALL DGEMM( 'T', 'N', NLP1, NRHS, NLP1, ONE, VT( NLF, 1 ),
-     $               LDU,
+         CALL DGEMM( 'T', 'N', NLP1, NRHS, NLP1, ONE, VT( NLF, 1 ), LDU,
      $               B( NLF, 1 ), LDB, ZERO, BX( NLF, 1 ), LDBX )
-         CALL DGEMM( 'T', 'N', NRP1, NRHS, NRP1, ONE, VT( NRF, 1 ),
-     $               LDU,
+         CALL DGEMM( 'T', 'N', NRP1, NRHS, NRP1, ONE, VT( NRF, 1 ), LDU,
      $               B( NRF, 1 ), LDB, ZERO, BX( NRF, 1 ), LDBX )
    80 CONTINUE
 *
@@ -58460,8 +57783,7 @@
       EXTERNAL           IDAMAX, DLAMCH, DLANST
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DCOPY, DGEMM, DLACPY, DLALSA, DLARTG,
-     $                   DLASCL,
+      EXTERNAL           DCOPY, DGEMM, DLACPY, DLALSA, DLARTG, DLASCL,
      $                   DLASDA, DLASDQ, DLASET, DLASRT, DROT, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
@@ -58506,8 +57828,7 @@
             CALL DLASET( 'A', 1, NRHS, ZERO, ZERO, B, LDB )
          ELSE
             RANK = 1
-            CALL DLASCL( 'G', 0, 0, D( 1 ), ONE, 1, NRHS, B, LDB,
-     $                   INFO )
+            CALL DLASCL( 'G', 0, 0, D( 1 ), ONE, 1, NRHS, B, LDB, INFO )
             D( 1 ) = ABS( D( 1 ) )
          END IF
          RETURN
@@ -58533,8 +57854,7 @@
                DO 20 J = 1, N - 1
                   CS = WORK( J*2-1 )
                   SN = WORK( J*2 )
-                  CALL DROT( 1, B( J, I ), 1, B( J+1, I ), 1, CS,
-     $                       SN )
+                  CALL DROT( 1, B( J, I ), 1, B( J+1, I ), 1, CS, SN )
    20          CONTINUE
    30       CONTINUE
          END IF
@@ -58558,8 +57878,7 @@
       IF( N.LE.SMLSIZ ) THEN
          NWORK = 1 + N*N
          CALL DLASET( 'A', N, N, ZERO, ONE, WORK, N )
-         CALL DLASDQ( 'U', 0, N, N, 0, NRHS, D, E, WORK, N, WORK, N,
-     $                B,
+         CALL DLASDQ( 'U', 0, N, N, 0, NRHS, D, E, WORK, N, WORK, N, B,
      $                LDB, WORK( NWORK ), INFO )
          IF( INFO.NE.0 ) THEN
             RETURN
@@ -58567,17 +57886,14 @@
          TOL = RCND*ABS( D( IDAMAX( N, D, 1 ) ) )
          DO 40 I = 1, N
             IF( D( I ).LE.TOL ) THEN
-               CALL DLASET( 'A', 1, NRHS, ZERO, ZERO, B( I, 1 ),
-     $                      LDB )
+               CALL DLASET( 'A', 1, NRHS, ZERO, ZERO, B( I, 1 ), LDB )
             ELSE
-               CALL DLASCL( 'G', 0, 0, D( I ), ONE, 1, NRHS, B( I,
-     $                      1 ),
+               CALL DLASCL( 'G', 0, 0, D( I ), ONE, 1, NRHS, B( I, 1 ),
      $                      LDB, INFO )
                RANK = RANK + 1
             END IF
    40    CONTINUE
-         CALL DGEMM( 'T', 'N', N, NRHS, N, ONE, WORK, N, B, LDB,
-     $               ZERO,
+         CALL DGEMM( 'T', 'N', N, NRHS, N, ONE, WORK, N, B, LDB, ZERO,
      $               WORK( NWORK ), N )
          CALL DLACPY( 'A', N, NRHS, WORK( NWORK ), N, B, LDB )
 *
@@ -58725,8 +58041,7 @@
 *        subproblems were not solved explicitly.
 *
          IF( ABS( D( I ) ).LE.TOL ) THEN
-            CALL DLASET( 'A', 1, NRHS, ZERO, ZERO, WORK( BX+I-1 ),
-     $                   N )
+            CALL DLASET( 'A', 1, NRHS, ZERO, ZERO, WORK( BX+I-1 ), N )
          ELSE
             RANK = RANK + 1
             CALL DLASCL( 'G', 0, 0, D( I ), ONE, 1, NRHS,
@@ -58750,8 +58065,7 @@
      $                  WORK( VT+ST1 ), N, WORK( BXST ), N, ZERO,
      $                  B( ST, 1 ), LDB )
          ELSE
-            CALL DLALSA( ICMPQ2, SMLSIZ, NSIZE, NRHS, WORK( BXST ),
-     $                   N,
+            CALL DLALSA( ICMPQ2, SMLSIZ, NSIZE, NRHS, WORK( BXST ), N,
      $                   B( ST, 1 ), LDB, WORK( U+ST1 ), N,
      $                   WORK( VT+ST1 ), IWORK( K+ST1 ),
      $                   WORK( DIFL+ST1 ), WORK( DIFR+ST1 ),
@@ -59371,8 +58685,7 @@
             TEMP = WORK( I )
             IF( VALUE.LT.TEMP .OR. DISNAN( TEMP ) ) VALUE = TEMP
    80    CONTINUE
-      ELSE IF( ( LSAME( NORM, 'F' ) ) .OR.
-     $         ( LSAME( NORM, 'E' ) ) ) THEN
+      ELSE IF( ( LSAME( NORM, 'F' ) ) .OR. ( LSAME( NORM, 'E' ) ) ) THEN
 *
 *        Find normF(A).
 *
@@ -59381,8 +58694,7 @@
          DO 90 J = 1, N
             L = MAX( 1, J-KU )
             K = KU + 1 - J + L
-            CALL DLASSQ( MIN( N, J+KL )-L+1, AB( K, J ), 1, SCALE,
-     $                   SUM )
+            CALL DLASSQ( MIN( N, J+KL )-L+1, AB( K, J ), 1, SCALE, SUM )
    90    CONTINUE
          VALUE = SCALE*SQRT( SUM )
       END IF
@@ -59583,8 +58895,7 @@
             TEMP = WORK( I )
             IF( VALUE.LT.TEMP .OR. DISNAN( TEMP ) ) VALUE = TEMP
    80    CONTINUE
-      ELSE IF( ( LSAME( NORM, 'F' ) ) .OR.
-     $         ( LSAME( NORM, 'E' ) ) ) THEN
+      ELSE IF( ( LSAME( NORM, 'F' ) ) .OR. ( LSAME( NORM, 'E' ) ) ) THEN
 *
 *        Find normF(A).
 *
@@ -59750,13 +59061,11 @@
 *
          ANORM = ABS( D( N ) )
          DO 10 I = 1, N - 1
-            IF( ANORM.LT.ABS( DL( I ) ) .OR.
-     $          DISNAN( ABS( DL( I ) ) ) )
+            IF( ANORM.LT.ABS( DL( I ) ) .OR. DISNAN( ABS( DL( I ) ) ) )
      $           ANORM = ABS(DL(I))
             IF( ANORM.LT.ABS( D( I ) ) .OR. DISNAN( ABS( D( I ) ) ) )
      $           ANORM = ABS(D(I))
-            IF( ANORM.LT.ABS( DU( I ) ) .OR.
-     $          DISNAN (ABS( DU( I ) ) ) )
+            IF( ANORM.LT.ABS( DU( I ) ) .OR. DISNAN (ABS( DU( I ) ) ) )
      $           ANORM = ABS(DU(I))
    10    CONTINUE
       ELSE IF( LSAME( NORM, 'O' ) .OR. NORM.EQ.'1' ) THEN
@@ -59789,8 +59098,7 @@
                IF( ANORM .LT. TEMP .OR. DISNAN( TEMP ) ) ANORM = TEMP
    30       CONTINUE
          END IF
-      ELSE IF( ( LSAME( NORM, 'F' ) ) .OR.
-     $         ( LSAME( NORM, 'E' ) ) ) THEN
+      ELSE IF( ( LSAME( NORM, 'F' ) ) .OR. ( LSAME( NORM, 'E' ) ) ) THEN
 *
 *        Find normF(A).
 *
@@ -59994,8 +59302,7 @@
             SUM = WORK( I )
             IF( VALUE .LT. SUM .OR. DISNAN( SUM ) ) VALUE = SUM
    80    CONTINUE
-      ELSE IF( ( LSAME( NORM, 'F' ) ) .OR.
-     $         ( LSAME( NORM, 'E' ) ) ) THEN
+      ELSE IF( ( LSAME( NORM, 'F' ) ) .OR. ( LSAME( NORM, 'E' ) ) ) THEN
 *
 *        Find normF(A).
 *
@@ -60198,8 +59505,7 @@
    30          CONTINUE
    40       CONTINUE
          END IF
-      ELSE IF( ( LSAME( NORM, 'I' ) ) .OR.
-     $         ( LSAME( NORM, 'O' ) ) .OR.
+      ELSE IF( ( LSAME( NORM, 'I' ) ) .OR. ( LSAME( NORM, 'O' ) ) .OR.
      $         ( NORM.EQ.'1' ) ) THEN
 *
 *        Find normI(A) ( = norm1(A), since A is symmetric).
@@ -60235,8 +59541,7 @@
                IF( VALUE .LT. SUM .OR. DISNAN( SUM ) ) VALUE = SUM
   100       CONTINUE
          END IF
-      ELSE IF( ( LSAME( NORM, 'F' ) ) .OR.
-     $         ( LSAME( NORM, 'E' ) ) ) THEN
+      ELSE IF( ( LSAME( NORM, 'F' ) ) .OR. ( LSAME( NORM, 'E' ) ) ) THEN
 *
 *        Find normF(A).
 *
@@ -60245,8 +59550,7 @@
          IF( K.GT.0 ) THEN
             IF( LSAME( UPLO, 'U' ) ) THEN
                DO 110 J = 2, N
-                  CALL DLASSQ( MIN( J-1, K ), AB( MAX( K+2-J, 1 ),
-     $                         J ),
+                  CALL DLASSQ( MIN( J-1, K ), AB( MAX( K+2-J, 1 ), J ),
      $                         1, SCALE, SUM )
   110          CONTINUE
                L = K + 1
@@ -60478,8 +59782,7 @@
 *> \endverbatim
 *
 *  =====================================================================
-      DOUBLE PRECISION FUNCTION DLANSF( NORM, TRANSR, UPLO, N, A,
-     $                                  WORK )
+      DOUBLE PRECISION FUNCTION DLANSF( NORM, TRANSR, UPLO, N, A, WORK )
 *
 *  -- LAPACK computational routine --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -60606,8 +59909,7 @@
                END DO
             END IF
          END IF
-      ELSE IF( ( LSAME( NORM, 'I' ) ) .OR.
-     $         ( LSAME( NORM, 'O' ) ) .OR.
+      ELSE IF( ( LSAME( NORM, 'I' ) ) .OR. ( LSAME( NORM, 'O' ) ) .OR.
      $         ( NORM.EQ.'1' ) ) THEN
 *
 *        Find normI(A) ( = norm1(A), since A is symmetric).
@@ -61052,8 +60354,7 @@
                END IF
             END IF
          END IF
-      ELSE IF( ( LSAME( NORM, 'F' ) ) .OR.
-     $         ( LSAME( NORM, 'E' ) ) ) THEN
+      ELSE IF( ( LSAME( NORM, 'F' ) ) .OR. ( LSAME( NORM, 'E' ) ) ) THEN
 *
 *       Find normF(A).
 *
@@ -61067,8 +60368,7 @@
                IF( ILU.EQ.0 ) THEN
 *                 A is upper
                   DO J = 0, K - 3
-                     CALL DLASSQ( K-J-2, A( K+J+1+J*LDA ), 1, SCALE,
-     $                            S )
+                     CALL DLASSQ( K-J-2, A( K+J+1+J*LDA ), 1, SCALE, S )
 *                    L at A(k,0)
                   END DO
                   DO J = 0, K - 1
@@ -61084,13 +60384,11 @@
                ELSE
 *                 ilu=1 & A is lower
                   DO J = 0, K - 1
-                     CALL DLASSQ( N-J-1, A( J+1+J*LDA ), 1, SCALE,
-     $                            S )
+                     CALL DLASSQ( N-J-1, A( J+1+J*LDA ), 1, SCALE, S )
 *                    trap L at A(0,0)
                   END DO
                   DO J = 0, K - 2
-                     CALL DLASSQ( J, A( 0+( 1+J )*LDA ), 1, SCALE,
-     $                            S )
+                     CALL DLASSQ( J, A( 0+( 1+J )*LDA ), 1, SCALE, S )
 *                    U at A(0,1)
                   END DO
                   S = S + S
@@ -61105,8 +60403,7 @@
                IF( ILU.EQ.0 ) THEN
 *                 A**T is upper
                   DO J = 1, K - 2
-                     CALL DLASSQ( J, A( 0+( K+J )*LDA ), 1, SCALE,
-     $                            S )
+                     CALL DLASSQ( J, A( 0+( K+J )*LDA ), 1, SCALE, S )
 *                    U at A(0,k)
                   END DO
                   DO J = 0, K - 2
@@ -61122,8 +60419,7 @@
 *                 double s for the off diagonal elements
                   CALL DLASSQ( K-1, A( 0+K*LDA ), LDA+1, SCALE, S )
 *                 tri U at A(0,k)
-                  CALL DLASSQ( K, A( 0+( K-1 )*LDA ), LDA+1, SCALE,
-     $                         S )
+                  CALL DLASSQ( K, A( 0+( K-1 )*LDA ), LDA+1, SCALE, S )
 *                 tri L at A(0,k-1)
                ELSE
 *                 A**T is lower
@@ -61136,8 +60432,7 @@
 *                    k by k-1 rect. at A(0,k)
                   END DO
                   DO J = 0, K - 3
-                     CALL DLASSQ( K-J-2, A( J+2+J*LDA ), 1, SCALE,
-     $                            S )
+                     CALL DLASSQ( K-J-2, A( J+2+J*LDA ), 1, SCALE, S )
 *                    L at A(1,0)
                   END DO
                   S = S + S
@@ -61155,8 +60450,7 @@
                IF( ILU.EQ.0 ) THEN
 *                 A is upper
                   DO J = 0, K - 2
-                     CALL DLASSQ( K-J-1, A( K+J+2+J*LDA ), 1, SCALE,
-     $                            S )
+                     CALL DLASSQ( K-J-1, A( K+J+2+J*LDA ), 1, SCALE, S )
 *                    L at A(k+1,0)
                   END DO
                   DO J = 0, K - 1
@@ -61172,8 +60466,7 @@
                ELSE
 *                 ilu=1 & A is lower
                   DO J = 0, K - 1
-                     CALL DLASSQ( N-J-1, A( J+2+J*LDA ), 1, SCALE,
-     $                            S )
+                     CALL DLASSQ( N-J-1, A( J+2+J*LDA ), 1, SCALE, S )
 *                    trap L at A(1,0)
                   END DO
                   DO J = 1, K - 1
@@ -61192,8 +60485,7 @@
                IF( ILU.EQ.0 ) THEN
 *                 A**T is upper
                   DO J = 1, K - 1
-                     CALL DLASSQ( J, A( 0+( K+1+J )*LDA ), 1, SCALE,
-     $                            S )
+                     CALL DLASSQ( J, A( 0+( K+1+J )*LDA ), 1, SCALE, S )
 *                    U at A(0,k+1)
                   END DO
                   DO J = 0, K - 1
@@ -61201,23 +60493,20 @@
 *                    k by k rect. at A(0,0)
                   END DO
                   DO J = 0, K - 2
-                     CALL DLASSQ( K-J-1, A( J+1+( J+K )*LDA ), 1,
-     $                            SCALE,
+                     CALL DLASSQ( K-J-1, A( J+1+( J+K )*LDA ), 1, SCALE,
      $                            S )
 *                    L at A(0,k)
                   END DO
                   S = S + S
 *                 double s for the off diagonal elements
-                  CALL DLASSQ( K, A( 0+( K+1 )*LDA ), LDA+1, SCALE,
-     $                         S )
+                  CALL DLASSQ( K, A( 0+( K+1 )*LDA ), LDA+1, SCALE, S )
 *                 tri U at A(0,k+1)
                   CALL DLASSQ( K, A( 0+K*LDA ), LDA+1, SCALE, S )
 *                 tri L at A(0,k)
                ELSE
 *                 A**T is lower
                   DO J = 1, K - 1
-                     CALL DLASSQ( J, A( 0+( J+1 )*LDA ), 1, SCALE,
-     $                            S )
+                     CALL DLASSQ( J, A( 0+( J+1 )*LDA ), 1, SCALE, S )
 *                    U at A(0,1)
                   END DO
                   DO J = K + 1, N
@@ -61225,8 +60514,7 @@
 *                    k by k rect. at A(0,k+1)
                   END DO
                   DO J = 0, K - 2
-                     CALL DLASSQ( K-J-1, A( J+1+J*LDA ), 1, SCALE,
-     $                            S )
+                     CALL DLASSQ( K-J-1, A( J+1+J*LDA ), 1, SCALE, S )
 *                    L at A(0,0)
                   END DO
                   S = S + S
@@ -61421,8 +60709,7 @@
                K = K + N - J + 1
    40       CONTINUE
          END IF
-      ELSE IF( ( LSAME( NORM, 'I' ) ) .OR.
-     $         ( LSAME( NORM, 'O' ) ) .OR.
+      ELSE IF( ( LSAME( NORM, 'I' ) ) .OR. ( LSAME( NORM, 'O' ) ) .OR.
      $         ( NORM.EQ.'1' ) ) THEN
 *
 *        Find normI(A) ( = norm1(A), since A is symmetric).
@@ -61461,8 +60748,7 @@
                IF( VALUE .LT. SUM .OR. DISNAN( SUM ) ) VALUE = SUM
   100       CONTINUE
          END IF
-      ELSE IF( ( LSAME( NORM, 'F' ) ) .OR.
-     $         ( LSAME( NORM, 'E' ) ) ) THEN
+      ELSE IF( ( LSAME( NORM, 'F' ) ) .OR. ( LSAME( NORM, 'E' ) ) ) THEN
 *
 *        Find normF(A).
 *
@@ -61670,8 +60956,7 @@
                IF( ANORM .LT. SUM .OR. DISNAN( SUM ) ) ANORM = SUM
    20       CONTINUE
          END IF
-      ELSE IF( ( LSAME( NORM, 'F' ) ) .OR.
-     $         ( LSAME( NORM, 'E' ) ) ) THEN
+      ELSE IF( ( LSAME( NORM, 'F' ) ) .OR. ( LSAME( NORM, 'E' ) ) ) THEN
 *
 *        Find normF(A).
 *
@@ -61869,8 +61154,7 @@
    30          CONTINUE
    40       CONTINUE
          END IF
-      ELSE IF( ( LSAME( NORM, 'I' ) ) .OR.
-     $         ( LSAME( NORM, 'O' ) ) .OR.
+      ELSE IF( ( LSAME( NORM, 'I' ) ) .OR. ( LSAME( NORM, 'O' ) ) .OR.
      $         ( NORM.EQ.'1' ) ) THEN
 *
 *        Find normI(A) ( = norm1(A), since A is symmetric).
@@ -61904,8 +61188,7 @@
                IF( VALUE .LT. SUM .OR. DISNAN( SUM ) ) VALUE = SUM
   100       CONTINUE
          END IF
-      ELSE IF( ( LSAME( NORM, 'F' ) ) .OR.
-     $         ( LSAME( NORM, 'E' ) ) ) THEN
+      ELSE IF( ( LSAME( NORM, 'F' ) ) .OR. ( LSAME( NORM, 'E' ) ) ) THEN
 *
 *        Find normF(A).
 *
@@ -62118,16 +61401,14 @@
                DO 20 J = 1, N
                   DO 10 I = MAX( K+2-J, 1 ), K
                      SUM = ABS( AB( I, J ) )
-                     IF( VALUE .LT. SUM .OR.
-     $                   DISNAN( SUM ) ) VALUE = SUM
+                     IF( VALUE .LT. SUM .OR. DISNAN( SUM ) ) VALUE = SUM
    10             CONTINUE
    20          CONTINUE
             ELSE
                DO 40 J = 1, N
                   DO 30 I = 2, MIN( N+1-J, K+1 )
                      SUM = ABS( AB( I, J ) )
-                     IF( VALUE .LT. SUM .OR.
-     $                   DISNAN( SUM ) ) VALUE = SUM
+                     IF( VALUE .LT. SUM .OR. DISNAN( SUM ) ) VALUE = SUM
    30             CONTINUE
    40          CONTINUE
             END IF
@@ -62137,16 +61418,14 @@
                DO 60 J = 1, N
                   DO 50 I = MAX( K+2-J, 1 ), K + 1
                      SUM = ABS( AB( I, J ) )
-                     IF( VALUE .LT. SUM .OR.
-     $                   DISNAN( SUM ) ) VALUE = SUM
+                     IF( VALUE .LT. SUM .OR. DISNAN( SUM ) ) VALUE = SUM
    50             CONTINUE
    60          CONTINUE
             ELSE
                DO 80 J = 1, N
                   DO 70 I = 1, MIN( N+1-J, K+1 )
                      SUM = ABS( AB( I, J ) )
-                     IF( VALUE .LT. SUM .OR.
-     $                   DISNAN( SUM ) ) VALUE = SUM
+                     IF( VALUE .LT. SUM .OR. DISNAN( SUM ) ) VALUE = SUM
    70             CONTINUE
    80          CONTINUE
             END IF
@@ -62242,8 +61521,7 @@
             SUM = WORK( I )
             IF( VALUE .LT. SUM .OR. DISNAN( SUM ) ) VALUE = SUM
   270    CONTINUE
-      ELSE IF( ( LSAME( NORM, 'F' ) ) .OR.
-     $         ( LSAME( NORM, 'E' ) ) ) THEN
+      ELSE IF( ( LSAME( NORM, 'F' ) ) .OR. ( LSAME( NORM, 'E' ) ) ) THEN
 *
 *        Find normF(A).
 *
@@ -62262,8 +61540,7 @@
                SCALE = ZERO
                SUM = ONE
                DO 290 J = 1, N
-                  CALL DLASSQ( MIN( J, K+1 ), AB( MAX( K+2-J, 1 ),
-     $                         J ),
+                  CALL DLASSQ( MIN( J, K+1 ), AB( MAX( K+2-J, 1 ), J ),
      $                         1, SCALE, SUM )
   290          CONTINUE
             END IF
@@ -62273,8 +61550,7 @@
                SUM = N
                IF( K.GT.0 ) THEN
                   DO 300 J = 1, N - 1
-                     CALL DLASSQ( MIN( N-J, K ), AB( 2, J ), 1,
-     $                            SCALE,
+                     CALL DLASSQ( MIN( N-J, K ), AB( 2, J ), 1, SCALE,
      $                            SUM )
   300             CONTINUE
                END IF
@@ -62282,8 +61558,7 @@
                SCALE = ZERO
                SUM = ONE
                DO 310 J = 1, N
-                  CALL DLASSQ( MIN( N-J+1, K+1 ), AB( 1, J ), 1,
-     $                         SCALE,
+                  CALL DLASSQ( MIN( N-J+1, K+1 ), AB( 1, J ), 1, SCALE,
      $                         SUM )
   310          CONTINUE
             END IF
@@ -62419,8 +61694,7 @@
 *> \ingroup lantp
 *
 *  =====================================================================
-      DOUBLE PRECISION FUNCTION DLANTP( NORM, UPLO, DIAG, N, AP,
-     $                                  WORK )
+      DOUBLE PRECISION FUNCTION DLANTP( NORM, UPLO, DIAG, N, AP, WORK )
 *
 *  -- LAPACK auxiliary routine --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -62470,8 +61744,7 @@
                DO 20 J = 1, N
                   DO 10 I = K, K + J - 2
                      SUM = ABS( AP( I ) )
-                     IF( VALUE .LT. SUM .OR.
-     $                   DISNAN( SUM ) ) VALUE = SUM
+                     IF( VALUE .LT. SUM .OR. DISNAN( SUM ) ) VALUE = SUM
    10             CONTINUE
                   K = K + J
    20          CONTINUE
@@ -62479,8 +61752,7 @@
                DO 40 J = 1, N
                   DO 30 I = K + 1, K + N - J
                      SUM = ABS( AP( I ) )
-                     IF( VALUE .LT. SUM .OR.
-     $                   DISNAN( SUM ) ) VALUE = SUM
+                     IF( VALUE .LT. SUM .OR. DISNAN( SUM ) ) VALUE = SUM
    30             CONTINUE
                   K = K + N - J + 1
    40          CONTINUE
@@ -62491,8 +61763,7 @@
                DO 60 J = 1, N
                   DO 50 I = K, K + J - 1
                      SUM = ABS( AP( I ) )
-                     IF( VALUE .LT. SUM .OR.
-     $                   DISNAN( SUM ) ) VALUE = SUM
+                     IF( VALUE .LT. SUM .OR. DISNAN( SUM ) ) VALUE = SUM
    50             CONTINUE
                   K = K + J
    60          CONTINUE
@@ -62500,8 +61771,7 @@
                DO 80 J = 1, N
                   DO 70 I = K, K + N - J
                      SUM = ABS( AP( I ) )
-                     IF( VALUE .LT. SUM .OR.
-     $                   DISNAN( SUM ) ) VALUE = SUM
+                     IF( VALUE .LT. SUM .OR. DISNAN( SUM ) ) VALUE = SUM
    70             CONTINUE
                   K = K + N - J + 1
    80          CONTINUE
@@ -62604,8 +61874,7 @@
             SUM = WORK( I )
             IF( VALUE .LT. SUM .OR. DISNAN( SUM ) ) VALUE = SUM
   270    CONTINUE
-      ELSE IF( ( LSAME( NORM, 'F' ) ) .OR.
-     $         ( LSAME( NORM, 'E' ) ) ) THEN
+      ELSE IF( ( LSAME( NORM, 'F' ) ) .OR. ( LSAME( NORM, 'E' ) ) ) THEN
 *
 *        Find normF(A).
 *
@@ -62793,8 +62062,7 @@
 *> \ingroup lantr
 *
 *  =====================================================================
-      DOUBLE PRECISION FUNCTION DLANTR( NORM, UPLO, DIAG, M, N, A,
-     $                                  LDA,
+      DOUBLE PRECISION FUNCTION DLANTR( NORM, UPLO, DIAG, M, N, A, LDA,
      $                 WORK )
 *
 *  -- LAPACK auxiliary routine --
@@ -62844,16 +62112,14 @@
                DO 20 J = 1, N
                   DO 10 I = 1, MIN( M, J-1 )
                      SUM = ABS( A( I, J ) )
-                     IF( VALUE .LT. SUM .OR.
-     $                   DISNAN( SUM ) ) VALUE = SUM
+                     IF( VALUE .LT. SUM .OR. DISNAN( SUM ) ) VALUE = SUM
    10             CONTINUE
    20          CONTINUE
             ELSE
                DO 40 J = 1, N
                   DO 30 I = J + 1, M
                      SUM = ABS( A( I, J ) )
-                     IF( VALUE .LT. SUM .OR.
-     $                   DISNAN( SUM ) ) VALUE = SUM
+                     IF( VALUE .LT. SUM .OR. DISNAN( SUM ) ) VALUE = SUM
    30             CONTINUE
    40          CONTINUE
             END IF
@@ -62863,16 +62129,14 @@
                DO 60 J = 1, N
                   DO 50 I = 1, MIN( M, J )
                      SUM = ABS( A( I, J ) )
-                     IF( VALUE .LT. SUM .OR.
-     $                   DISNAN( SUM ) ) VALUE = SUM
+                     IF( VALUE .LT. SUM .OR. DISNAN( SUM ) ) VALUE = SUM
    50             CONTINUE
    60          CONTINUE
             ELSE
                DO 80 J = 1, N
                   DO 70 I = J, M
                      SUM = ABS( A( I, J ) )
-                     IF( VALUE .LT. SUM .OR.
-     $                   DISNAN( SUM ) ) VALUE = SUM
+                     IF( VALUE .LT. SUM .OR. DISNAN( SUM ) ) VALUE = SUM
    70             CONTINUE
    80          CONTINUE
             END IF
@@ -62967,8 +62231,7 @@
             SUM = WORK( I )
             IF( VALUE .LT. SUM .OR. DISNAN( SUM ) ) VALUE = SUM
   280    CONTINUE
-      ELSE IF( ( LSAME( NORM, 'F' ) ) .OR.
-     $         ( LSAME( NORM, 'E' ) ) ) THEN
+      ELSE IF( ( LSAME( NORM, 'F' ) ) .OR. ( LSAME( NORM, 'E' ) ) ) THEN
 *
 *        Find normF(A).
 *
@@ -62977,15 +62240,13 @@
                SCALE = ONE
                SUM = MIN( M, N )
                DO 290 J = 2, N
-                  CALL DLASSQ( MIN( M, J-1 ), A( 1, J ), 1, SCALE,
-     $                         SUM )
+                  CALL DLASSQ( MIN( M, J-1 ), A( 1, J ), 1, SCALE, SUM )
   290          CONTINUE
             ELSE
                SCALE = ZERO
                SUM = ONE
                DO 300 J = 1, N
-                  CALL DLASSQ( MIN( M, J ), A( 1, J ), 1, SCALE,
-     $                         SUM )
+                  CALL DLASSQ( MIN( M, J ), A( 1, J ), 1, SCALE, SUM )
   300          CONTINUE
             END IF
          ELSE
@@ -63159,7 +62420,7 @@
 *     ..
 *     .. Local Scalars ..
       DOUBLE PRECISION   AA, BB, BCMAX, BCMIS, CC, CS1, DD, EPS, P, SAB,
-     $                   SAC, SCALE, SIGMA, SN1, TAU, TEMP, Z, SAFMIN,
+     $                   SAC, SCALE, SIGMA, SN1, TAU, TEMP, Z, SAFMIN, 
      $                   SAFMN2, SAFMX2
       INTEGER            COUNT
 *     ..
@@ -63264,13 +62525,9 @@
 *           Compute [ A  B ] = [ CS  SN ] [ AA  BB ]
 *                   [ C  D ]   [-SN  CS ] [ CC  DD ]
 *
-*           Note: Some of the multiplications are wrapped in parentheses to
-*                 prevent compilers from using FMA instructions. See
-*                 https://github.com/Reference-LAPACK/lapack/issues/1031.
-*
             A = AA*CS + CC*SN
-            B = ( BB*CS ) + ( DD*SN )
-            C = -( AA*SN ) + ( CC*CS )
+            B = BB*CS + DD*SN
+            C = -AA*SN + CC*CS
             D = -BB*SN + DD*CS
 *
             TEMP = HALF*( A+D )
@@ -64273,8 +63530,7 @@
 *> \ingroup laqgb
 *
 *  =====================================================================
-      SUBROUTINE DLAQGB( M, N, KL, KU, AB, LDAB, R, C, ROWCND,
-     $                   COLCND,
+      SUBROUTINE DLAQGB( M, N, KL, KU, AB, LDAB, R, C, ROWCND, COLCND,
      $                   AMAX, EQUED )
 *
 *  -- LAPACK auxiliary routine --
@@ -64774,7 +64030,7 @@
 *     ..
 *     .. Local Scalars ..
       INTEGER            I, ITEMP, J, MN, OFFPI, PVT
-      DOUBLE PRECISION   TEMP, TEMP2, TOL3Z
+      DOUBLE PRECISION   AII, TEMP, TEMP2, TOL3Z
 *     ..
 *     .. External Subroutines ..
       EXTERNAL           DLARF, DLARFG, DSWAP
@@ -64814,8 +64070,7 @@
 *        Generate elementary reflector H(i).
 *
          IF( OFFPI.LT.M ) THEN
-            CALL DLARFG( M-OFFPI+1, A( OFFPI, I ), A( OFFPI+1, I ),
-     $                   1,
+            CALL DLARFG( M-OFFPI+1, A( OFFPI, I ), A( OFFPI+1, I ), 1,
      $                   TAU( I ) )
          ELSE
             CALL DLARFG( 1, A( M, I ), A( M, I ), 1, TAU( I ) )
@@ -64825,8 +64080,11 @@
 *
 *           Apply H(i)**T to A(offset+i:m,i+1:n) from the left.
 *
-            CALL DLARF1F( 'Left', M-OFFPI+1, N-I, A( OFFPI, I ), 1,
+            AII = A( OFFPI, I )
+            A( OFFPI, I ) = ONE
+            CALL DLARF( 'Left', M-OFFPI+1, N-I, A( OFFPI, I ), 1,
      $                  TAU( I ), A( OFFPI, I+1 ), LDA, WORK( 1 ) )
+            A( OFFPI, I ) = AII
          END IF
 *
 *        Update partial column norms.
@@ -65035,8 +64293,7 @@
 *> \endhtmlonly
 *
 *  =====================================================================
-      SUBROUTINE DLAQPS( M, N, OFFSET, NB, KB, A, LDA, JPVT, TAU,
-     $                   VN1,
+      SUBROUTINE DLAQPS( M, N, OFFSET, NB, KB, A, LDA, JPVT, TAU, VN1,
      $                   VN2, AUXV, F, LDF )
 *
 *  -- LAPACK auxiliary routine --
@@ -65104,16 +64361,14 @@
 *        A(RK:M,K) := A(RK:M,K) - A(RK:M,1:K-1)*F(K,1:K-1)**T.
 *
          IF( K.GT.1 ) THEN
-            CALL DGEMV( 'No transpose', M-RK+1, K-1, -ONE, A( RK,
-     $                  1 ),
+            CALL DGEMV( 'No transpose', M-RK+1, K-1, -ONE, A( RK, 1 ),
      $                  LDA, F( K, 1 ), LDF, ONE, A( RK, K ), 1 )
          END IF
 *
 *        Generate elementary reflector H(k).
 *
          IF( RK.LT.M ) THEN
-            CALL DLARFG( M-RK+1, A( RK, K ), A( RK+1, K ), 1,
-     $                   TAU( K ) )
+            CALL DLARFG( M-RK+1, A( RK, K ), A( RK+1, K ), 1, TAU( K ) )
          ELSE
             CALL DLARFG( 1, A( RK, K ), A( RK, K ), 1, TAU( K ) )
          END IF
@@ -65142,8 +64397,7 @@
 *                    *A(RK:M,K).
 *
          IF( K.GT.1 ) THEN
-            CALL DGEMV( 'Transpose', M-RK+1, K-1, -TAU( K ), A( RK,
-     $                  1 ),
+            CALL DGEMV( 'Transpose', M-RK+1, K-1, -TAU( K ), A( RK, 1 ),
      $                  LDA, A( RK, K ), 1, ZERO, AUXV( 1 ), 1 )
 *
             CALL DGEMV( 'No transpose', N, K-1, ONE, F( 1, 1 ), LDF,
@@ -65154,8 +64408,7 @@
 *        A(RK,K+1:N) := A(RK,K+1:N) - A(RK,1:K)*F(K+1:N,1:K)**T.
 *
          IF( K.LT.N ) THEN
-            CALL DGEMV( 'No transpose', N-K, K, -ONE, F( K+1, 1 ),
-     $                  LDF,
+            CALL DGEMV( 'No transpose', N-K, K, -ONE, F( K+1, 1 ), LDF,
      $                  A( RK, 1 ), LDA, ONE, A( RK, K+1 ), LDA )
          END IF
 *
@@ -65195,8 +64448,7 @@
 *                         A(OFFSET+KB+1:M,1:KB)*F(KB+1:N,1:KB)**T.
 *
       IF( KB.LT.MIN( N, M-OFFSET ) ) THEN
-         CALL DGEMM( 'No transpose', 'Transpose', M-RK, N-KB, KB,
-     $               -ONE,
+         CALL DGEMM( 'No transpose', 'Transpose', M-RK, N-KB, KB, -ONE,
      $               A( RK+1, 1 ), LDA, F( KB+1, 1 ), LDF, ONE,
      $               A( RK+1, KB+1 ), LDA )
       END IF
@@ -65537,8 +64789,7 @@
       DOUBLE PRECISION   ZDUM( 1, 1 )
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DLACPY, DLAHQR, DLANV2, DLAQR3, DLAQR4,
-     $                   DLAQR5
+      EXTERNAL           DLACPY, DLAHQR, DLANV2, DLAQR3, DLAQR4, DLAQR5
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          ABS, DBLE, INT, MAX, MIN, MOD
@@ -65741,8 +64992,7 @@
 *
 *           ==== Aggressive early deflation ====
 *
-            CALL DLAQR3( WANTT, WANTZ, N, KTOP, KBOT, NW, H, LDH,
-     $                   ILOZ,
+            CALL DLAQR3( WANTT, WANTZ, N, KTOP, KBOT, NW, H, LDH, ILOZ,
      $                   IHIZ, Z, LDZ, LS, LD, WR, WI, H( KV, 1 ), LDH,
      $                   NHO, H( KV, KT ), LDH, NVE, H( KWV, 1 ), LDH,
      $                   WORK, LWORK )
@@ -65786,8 +65036,7 @@
                      BB = SS
                      CC = WILK2*SS
                      DD = AA
-                     CALL DLANV2( AA, BB, CC, DD, WR( I-1 ),
-     $                            WI( I-1 ),
+                     CALL DLANV2( AA, BB, CC, DD, WR( I-1 ), WI( I-1 ),
      $                            WR( I ), WI( I ), CS, SN )
    30             CONTINUE
                   IF( KS.EQ.KTOP ) THEN
@@ -66419,8 +65668,7 @@
 *>       University of Kansas, USA
 *>
 *  =====================================================================
-      SUBROUTINE DLAQR2( WANTT, WANTZ, N, KTOP, KBOT, NW, H, LDH,
-     $                   ILOZ,
+      SUBROUTINE DLAQR2( WANTT, WANTZ, N, KTOP, KBOT, NW, H, LDH, ILOZ,
      $                   IHIZ, Z, LDZ, NS, ND, SR, SI, V, LDV, NH, T,
      $                   LDT, NV, WV, LDWV, WORK, LWORK )
 *
@@ -66457,9 +65705,8 @@
       EXTERNAL           DLAMCH
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DCOPY, DGEHRD, DGEMM, DLACPY,
-     $                   DLAHQR,
-     $                   DLANV2, DLARF1F, DLARFG, DLASET, DORMHR, DTREXC
+      EXTERNAL           DCOPY, DGEHRD, DGEMM, DLACPY, DLAHQR,
+     $                   DLANV2, DLARF, DLARFG, DLASET, DORMHR, DTREXC
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          ABS, DBLE, INT, MAX, MIN, SQRT
@@ -66480,8 +65727,7 @@
 *
 *        ==== Workspace query call to DORMHR ====
 *
-         CALL DORMHR( 'R', 'N', JW, JW, 1, JW-1, T, LDT, WORK, V,
-     $                LDV,
+         CALL DORMHR( 'R', 'N', JW, JW, 1, JW-1, T, LDT, WORK, V, LDV,
      $                WORK, -1, INFO )
          LWK2 = INT( WORK( 1 ) )
 *
@@ -66551,8 +65797,7 @@
 *     .    here and there to keep track.) ====
 *
       CALL DLACPY( 'U', JW, JW, H( KWTOP, KWTOP ), LDH, T, LDT )
-      CALL DCOPY( JW-1, H( KWTOP+1, KWTOP ), LDH+1, T( 2, 1 ),
-     $            LDT+1 )
+      CALL DCOPY( JW-1, H( KWTOP+1, KWTOP ), LDH+1, T( 2, 1 ), LDT+1 )
 *
       CALL DLASET( 'A', JW, JW, ZERO, ONE, V, LDV )
       CALL DLAHQR( .true., .true., JW, 1, JW, T, LDT, SR( KWTOP ),
@@ -66599,8 +65844,7 @@
 *              .    (DTREXC can not fail in this case.) ====
 *
                IFST = NS
-               CALL DTREXC( 'V', JW, T, LDT, V, LDV, IFST, ILST,
-     $                      WORK,
+               CALL DTREXC( 'V', JW, T, LDT, V, LDV, IFST, ILST, WORK,
      $                      INFO )
                ILST = ILST + 1
             END IF
@@ -66625,8 +65869,7 @@
 *              .    ILST in case of a rare exchange failure. ====
 *
                IFST = NS
-               CALL DTREXC( 'V', JW, T, LDT, V, LDV, IFST, ILST,
-     $                      WORK,
+               CALL DTREXC( 'V', JW, T, LDT, V, LDV, IFST, ILST, WORK,
      $                      INFO )
                ILST = ILST + 2
             END IF
@@ -66688,8 +65931,7 @@
                SORTED = .false.
                IFST = I
                ILST = K
-               CALL DTREXC( 'V', JW, T, LDT, V, LDV, IFST, ILST,
-     $                      WORK,
+               CALL DTREXC( 'V', JW, T, LDT, V, LDV, IFST, ILST, WORK,
      $                      INFO )
                IF( INFO.EQ.0 ) THEN
                   I = ILST
@@ -66744,15 +65986,15 @@
             CALL DCOPY( NS, V, LDV, WORK, 1 )
             BETA = WORK( 1 )
             CALL DLARFG( NS, BETA, WORK( 2 ), 1, TAU )
+            WORK( 1 ) = ONE
 *
-            CALL DLASET( 'L', JW-2, JW-2, ZERO, ZERO, T( 3, 1 ),
-     $                   LDT )
+            CALL DLASET( 'L', JW-2, JW-2, ZERO, ZERO, T( 3, 1 ), LDT )
 *
-            CALL DLARF1F( 'L', NS, JW, WORK, 1, TAU, T, LDT,
+            CALL DLARF( 'L', NS, JW, WORK, 1, TAU, T, LDT,
      $                  WORK( JW+1 ) )
-            CALL DLARF1F( 'R', NS, NS, WORK, 1, TAU, T, LDT,
+            CALL DLARF( 'R', NS, NS, WORK, 1, TAU, T, LDT,
      $                  WORK( JW+1 ) )
-            CALL DLARF1F( 'R', JW, NS, WORK, 1, TAU, V, LDV,
+            CALL DLARF( 'R', JW, NS, WORK, 1, TAU, V, LDV,
      $                  WORK( JW+1 ) )
 *
             CALL DGEHRD( JW, 1, NS, T, LDT, WORK, WORK( JW+1 ),
@@ -66771,8 +66013,7 @@
 *        .    H and Z, if requested.  ====
 *
          IF( NS.GT.1 .AND. S.NE.ZERO )
-     $      CALL DORMHR( 'R', 'N', JW, NS, 1, NS, T, LDT, WORK, V,
-     $                   LDV,
+     $      CALL DORMHR( 'R', 'N', JW, NS, 1, NS, T, LDT, WORK, V, LDV,
      $                   WORK( JW+1 ), LWORK-JW, INFO )
 *
 *        ==== Update vertical slab in H ====
@@ -66786,8 +66027,7 @@
             KLN = MIN( NV, KWTOP-KROW )
             CALL DGEMM( 'N', 'N', KLN, JW, JW, ONE, H( KROW, KWTOP ),
      $                  LDH, V, LDV, ZERO, WV, LDWV )
-            CALL DLACPY( 'A', KLN, JW, WV, LDWV, H( KROW, KWTOP ),
-     $                   LDH )
+            CALL DLACPY( 'A', KLN, JW, WV, LDWV, H( KROW, KWTOP ), LDH )
    70    CONTINUE
 *
 *        ==== Update horizontal slab in H ====
@@ -66807,8 +66047,7 @@
          IF( WANTZ ) THEN
             DO 90 KROW = ILOZ, IHIZ, NV
                KLN = MIN( NV, IHIZ-KROW+1 )
-               CALL DGEMM( 'N', 'N', KLN, JW, JW, ONE, Z( KROW,
-     $                     KWTOP ),
+               CALL DGEMM( 'N', 'N', KLN, JW, JW, ONE, Z( KROW, KWTOP ),
      $                     LDZ, V, LDV, ZERO, WV, LDWV )
                CALL DLACPY( 'A', KLN, JW, WV, LDWV, Z( KROW, KWTOP ),
      $                      LDZ )
@@ -67106,8 +66345,7 @@
 *>       University of Kansas, USA
 *>
 *  =====================================================================
-      SUBROUTINE DLAQR3( WANTT, WANTZ, N, KTOP, KBOT, NW, H, LDH,
-     $                   ILOZ,
+      SUBROUTINE DLAQR3( WANTT, WANTZ, N, KTOP, KBOT, NW, H, LDH, ILOZ,
      $                   IHIZ, Z, LDZ, NS, ND, SR, SI, V, LDV, NH, T,
      $                   LDT, NV, WV, LDWV, WORK, LWORK )
 *
@@ -67145,9 +66383,8 @@
       EXTERNAL           DLAMCH, ILAENV
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DCOPY, DGEHRD, DGEMM, DLACPY, DLAHQR,
-     $                   DLANV2,
-     $                   DLAQR4, DLARF1F, DLARFG, DLASET, DORMHR, DTREXC
+      EXTERNAL           DCOPY, DGEHRD, DGEMM, DLACPY, DLAHQR, DLANV2,
+     $                   DLAQR4, DLARF, DLARFG, DLASET, DORMHR, DTREXC
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          ABS, DBLE, INT, MAX, MIN, SQRT
@@ -67168,15 +66405,13 @@
 *
 *        ==== Workspace query call to DORMHR ====
 *
-         CALL DORMHR( 'R', 'N', JW, JW, 1, JW-1, T, LDT, WORK, V,
-     $                LDV,
+         CALL DORMHR( 'R', 'N', JW, JW, 1, JW-1, T, LDT, WORK, V, LDV,
      $                WORK, -1, INFO )
          LWK2 = INT( WORK( 1 ) )
 *
 *        ==== Workspace query call to DLAQR4 ====
 *
-         CALL DLAQR4( .true., .true., JW, 1, JW, T, LDT, SR, SI, 1,
-     $                JW,
+         CALL DLAQR4( .true., .true., JW, 1, JW, T, LDT, SR, SI, 1, JW,
      $                V, LDV, WORK, -1, INFQR )
          LWK3 = INT( WORK( 1 ) )
 *
@@ -67246,8 +66481,7 @@
 *     .    here and there to keep track.) ====
 *
       CALL DLACPY( 'U', JW, JW, H( KWTOP, KWTOP ), LDH, T, LDT )
-      CALL DCOPY( JW-1, H( KWTOP+1, KWTOP ), LDH+1, T( 2, 1 ),
-     $            LDT+1 )
+      CALL DCOPY( JW-1, H( KWTOP+1, KWTOP ), LDH+1, T( 2, 1 ), LDT+1 )
 *
       CALL DLASET( 'A', JW, JW, ZERO, ONE, V, LDV )
       NMIN = ILAENV( 12, 'DLAQR3', 'SV', JW, 1, JW, LWORK )
@@ -67300,8 +66534,7 @@
 *              .    (DTREXC can not fail in this case.) ====
 *
                IFST = NS
-               CALL DTREXC( 'V', JW, T, LDT, V, LDV, IFST, ILST,
-     $                      WORK,
+               CALL DTREXC( 'V', JW, T, LDT, V, LDV, IFST, ILST, WORK,
      $                      INFO )
                ILST = ILST + 1
             END IF
@@ -67326,8 +66559,7 @@
 *              .    ILST in case of a rare exchange failure. ====
 *
                IFST = NS
-               CALL DTREXC( 'V', JW, T, LDT, V, LDV, IFST, ILST,
-     $                      WORK,
+               CALL DTREXC( 'V', JW, T, LDT, V, LDV, IFST, ILST, WORK,
      $                      INFO )
                ILST = ILST + 2
             END IF
@@ -67389,8 +66621,7 @@
                SORTED = .false.
                IFST = I
                ILST = K
-               CALL DTREXC( 'V', JW, T, LDT, V, LDV, IFST, ILST,
-     $                      WORK,
+               CALL DTREXC( 'V', JW, T, LDT, V, LDV, IFST, ILST, WORK,
      $                      INFO )
                IF( INFO.EQ.0 ) THEN
                   I = ILST
@@ -67445,15 +66676,15 @@
             CALL DCOPY( NS, V, LDV, WORK, 1 )
             BETA = WORK( 1 )
             CALL DLARFG( NS, BETA, WORK( 2 ), 1, TAU )
+            WORK( 1 ) = ONE
 *
-            CALL DLASET( 'L', JW-2, JW-2, ZERO, ZERO, T( 3, 1 ),
-     $                   LDT )
+            CALL DLASET( 'L', JW-2, JW-2, ZERO, ZERO, T( 3, 1 ), LDT )
 *
-            CALL DLARF1F( 'L', NS, JW, WORK, 1, TAU, T, LDT,
+            CALL DLARF( 'L', NS, JW, WORK, 1, TAU, T, LDT,
      $                  WORK( JW+1 ) )
-            CALL DLARF1F( 'R', NS, NS, WORK, 1, TAU, T, LDT,
+            CALL DLARF( 'R', NS, NS, WORK, 1, TAU, T, LDT,
      $                  WORK( JW+1 ) )
-            CALL DLARF1F( 'R', JW, NS, WORK, 1, TAU, V, LDV,
+            CALL DLARF( 'R', JW, NS, WORK, 1, TAU, V, LDV,
      $                  WORK( JW+1 ) )
 *
             CALL DGEHRD( JW, 1, NS, T, LDT, WORK, WORK( JW+1 ),
@@ -67472,8 +66703,7 @@
 *        .    H and Z, if requested.  ====
 *
          IF( NS.GT.1 .AND. S.NE.ZERO )
-     $      CALL DORMHR( 'R', 'N', JW, NS, 1, NS, T, LDT, WORK, V,
-     $                   LDV,
+     $      CALL DORMHR( 'R', 'N', JW, NS, 1, NS, T, LDT, WORK, V, LDV,
      $                   WORK( JW+1 ), LWORK-JW, INFO )
 *
 *        ==== Update vertical slab in H ====
@@ -67487,8 +66717,7 @@
             KLN = MIN( NV, KWTOP-KROW )
             CALL DGEMM( 'N', 'N', KLN, JW, JW, ONE, H( KROW, KWTOP ),
      $                  LDH, V, LDV, ZERO, WV, LDWV )
-            CALL DLACPY( 'A', KLN, JW, WV, LDWV, H( KROW, KWTOP ),
-     $                   LDH )
+            CALL DLACPY( 'A', KLN, JW, WV, LDWV, H( KROW, KWTOP ), LDH )
    70    CONTINUE
 *
 *        ==== Update horizontal slab in H ====
@@ -67508,8 +66737,7 @@
          IF( WANTZ ) THEN
             DO 90 KROW = ILOZ, IHIZ, NV
                KLN = MIN( NV, IHIZ-KROW+1 )
-               CALL DGEMM( 'N', 'N', KLN, JW, JW, ONE, Z( KROW,
-     $                     KWTOP ),
+               CALL DGEMM( 'N', 'N', KLN, JW, JW, ONE, Z( KROW, KWTOP ),
      $                     LDZ, V, LDV, ZERO, WV, LDWV )
                CALL DLACPY( 'A', KLN, JW, WV, LDWV, Z( KROW, KWTOP ),
      $                      LDZ )
@@ -67857,8 +67085,7 @@
       DOUBLE PRECISION   ZDUM( 1, 1 )
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DLACPY, DLAHQR, DLANV2, DLAQR2,
-     $                   DLAQR5
+      EXTERNAL           DLACPY, DLAHQR, DLANV2, DLAQR2, DLAQR5
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          ABS, DBLE, INT, MAX, MIN, MOD
@@ -68061,8 +67288,7 @@
 *
 *           ==== Aggressive early deflation ====
 *
-            CALL DLAQR2( WANTT, WANTZ, N, KTOP, KBOT, NW, H, LDH,
-     $                   ILOZ,
+            CALL DLAQR2( WANTT, WANTZ, N, KTOP, KBOT, NW, H, LDH, ILOZ,
      $                   IHIZ, Z, LDZ, LS, LD, WR, WI, H( KV, 1 ), LDH,
      $                   NHO, H( KV, KT ), LDH, NVE, H( KWV, 1 ), LDH,
      $                   WORK, LWORK )
@@ -68106,8 +67332,7 @@
                      BB = SS
                      CC = WILK2*SS
                      DD = AA
-                     CALL DLANV2( AA, BB, CC, DD, WR( I-1 ),
-     $                            WI( I-1 ),
+                     CALL DLANV2( AA, BB, CC, DD, WR( I-1 ), WI( I-1 ),
      $                            WR( I ), WI( I ), CS, SN )
    30             CONTINUE
                   IF( KS.EQ.KTOP ) THEN
@@ -68583,8 +67808,7 @@
       DOUBLE PRECISION   VT( 3 )
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DGEMM, DLACPY, DLAQR1, DLARFG, DLASET,
-     $                   DTRMM
+      EXTERNAL           DGEMM, DLACPY, DLAQR1, DLARFG, DLASET, DTRMM
 *     ..
 *     .. Executable Statements ..
 *
@@ -69249,8 +68473,7 @@
 *> \ingroup laqhb
 *
 *  =====================================================================
-      SUBROUTINE DLAQSB( UPLO, N, KD, AB, LDAB, S, SCOND, AMAX,
-     $                   EQUED )
+      SUBROUTINE DLAQSB( UPLO, N, KD, AB, LDAB, S, SCOND, AMAX, EQUED )
 *
 *  -- LAPACK auxiliary routine --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -69919,8 +69142,7 @@
 *> \ingroup laqtr
 *
 *  =====================================================================
-      SUBROUTINE DLAQTR( LTRAN, LREAL, N, T, LDT, B, W, SCALE, X,
-     $                   WORK,
+      SUBROUTINE DLAQTR( LTRAN, LREAL, N, T, LDT, B, W, SCALE, X, WORK,
      $                   INFO )
 *
 *  -- LAPACK auxiliary routine --
@@ -70074,8 +69296,7 @@
                      END IF
                   END IF
                   IF( J1.GT.1 ) THEN
-                     CALL DAXPY( J1-1, -X( J1 ), T( 1, J1 ), 1, X,
-     $                           1 )
+                     CALL DAXPY( J1-1, -X( J1 ), T( 1, J1 ), 1, X, 1 )
                      K = IDAMAX( J1-1, X, 1 )
                      XMAX = ABS( X( K ) )
                   END IF
@@ -70118,10 +69339,8 @@
 *                 Update right-hand side
 *
                   IF( J1.GT.1 ) THEN
-                     CALL DAXPY( J1-1, -X( J1 ), T( 1, J1 ), 1, X,
-     $                           1 )
-                     CALL DAXPY( J1-1, -X( J2 ), T( 1, J2 ), 1, X,
-     $                           1 )
+                     CALL DAXPY( J1-1, -X( J1 ), T( 1, J1 ), 1, X, 1 )
+                     CALL DAXPY( J1-1, -X( J2 ), T( 1, J2 ), 1, X, 1 )
                      K = IDAMAX( J1-1, X, 1 )
                      XMAX = ABS( X( K ) )
                   END IF
@@ -70165,8 +69384,7 @@
                      END IF
                   END IF
 *
-                  X( J1 ) = X( J1 ) - DDOT( J1-1, T( 1, J1 ), 1, X,
-     $               1 )
+                  X( J1 ) = X( J1 ) - DDOT( J1-1, T( 1, J1 ), 1, X, 1 )
 *
                   XJ = ABS( X( J1 ) )
                   TJJ = ABS( T( J1, J1 ) )
@@ -70296,8 +69514,7 @@
                   END IF
 *
                   IF( J1.GT.1 ) THEN
-                     CALL DAXPY( J1-1, -X( J1 ), T( 1, J1 ), 1, X,
-     $                           1 )
+                     CALL DAXPY( J1-1, -X( J1 ), T( 1, J1 ), 1, X, 1 )
                      CALL DAXPY( J1-1, -X( N+J1 ), T( 1, J1 ), 1,
      $                           X( N+1 ), 1 )
 *
@@ -70319,8 +69536,7 @@
                   D( 2, 1 ) = X( J2 )
                   D( 1, 2 ) = X( N+J1 )
                   D( 2, 2 ) = X( N+J2 )
-                  CALL DLALN2( .FALSE., 2, 2, SMINW, ONE, T( J1,
-     $                         J1 ),
+                  CALL DLALN2( .FALSE., 2, 2, SMINW, ONE, T( J1, J1 ),
      $                         LDT, ONE, ONE, D, 2, ZERO, -W, V, 2,
      $                         SCALOC, XNORM, IERR )
                   IF( IERR.NE.0 )
@@ -70352,10 +69568,8 @@
 *                 Update the right-hand side.
 *
                   IF( J1.GT.1 ) THEN
-                     CALL DAXPY( J1-1, -X( J1 ), T( 1, J1 ), 1, X,
-     $                           1 )
-                     CALL DAXPY( J1-1, -X( J2 ), T( 1, J2 ), 1, X,
-     $                           1 )
+                     CALL DAXPY( J1-1, -X( J1 ), T( 1, J1 ), 1, X, 1 )
+                     CALL DAXPY( J1-1, -X( J2 ), T( 1, J2 ), 1, X, 1 )
 *
                      CALL DAXPY( J1-1, -X( N+J1 ), T( 1, J1 ), 1,
      $                           X( N+1 ), 1 )
@@ -70412,8 +69626,7 @@
                      END IF
                   END IF
 *
-                  X( J1 ) = X( J1 ) - DDOT( J1-1, T( 1, J1 ), 1, X,
-     $               1 )
+                  X( J1 ) = X( J1 ) - DDOT( J1-1, T( 1, J1 ), 1, X, 1 )
                   X( N+J1 ) = X( N+J1 ) - DDOT( J1-1, T( 1, J1 ), 1,
      $                        X( N+1 ), 1 )
                   IF( J1.GT.1 ) THEN
@@ -71345,8 +70558,7 @@
 *
 *           w(1:lastc,1) := C(1:lastv,1:lastc)**T * v(1:lastv,1)
 *
-            CALL DGEMV( 'Transpose', LASTV, LASTC, ONE, C, LDC, V,
-     $                  INCV,
+            CALL DGEMV( 'Transpose', LASTV, LASTC, ONE, C, LDC, V, INCV,
      $           ZERO, WORK, 1 )
 *
 *           C(1:lastv,1:lastc) := C(...) - v(1:lastv,1) * w(1:lastc,1)**T
@@ -71372,550 +70584,6 @@
       RETURN
 *
 *     End of DLARF
-*
-      END
-*> \brief \b DLARF1F applies an elementary reflector to a general rectangular
-*              matrix assuming v(1) = 1.
-*
-*  =========== DOCUMENTATION ===========
-*
-* Online html documentation available at
-*            http://www.netlib.org/lapack/explore-html/
-*
-*> \htmlonly
-*> Download DLARF1F + dependencies
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/dlarf1f.f">
-*> [TGZ]</a>
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/dlarf1f.f">
-*> [ZIP]</a>
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/dlarf1f.f">
-*> [TXT]</a>
-*> \endhtmlonly
-*
-*  Definition:
-*  ===========
-*
-*       SUBROUTINE DLARF1F( SIDE, M, N, V, INCV, TAU, C, LDC, WORK )
-*
-*       .. Scalar Arguments ..
-*       CHARACTER          SIDE
-*       INTEGER            INCV, LDC, M, N
-*       DOUBLE PRECISION   TAU
-*       ..
-*       .. Array Arguments ..
-*       DOUBLE PRECISION   C( LDC, * ), V( * ), WORK( * )
-*       ..
-*
-*
-*> \par Purpose:
-*  =============
-*>
-*> \verbatim
-*>
-*> DLARF1F applies a real elementary reflector H to a real m by n matrix
-*> C, from either the left or the right. H is represented in the form
-*>
-*>       H = I - tau * v * v**T
-*>
-*> where tau is a real scalar and v is a real vector.
-*>
-*> If tau = 0, then H is taken to be the unit matrix.
-*> \endverbatim
-*
-*  Arguments:
-*  ==========
-*
-*> \param[in] SIDE
-*> \verbatim
-*>          SIDE is CHARACTER*1
-*>          = 'L': form  H * C
-*>          = 'R': form  C * H
-*> \endverbatim
-*>
-*> \param[in] M
-*> \verbatim
-*>          M is INTEGER
-*>          The number of rows of the matrix C.
-*> \endverbatim
-*>
-*> \param[in] N
-*> \verbatim
-*>          N is INTEGER
-*>          The number of columns of the matrix C.
-*> \endverbatim
-*>
-*> \param[in] V
-*> \verbatim
-*>          V is DOUBLE PRECISION array, dimension
-*>                     (1 + (M-1)*abs(INCV)) if SIDE = 'L'
-*>                  or (1 + (N-1)*abs(INCV)) if SIDE = 'R'
-*>          The vector v in the representation of H. V is not used if
-*>          TAU = 0. V(1) is not referenced or modified.
-*> \endverbatim
-*>
-*> \param[in] INCV
-*> \verbatim
-*>          INCV is INTEGER
-*>          The increment between elements of v. INCV <> 0.
-*> \endverbatim
-*>
-*> \param[in] TAU
-*> \verbatim
-*>          TAU is DOUBLE PRECISION
-*>          The value tau in the representation of H.
-*> \endverbatim
-*>
-*> \param[in,out] C
-*> \verbatim
-*>          C is DOUBLE PRECISION array, dimension (LDC,N)
-*>          On entry, the m by n matrix C.
-*>          On exit, C is overwritten by the matrix H * C if SIDE = 'L',
-*>          or C * H if SIDE = 'R'.
-*> \endverbatim
-*>
-*> \param[in] LDC
-*> \verbatim
-*>          LDC is INTEGER
-*>          The leading dimension of the array C. LDC >= max(1,M).
-*> \endverbatim
-*>
-*> \param[out] WORK
-*> \verbatim
-*>          WORK is DOUBLE PRECISION array, dimension
-*>                         (N) if SIDE = 'L'
-*>                      or (M) if SIDE = 'R'
-*> \endverbatim
-*
-*  To take advantage of the fact that v(1) = 1, we do the following
-*     v = [ 1 v_2 ]**T
-*     If SIDE='L'
-*           |-----|
-*           | C_1 |
-*        C =| C_2 |
-*           |-----|
-*        C_1\in\mathbb{R}^{1\times n}, C_2\in\mathbb{R}^{m-1\times n}
-*        So we compute:
-*        C = HC   = (I - \tau vv**T)C
-*                 = C - \tau vv**T C
-*        w = C**T v  = [ C_1**T C_2**T ] [ 1 v_2 ]**T
-*                    = C_1**T + C_2**T v ( DGEMM then DAXPY )
-*        C  = C - \tau vv**T C
-*           = C - \tau vw**T
-*        Giving us   C_1 = C_1 - \tau w**T ( DAXPY )
-*                 and
-*                    C_2 = C_2 - \tau v_2w**T ( DGER )
-*     If SIDE='R'
-*
-*        C = [ C_1 C_2 ]
-*        C_1\in\mathbb{R}^{m\times 1}, C_2\in\mathbb{R}^{m\times n-1}
-*        So we compute: 
-*        C = CH   = C(I - \tau vv**T)
-*                 = C - \tau Cvv**T
-*
-*        w = Cv   = [ C_1 C_2 ] [ 1 v_2 ]**T
-*                 = C_1 + C_2v_2 ( DGEMM then DAXPY )
-*        C  = C - \tau Cvv**T
-*           = C - \tau wv**T
-*        Giving us   C_1 = C_1 - \tau w ( DAXPY )
-*                 and
-*                    C_2 = C_2 - \tau wv_2**T ( DGER )
-*
-*  Authors:
-*  ========
-*
-*> \author Univ. of Tennessee
-*> \author Univ. of California Berkeley
-*> \author Univ. of Colorado Denver
-*> \author NAG Ltd.
-*
-*> \ingroup larf
-*
-*  =====================================================================
-      SUBROUTINE DLARF1F( SIDE, M, N, V, INCV, TAU, C, LDC, WORK )
-*
-*  -- LAPACK auxiliary routine --
-*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*
-*     .. Scalar Arguments ..
-      CHARACTER          SIDE
-      INTEGER            INCV, LDC, M, N
-      DOUBLE PRECISION   TAU
-*     ..
-*     .. Array Arguments ..
-      DOUBLE PRECISION   C( LDC, * ), V( * ), WORK( * )
-*     ..
-*
-*  =====================================================================
-*
-*     .. Parameters ..
-      DOUBLE PRECISION   ONE, ZERO
-      PARAMETER          ( ONE = 1.0D+0, ZERO = 0.0D+0 )
-*     ..
-*     .. Local Scalars ..
-      LOGICAL            APPLYLEFT
-      INTEGER            I, LASTV, LASTC
-*     ..
-*     .. External Subroutines ..
-      EXTERNAL           DGEMV, DGER, DAXPY, DSCAL
-*     ..
-*     .. External Functions ..
-      LOGICAL            LSAME
-      INTEGER            ILADLR, ILADLC
-      EXTERNAL           LSAME, ILADLR, ILADLC
-*     ..
-*     .. Executable Statements ..
-*
-      APPLYLEFT = LSAME( SIDE, 'L' )
-      LASTV = 1
-      LASTC = 0
-      IF( TAU.NE.ZERO ) THEN
-!     Set up variables for scanning V.  LASTV begins pointing to the end
-!     of V.
-         IF( APPLYLEFT ) THEN
-            LASTV = M
-         ELSE
-            LASTV = N
-         END IF
-         IF( INCV.GT.0 ) THEN
-            I = 1 + (LASTV-1) * INCV
-         ELSE
-            I = 1
-         END IF
-!     Look for the last non-zero row in V.
-!        Since we are assuming that V(1) = 1, and it is not stored, so we
-!        shouldn't access it.
-         DO WHILE( LASTV.GT.1 .AND. V( I ).EQ.ZERO )
-            LASTV = LASTV - 1
-            I = I - INCV
-         END DO
-         IF( APPLYLEFT ) THEN
-!     Scan for the last non-zero column in C(1:lastv,:).
-            LASTC = ILADLC(LASTV, N, C, LDC)
-         ELSE
-!     Scan for the last non-zero row in C(:,1:lastv).
-            LASTC = ILADLR(M, LASTV, C, LDC)
-         END IF
-      END IF
-      IF( LASTC.EQ.0 ) THEN
-         RETURN
-      END IF
-      IF( APPLYLEFT ) THEN
-*
-*        Form  H * C
-*
-         ! Check if lastv = 1. This means v = 1, So we just need to compute
-         ! C := HC = (1-\tau)C.
-         IF( LASTV.EQ.1 ) THEN
-*
-*           C(1,1:lastc) := ( 1 - tau ) * C(1,1:lastc)
-*
-            CALL DSCAL(LASTC, ONE - TAU, C, LDC)
-         ELSE
-*
-*           w(1:lastc,1) := C(1:lastv,1:lastc)**T * v(1:lastv,1)
-*
-            ! w(1:lastc,1) := C(2:lastv,1:lastc)**T * v(2:lastv,1)
-            CALL DGEMV( 'Transpose', LASTV-1, LASTC, ONE, C(1+1,1),
-     $                  LDC, V(1+INCV), INCV, ZERO, WORK, 1)
-            ! w(1:lastc,1) += C(1,1:lastc)**T * v(1,1) = C(1,1:lastc)**T
-            CALL DAXPY(LASTC, ONE, C, LDC, WORK, 1)
-*
-*           C(1:lastv,1:lastc) := C(...) - tau * v(1:lastv,1) * w(1:lastc,1)**T
-*
-            ! C(1, 1:lastc)   := C(...) - tau * v(1,1) * w(1:lastc,1)**T
-            !                  = C(...) - tau * w(1:lastc,1)**T
-            CALL DAXPY(LASTC, -TAU, WORK, 1, C, LDC)
-            ! C(2:lastv,1:lastc) := C(...) - tau * v(2:lastv,1)*w(1:lastc,1)**T
-            CALL DGER(LASTV-1, LASTC, -TAU, V(1+INCV), INCV, WORK, 1,
-     $                  C(1+1,1), LDC)
-         END IF
-      ELSE
-*
-*        Form  C * H
-*
-         ! Check if n = 1. This means v = 1, so we just need to compute
-         ! C := CH = C(1-\tau).
-         IF( LASTV.EQ.1 ) THEN
-*
-*           C(1:lastc,1) := ( 1 - tau ) * C(1:lastc,1)
-*
-            CALL DSCAL(LASTC, ONE - TAU, C, 1)
-         ELSE
-*
-*           w(1:lastc,1) := C(1:lastc,1:lastv) * v(1:lastv,1)
-*
-            ! w(1:lastc,1) := C(1:lastc,2:lastv) * v(2:lastv,1)
-            CALL DGEMV( 'No transpose', LASTC, LASTV-1, ONE, 
-     $         C(1,1+1), LDC, V(1+INCV), INCV, ZERO, WORK, 1 )
-            ! w(1:lastc,1) += C(1:lastc,1) v(1,1) = C(1:lastc,1)
-            CALL DAXPY(LASTC, ONE, C, 1, WORK, 1)
-*
-*           C(1:lastc,1:lastv) := C(...) - tau * w(1:lastc,1) * v(1:lastv,1)**T
-*
-            ! C(1:lastc,1)     := C(...) - tau * w(1:lastc,1) * v(1,1)**T
-            !                   = C(...) - tau * w(1:lastc,1)
-            CALL DAXPY(LASTC, -TAU, WORK, 1, C, 1)
-            ! C(1:lastc,2:lastv) := C(...) - tau * w(1:lastc,1) * v(2:lastv)**T
-            CALL DGER( LASTC, LASTV-1, -TAU, WORK, 1, V(1+INCV),
-     $                  INCV, C(1,1+1), LDC )
-         END IF
-      END IF
-      RETURN
-*
-*     End of DLARF1F
-*
-      END
-*> \brief \b DLARF1L applies an elementary reflector to a general rectangular
-*              matrix assuming v(lastv) = 1 where lastv is the last non-zero
-*              element
-*
-*  =========== DOCUMENTATION ===========
-*
-* Online html documentation available at
-*            http://www.netlib.org/lapack/explore-html/
-*
-*> \htmlonly
-*> Download DLARF1L + dependencies
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/dlarf1l.f">
-*> [TGZ]</a>
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/dlarf1l.f">
-*> [ZIP]</a>
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/dlarf1l.f">
-*> [TXT]</a>
-*> \endhtmlonly
-*
-*  Definition:
-*  ===========
-*
-*       SUBROUTINE DLARF1L( SIDE, M, N, V, INCV, TAU, C, LDC, WORK )
-*
-*       .. Scalar Arguments ..
-*       CHARACTER          SIDE
-*       INTEGER            INCV, LDC, M, N
-*       DOUBLE PRECISION   TAU
-*       ..
-*       .. Array Arguments ..
-*       DOUBLE PRECISION   C( LDC, * ), V( * ), WORK( * )
-*       ..
-*
-*
-*> \par Purpose:
-*  =============
-*>
-*> \verbatim
-*>
-*> DLARF1L applies a real elementary reflector H to a real m by n matrix
-*> C, from either the left or the right. H is represented in the form
-*>
-*>       H = I - tau * v * v**T
-*>
-*> where tau is a real scalar and v is a real vector.
-*>
-*> If tau = 0, then H is taken to be the unit matrix.
-*> \endverbatim
-*
-*  Arguments:
-*  ==========
-*
-*> \param[in] SIDE
-*> \verbatim
-*>          SIDE is CHARACTER*1
-*>          = 'L': form  H * C
-*>          = 'R': form  C * H
-*> \endverbatim
-*>
-*> \param[in] M
-*> \verbatim
-*>          M is INTEGER
-*>          The number of rows of the matrix C.
-*> \endverbatim
-*>
-*> \param[in] N
-*> \verbatim
-*>          N is INTEGER
-*>          The number of columns of the matrix C.
-*> \endverbatim
-*>
-*> \param[in] V
-*> \verbatim
-*>          V is DOUBLE PRECISION array, dimension
-*>                     (1 + (M-1)*abs(INCV)) if SIDE = 'L'
-*>                  or (1 + (N-1)*abs(INCV)) if SIDE = 'R'
-*>          The vector v in the representation of H. V is not used if
-*>          TAU = 0.
-*> \endverbatim
-*>
-*> \param[in] INCV
-*> \verbatim
-*>          INCV is INTEGER
-*>          The increment between elements of v. INCV <> 0.
-*> \endverbatim
-*>
-*> \param[in] TAU
-*> \verbatim
-*>          TAU is DOUBLE PRECISION
-*>          The value tau in the representation of H.
-*> \endverbatim
-*>
-*> \param[in,out] C
-*> \verbatim
-*>          C is DOUBLE PRECISION array, dimension (LDC,N)
-*>          On entry, the m by n matrix C.
-*>          On exit, C is overwritten by the matrix H * C if SIDE = 'L',
-*>          or C * H if SIDE = 'R'.
-*> \endverbatim
-*>
-*> \param[in] LDC
-*> \verbatim
-*>          LDC is INTEGER
-*>          The leading dimension of the array C. LDC >= max(1,M).
-*> \endverbatim
-*>
-*> \param[out] WORK
-*> \verbatim
-*>          WORK is DOUBLE PRECISION array, dimension
-*>                         (N) if SIDE = 'L'
-*>                      or (M) if SIDE = 'R'
-*> \endverbatim
-*
-*  Authors:
-*  ========
-*
-*> \author Univ. of Tennessee
-*> \author Univ. of California Berkeley
-*> \author Univ. of Colorado Denver
-*> \author NAG Ltd.
-*
-*> \ingroup larf
-*
-*  =====================================================================
-      SUBROUTINE DLARF1L( SIDE, M, N, V, INCV, TAU, C, LDC, WORK )
-*
-*  -- LAPACK auxiliary routine --
-*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*
-*     .. Scalar Arguments ..
-      CHARACTER          SIDE
-      INTEGER            INCV, LDC, M, N
-      DOUBLE PRECISION   TAU
-*     ..
-*     .. Array Arguments ..
-      DOUBLE PRECISION   C( LDC, * ), V( * ), WORK( * )
-*     ..
-*
-*  =====================================================================
-*
-*     .. Parameters ..
-      DOUBLE PRECISION   ONE, ZERO
-      PARAMETER          ( ONE = 1.0D+0, ZERO = 0.0D+0 )
-*     ..
-*     .. Local Scalars ..
-      LOGICAL            APPLYLEFT
-      INTEGER            I, FIRSTV, LASTV, LASTC
-*     ..
-*     .. External Subroutines ..
-      EXTERNAL           DGEMV, DGER
-*     ..
-*     .. External Functions ..
-      LOGICAL            LSAME
-      INTEGER            ILADLR, ILADLC
-      EXTERNAL           LSAME, ILADLR, ILADLC
-*     ..
-*     .. Executable Statements ..
-*
-      APPLYLEFT = LSAME( SIDE, 'L' )
-      FIRSTV = 1
-      LASTC = 0
-      IF( TAU.NE.ZERO ) THEN
-!     Set up variables for scanning V.  LASTV begins pointing to the end
-!     of V.
-         IF( APPLYLEFT ) THEN
-            LASTV = M
-         ELSE
-            LASTV = N
-         END IF
-         I = 1
-!     Look for the last non-zero row in V.
-         DO WHILE( LASTV.GT.FIRSTV .AND. V( I ).EQ.ZERO )
-            FIRSTV = FIRSTV + 1
-            I = I + INCV
-         END DO
-         IF( APPLYLEFT ) THEN
-!     Scan for the last non-zero column in C(1:lastv,:).
-            LASTC = ILADLC(LASTV, N, C, LDC)
-         ELSE
-!     Scan for the last non-zero row in C(:,1:lastv).
-            LASTC = ILADLR(M, LASTV, C, LDC)
-         END IF
-      END IF
-      IF( LASTC.EQ.0 ) THEN
-         RETURN
-      END IF
-      IF( APPLYLEFT ) THEN
-*
-*        Form  H * C
-*
-         IF( LASTV.GT.0 ) THEN
-            ! Check if m = 1. This means v = 1, So we just need to compute
-            ! C := HC = (1-\tau)C.
-            IF( LASTV.EQ.FIRSTV ) THEN
-               CALL DSCAL(LASTC, ONE - TAU, C( FIRSTV, 1), LDC)
-            ELSE
-*
-*              w(1:lastc,1) := C(1:lastv,1:lastc)**T * v(1:lastv,1)
-*
-               ! w(1:lastc,1) := C(1:lastv-1,1:lastc)**T * v(1:lastv-1,1)
-               CALL DGEMV( 'Transpose', LASTV-FIRSTV, LASTC, ONE,
-     $                     C(FIRSTV,1), LDC, V(I), INCV, ZERO, 
-     $                     WORK, 1)
-               ! w(1:lastc,1) += C(lastv,1:lastc)**T * v(lastv,1) = C(lastv,1:lastc)**T
-               CALL DAXPY(LASTC, ONE, C(LASTV,1), LDC, WORK, 1)
-*
-*              C(1:lastv,1:lastc) := C(...) - tau * v(1:lastv,1) * w(1:lastc,1)**T
-*
-               ! C(lastv, 1:lastc)   := C(...) - tau * v(lastv,1) * w(1:lastc,1)**T
-               !                      = C(...) - tau * w(1:lastc,1)**T
-               CALL DAXPY(LASTC, -TAU, WORK, 1, C(LASTV,1), LDC)
-               ! C(1:lastv-1,1:lastc) := C(...) - tau * v(1:lastv-1,1)*w(1:lastc,1)**T
-               CALL DGER(LASTV-FIRSTV, LASTC, -TAU, V(I), INCV,
-     $                   WORK, 1, C(FIRSTV,1), LDC)
-            END IF
-         END IF
-      ELSE
-*
-*        Form  C * H
-*
-         IF( LASTV.GT.0 ) THEN
-            ! Check if n = 1. This means v = 1, so we just need to compute
-            ! C := CH = C(1-\tau).
-            IF( LASTV.EQ.FIRSTV ) THEN
-               CALL DSCAL(LASTC, ONE - TAU, C, 1)
-            ELSE
-*
-*              w(1:lastc,1) := C(1:lastc,1:lastv) * v(1:lastv,1)
-*
-               ! w(1:lastc,1) := C(1:lastc,1:lastv-1) * v(1:lastv-1,1)
-               CALL DGEMV( 'No transpose', LASTC, LASTV-FIRSTV,
-     $            ONE, C(1,FIRSTV), LDC, V(I), INCV, ZERO, WORK, 1 )
-               ! w(1:lastc,1) += C(1:lastc,lastv) * v(lastv,1) = C(1:lastc,lastv)
-               CALL DAXPY(LASTC, ONE, C(1,LASTV), 1, WORK, 1)
-*
-*              C(1:lastc,1:lastv) := C(...) - tau * w(1:lastc,1) * v(1:lastv,1)**T
-*
-               ! C(1:lastc,lastv)     := C(...) - tau * w(1:lastc,1) * v(lastv,1)**T
-               !                       = C(...) - tau * w(1:lastc,1)
-               CALL DAXPY(LASTC, -TAU, WORK, 1, C(1,LASTV), 1)
-               ! C(1:lastc,1:lastv-1) := C(...) - tau * w(1:lastc,1) * v(1:lastv-1)**T
-               CALL DGER( LASTC, LASTV-FIRSTV, -TAU, WORK, 1, V(I), 
-     $                     INCV, C(1,FIRSTV), LDC )
-            END IF
-         END IF
-      END IF
-      RETURN
-*
-*     End of DLARF1L
 *
       END
 *> \brief \b DLARFB applies a block reflector or its transpose to a general rectangular matrix.
@@ -72090,8 +70758,9 @@
 *>
 *>  The shape of the matrix V and the storage of the vectors which define
 *>  the H(i) is best illustrated by the following example with n = 5 and
-*>  k = 3. The triangular part of V (including its diagonal) is not
-*>  referenced.
+*>  k = 3. The elements equal to 1 are not stored; the corresponding
+*>  array elements are modified but restored on exit. The rest of the
+*>  array is not used.
 *>
 *>  DIRECT = 'F' and STOREV = 'C':         DIRECT = 'F' and STOREV = 'R':
 *>
@@ -72111,8 +70780,7 @@
 *> \endverbatim
 *>
 *  =====================================================================
-      SUBROUTINE DLARFB( SIDE, TRANS, DIRECT, STOREV, M, N, K, V,
-     $                   LDV,
+      SUBROUTINE DLARFB( SIDE, TRANS, DIRECT, STOREV, M, N, K, V, LDV,
      $                   T, LDT, C, LDC, WORK, LDWORK )
 *
 *  -- LAPACK auxiliary routine --
@@ -72181,8 +70849,7 @@
 *
 *              W := W * V1
 *
-               CALL DTRMM( 'Right', 'Lower', 'No transpose', 'Unit',
-     $                     N,
+               CALL DTRMM( 'Right', 'Lower', 'No transpose', 'Unit', N,
      $                     K, ONE, V, LDV, WORK, LDWORK )
                IF( M.GT.K ) THEN
 *
@@ -72195,8 +70862,7 @@
 *
 *              W := W * T**T  or  W * T
 *
-               CALL DTRMM( 'Right', 'Upper', TRANST, 'Non-unit', N,
-     $                     K,
+               CALL DTRMM( 'Right', 'Upper', TRANST, 'Non-unit', N, K,
      $                     ONE, T, LDT, WORK, LDWORK )
 *
 *              C := C - V * W**T
@@ -72212,8 +70878,7 @@
 *
 *              W := W * V1**T
 *
-               CALL DTRMM( 'Right', 'Lower', 'Transpose', 'Unit', N,
-     $                     K,
+               CALL DTRMM( 'Right', 'Lower', 'Transpose', 'Unit', N, K,
      $                     ONE, V, LDV, WORK, LDWORK )
 *
 *              C1 := C1 - W**T
@@ -72238,15 +70903,13 @@
 *
 *              W := W * V1
 *
-               CALL DTRMM( 'Right', 'Lower', 'No transpose', 'Unit',
-     $                     M,
+               CALL DTRMM( 'Right', 'Lower', 'No transpose', 'Unit', M,
      $                     K, ONE, V, LDV, WORK, LDWORK )
                IF( N.GT.K ) THEN
 *
 *                 W := W + C2 * V2
 *
-                  CALL DGEMM( 'No transpose', 'No transpose', M, K,
-     $                        N-K,
+                  CALL DGEMM( 'No transpose', 'No transpose', M, K, N-K,
      $                        ONE, C( 1, K+1 ), LDC, V( K+1, 1 ), LDV,
      $                        ONE, WORK, LDWORK )
                END IF
@@ -72269,8 +70932,7 @@
 *
 *              W := W * V1**T
 *
-               CALL DTRMM( 'Right', 'Lower', 'Transpose', 'Unit', M,
-     $                     K,
+               CALL DTRMM( 'Right', 'Lower', 'Transpose', 'Unit', M, K,
      $                     ONE, V, LDV, WORK, LDWORK )
 *
 *              C1 := C1 - W
@@ -72298,14 +70960,12 @@
 *              W := C2**T
 *
                DO 70 J = 1, K
-                  CALL DCOPY( N, C( M-K+J, 1 ), LDC, WORK( 1, J ),
-     $                        1 )
+                  CALL DCOPY( N, C( M-K+J, 1 ), LDC, WORK( 1, J ), 1 )
    70          CONTINUE
 *
 *              W := W * V2
 *
-               CALL DTRMM( 'Right', 'Upper', 'No transpose', 'Unit',
-     $                     N,
+               CALL DTRMM( 'Right', 'Upper', 'No transpose', 'Unit', N,
      $                     K, ONE, V( M-K+1, 1 ), LDV, WORK, LDWORK )
                IF( M.GT.K ) THEN
 *
@@ -72317,8 +70977,7 @@
 *
 *              W := W * T**T  or  W * T
 *
-               CALL DTRMM( 'Right', 'Lower', TRANST, 'Non-unit', N,
-     $                     K,
+               CALL DTRMM( 'Right', 'Lower', TRANST, 'Non-unit', N, K,
      $                     ONE, T, LDT, WORK, LDWORK )
 *
 *              C := C - V * W**T
@@ -72333,8 +70992,7 @@
 *
 *              W := W * V2**T
 *
-               CALL DTRMM( 'Right', 'Upper', 'Transpose', 'Unit', N,
-     $                     K,
+               CALL DTRMM( 'Right', 'Upper', 'Transpose', 'Unit', N, K,
      $                     ONE, V( M-K+1, 1 ), LDV, WORK, LDWORK )
 *
 *              C2 := C2 - W**T
@@ -72359,15 +71017,13 @@
 *
 *              W := W * V2
 *
-               CALL DTRMM( 'Right', 'Upper', 'No transpose', 'Unit',
-     $                     M,
+               CALL DTRMM( 'Right', 'Upper', 'No transpose', 'Unit', M,
      $                     K, ONE, V( N-K+1, 1 ), LDV, WORK, LDWORK )
                IF( N.GT.K ) THEN
 *
 *                 W := W + C1 * V1
 *
-                  CALL DGEMM( 'No transpose', 'No transpose', M, K,
-     $                        N-K,
+                  CALL DGEMM( 'No transpose', 'No transpose', M, K, N-K,
      $                        ONE, C, LDC, V, LDV, ONE, WORK, LDWORK )
                END IF
 *
@@ -72388,8 +71044,7 @@
 *
 *              W := W * V2**T
 *
-               CALL DTRMM( 'Right', 'Upper', 'Transpose', 'Unit', M,
-     $                     K,
+               CALL DTRMM( 'Right', 'Upper', 'Transpose', 'Unit', M, K,
      $                     ONE, V( N-K+1, 1 ), LDV, WORK, LDWORK )
 *
 *              C2 := C2 - W
@@ -72424,23 +71079,20 @@
 *
 *              W := W * V1**T
 *
-               CALL DTRMM( 'Right', 'Upper', 'Transpose', 'Unit', N,
-     $                     K,
+               CALL DTRMM( 'Right', 'Upper', 'Transpose', 'Unit', N, K,
      $                     ONE, V, LDV, WORK, LDWORK )
                IF( M.GT.K ) THEN
 *
 *                 W := W + C2**T * V2**T
 *
-                  CALL DGEMM( 'Transpose', 'Transpose', N, K, M-K,
-     $                        ONE,
+                  CALL DGEMM( 'Transpose', 'Transpose', N, K, M-K, ONE,
      $                        C( K+1, 1 ), LDC, V( 1, K+1 ), LDV, ONE,
      $                        WORK, LDWORK )
                END IF
 *
 *              W := W * T**T  or  W * T
 *
-               CALL DTRMM( 'Right', 'Upper', TRANST, 'Non-unit', N,
-     $                     K,
+               CALL DTRMM( 'Right', 'Upper', TRANST, 'Non-unit', N, K,
      $                     ONE, T, LDT, WORK, LDWORK )
 *
 *              C := C - V**T * W**T
@@ -72449,16 +71101,14 @@
 *
 *                 C2 := C2 - V2**T * W**T
 *
-                  CALL DGEMM( 'Transpose', 'Transpose', M-K, N, K,
-     $                        -ONE,
+                  CALL DGEMM( 'Transpose', 'Transpose', M-K, N, K, -ONE,
      $                        V( 1, K+1 ), LDV, WORK, LDWORK, ONE,
      $                        C( K+1, 1 ), LDC )
                END IF
 *
 *              W := W * V1
 *
-               CALL DTRMM( 'Right', 'Upper', 'No transpose', 'Unit',
-     $                     N,
+               CALL DTRMM( 'Right', 'Upper', 'No transpose', 'Unit', N,
      $                     K, ONE, V, LDV, WORK, LDWORK )
 *
 *              C1 := C1 - W**T
@@ -72483,8 +71133,7 @@
 *
 *              W := W * V1**T
 *
-               CALL DTRMM( 'Right', 'Upper', 'Transpose', 'Unit', M,
-     $                     K,
+               CALL DTRMM( 'Right', 'Upper', 'Transpose', 'Unit', M, K,
      $                     ONE, V, LDV, WORK, LDWORK )
                IF( N.GT.K ) THEN
 *
@@ -72506,16 +71155,14 @@
 *
 *                 C2 := C2 - W * V2
 *
-                  CALL DGEMM( 'No transpose', 'No transpose', M, N-K,
-     $                        K,
+                  CALL DGEMM( 'No transpose', 'No transpose', M, N-K, K,
      $                        -ONE, WORK, LDWORK, V( 1, K+1 ), LDV, ONE,
      $                        C( 1, K+1 ), LDC )
                END IF
 *
 *              W := W * V1
 *
-               CALL DTRMM( 'Right', 'Upper', 'No transpose', 'Unit',
-     $                     M,
+               CALL DTRMM( 'Right', 'Upper', 'No transpose', 'Unit', M,
      $                     K, ONE, V, LDV, WORK, LDWORK )
 *
 *              C1 := C1 - W
@@ -72543,28 +71190,24 @@
 *              W := C2**T
 *
                DO 190 J = 1, K
-                  CALL DCOPY( N, C( M-K+J, 1 ), LDC, WORK( 1, J ),
-     $                        1 )
+                  CALL DCOPY( N, C( M-K+J, 1 ), LDC, WORK( 1, J ), 1 )
   190          CONTINUE
 *
 *              W := W * V2**T
 *
-               CALL DTRMM( 'Right', 'Lower', 'Transpose', 'Unit', N,
-     $                     K,
+               CALL DTRMM( 'Right', 'Lower', 'Transpose', 'Unit', N, K,
      $                     ONE, V( 1, M-K+1 ), LDV, WORK, LDWORK )
                IF( M.GT.K ) THEN
 *
 *                 W := W + C1**T * V1**T
 *
-                  CALL DGEMM( 'Transpose', 'Transpose', N, K, M-K,
-     $                        ONE,
+                  CALL DGEMM( 'Transpose', 'Transpose', N, K, M-K, ONE,
      $                        C, LDC, V, LDV, ONE, WORK, LDWORK )
                END IF
 *
 *              W := W * T**T  or  W * T
 *
-               CALL DTRMM( 'Right', 'Lower', TRANST, 'Non-unit', N,
-     $                     K,
+               CALL DTRMM( 'Right', 'Lower', TRANST, 'Non-unit', N, K,
      $                     ONE, T, LDT, WORK, LDWORK )
 *
 *              C := C - V**T * W**T
@@ -72573,15 +71216,13 @@
 *
 *                 C1 := C1 - V1**T * W**T
 *
-                  CALL DGEMM( 'Transpose', 'Transpose', M-K, N, K,
-     $                        -ONE,
+                  CALL DGEMM( 'Transpose', 'Transpose', M-K, N, K, -ONE,
      $                        V, LDV, WORK, LDWORK, ONE, C, LDC )
                END IF
 *
 *              W := W * V2
 *
-               CALL DTRMM( 'Right', 'Lower', 'No transpose', 'Unit',
-     $                     N,
+               CALL DTRMM( 'Right', 'Lower', 'No transpose', 'Unit', N,
      $                     K, ONE, V( 1, M-K+1 ), LDV, WORK, LDWORK )
 *
 *              C2 := C2 - W**T
@@ -72606,8 +71247,7 @@
 *
 *              W := W * V2**T
 *
-               CALL DTRMM( 'Right', 'Lower', 'Transpose', 'Unit', M,
-     $                     K,
+               CALL DTRMM( 'Right', 'Lower', 'Transpose', 'Unit', M, K,
      $                     ONE, V( 1, N-K+1 ), LDV, WORK, LDWORK )
                IF( N.GT.K ) THEN
 *
@@ -72628,15 +71268,13 @@
 *
 *                 C1 := C1 - W * V1
 *
-                  CALL DGEMM( 'No transpose', 'No transpose', M, N-K,
-     $                        K,
+                  CALL DGEMM( 'No transpose', 'No transpose', M, N-K, K,
      $                        -ONE, WORK, LDWORK, V, LDV, ONE, C, LDC )
                END IF
 *
 *              W := W * V2
 *
-               CALL DTRMM( 'Right', 'Lower', 'No transpose', 'Unit',
-     $                     M,
+               CALL DTRMM( 'Right', 'Lower', 'No transpose', 'Unit', M,
      $                     K, ONE, V( 1, N-K+1 ), LDV, WORK, LDWORK )
 *
 *              C1 := C1 - W
@@ -73110,7 +71748,7 @@
 *  Definition:
 *  ===========
 *
-*       RECURSIVE SUBROUTINE DLARFT( DIRECT, STOREV, N, K, V, LDV, TAU, T, LDT )
+*       SUBROUTINE DLARFT( DIRECT, STOREV, N, K, V, LDV, TAU, T, LDT )
 *
 *       .. Scalar Arguments ..
 *       CHARACTER          DIRECT, STOREV
@@ -73251,473 +71889,168 @@
 *> \endverbatim
 *>
 *  =====================================================================
-      RECURSIVE SUBROUTINE DLARFT( DIRECT, STOREV, N, K, V, LDV,
-     $                             TAU, T, LDT )
+      SUBROUTINE DLARFT( DIRECT, STOREV, N, K, V, LDV, TAU, T, LDT )
 *
 *  -- LAPACK auxiliary routine --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
 *
-*        .. Scalar Arguments
-*
+*     .. Scalar Arguments ..
       CHARACTER          DIRECT, STOREV
       INTEGER            K, LDT, LDV, N
 *     ..
 *     .. Array Arguments ..
-*
       DOUBLE PRECISION   T( LDT, * ), TAU( * ), V( LDV, * )
 *     ..
 *
+*  =====================================================================
+*
 *     .. Parameters ..
-*
-      DOUBLE PRECISION ONE, NEG_ONE, ZERO
-      PARAMETER(ONE=1.0D+0, ZERO = 0.0D+0, NEG_ONE=-1.0D+0)
-*
+      DOUBLE PRECISION   ONE, ZERO
+      PARAMETER          ( ONE = 1.0D+0, ZERO = 0.0D+0 )
+*     ..
 *     .. Local Scalars ..
-*
-      INTEGER           I,J,L
-      LOGICAL           QR,LQ,QL,DIRF,COLV
-*
+      INTEGER            I, J, PREVLASTV, LASTV
+*     ..
 *     .. External Subroutines ..
-*
-      EXTERNAL          DTRMM,DGEMM,DLACPY
-*
-*     .. External Functions..
-*
-      LOGICAL           LSAME
-      EXTERNAL          LSAME
-*     
-*     The general scheme used is inspired by the approach inside DGEQRT3
-*     which was (at the time of writing this code):
-*     Based on the algorithm of Elmroth and Gustavson,
-*     IBM J. Res. Develop. Vol 44 No. 4 July 2000.
+      EXTERNAL           DGEMV, DTRMV
+*     ..
+*     .. External Functions ..
+      LOGICAL            LSAME
+      EXTERNAL           LSAME
 *     ..
 *     .. Executable Statements ..
 *
 *     Quick return if possible
 *
-      IF(N.EQ.0.OR.K.EQ.0) THEN
-         RETURN
-      END IF
+      IF( N.EQ.0 )
+     $   RETURN
 *
-*     Base case
+      IF( LSAME( DIRECT, 'F' ) ) THEN
+         PREVLASTV = N
+         DO I = 1, K
+            PREVLASTV = MAX( I, PREVLASTV )
+            IF( TAU( I ).EQ.ZERO ) THEN
 *
-      IF(N.EQ.1.OR.K.EQ.1) THEN
-         T(1,1) = TAU(1)
-         RETURN
-      END IF
+*              H(i)  =  I
 *
-*     Beginning of executable statements
+               DO J = 1, I
+                  T( J, I ) = ZERO
+               END DO
+            ELSE
 *
-      L = K / 2
+*              general case
 *
-*     Determine what kind of Q we need to compute
-*     We assume that if the user doesn't provide 'F' for DIRECT,
-*     then they meant to provide 'B' and if they don't provide
-*     'C' for STOREV, then they meant to provide 'R'
+               IF( LSAME( STOREV, 'C' ) ) THEN
+*                 Skip any trailing zeros.
+                  DO LASTV = N, I+1, -1
+                     IF( V( LASTV, I ).NE.ZERO ) EXIT
+                  END DO
+                  DO J = 1, I-1
+                     T( J, I ) = -TAU( I ) * V( I , J )
+                  END DO
+                  J = MIN( LASTV, PREVLASTV )
 *
-      DIRF = LSAME(DIRECT,'F')
-      COLV = LSAME(STOREV,'C')
+*                 T(1:i-1,i) := - tau(i) * V(i:j,1:i-1)**T * V(i:j,i)
 *
-*     QR happens when we have forward direction in column storage
+                  CALL DGEMV( 'Transpose', J-I, I-1, -TAU( I ),
+     $                        V( I+1, 1 ), LDV, V( I+1, I ), 1, ONE,
+     $                        T( 1, I ), 1 )
+               ELSE
+*                 Skip any trailing zeros.
+                  DO LASTV = N, I+1, -1
+                     IF( V( I, LASTV ).NE.ZERO ) EXIT
+                  END DO
+                  DO J = 1, I-1
+                     T( J, I ) = -TAU( I ) * V( J , I )
+                  END DO
+                  J = MIN( LASTV, PREVLASTV )
 *
-      QR = DIRF.AND.COLV
+*                 T(1:i-1,i) := - tau(i) * V(1:i-1,i:j) * V(i,i:j)**T
 *
-*     LQ happens when we have forward direction in row storage
+                  CALL DGEMV( 'No transpose', I-1, J-I, -TAU( I ),
+     $                        V( 1, I+1 ), LDV, V( I, I+1 ), LDV, ONE,
+     $                        T( 1, I ), 1 )
+               END IF
 *
-      LQ = DIRF.AND.(.NOT.COLV)
+*              T(1:i-1,i) := T(1:i-1,1:i-1) * T(1:i-1,i)
 *
-*     QL happens when we have backward direction in column storage
-*
-      QL = (.NOT.DIRF).AND.COLV
-*
-*     The last case is RQ. Due to how we structured this, if the
-*     above 3 are false, then RQ must be true, so we never store 
-*     this
-*     RQ happens when we have backward direction in row storage
-*     RQ = (.NOT.DIRF).AND.(.NOT.COLV)
-*
-      IF(QR) THEN
-*
-*        Break V apart into 6 components
-*
-*        V = |---------------|
-*            |V_{1,1} 0      |
-*            |V_{2,1} V_{2,2}|
-*            |V_{3,1} V_{3,2}|
-*            |---------------|
-*
-*        V_{1,1}\in\R^{l,l}      unit lower triangular
-*        V_{2,1}\in\R^{k-l,l}    rectangular
-*        V_{3,1}\in\R^{n-k,l}    rectangular
-*        
-*        V_{2,2}\in\R^{k-l,k-l}  unit lower triangular
-*        V_{3,2}\in\R^{n-k,k-l}  rectangular
-*
-*        We will construct the T matrix 
-*        T = |---------------|
-*            |T_{1,1} T_{1,2}|
-*            |0       T_{2,2}|
-*            |---------------|
-*
-*        T is the triangular factor obtained from block reflectors. 
-*        To motivate the structure, assume we have already computed T_{1,1}
-*        and T_{2,2}. Then collect the associated reflectors in V_1 and V_2
-*
-*        T_{1,1}\in\R^{l, l}     upper triangular
-*        T_{2,2}\in\R^{k-l, k-l} upper triangular
-*        T_{1,2}\in\R^{l, k-l}   rectangular
-*
-*        Where l = floor(k/2)
-*
-*        Then, consider the product:
-*        
-*        (I - V_1*T_{1,1}*V_1')*(I - V_2*T_{2,2}*V_2')
-*        = I - V_1*T_{1,1}*V_1' - V_2*T_{2,2}*V_2' + V_1*T_{1,1}*V_1'*V_2*T_{2,2}*V_2'
-*        
-*        Define T_{1,2} = -T_{1,1}*V_1'*V_2*T_{2,2}
-*        
-*        Then, we can define the matrix V as 
-*        V = |-------|
-*            |V_1 V_2|
-*            |-------|
-*        
-*        So, our product is equivalent to the matrix product
-*        I - V*T*V'
-*        This means, we can compute T_{1,1} and T_{2,2}, then use this information
-*        to compute T_{1,2}
-*
-*        Compute T_{1,1} recursively
-*
-         CALL DLARFT(DIRECT, STOREV, N, L, V, LDV, TAU, T, LDT)
-*
-*        Compute T_{2,2} recursively
-*
-         CALL DLARFT(DIRECT, STOREV, N-L, K-L, V(L+1, L+1), LDV, 
-     $               TAU(L+1), T(L+1, L+1), LDT)
-*
-*        Compute T_{1,2} 
-*        T_{1,2} = V_{2,1}'
-*
-         DO J = 1, L
-            DO I = 1, K-L
-               T(J, L+I) = V(L+I, J)
-            END DO
+               CALL DTRMV( 'Upper', 'No transpose', 'Non-unit', I-1, T,
+     $                     LDT, T( 1, I ), 1 )
+               T( I, I ) = TAU( I )
+               IF( I.GT.1 ) THEN
+                  PREVLASTV = MAX( PREVLASTV, LASTV )
+               ELSE
+                  PREVLASTV = LASTV
+               END IF
+            END IF
          END DO
-*
-*        T_{1,2} = T_{1,2}*V_{2,2}
-*
-         CALL DTRMM('Right', 'Lower', 'No transpose', 'Unit', L,
-     $               K-L, ONE, V(L+1, L+1), LDV, T(1, L+1), LDT)
-
-*
-*        T_{1,2} = V_{3,1}'*V_{3,2} + T_{1,2}
-*        Note: We assume K <= N, and GEMM will do nothing if N=K
-*
-         CALL DGEMM('Transpose', 'No transpose', L, K-L, N-K, ONE, 
-     $               V(K+1, 1), LDV, V(K+1, L+1), LDV, ONE, 
-     $               T(1, L+1), LDT)
-*
-*        At this point, we have that T_{1,2} = V_1'*V_2
-*        All that is left is to pre and post multiply by -T_{1,1} and T_{2,2}
-*        respectively.
-*
-*        T_{1,2} = -T_{1,1}*T_{1,2}
-*
-         CALL DTRMM('Left', 'Upper', 'No transpose', 'Non-unit', L,
-     $               K-L, NEG_ONE, T, LDT, T(1, L+1), LDT)
-*
-*        T_{1,2} = T_{1,2}*T_{2,2}
-*
-         CALL DTRMM('Right', 'Upper', 'No transpose', 'Non-unit', L, 
-     $               K-L, ONE, T(L+1, L+1), LDT, T(1, L+1), LDT)
-
-      ELSE IF(LQ) THEN
-*
-*        Break V apart into 6 components
-*
-*        V = |----------------------|
-*            |V_{1,1} V_{1,2} V{1,3}|
-*            |0       V_{2,2} V{2,3}|
-*            |----------------------|
-*
-*        V_{1,1}\in\R^{l,l}      unit upper triangular
-*        V_{1,2}\in\R^{l,k-l}    rectangular
-*        V_{1,3}\in\R^{l,n-k}    rectangular
-*        
-*        V_{2,2}\in\R^{k-l,k-l}  unit upper triangular
-*        V_{2,3}\in\R^{k-l,n-k}  rectangular
-*
-*        Where l = floor(k/2)
-*
-*        We will construct the T matrix 
-*        T = |---------------|
-*            |T_{1,1} T_{1,2}|
-*            |0       T_{2,2}|
-*            |---------------|
-*
-*        T is the triangular factor obtained from block reflectors. 
-*        To motivate the structure, assume we have already computed T_{1,1}
-*        and T_{2,2}. Then collect the associated reflectors in V_1 and V_2
-*
-*        T_{1,1}\in\R^{l, l}     upper triangular
-*        T_{2,2}\in\R^{k-l, k-l} upper triangular
-*        T_{1,2}\in\R^{l, k-l}   rectangular
-*
-*        Then, consider the product:
-*        
-*        (I - V_1'*T_{1,1}*V_1)*(I - V_2'*T_{2,2}*V_2)
-*        = I - V_1'*T_{1,1}*V_1 - V_2'*T_{2,2}*V_2 + V_1'*T_{1,1}*V_1*V_2'*T_{2,2}*V_2
-*        
-*        Define T_{1,2} = -T_{1,1}*V_1*V_2'*T_{2,2}
-*        
-*        Then, we can define the matrix V as 
-*        V = |---|
-*            |V_1|
-*            |V_2|
-*            |---|
-*        
-*        So, our product is equivalent to the matrix product
-*        I - V'*T*V
-*        This means, we can compute T_{1,1} and T_{2,2}, then use this information
-*        to compute T_{1,2}
-*
-*        Compute T_{1,1} recursively
-*
-         CALL DLARFT(DIRECT, STOREV, N, L, V, LDV, TAU, T, LDT)
-*
-*        Compute T_{2,2} recursively
-*
-         CALL DLARFT(DIRECT, STOREV, N-L, K-L, V(L+1, L+1), LDV, 
-     $      TAU(L+1), T(L+1, L+1), LDT)
-
-*
-*        Compute T_{1,2}
-*        T_{1,2} = V_{1,2}
-*
-         CALL DLACPY('All', L, K-L, V(1, L+1), LDV, T(1, L+1), LDT)
-*
-*        T_{1,2} = T_{1,2}*V_{2,2}'
-*
-         CALL DTRMM('Right', 'Upper', 'Transpose', 'Unit', L, K-L,
-     $               ONE, V(L+1, L+1), LDV, T(1, L+1), LDT)
-
-*
-*        T_{1,2} = V_{1,3}*V_{2,3}' + T_{1,2}
-*        Note: We assume K <= N, and GEMM will do nothing if N=K
-*
-         CALL DGEMM('No transpose', 'Transpose', L, K-L, N-K, ONE,
-     $               V(1, K+1), LDV, V(L+1, K+1), LDV, ONE, 
-     $               T(1, L+1), LDT)
-*
-*        At this point, we have that T_{1,2} = V_1*V_2'
-*        All that is left is to pre and post multiply by -T_{1,1} and T_{2,2}
-*        respectively.
-*
-*        T_{1,2} = -T_{1,1}*T_{1,2}
-*
-         CALL DTRMM('Left', 'Upper', 'No transpose', 'Non-unit', L,
-     $               K-L, NEG_ONE, T, LDT, T(1, L+1), LDT)
-
-*
-*        T_{1,2} = T_{1,2}*T_{2,2}
-*
-         CALL DTRMM('Right', 'Upper', 'No transpose', 'Non-unit', L,
-     $               K-L, ONE, T(L+1, L+1), LDT, T(1, L+1), LDT)
-      ELSE IF(QL) THEN
-*
-*        Break V apart into 6 components
-*
-*        V = |---------------|
-*            |V_{1,1} V_{1,2}|
-*            |V_{2,1} V_{2,2}|
-*            |0       V_{3,2}|
-*            |---------------|
-*
-*        V_{1,1}\in\R^{n-k,k-l}  rectangular
-*        V_{2,1}\in\R^{k-l,k-l}  unit upper triangular
-*        
-*        V_{1,2}\in\R^{n-k,l}    rectangular
-*        V_{2,2}\in\R^{k-l,l}    rectangular
-*        V_{3,2}\in\R^{l,l}      unit upper triangular
-*
-*        We will construct the T matrix 
-*        T = |---------------|
-*            |T_{1,1} 0      |
-*            |T_{2,1} T_{2,2}|
-*            |---------------|
-*
-*        T is the triangular factor obtained from block reflectors. 
-*        To motivate the structure, assume we have already computed T_{1,1}
-*        and T_{2,2}. Then collect the associated reflectors in V_1 and V_2
-*
-*        T_{1,1}\in\R^{k-l, k-l} non-unit lower triangular
-*        T_{2,2}\in\R^{l, l}     non-unit lower triangular
-*        T_{2,1}\in\R^{k-l, l}   rectangular
-*
-*        Where l = floor(k/2)
-*
-*        Then, consider the product:
-*        
-*        (I - V_2*T_{2,2}*V_2')*(I - V_1*T_{1,1}*V_1')
-*        = I - V_2*T_{2,2}*V_2' - V_1*T_{1,1}*V_1' + V_2*T_{2,2}*V_2'*V_1*T_{1,1}*V_1'
-*        
-*        Define T_{2,1} = -T_{2,2}*V_2'*V_1*T_{1,1}
-*        
-*        Then, we can define the matrix V as 
-*        V = |-------|
-*            |V_1 V_2|
-*            |-------|
-*        
-*        So, our product is equivalent to the matrix product
-*        I - V*T*V'
-*        This means, we can compute T_{1,1} and T_{2,2}, then use this information
-*        to compute T_{2,1}
-*
-*        Compute T_{1,1} recursively
-*
-         CALL DLARFT(DIRECT, STOREV, N-L, K-L, V, LDV, TAU, T, LDT)
-*
-*        Compute T_{2,2} recursively
-*
-         CALL DLARFT(DIRECT, STOREV, N, L, V(1, K-L+1), LDV,
-     $               TAU(K-L+1), T(K-L+1, K-L+1), LDT)
-*
-*        Compute T_{2,1}
-*        T_{2,1} = V_{2,2}'
-*
-         DO J = 1, K-L
-            DO I = 1, L
-               T(K-L+I, J) = V(N-K+J, K-L+I)
-            END DO
-         END DO
-*
-*        T_{2,1} = T_{2,1}*V_{2,1}
-*
-         CALL DTRMM('Right', 'Upper', 'No transpose', 'Unit', L,
-     $               K-L, ONE, V(N-K+1, 1), LDV, T(K-L+1, 1), LDT)
-
-*
-*        T_{2,1} = V_{2,2}'*V_{2,1} + T_{2,1}
-*        Note: We assume K <= N, and GEMM will do nothing if N=K
-*
-         CALL DGEMM('Transpose', 'No transpose', L, K-L, N-K, ONE,
-     $               V(1, K-L+1), LDV, V, LDV, ONE, T(K-L+1, 1),
-     $               LDT)
-*
-*        At this point, we have that T_{2,1} = V_2'*V_1
-*        All that is left is to pre and post multiply by -T_{2,2} and T_{1,1}
-*        respectively.
-*
-*        T_{2,1} = -T_{2,2}*T_{2,1}
-*
-         CALL DTRMM('Left', 'Lower', 'No transpose', 'Non-unit', L,
-     $               K-L, NEG_ONE, T(K-L+1, K-L+1), LDT,
-     $               T(K-L+1, 1), LDT)
-*
-*        T_{2,1} = T_{2,1}*T_{1,1}
-*
-         CALL DTRMM('Right', 'Lower', 'No transpose', 'Non-unit', L,
-     $               K-L, ONE, T, LDT, T(K-L+1, 1), LDT)
       ELSE
+         PREVLASTV = 1
+         DO I = K, 1, -1
+            IF( TAU( I ).EQ.ZERO ) THEN
 *
-*        Else means RQ case
+*              H(i)  =  I
 *
-*        Break V apart into 6 components
+               DO J = I, K
+                  T( J, I ) = ZERO
+               END DO
+            ELSE
 *
-*        V = |-----------------------|
-*            |V_{1,1} V_{1,2} 0      |
-*            |V_{2,1} V_{2,2} V_{2,3}|
-*            |-----------------------|
+*              general case
 *
-*        V_{1,1}\in\R^{k-l,n-k}  rectangular
-*        V_{1,2}\in\R^{k-l,k-l}  unit lower triangular
+               IF( I.LT.K ) THEN
+                  IF( LSAME( STOREV, 'C' ) ) THEN
+*                    Skip any leading zeros.
+                     DO LASTV = 1, I-1
+                        IF( V( LASTV, I ).NE.ZERO ) EXIT
+                     END DO
+                     DO J = I+1, K
+                        T( J, I ) = -TAU( I ) * V( N-K+I , J )
+                     END DO
+                     J = MAX( LASTV, PREVLASTV )
 *
-*        V_{2,1}\in\R^{l,n-k}    rectangular
-*        V_{2,2}\in\R^{l,k-l}    rectangular
-*        V_{2,3}\in\R^{l,l}      unit lower triangular
+*                    T(i+1:k,i) = -tau(i) * V(j:n-k+i,i+1:k)**T * V(j:n-k+i,i)
 *
-*        We will construct the T matrix 
-*        T = |---------------|
-*            |T_{1,1} 0      |
-*            |T_{2,1} T_{2,2}|
-*            |---------------|
+                     CALL DGEMV( 'Transpose', N-K+I-J, K-I, -TAU( I ),
+     $                           V( J, I+1 ), LDV, V( J, I ), 1, ONE,
+     $                           T( I+1, I ), 1 )
+                  ELSE
+*                    Skip any leading zeros.
+                     DO LASTV = 1, I-1
+                        IF( V( I, LASTV ).NE.ZERO ) EXIT
+                     END DO
+                     DO J = I+1, K
+                        T( J, I ) = -TAU( I ) * V( J, N-K+I )
+                     END DO
+                     J = MAX( LASTV, PREVLASTV )
 *
-*        T is the triangular factor obtained from block reflectors. 
-*        To motivate the structure, assume we have already computed T_{1,1}
-*        and T_{2,2}. Then collect the associated reflectors in V_1 and V_2
+*                    T(i+1:k,i) = -tau(i) * V(i+1:k,j:n-k+i) * V(i,j:n-k+i)**T
 *
-*        T_{1,1}\in\R^{k-l, k-l} non-unit lower triangular
-*        T_{2,2}\in\R^{l, l}     non-unit lower triangular
-*        T_{2,1}\in\R^{k-l, l}   rectangular
+                     CALL DGEMV( 'No transpose', K-I, N-K+I-J,
+     $                    -TAU( I ), V( I+1, J ), LDV, V( I, J ), LDV,
+     $                    ONE, T( I+1, I ), 1 )
+                  END IF
 *
-*        Where l = floor(k/2)
+*                 T(i+1:k,i) := T(i+1:k,i+1:k) * T(i+1:k,i)
 *
-*        Then, consider the product:
-*        
-*        (I - V_2'*T_{2,2}*V_2)*(I - V_1'*T_{1,1}*V_1)
-*        = I - V_2'*T_{2,2}*V_2 - V_1'*T_{1,1}*V_1 + V_2'*T_{2,2}*V_2*V_1'*T_{1,1}*V_1
-*        
-*        Define T_{2,1} = -T_{2,2}*V_2*V_1'*T_{1,1}
-*        
-*        Then, we can define the matrix V as 
-*        V = |---|
-*            |V_1|
-*            |V_2|
-*            |---|
-*        
-*        So, our product is equivalent to the matrix product
-*        I - V'*T*V
-*        This means, we can compute T_{1,1} and T_{2,2}, then use this information
-*        to compute T_{2,1}
-*
-*        Compute T_{1,1} recursively
-*
-         CALL DLARFT(DIRECT, STOREV, N-L, K-L, V, LDV, TAU, T, LDT)
-*
-*        Compute T_{2,2} recursively
-*
-         CALL DLARFT(DIRECT, STOREV, N, L, V(K-L+1, 1), LDV,
-     $               TAU(K-L+1), T(K-L+1, K-L+1), LDT)
-*
-*        Compute T_{2,1}
-*        T_{2,1} = V_{2,2}
-*
-         CALL DLACPY('All', L, K-L, V(K-L+1, N-K+1), LDV,
-     $               T(K-L+1, 1), LDT)
-
-*
-*        T_{2,1} = T_{2,1}*V_{1,2}'
-*
-         CALL DTRMM('Right', 'Lower', 'Transpose', 'Unit', L, K-L,
-     $               ONE, V(1, N-K+1), LDV, T(K-L+1, 1), LDT)
-
-*
-*        T_{2,1} = V_{2,1}*V_{1,1}' + T_{2,1} 
-*        Note: We assume K <= N, and GEMM will do nothing if N=K
-*
-         CALL DGEMM('No transpose', 'Transpose', L, K-L, N-K, ONE, 
-     $               V(K-L+1, 1), LDV, V, LDV, ONE, T(K-L+1, 1),
-     $               LDT)
-
-*
-*        At this point, we have that T_{2,1} = V_2*V_1'
-*        All that is left is to pre and post multiply by -T_{2,2} and T_{1,1}
-*        respectively.
-*
-*        T_{2,1} = -T_{2,2}*T_{2,1}
-*
-         CALL DTRMM('Left', 'Lower', 'No tranpose', 'Non-unit', L,
-     $               K-L, NEG_ONE, T(K-L+1, K-L+1), LDT,
-     $               T(K-L+1, 1), LDT)
-
-*
-*        T_{2,1} = T_{2,1}*T_{1,1}
-*
-         CALL DTRMM('Right', 'Lower', 'No tranpose', 'Non-unit', L,
-     $               K-L, ONE, T, LDT, T(K-L+1, 1), LDT)
+                  CALL DTRMV( 'Lower', 'No transpose', 'Non-unit', K-I,
+     $                        T( I+1, I+1 ), LDT, T( I+1, I ), 1 )
+                  IF( I.GT.1 ) THEN
+                     PREVLASTV = MIN( PREVLASTV, LASTV )
+                  ELSE
+                     PREVLASTV = LASTV
+                  END IF
+               END IF
+               T( I, I ) = TAU( I )
+            END IF
+         END DO
       END IF
-      END SUBROUTINE
+      RETURN
+*
+*     End of DLARFT
+*
+      END
 *> \brief \b DLARFX applies an elementary reflector to a general rectangular matrix, with loop unrolling when the reflector has order ≤ 10.
 *
 *  =========== DOCUMENTATION ===========
@@ -76288,8 +74621,7 @@
 *           Compute Eigenvalues
             ITMAX = INT( ( LOG( GU-GL+PIVMIN )-LOG( PIVMIN ) ) /
      $              LOG( TWO ) ) + 2
-            CALL DLAEBZ( 2, ITMAX, IN, IN, 1, NB, ATOLI, RTOLI,
-     $                   PIVMIN,
+            CALL DLAEBZ( 2, ITMAX, IN, IN, 1, NB, ATOLI, RTOLI, PIVMIN,
      $                   D( IBEGIN ), E( IBEGIN ), E2( IBEGIN ),
      $                   IDUMMA, WORK( N+1 ), WORK( N+2*IN+1 ), IOUT,
      $                   IWORK, W( M+1 ), IBLOCK( M+1 ), IINFO )
@@ -76831,8 +75163,7 @@
 
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DCOPY, DLARNV, DLARRA, DLARRB, DLARRC,
-     $                   DLARRD,
+      EXTERNAL           DCOPY, DLARNV, DLARRA, DLARRB, DLARRC, DLARRD,
      $                   DLASQ2, DLARRK
 *     ..
 *     .. Intrinsic Functions ..
@@ -79043,8 +77374,7 @@
       EXTERNAL           DLAMCH
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DCOPY, DLAR1V, DLARRB, DLARRF,
-     $                   DLASET,
+      EXTERNAL           DCOPY, DLAR1V, DLARRB, DLARRF, DLASET,
      $                   DSCAL
 *     ..
 *     .. Intrinsic Functions ..
@@ -80997,8 +79327,7 @@
 *
 *           w( 1:n ) = w( 1:n ) + C( m-l+1:m, 1:n )**T * v( 1:l )
 *
-            CALL DGEMV( 'Transpose', L, N, ONE, C( M-L+1, 1 ), LDC,
-     $                  V,
+            CALL DGEMV( 'Transpose', L, N, ONE, C( M-L+1, 1 ), LDC, V,
      $                  INCV, ONE, WORK, 1 )
 *
 *           C( 1, 1:n ) = C( 1, 1:n ) - tau * w( 1:n )
@@ -81024,8 +79353,7 @@
 *
 *           w( 1:m ) = w( 1:m ) + C( 1:m, n-l+1:n, 1:n ) * v( 1:l )
 *
-            CALL DGEMV( 'No transpose', M, L, ONE, C( 1, N-L+1 ),
-     $                  LDC,
+            CALL DGEMV( 'No transpose', M, L, ONE, C( 1, N-L+1 ), LDC,
      $                  V, INCV, ONE, WORK, 1 )
 *
 *           C( 1:m, 1 ) = C( 1:m, 1 ) - tau * w( 1:m )
@@ -81305,8 +79633,7 @@
 *
 *        W( 1:n, 1:k ) = W( 1:n, 1:k ) * T**T  or  W( 1:m, 1:k ) * T
 *
-         CALL DTRMM( 'Right', 'Lower', TRANST, 'Non-unit', N, K, ONE,
-     $               T,
+         CALL DTRMM( 'Right', 'Lower', TRANST, 'Non-unit', N, K, ONE, T,
      $               LDT, WORK, LDWORK )
 *
 *        C( 1:k, 1:n ) = C( 1:k, 1:n ) - W( 1:n, 1:k )**T
@@ -81321,8 +79648,7 @@
 *                            V( 1:k, 1:l )**T * W( 1:n, 1:k )**T
 *
          IF( L.GT.0 )
-     $      CALL DGEMM( 'Transpose', 'Transpose', L, N, K, -ONE, V,
-     $                  LDV,
+     $      CALL DGEMM( 'Transpose', 'Transpose', L, N, K, -ONE, V, LDV,
      $                  WORK, LDWORK, ONE, C( M-L+1, 1 ), LDC )
 *
       ELSE IF( LSAME( SIDE, 'R' ) ) THEN
@@ -81344,8 +79670,7 @@
 *
 *        W( 1:m, 1:k ) = W( 1:m, 1:k ) * T  or  W( 1:m, 1:k ) * T**T
 *
-         CALL DTRMM( 'Right', 'Lower', TRANS, 'Non-unit', M, K, ONE,
-     $               T,
+         CALL DTRMM( 'Right', 'Lower', TRANS, 'Non-unit', M, K, ONE, T,
      $               LDT, WORK, LDWORK )
 *
 *        C( 1:m, 1:k ) = C( 1:m, 1:k ) - W( 1:m, 1:k )
@@ -81360,8 +79685,7 @@
 *                            W( 1:m, 1:k ) * V( 1:k, 1:l )
 *
          IF( L.GT.0 )
-     $      CALL DGEMM( 'No transpose', 'No transpose', M, L, K,
-     $                  -ONE,
+     $      CALL DGEMM( 'No transpose', 'No transpose', M, L, K, -ONE,
      $                  WORK, LDWORK, V, LDV, ONE, C( 1, N-L+1 ), LDC )
 *
       END IF
@@ -81951,8 +80275,7 @@
 *> \ingroup lascl
 *
 *  =====================================================================
-      SUBROUTINE DLASCL( TYPE, KL, KU, CFROM, CTO, M, N, A, LDA,
-     $                   INFO )
+      SUBROUTINE DLASCL( TYPE, KL, KU, CFROM, CTO, M, N, A, LDA, INFO )
 *
 *  -- LAPACK auxiliary routine --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -82443,8 +80766,7 @@
 *>     California at Berkeley, USA
 *>
 *  =====================================================================
-      SUBROUTINE DLASD0( N, SQRE, D, E, U, LDU, VT, LDVT, SMLSIZ,
-     $                   IWORK,
+      SUBROUTINE DLASD0( N, SQRE, D, E, U, LDU, VT, LDVT, SMLSIZ, IWORK,
      $                   WORK, INFO )
 *
 *  -- LAPACK auxiliary routine --
@@ -82500,8 +80822,7 @@
 *     If the input matrix is too small, call DLASDQ to find the SVD.
 *
       IF( N.LE.SMLSIZ ) THEN
-         CALL DLASDQ( 'U', SQRE, N, M, N, 0, D, E, VT, LDVT, U, LDU,
-     $                U,
+         CALL DLASDQ( 'U', SQRE, N, M, N, 0, D, E, VT, LDVT, U, LDU, U,
      $                LDU, WORK, INFO )
          RETURN
       END IF
@@ -82538,8 +80859,7 @@
          NLF = IC - NL
          NRF = IC + 1
          SQREI = 1
-         CALL DLASDQ( 'U', SQREI, NL, NLP1, NL, NCC, D( NLF ),
-     $                E( NLF ),
+         CALL DLASDQ( 'U', SQREI, NL, NLP1, NL, NCC, D( NLF ), E( NLF ),
      $                VT( NLF, NLF ), LDVT, U( NLF, NLF ), LDU,
      $                U( NLF, NLF ), LDU, WORK, INFO )
          IF( INFO.NE.0 ) THEN
@@ -82555,8 +80875,7 @@
             SQREI = 1
          END IF
          NRP1 = NR + SQREI
-         CALL DLASDQ( 'U', SQREI, NR, NRP1, NR, NCC, D( NRF ),
-     $                E( NRF ),
+         CALL DLASDQ( 'U', SQREI, NR, NRP1, NR, NCC, D( NRF ), E( NRF ),
      $                VT( NRF, NRF ), LDVT, U( NRF, NRF ), LDU,
      $                U( NRF, NRF ), LDU, WORK, INFO )
          IF( INFO.NE.0 ) THEN
@@ -82814,8 +81133,7 @@
 *>     California at Berkeley, USA
 *>
 *  =====================================================================
-      SUBROUTINE DLASD1( NL, NR, SQRE, D, ALPHA, BETA, U, LDU, VT,
-     $                   LDVT,
+      SUBROUTINE DLASD1( NL, NR, SQRE, D, ALPHA, BETA, U, LDU, VT, LDVT,
      $                   IDXQ, IWORK, WORK, INFO )
 *
 *  -- LAPACK auxiliary routine --
@@ -82844,8 +81162,7 @@
       DOUBLE PRECISION   ORGNRM
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DLAMRG, DLASCL, DLASD2, DLASD3,
-     $                   XERBLA
+      EXTERNAL           DLAMRG, DLASCL, DLASD2, DLASD3, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          ABS, MAX
@@ -82904,8 +81221,7 @@
 *
 *     Deflate singular values.
 *
-      CALL DLASD2( NL, NR, SQRE, K, D, WORK( IZ ), ALPHA, BETA, U,
-     $             LDU,
+      CALL DLASD2( NL, NR, SQRE, K, D, WORK( IZ ), ALPHA, BETA, U, LDU,
      $             VT, LDVT, WORK( ISIGMA ), WORK( IU2 ), LDU2,
      $             WORK( IVT2 ), LDVT2, IWORK( IDXP ), IWORK( IDX ),
      $             IWORK( IDXC ), IDXQ, IWORK( COLTYP ), INFO )
@@ -82913,8 +81229,7 @@
 *     Solve Secular Equation and update singular vectors.
 *
       LDQ = K
-      CALL DLASD3( NL, NR, SQRE, K, D, WORK( IQ ), LDQ,
-     $             WORK( ISIGMA ),
+      CALL DLASD3( NL, NR, SQRE, K, D, WORK( IQ ), LDQ, WORK( ISIGMA ),
      $             U, LDU, WORK( IU2 ), LDU2, VT, LDVT, WORK( IVT2 ),
      $             LDVT2, IWORK( IDXC ), IWORK( COLTYP ), WORK( IZ ),
      $             INFO )
@@ -83205,8 +81520,7 @@
 *>     California at Berkeley, USA
 *>
 *  =====================================================================
-      SUBROUTINE DLASD2( NL, NR, SQRE, K, D, Z, ALPHA, BETA, U, LDU,
-     $                   VT,
+      SUBROUTINE DLASD2( NL, NR, SQRE, K, D, Z, ALPHA, BETA, U, LDU, VT,
      $                   LDVT, DSIGMA, U2, LDU2, VT2, LDVT2, IDXP, IDX,
      $                   IDXC, IDXQ, COLTYP, INFO )
 *
@@ -83246,8 +81560,7 @@
       EXTERNAL           DLAMCH, DLAPY2
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DCOPY, DLACPY, DLAMRG, DLASET, DROT,
-     $                   XERBLA
+      EXTERNAL           DCOPY, DLACPY, DLAMRG, DLASET, DROT, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          ABS, MAX
@@ -83423,8 +81736,7 @@
                IDXJ = IDXJ - 1
             END IF
             CALL DROT( N, U( 1, IDXJP ), 1, U( 1, IDXJ ), 1, C, S )
-            CALL DROT( M, VT( IDXJP, 1 ), LDVT, VT( IDXJ, 1 ), LDVT,
-     $                 C,
+            CALL DROT( M, VT( IDXJP, 1 ), LDVT, VT( IDXJ, 1 ), LDVT, C,
      $                 S )
             IF( COLTYP( J ).NE.COLTYP( JPREV ) ) THEN
                COLTYP( J ) = 3
@@ -83559,8 +81871,7 @@
          CALL DCOPY( N-K, DSIGMA( K+1 ), 1, D( K+1 ), 1 )
          CALL DLACPY( 'A', N, N-K, U2( 1, K+1 ), LDU2, U( 1, K+1 ),
      $                LDU )
-         CALL DLACPY( 'A', N-K, M, VT2( K+1, 1 ), LDVT2, VT( K+1,
-     $                1 ),
+         CALL DLACPY( 'A', N-K, M, VT2( K+1, 1 ), LDVT2, VT( K+1, 1 ),
      $                LDVT )
       END IF
 *
@@ -83788,8 +82099,7 @@
 *>     California at Berkeley, USA
 *>
 *  =====================================================================
-      SUBROUTINE DLASD3( NL, NR, SQRE, K, D, Q, LDQ, DSIGMA, U, LDU,
-     $                   U2,
+      SUBROUTINE DLASD3( NL, NR, SQRE, K, D, Q, LDQ, DSIGMA, U, LDU, U2,
      $                   LDU2, VT, LDVT, VT2, LDVT2, IDXC, CTOT, Z,
      $                   INFO )
 *
@@ -83824,8 +82134,7 @@
       EXTERNAL           DNRM2
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DCOPY, DGEMM, DLACPY, DLASCL, DLASD4,
-     $                   XERBLA
+      EXTERNAL           DCOPY, DGEMM, DLACPY, DLASCL, DLASD4, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          ABS, SIGN, SQRT
@@ -83943,19 +82252,16 @@
 *     Update the left singular vector matrix.
 *
       IF( K.EQ.2 ) THEN
-         CALL DGEMM( 'N', 'N', N, K, K, ONE, U2, LDU2, Q, LDQ, ZERO,
-     $               U,
+         CALL DGEMM( 'N', 'N', N, K, K, ONE, U2, LDU2, Q, LDQ, ZERO, U,
      $               LDU )
          GO TO 100
       END IF
       IF( CTOT( 1 ).GT.0 ) THEN
-         CALL DGEMM( 'N', 'N', NL, K, CTOT( 1 ), ONE, U2( 1, 2 ),
-     $               LDU2,
+         CALL DGEMM( 'N', 'N', NL, K, CTOT( 1 ), ONE, U2( 1, 2 ), LDU2,
      $               Q( 2, 1 ), LDQ, ZERO, U( 1, 1 ), LDU )
          IF( CTOT( 3 ).GT.0 ) THEN
             KTEMP = 2 + CTOT( 1 ) + CTOT( 2 )
-            CALL DGEMM( 'N', 'N', NL, K, CTOT( 3 ), ONE, U2( 1,
-     $                  KTEMP ),
+            CALL DGEMM( 'N', 'N', NL, K, CTOT( 3 ), ONE, U2( 1, KTEMP ),
      $                  LDU2, Q( KTEMP, 1 ), LDQ, ONE, U( 1, 1 ), LDU )
          END IF
       ELSE IF( CTOT( 3 ).GT.0 ) THEN
@@ -83968,8 +82274,7 @@
       CALL DCOPY( K, Q( 1, 1 ), LDQ, U( NLP1, 1 ), LDU )
       KTEMP = 2 + CTOT( 1 )
       CTEMP = CTOT( 2 ) + CTOT( 3 )
-      CALL DGEMM( 'N', 'N', NR, K, CTEMP, ONE, U2( NLP2, KTEMP ),
-     $            LDU2,
+      CALL DGEMM( 'N', 'N', NR, K, CTEMP, ONE, U2( NLP2, KTEMP ), LDU2,
      $            Q( KTEMP, 1 ), LDQ, ZERO, U( NLP2, 1 ), LDU )
 *
 *     Generate the right singular vectors.
@@ -83987,8 +82292,7 @@
 *     Update the right singular vector matrix.
 *
       IF( K.EQ.2 ) THEN
-         CALL DGEMM( 'N', 'N', K, M, K, ONE, Q, LDQ, VT2, LDVT2,
-     $               ZERO,
+         CALL DGEMM( 'N', 'N', K, M, K, ONE, Q, LDQ, VT2, LDVT2, ZERO,
      $               VT, LDVT )
          RETURN
       END IF
@@ -83997,8 +82301,7 @@
      $            VT2( 1, 1 ), LDVT2, ZERO, VT( 1, 1 ), LDVT )
       KTEMP = 2 + CTOT( 1 ) + CTOT( 2 )
       IF( KTEMP.LE.LDVT2 )
-     $   CALL DGEMM( 'N', 'N', K, NLP1, CTOT( 3 ), ONE, Q( 1,
-     $               KTEMP ),
+     $   CALL DGEMM( 'N', 'N', K, NLP1, CTOT( 3 ), ONE, Q( 1, KTEMP ),
      $               LDQ, VT2( KTEMP, 1 ), LDVT2, ONE, VT( 1, 1 ),
      $               LDVT )
 *
@@ -85615,8 +83918,7 @@
 *>     California at Berkeley, USA
 *>
 *  =====================================================================
-      SUBROUTINE DLASD6( ICOMPQ, NL, NR, SQRE, D, VF, VL, ALPHA,
-     $                   BETA,
+      SUBROUTINE DLASD6( ICOMPQ, NL, NR, SQRE, D, VF, VL, ALPHA, BETA,
      $                   IDXQ, PERM, GIVPTR, GIVCOL, LDGCOL, GIVNUM,
      $                   LDGNUM, POLES, DIFL, DIFR, Z, K, C, S, WORK,
      $                   IWORK, INFO )
@@ -85650,8 +83952,7 @@
       DOUBLE PRECISION   ORGNRM
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DCOPY, DLAMRG, DLASCL, DLASD7, DLASD8,
-     $                   XERBLA
+      EXTERNAL           DCOPY, DLAMRG, DLASCL, DLASD7, DLASD8, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          ABS, MAX
@@ -86024,8 +84325,7 @@
 *>     California at Berkeley, USA
 *>
 *  =====================================================================
-      SUBROUTINE DLASD7( ICOMPQ, NL, NR, SQRE, K, D, Z, ZW, VF, VFW,
-     $                   VL,
+      SUBROUTINE DLASD7( ICOMPQ, NL, NR, SQRE, K, D, Z, ZW, VF, VFW, VL,
      $                   VLW, ALPHA, BETA, DSIGMA, IDX, IDXP, IDXQ,
      $                   PERM, GIVPTR, GIVCOL, LDGCOL, GIVNUM, LDGNUM,
      $                   C, S, INFO )
@@ -86515,8 +84815,7 @@
       DOUBLE PRECISION   DIFLJ, DIFRJ, DJ, DSIGJ, DSIGJP, RHO, TEMP
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DCOPY, DLASCL, DLASD4, DLASET,
-     $                   XERBLA
+      EXTERNAL           DCOPY, DLASCL, DLASD4, DLASET, XERBLA
 *     ..
 *     .. External Functions ..
       DOUBLE PRECISION   DDOT, DLAMC3, DNRM2
@@ -86625,13 +84924,11 @@
 *        from doing x+(y+z).
 *
          DO 60 I = 1, J - 1
-            WORK( I ) = Z( I ) / ( DLAMC3( DSIGMA( I ),
-     $            DSIGJ )-DIFLJ )
+            WORK( I ) = Z( I ) / ( DLAMC3( DSIGMA( I ), DSIGJ )-DIFLJ )
      $                   / ( DSIGMA( I )+DJ )
    60    CONTINUE
          DO 70 I = J + 1, K
-            WORK( I ) = Z( I ) / ( DLAMC3( DSIGMA( I ),
-     $            DSIGJP )+DIFRJ )
+            WORK( I ) = Z( I ) / ( DLAMC3( DSIGMA( I ), DSIGJP )+DIFRJ )
      $                   / ( DSIGMA( I )+DJ )
    70    CONTINUE
          TEMP = DNRM2( K, WORK, 1 )
@@ -86920,8 +85217,7 @@
 *>     California at Berkeley, USA
 *>
 *  =====================================================================
-      SUBROUTINE DLASDA( ICOMPQ, SMLSIZ, N, SQRE, D, E, U, LDU, VT,
-     $                   K,
+      SUBROUTINE DLASDA( ICOMPQ, SMLSIZ, N, SQRE, D, E, U, LDU, VT, K,
      $                   DIFL, DIFR, Z, POLES, GIVPTR, GIVCOL, LDGCOL,
      $                   PERM, GIVNUM, C, S, WORK, IWORK, INFO )
 *
@@ -86955,8 +85251,7 @@
       DOUBLE PRECISION   ALPHA, BETA
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DCOPY, DLASD6, DLASDQ, DLASDT, DLASET,
-     $                   XERBLA
+      EXTERNAL           DCOPY, DLASD6, DLASDQ, DLASDT, DLASET, XERBLA
 *     ..
 *     .. Executable Statements ..
 *
@@ -86988,12 +85283,10 @@
 *
       IF( N.LE.SMLSIZ ) THEN
          IF( ICOMPQ.EQ.0 ) THEN
-            CALL DLASDQ( 'U', SQRE, N, 0, 0, 0, D, E, VT, LDU, U,
-     $                   LDU,
+            CALL DLASDQ( 'U', SQRE, N, 0, 0, 0, D, E, VT, LDU, U, LDU,
      $                   U, LDU, WORK, INFO )
          ELSE
-            CALL DLASDQ( 'U', SQRE, N, M, N, 0, D, E, VT, LDU, U,
-     $                   LDU,
+            CALL DLASDQ( 'U', SQRE, N, M, N, 0, D, E, VT, LDU, U, LDU,
      $                   U, LDU, WORK, INFO )
          END IF
          RETURN
@@ -87054,8 +85347,7 @@
             CALL DCOPY( NLP1, WORK( ITEMP ), 1, WORK( VLI ), 1 )
          ELSE
             CALL DLASET( 'A', NL, NL, ZERO, ONE, U( NLF, 1 ), LDU )
-            CALL DLASET( 'A', NLP1, NLP1, ZERO, ONE, VT( NLF, 1 ),
-     $                   LDU )
+            CALL DLASET( 'A', NLP1, NLP1, ZERO, ONE, VT( NLF, 1 ), LDU )
             CALL DLASDQ( 'U', SQREI, NL, NLP1, NL, NCC, D( NLF ),
      $                   E( NLF ), VT( NLF, 1 ), LDU, U( NLF, 1 ), LDU,
      $                   U( NLF, 1 ), LDU, WORK( NWORK1 ), INFO )
@@ -87089,8 +85381,7 @@
             CALL DCOPY( NRP1, WORK( ITEMP ), 1, WORK( VLI ), 1 )
          ELSE
             CALL DLASET( 'A', NR, NR, ZERO, ONE, U( NRF, 1 ), LDU )
-            CALL DLASET( 'A', NRP1, NRP1, ZERO, ONE, VT( NRF, 1 ),
-     $                   LDU )
+            CALL DLASET( 'A', NRP1, NRP1, ZERO, ONE, VT( NRF, 1 ), LDU )
             CALL DLASDQ( 'U', SQREI, NR, NRP1, NR, NCC, D( NRF ),
      $                   E( NRF ), VT( NRF, 1 ), LDU, U( NRF, 1 ), LDU,
      $                   U( NRF, 1 ), LDU, WORK( NWORK1 ), INFO )
@@ -87376,8 +85667,7 @@
 *>     California at Berkeley, USA
 *>
 *  =====================================================================
-      SUBROUTINE DLASDQ( UPLO, SQRE, N, NCVT, NRU, NCC, D, E, VT,
-     $                   LDVT,
+      SUBROUTINE DLASDQ( UPLO, SQRE, N, NCVT, NRU, NCC, D, E, VT, LDVT,
      $                   U, LDU, C, LDC, WORK, INFO )
 *
 *  -- LAPACK auxiliary routine --
@@ -87405,8 +85695,7 @@
       DOUBLE PRECISION   CS, R, SMIN, SN
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DBDSQR, DLARTG, DLASR, DSWAP,
-     $                   XERBLA
+      EXTERNAL           DBDSQR, DLARTG, DLASR, DSWAP, XERBLA
 *     ..
 *     .. External Functions ..
       LOGICAL            LSAME
@@ -87567,8 +85856,7 @@
             D( ISUB ) = D( I )
             D( I ) = SMIN
             IF( NCVT.GT.0 )
-     $         CALL DSWAP( NCVT, VT( ISUB, 1 ), LDVT, VT( I, 1 ),
-     $                     LDVT )
+     $         CALL DSWAP( NCVT, VT( ISUB, 1 ), LDVT, VT( I, 1 ), LDVT )
             IF( NRU.GT.0 )
      $         CALL DSWAP( NRU, U( 1, ISUB ), 1, U( 1, I ), 1 )
             IF( NCC.GT.0 )
@@ -88061,8 +86349,7 @@
       DOUBLE PRECISION   EPS, SCALE, SAFMIN, SIGMN, SIGMX
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DCOPY, DLAS2, DLASCL, DLASQ2, DLASRT,
-     $                   XERBLA
+      EXTERNAL           DCOPY, DLAS2, DLASCL, DLASQ2, DLASRT, XERBLA
 *     ..
 *     .. External Functions ..
       DOUBLE PRECISION   DLAMCH
@@ -88618,8 +86905,7 @@
 *
 *           While submatrix unfinished take a good dqds step.
 *
-            CALL DLASQ3( I0, N0, Z, PP, DMIN, SIGMA, DESIG, QMAX,
-     $                   NFAIL,
+            CALL DLASQ3( I0, N0, Z, PP, DMIN, SIGMA, DESIG, QMAX, NFAIL,
      $                   ITER, NDIV, IEEE, TTYPE, DMIN1, DMIN2, DN, DN1,
      $                   DN2, G, TAU )
 *
@@ -88918,8 +87204,7 @@
 *> \ingroup lasq3
 *
 *  =====================================================================
-      SUBROUTINE DLASQ3( I0, N0, Z, PP, DMIN, SIGMA, DESIG, QMAX,
-     $                   NFAIL,
+      SUBROUTINE DLASQ3( I0, N0, Z, PP, DMIN, SIGMA, DESIG, QMAX, NFAIL,
      $                   ITER, NDIV, IEEE, TTYPE, DMIN1, DMIN2, DN, DN1,
      $                   DN2, G, TAU )
 *
@@ -89721,8 +88006,7 @@
 *> \ingroup lasq5
 *
 *  =====================================================================
-      SUBROUTINE DLASQ5( I0, N0, Z, PP, TAU, SIGMA, DMIN, DMIN1,
-     $                   DMIN2,
+      SUBROUTINE DLASQ5( I0, N0, Z, PP, TAU, SIGMA, DMIN, DMIN1, DMIN2,
      $                   DN, DNM1, DNM2, IEEE, EPS )
 *
 *  -- LAPACK computational routine --
@@ -90475,14 +88759,12 @@
 *     Test the input parameters
 *
       INFO = 0
-      IF( .NOT.( LSAME( SIDE, 'L' ) .OR.
-     $    LSAME( SIDE, 'R' ) ) ) THEN
+      IF( .NOT.( LSAME( SIDE, 'L' ) .OR. LSAME( SIDE, 'R' ) ) ) THEN
          INFO = 1
       ELSE IF( .NOT.( LSAME( PIVOT, 'V' ) .OR. LSAME( PIVOT,
      $         'T' ) .OR. LSAME( PIVOT, 'B' ) ) ) THEN
          INFO = 2
-      ELSE IF( .NOT.( LSAME( DIRECT, 'F' ) .OR.
-     $         LSAME( DIRECT, 'B' ) ) )
+      ELSE IF( .NOT.( LSAME( DIRECT, 'F' ) .OR. LSAME( DIRECT, 'B' ) ) )
      $          THEN
          INFO = 3
       ELSE IF( M.LT.0 ) THEN
@@ -92137,8 +90419,7 @@
 *> \endverbatim
 *
 *  =====================================================================
-      SUBROUTINE DLASYF( UPLO, N, NB, KB, A, LDA, IPIV, W, LDW,
-     $                   INFO )
+      SUBROUTINE DLASYF( UPLO, N, NB, KB, A, LDA, IPIV, W, LDW, INFO )
 *
 *  -- LAPACK computational routine --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -92162,7 +90443,7 @@
       PARAMETER          ( EIGHT = 8.0D+0, SEVTEN = 17.0D+0 )
 *     ..
 *     .. Local Scalars ..
-      INTEGER            IMAX, J, JJ, JMAX, JP, K, KK, KKW, KP,
+      INTEGER            IMAX, J, JB, JJ, JMAX, JP, K, KK, KKW, KP,
      $                   KSTEP, KW
       DOUBLE PRECISION   ABSAKK, ALPHA, COLMAX, D11, D21, D22, R1,
      $                   ROWMAX, T
@@ -92173,7 +90454,7 @@
       EXTERNAL           LSAME, IDAMAX
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DCOPY, DGEMMTR, DGEMV, DSCAL, DSWAP
+      EXTERNAL           DCOPY, DGEMM, DGEMV, DSCAL, DSWAP
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          ABS, MAX, MIN, SQRT
@@ -92209,8 +90490,7 @@
 *
          CALL DCOPY( K, A( 1, K ), 1, W( 1, KW ), 1 )
          IF( K.LT.N )
-     $      CALL DGEMV( 'No transpose', K, N-K, -ONE, A( 1, K+1 ),
-     $                  LDA,
+     $      CALL DGEMV( 'No transpose', K, N-K, -ONE, A( 1, K+1 ), LDA,
      $                  W( K, KW+1 ), LDW, ONE, W( 1, KW ), 1 )
 *
          KSTEP = 1
@@ -92252,8 +90532,7 @@
                CALL DCOPY( K-IMAX, A( IMAX, IMAX+1 ), LDA,
      $                     W( IMAX+1, KW-1 ), 1 )
                IF( K.LT.N )
-     $            CALL DGEMV( 'No transpose', K, N-K, -ONE, A( 1,
-     $                        K+1 ),
+     $            CALL DGEMV( 'No transpose', K, N-K, -ONE, A( 1, K+1 ),
      $                        LDA, W( IMAX, KW+1 ), LDW, ONE,
      $                        W( 1, KW-1 ), 1 )
 *
@@ -92439,9 +90718,25 @@
 *
 *        A11 := A11 - U12*D*U12**T = A11 - U12*W**T
 *
-         CALL DGEMMTR( 'Upper', 'No transpose', 'Transpose', K, N-K,
-     $                 -ONE, A( 1, K+1 ), LDA, W( 1, KW+1 ), LDW,
-     $                 ONE, A( 1, 1 ), LDA )
+*        computing blocks of NB columns at a time
+*
+         DO 50 J = ( ( K-1 ) / NB )*NB + 1, 1, -NB
+            JB = MIN( NB, K-J+1 )
+*
+*           Update the upper triangle of the diagonal block
+*
+            DO 40 JJ = J, J + JB - 1
+               CALL DGEMV( 'No transpose', JJ-J+1, N-K, -ONE,
+     $                     A( J, K+1 ), LDA, W( JJ, KW+1 ), LDW, ONE,
+     $                     A( J, JJ ), 1 )
+   40       CONTINUE
+*
+*           Update the rectangular superdiagonal block
+*
+            CALL DGEMM( 'No transpose', 'Transpose', J-1, JB, N-K, -ONE,
+     $                  A( 1, K+1 ), LDA, W( J, KW+1 ), LDW, ONE,
+     $                  A( 1, J ), LDA )
+   50    CONTINUE
 *
 *        Put U12 in standard form by partially undoing the interchanges
 *        in columns k+1:n looping backwards from k+1 to n
@@ -92491,8 +90786,7 @@
 *        Copy column K of A to column K of W and update it
 *
          CALL DCOPY( N-K+1, A( K, K ), 1, W( K, K ), 1 )
-         CALL DGEMV( 'No transpose', N-K+1, K-1, -ONE, A( K, 1 ),
-     $               LDA,
+         CALL DGEMV( 'No transpose', N-K+1, K-1, -ONE, A( K, 1 ), LDA,
      $               W( K, 1 ), LDW, ONE, W( K, K ), 1 )
 *
          KSTEP = 1
@@ -92530,13 +90824,10 @@
 *
 *              Copy column IMAX to column K+1 of W and update it
 *
-               CALL DCOPY( IMAX-K, A( IMAX, K ), LDA, W( K, K+1 ),
+               CALL DCOPY( IMAX-K, A( IMAX, K ), LDA, W( K, K+1 ), 1 )
+               CALL DCOPY( N-IMAX+1, A( IMAX, IMAX ), 1, W( IMAX, K+1 ),
      $                     1 )
-               CALL DCOPY( N-IMAX+1, A( IMAX, IMAX ), 1, W( IMAX,
-     $                     K+1 ),
-     $                     1 )
-               CALL DGEMV( 'No transpose', N-K+1, K-1, -ONE, A( K,
-     $                     1 ),
+               CALL DGEMV( 'No transpose', N-K+1, K-1, -ONE, A( K, 1 ),
      $                     LDA, W( IMAX, 1 ), LDW, ONE, W( K, K+1 ), 1 )
 *
 *              JMAX is the column-index of the largest off-diagonal
@@ -92594,8 +90885,7 @@
                CALL DCOPY( KP-KK-1, A( KK+1, KK ), 1, A( KP, KK+1 ),
      $                     LDA )
                IF( KP.LT.N )
-     $            CALL DCOPY( N-KP, A( KP+1, KK ), 1, A( KP+1, KP ),
-     $                        1 )
+     $            CALL DCOPY( N-KP, A( KP+1, KK ), 1, A( KP+1, KP ), 1 )
 *
 *              Interchange rows KK and KP in first K-1 columns of A
 *              (columns K (or K and K+1 for 2-by-2 pivot) of A will be
@@ -92718,9 +91008,26 @@
 *
 *        A22 := A22 - L21*D*L21**T = A22 - L21*W**T
 *
-         CALL DGEMMTR( 'Lower', 'No transpose', 'Transpose', N-K+1,
-     $                 K-1, -ONE, A( K, 1 ), LDA, W( K, 1 ), LDW,
-     $                 ONE, A( K, K ), LDA )
+*        computing blocks of NB columns at a time
+*
+         DO 110 J = K, N, NB
+            JB = MIN( NB, N-J+1 )
+*
+*           Update the lower triangle of the diagonal block
+*
+            DO 100 JJ = J, J + JB - 1
+               CALL DGEMV( 'No transpose', J+JB-JJ, K-1, -ONE,
+     $                     A( JJ, 1 ), LDA, W( JJ, 1 ), LDW, ONE,
+     $                     A( JJ, JJ ), 1 )
+  100       CONTINUE
+*
+*           Update the rectangular subdiagonal block
+*
+            IF( J+JB.LE.N )
+     $         CALL DGEMM( 'No transpose', 'Transpose', N-J-JB+1, JB,
+     $                     K-1, -ONE, A( J+JB, 1 ), LDA, W( J, 1 ), LDW,
+     $                     ONE, A( J+JB, J ), LDA )
+  110    CONTINUE
 *
 *        Put L21 in standard form by partially undoing the interchanges
 *        of rows in columns 1:k-1 looping backwards from k-1 to 1
@@ -92996,8 +91303,7 @@
 *> \endverbatim
 *>
 *  =====================================================================
-      SUBROUTINE DLATBS( UPLO, TRANS, DIAG, NORMIN, N, KD, AB, LDAB,
-     $                   X,
+      SUBROUTINE DLATBS( UPLO, TRANS, DIAG, NORMIN, N, KD, AB, LDAB, X,
      $                   SCALE, CNORM, INFO )
 *
 *  -- LAPACK auxiliary routine --
@@ -93462,8 +91768,7 @@
                   ELSE
                      JLEN = MIN( KD, N-J )
                      IF( JLEN.GT.0 )
-     $                  SUMJ = DDOT( JLEN, AB( 2, J ), 1, X( J+1 ),
-     $                               1 )
+     $                  SUMJ = DDOT( JLEN, AB( 2, J ), 1, X( J+1 ), 1 )
                   END IF
                ELSE
 *
@@ -93769,8 +92074,7 @@
       DOUBLE PRECISION   WORK( 4*MAXDIM ), XM( MAXDIM ), XP( MAXDIM )
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DAXPY, DCOPY, DGECON, DGESC2, DLASSQ,
-     $                   DLASWP,
+      EXTERNAL           DAXPY, DCOPY, DGECON, DGESC2, DLASSQ, DLASWP,
      $                   DSCAL
 *     ..
 *     .. External Functions ..
@@ -93800,8 +92104,7 @@
 *           Look-ahead for L-part RHS(1:N-1) = + or -1, SPLUS and
 *           SMIN computed more efficiently than in BSOLVE [1].
 *
-            SPLUS = SPLUS + DDOT( N-J, Z( J+1, J ), 1, Z( J+1, J ),
-     $                            1 )
+            SPLUS = SPLUS + DDOT( N-J, Z( J+1, J ), 1, Z( J+1, J ), 1 )
             SMINU = DDOT( N-J, Z( J+1, J ), 1, RHS( J+1 ), 1 )
             SPLUS = SPLUS*RHS( J )
             IF( SPLUS.GT.SMINU ) THEN
@@ -94509,8 +92812,7 @@
 *                    Compute the update
 *                       x(1:j-1) := x(1:j-1) - x(j) * A(1:j-1,j)
 *
-                     CALL DAXPY( J-1, -X( J )*TSCAL, AP( IP-J+1 ), 1,
-     $                           X,
+                     CALL DAXPY( J-1, -X( J )*TSCAL, AP( IP-J+1 ), 1, X,
      $                           1 )
                      I = IDAMAX( J-1, X, 1 )
                      XMAX = ABS( X( I ) )
@@ -94933,8 +93235,7 @@
 *
                CALL DGEMV( 'No transpose', I, N-I, -ONE, A( 1, I+1 ),
      $                     LDA, W( I, IW+1 ), LDW, ONE, A( 1, I ), 1 )
-               CALL DGEMV( 'No transpose', I, N-I, -ONE, W( 1,
-     $                     IW+1 ),
+               CALL DGEMV( 'No transpose', I, N-I, -ONE, W( 1, IW+1 ),
      $                     LDW, A( I, I+1 ), LDA, ONE, A( 1, I ), 1 )
             END IF
             IF( I.GT.1 ) THEN
@@ -94942,8 +93243,7 @@
 *              Generate elementary reflector H(i) to annihilate
 *              A(1:i-2,i)
 *
-               CALL DLARFG( I-1, A( I-1, I ), A( 1, I ), 1,
-     $                      TAU( I-1 ) )
+               CALL DLARFG( I-1, A( I-1, I ), A( 1, I ), 1, TAU( I-1 ) )
                E( I-1 ) = A( I-1, I )
                A( I-1, I ) = ONE
 *
@@ -94952,14 +93252,12 @@
                CALL DSYMV( 'Upper', I-1, ONE, A, LDA, A( 1, I ), 1,
      $                     ZERO, W( 1, IW ), 1 )
                IF( I.LT.N ) THEN
-                  CALL DGEMV( 'Transpose', I-1, N-I, ONE, W( 1,
-     $                        IW+1 ),
+                  CALL DGEMV( 'Transpose', I-1, N-I, ONE, W( 1, IW+1 ),
      $                        LDW, A( 1, I ), 1, ZERO, W( I+1, IW ), 1 )
                   CALL DGEMV( 'No transpose', I-1, N-I, -ONE,
      $                        A( 1, I+1 ), LDA, W( I+1, IW ), 1, ONE,
      $                        W( 1, IW ), 1 )
-                  CALL DGEMV( 'Transpose', I-1, N-I, ONE, A( 1,
-     $                        I+1 ),
+                  CALL DGEMV( 'Transpose', I-1, N-I, ONE, A( 1, I+1 ),
      $                        LDA, A( 1, I ), 1, ZERO, W( I+1, IW ), 1 )
                   CALL DGEMV( 'No transpose', I-1, N-I, -ONE,
      $                        W( 1, IW+1 ), LDW, W( I+1, IW ), 1, ONE,
@@ -94989,8 +93287,7 @@
 *              Generate elementary reflector H(i) to annihilate
 *              A(i+2:n,i)
 *
-               CALL DLARFG( N-I, A( I+1, I ), A( MIN( I+2, N ), I ),
-     $                      1,
+               CALL DLARFG( N-I, A( I+1, I ), A( MIN( I+2, N ), I ), 1,
      $                      TAU( I ) )
                E( I ) = A( I+1, I )
                A( I+1, I ) = ONE
@@ -94999,23 +93296,18 @@
 *
                CALL DSYMV( 'Lower', N-I, ONE, A( I+1, I+1 ), LDA,
      $                     A( I+1, I ), 1, ZERO, W( I+1, I ), 1 )
-               CALL DGEMV( 'Transpose', N-I, I-1, ONE, W( I+1, 1 ),
-     $                     LDW,
+               CALL DGEMV( 'Transpose', N-I, I-1, ONE, W( I+1, 1 ), LDW,
      $                     A( I+1, I ), 1, ZERO, W( 1, I ), 1 )
-               CALL DGEMV( 'No transpose', N-I, I-1, -ONE, A( I+1,
-     $                     1 ),
+               CALL DGEMV( 'No transpose', N-I, I-1, -ONE, A( I+1, 1 ),
      $                     LDA, W( 1, I ), 1, ONE, W( I+1, I ), 1 )
-               CALL DGEMV( 'Transpose', N-I, I-1, ONE, A( I+1, 1 ),
-     $                     LDA,
+               CALL DGEMV( 'Transpose', N-I, I-1, ONE, A( I+1, 1 ), LDA,
      $                     A( I+1, I ), 1, ZERO, W( 1, I ), 1 )
-               CALL DGEMV( 'No transpose', N-I, I-1, -ONE, W( I+1,
-     $                     1 ),
+               CALL DGEMV( 'No transpose', N-I, I-1, -ONE, W( I+1, 1 ),
      $                     LDW, W( 1, I ), 1, ONE, W( I+1, I ), 1 )
                CALL DSCAL( N-I, TAU( I ), W( I+1, I ), 1 )
                ALPHA = -HALF*TAU( I )*DDOT( N-I, W( I+1, I ), 1,
      $                 A( I+1, I ), 1 )
-               CALL DAXPY( N-I, ALPHA, A( I+1, I ), 1, W( I+1, I ),
-     $                     1 )
+               CALL DAXPY( N-I, ALPHA, A( I+1, I ), 1, W( I+1, I ), 1 )
             END IF
 *
    20    CONTINUE
@@ -95261,8 +93553,7 @@
 *> \endverbatim
 *>
 *  =====================================================================
-      SUBROUTINE DLATRS( UPLO, TRANS, DIAG, NORMIN, N, A, LDA, X,
-     $                   SCALE,
+      SUBROUTINE DLATRS( UPLO, TRANS, DIAG, NORMIN, N, A, LDA, X, SCALE,
      $                   CNORM, INFO )
 *
 *  -- LAPACK auxiliary routine --
@@ -95297,8 +93588,7 @@
       LOGICAL            LSAME
       INTEGER            IDAMAX
       DOUBLE PRECISION   DASUM, DDOT, DLAMCH, DLANGE
-      EXTERNAL           LSAME, IDAMAX, DASUM, DDOT, DLAMCH,
-     $                   DLANGE
+      EXTERNAL           LSAME, IDAMAX, DASUM, DDOT, DLAMCH, DLANGE
 *     ..
 *     .. External Subroutines ..
       EXTERNAL           DAXPY, DSCAL, DTRSV, XERBLA
@@ -95395,8 +93685,8 @@
 *              A is upper triangular.
 *
                DO J = 2, N
-                  TMAX = MAX( DLANGE( 'M', J-1, 1, A( 1, J ), 1,
-     $                        WORK ), TMAX )
+                  TMAX = MAX( DLANGE( 'M', J-1, 1, A( 1, J ), 1, WORK ),
+     $                        TMAX )
                END DO
             ELSE
 *
@@ -96220,8 +94510,7 @@
 *> \ingroup doubleOTHERcomputational
 *
 *  =====================================================================
-      SUBROUTINE DLATZM( SIDE, M, N, V, INCV, TAU, C1, C2, LDC,
-     $                   WORK )
+      SUBROUTINE DLATZM( SIDE, M, N, V, INCV, TAU, C1, C2, LDC, WORK )
 *
 *  -- LAPACK computational routine --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -96276,8 +94565,8 @@
 *        w := C1 + C2 * v
 *
          CALL DCOPY( M, C1, 1, WORK, 1 )
-         CALL DGEMV( 'No transpose', M, N-1, ONE, C2, LDC, V, INCV,
-     $               ONE, WORK, 1 )
+         CALL DGEMV( 'No transpose', M, N-1, ONE, C2, LDC, V, INCV, ONE,
+     $               WORK, 1 )
 *
 *        [ C1, C2 ] := [ C1, C2 ] - tau* w * [ 1 , v**T]
 *
@@ -96456,10 +94745,8 @@
          DO 10 I = 1, N
             AII = A( I, I )
             IF( I.LT.N ) THEN
-               A( I, I ) = DDOT( N-I+1, A( I, I ), LDA, A( I, I ),
-     $            LDA )
-               CALL DGEMV( 'No transpose', I-1, N-I, ONE, A( 1,
-     $                     I+1 ),
+               A( I, I ) = DDOT( N-I+1, A( I, I ), LDA, A( I, I ), LDA )
+               CALL DGEMV( 'No transpose', I-1, N-I, ONE, A( 1, I+1 ),
      $                     LDA, A( I, I+1 ), LDA, AII, A( 1, I ), 1 )
             ELSE
                CALL DSCAL( I, AII, A( 1, I ), 1 )
@@ -96474,8 +94761,7 @@
             AII = A( I, I )
             IF( I.LT.N ) THEN
                A( I, I ) = DDOT( N-I+1, A( I, I ), 1, A( I, I ), 1 )
-               CALL DGEMV( 'Transpose', N-I, I-1, ONE, A( I+1, 1 ),
-     $                     LDA,
+               CALL DGEMV( 'Transpose', N-I, I-1, ONE, A( I+1, 1 ), LDA,
      $                     A( I+1, I ), 1, AII, A( I, 1 ), LDA )
             ELSE
                CALL DSCAL( I, AII, A( I, 1 ), LDA )
@@ -96684,16 +94970,14 @@
 *
             DO 20 I = 1, N, NB
                IB = MIN( NB, N-I+1 )
-               CALL DTRMM( 'Left', 'Lower', 'Transpose', 'Non-unit',
-     $                     IB,
+               CALL DTRMM( 'Left', 'Lower', 'Transpose', 'Non-unit', IB,
      $                     I-1, ONE, A( I, I ), LDA, A( I, 1 ), LDA )
                CALL DLAUU2( 'Lower', IB, A( I, I ), LDA, INFO )
                IF( I+IB.LE.N ) THEN
                   CALL DGEMM( 'Transpose', 'No transpose', IB, I-1,
      $                        N-I-IB+1, ONE, A( I+IB, I ), LDA,
      $                        A( I+IB, 1 ), LDA, ONE, A( I, 1 ), LDA )
-                  CALL DSYRK( 'Lower', 'Transpose', IB, N-I-IB+1,
-     $                        ONE,
+                  CALL DSYRK( 'Lower', 'Transpose', IB, N-I-IB+1, ONE,
      $                        A( I+IB, I ), LDA, ONE, A( I, I ), LDA )
                END IF
    20       CONTINUE
@@ -97081,8 +95365,7 @@
 *> \ingroup upmtr
 *
 *  =====================================================================
-      SUBROUTINE DOPMTR( SIDE, UPLO, TRANS, M, N, AP, TAU, C, LDC,
-     $                   WORK,
+      SUBROUTINE DOPMTR( SIDE, UPLO, TRANS, M, N, AP, TAU, C, LDC, WORK,
      $                   INFO )
 *
 *  -- LAPACK computational routine --
@@ -97197,9 +95480,11 @@
 *
 *           Apply H(i)
 *
-            CALL DLARF1L( SIDE, MI, NI, AP( II-I+1 ), 1, TAU( I ), C,
-     $                  LDC,
+            AII = AP( II )
+            AP( II ) = ONE
+            CALL DLARF( SIDE, MI, NI, AP( II-I+1 ), 1, TAU( I ), C, LDC,
      $                  WORK )
+            AP( II ) = AII
 *
             IF( FORWRD ) THEN
                II = II + I + 2
@@ -97552,8 +95837,7 @@
 *>      Algorithms, 50(1):33-65, 2009.
 *>
 *  =====================================================================
-      SUBROUTINE DORBDB( TRANS, SIGNS, M, P, Q, X11, LDX11, X12,
-     $                   LDX12,
+      SUBROUTINE DORBDB( TRANS, SIGNS, M, P, Q, X11, LDX11, X12, LDX12,
      $                   X21, LDX21, X22, LDX22, THETA, PHI, TAUP1,
      $                   TAUP2, TAUQ1, TAUQ2, WORK, LWORK, INFO )
 *
@@ -97587,8 +95871,7 @@
       DOUBLE PRECISION   Z1, Z2, Z3, Z4
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DAXPY, DLARF1F, DLARFGP, DSCAL,
-     $                   XERBLA
+      EXTERNAL           DAXPY, DLARF, DLARFGP, DSCAL, XERBLA
 *     ..
 *     .. External Functions ..
       DOUBLE PRECISION   DNRM2
@@ -97671,16 +95954,14 @@
                CALL DSCAL( P-I+1, Z1, X11(I,I), 1 )
             ELSE
                CALL DSCAL( P-I+1, Z1*COS(PHI(I-1)), X11(I,I), 1 )
-               CALL DAXPY( P-I+1, -Z1*Z3*Z4*SIN(PHI(I-1)), X12(I,
-     $                     I-1),
+               CALL DAXPY( P-I+1, -Z1*Z3*Z4*SIN(PHI(I-1)), X12(I,I-1),
      $                     1, X11(I,I), 1 )
             END IF
             IF( I .EQ. 1 ) THEN
                CALL DSCAL( M-P-I+1, Z2, X21(I,I), 1 )
             ELSE
                CALL DSCAL( M-P-I+1, Z2*COS(PHI(I-1)), X21(I,I), 1 )
-               CALL DAXPY( M-P-I+1, -Z2*Z3*Z4*SIN(PHI(I-1)), X22(I,
-     $                     I-1),
+               CALL DAXPY( M-P-I+1, -Z2*Z3*Z4*SIN(PHI(I-1)), X22(I,I-1),
      $                     1, X21(I,I), 1 )
             END IF
 *
@@ -97688,48 +95969,44 @@
      $                 DNRM2( P-I+1, X11(I,I), 1 ) )
 *
             IF( P .GT. I ) THEN
-               CALL DLARFGP( P-I+1, X11(I,I), X11(I+1,I), 1,
-     $                       TAUP1(I) )
+               CALL DLARFGP( P-I+1, X11(I,I), X11(I+1,I), 1, TAUP1(I) )
             ELSE IF( P .EQ. I ) THEN
                CALL DLARFGP( P-I+1, X11(I,I), X11(I,I), 1, TAUP1(I) )
             END IF
+            X11(I,I) = ONE
             IF ( M-P .GT. I ) THEN
                CALL DLARFGP( M-P-I+1, X21(I,I), X21(I+1,I), 1,
      $                       TAUP2(I) )
             ELSE IF ( M-P .EQ. I ) THEN
-               CALL DLARFGP( M-P-I+1, X21(I,I), X21(I,I), 1,
-     $                       TAUP2(I) )
+               CALL DLARFGP( M-P-I+1, X21(I,I), X21(I,I), 1, TAUP2(I) )
             END IF
+            X21(I,I) = ONE
 *
             IF ( Q .GT. I ) THEN
-               CALL DLARF1F( 'L', P-I+1, Q-I, X11(I,I), 1, TAUP1(I),
+               CALL DLARF( 'L', P-I+1, Q-I, X11(I,I), 1, TAUP1(I),
      $                     X11(I,I+1), LDX11, WORK )
             END IF
             IF ( M-Q+1 .GT. I ) THEN
-               CALL DLARF1F( 'L', P-I+1, M-Q-I+1, X11(I,I), 1,
-     $                     TAUP1(I),
+               CALL DLARF( 'L', P-I+1, M-Q-I+1, X11(I,I), 1, TAUP1(I),
      $                     X12(I,I), LDX12, WORK )
             END IF
             IF ( Q .GT. I ) THEN
-               CALL DLARF1F( 'L', M-P-I+1, Q-I, X21(I,I), 1,
-     $                       TAUP2(I), X21(I,I+1), LDX21, WORK )
+               CALL DLARF( 'L', M-P-I+1, Q-I, X21(I,I), 1, TAUP2(I),
+     $                     X21(I,I+1), LDX21, WORK )
             END IF
             IF ( M-Q+1 .GT. I ) THEN
-               CALL DLARF1F( 'L', M-P-I+1, M-Q-I+1, X21(I,I), 1,
-     $                       TAUP2(I), X22(I,I), LDX22, WORK )
+               CALL DLARF( 'L', M-P-I+1, M-Q-I+1, X21(I,I), 1, TAUP2(I),
+     $                     X22(I,I), LDX22, WORK )
             END IF
 *
             IF( I .LT. Q ) THEN
                CALL DSCAL( Q-I, -Z1*Z3*SIN(THETA(I)), X11(I,I+1),
      $                     LDX11 )
-               CALL DAXPY( Q-I, Z2*Z3*COS(THETA(I)), X21(I,I+1),
-     $                     LDX21,
+               CALL DAXPY( Q-I, Z2*Z3*COS(THETA(I)), X21(I,I+1), LDX21,
      $                     X11(I,I+1), LDX11 )
             END IF
-            CALL DSCAL( M-Q-I+1, -Z1*Z4*SIN(THETA(I)), X12(I,I),
-     $                  LDX12 )
-            CALL DAXPY( M-Q-I+1, Z2*Z4*COS(THETA(I)), X22(I,I),
-     $                  LDX22,
+            CALL DSCAL( M-Q-I+1, -Z1*Z4*SIN(THETA(I)), X12(I,I), LDX12 )
+            CALL DAXPY( M-Q-I+1, Z2*Z4*COS(THETA(I)), X22(I,I), LDX22,
      $                  X12(I,I), LDX12 )
 *
             IF( I .LT. Q )
@@ -97744,6 +96021,7 @@
                   CALL DLARFGP( Q-I, X11(I,I+1), X11(I,I+2), LDX11,
      $                          TAUQ1(I) )
                END IF
+               X11(I,I+1) = ONE
             END IF
             IF ( Q+I-1 .LT. M ) THEN
                IF ( M-Q .EQ. I ) THEN
@@ -97754,22 +96032,20 @@
      $                          TAUQ2(I) )
                END IF
             END IF
+            X12(I,I) = ONE
 *
             IF( I .LT. Q ) THEN
-               CALL DLARF1F( 'R', P-I, Q-I, X11(I,I+1), LDX11,
-     $                     TAUQ1(I),
+               CALL DLARF( 'R', P-I, Q-I, X11(I,I+1), LDX11, TAUQ1(I),
      $                     X11(I+1,I+1), LDX11, WORK )
-               CALL DLARF1F( 'R', M-P-I, Q-I, X11(I,I+1), LDX11,
-     $                     TAUQ1(I),
+               CALL DLARF( 'R', M-P-I, Q-I, X11(I,I+1), LDX11, TAUQ1(I),
      $                     X21(I+1,I+1), LDX21, WORK )
             END IF
             IF ( P .GT. I ) THEN
-               CALL DLARF1F( 'R', P-I, M-Q-I+1, X12(I,I), LDX12,
-     $                     TAUQ2(I),
+               CALL DLARF( 'R', P-I, M-Q-I+1, X12(I,I), LDX12, TAUQ2(I),
      $                     X12(I+1,I), LDX12, WORK )
             END IF
             IF ( M-P .GT. I ) THEN
-               CALL DLARF1F( 'R', M-P-I, M-Q-I+1, X12(I,I), LDX12,
+               CALL DLARF( 'R', M-P-I, M-Q-I+1, X12(I,I), LDX12,
      $                     TAUQ2(I), X22(I+1,I), LDX22, WORK )
             END IF
 *
@@ -97787,14 +96063,14 @@
                CALL DLARFGP( M-Q-I+1, X12(I,I), X12(I,I+1), LDX12,
      $                       TAUQ2(I) )
             END IF
+            X12(I,I) = ONE
 *
             IF ( P .GT. I ) THEN
-               CALL DLARF1F( 'R', P-I, M-Q-I+1, X12(I,I), LDX12,
-     $                     TAUQ2(I),
+               CALL DLARF( 'R', P-I, M-Q-I+1, X12(I,I), LDX12, TAUQ2(I),
      $                     X12(I+1,I), LDX12, WORK )
             END IF
             IF( M-P-Q .GE. 1 )
-     $         CALL DLARF1F( 'R', M-P-Q, M-Q-I+1, X12(I,I), LDX12,
+     $         CALL DLARF( 'R', M-P-Q, M-Q-I+1, X12(I,I), LDX12,
      $                     TAUQ2(I), X22(Q+1,I), LDX22, WORK )
 *
          END DO
@@ -97811,9 +96087,9 @@
                CALL DLARFGP( M-P-Q-I+1, X22(Q+I,P+I), X22(Q+I,P+I+1),
      $                       LDX22, TAUQ2(P+I) )
             END IF
+            X22(Q+I,P+I) = ONE
             IF ( I .LT. M-P-Q ) THEN
-               CALL DLARF1F( 'R', M-P-Q-I, M-P-Q-I+1, X22(Q+I,P+I),
-     $                     LDX22,
+               CALL DLARF( 'R', M-P-Q-I, M-P-Q-I+1, X22(Q+I,P+I), LDX22,
      $                     TAUQ2(P+I), X22(Q+I+1,P+I), LDX22, WORK )
             END IF
 *
@@ -97829,25 +96105,22 @@
                CALL DSCAL( P-I+1, Z1, X11(I,I), LDX11 )
             ELSE
                CALL DSCAL( P-I+1, Z1*COS(PHI(I-1)), X11(I,I), LDX11 )
-               CALL DAXPY( P-I+1, -Z1*Z3*Z4*SIN(PHI(I-1)), X12(I-1,
-     $                     I),
+               CALL DAXPY( P-I+1, -Z1*Z3*Z4*SIN(PHI(I-1)), X12(I-1,I),
      $                     LDX12, X11(I,I), LDX11 )
             END IF
             IF( I .EQ. 1 ) THEN
                CALL DSCAL( M-P-I+1, Z2, X21(I,I), LDX21 )
             ELSE
-               CALL DSCAL( M-P-I+1, Z2*COS(PHI(I-1)), X21(I,I),
-     $                     LDX21 )
-               CALL DAXPY( M-P-I+1, -Z2*Z3*Z4*SIN(PHI(I-1)), X22(I-1,
-     $                     I),
+               CALL DSCAL( M-P-I+1, Z2*COS(PHI(I-1)), X21(I,I), LDX21 )
+               CALL DAXPY( M-P-I+1, -Z2*Z3*Z4*SIN(PHI(I-1)), X22(I-1,I),
      $                     LDX22, X21(I,I), LDX21 )
             END IF
 *
             THETA(I) = ATAN2( DNRM2( M-P-I+1, X21(I,I), LDX21 ),
      $                 DNRM2( P-I+1, X11(I,I), LDX11 ) )
 *
-            CALL DLARFGP( P-I+1, X11(I,I), X11(I,I+1), LDX11,
-     $                    TAUP1(I) )
+            CALL DLARFGP( P-I+1, X11(I,I), X11(I,I+1), LDX11, TAUP1(I) )
+            X11(I,I) = ONE
             IF ( I .EQ. M-P ) THEN
                CALL DLARFGP( M-P-I+1, X21(I,I), X21(I,I), LDX21,
      $                    TAUP2(I) )
@@ -97855,23 +96128,22 @@
                CALL DLARFGP( M-P-I+1, X21(I,I), X21(I,I+1), LDX21,
      $                    TAUP2(I) )
             END IF
+            X21(I,I) = ONE
 *
             IF ( Q .GT. I ) THEN
-               CALL DLARF1F( 'R', Q-I, P-I+1, X11(I,I), LDX11,
-     $                     TAUP1(I),
+               CALL DLARF( 'R', Q-I, P-I+1, X11(I,I), LDX11, TAUP1(I),
      $                     X11(I+1,I), LDX11, WORK )
             END IF
             IF ( M-Q+1 .GT. I ) THEN
-               CALL DLARF1F( 'R', M-Q-I+1, P-I+1, X11(I,I), LDX11,
+               CALL DLARF( 'R', M-Q-I+1, P-I+1, X11(I,I), LDX11,
      $                     TAUP1(I), X12(I,I), LDX12, WORK )
             END IF
             IF ( Q .GT. I ) THEN
-               CALL DLARF1F( 'R', Q-I, M-P-I+1, X21(I,I), LDX21,
-     $                     TAUP2(I),
+               CALL DLARF( 'R', Q-I, M-P-I+1, X21(I,I), LDX21, TAUP2(I),
      $                     X21(I+1,I), LDX21, WORK )
             END IF
             IF ( M-Q+1 .GT. I ) THEN
-               CALL DLARF1F( 'R', M-Q-I+1, M-P-I+1, X21(I,I), LDX21,
+               CALL DLARF( 'R', M-Q-I+1, M-P-I+1, X21(I,I), LDX21,
      $                     TAUP2(I), X22(I,I), LDX22, WORK )
             END IF
 *
@@ -97896,6 +96168,7 @@
                   CALL DLARFGP( Q-I, X11(I+1,I), X11(I+2,I), 1,
      $                          TAUQ1(I) )
                END IF
+               X11(I+1,I) = ONE
             END IF
             IF ( M-Q .GT. I ) THEN
                CALL DLARFGP( M-Q-I+1, X12(I,I), X12(I+1,I), 1,
@@ -97904,18 +96177,19 @@
                CALL DLARFGP( M-Q-I+1, X12(I,I), X12(I,I), 1,
      $                       TAUQ2(I) )
             END IF
+            X12(I,I) = ONE
 *
             IF( I .LT. Q ) THEN
-               CALL DLARF1F( 'L', Q-I, P-I, X11(I+1,I), 1, TAUQ1(I),
+               CALL DLARF( 'L', Q-I, P-I, X11(I+1,I), 1, TAUQ1(I),
      $                     X11(I+1,I+1), LDX11, WORK )
-               CALL DLARF1F( 'L', Q-I, M-P-I, X11(I+1,I), 1,
-     $                       TAUQ1(I), X21(I+1,I+1), LDX21, WORK )
+               CALL DLARF( 'L', Q-I, M-P-I, X11(I+1,I), 1, TAUQ1(I),
+     $                     X21(I+1,I+1), LDX21, WORK )
             END IF
-            CALL DLARF1F( 'L', M-Q-I+1, P-I, X12(I,I), 1, TAUQ2(I),
-     $                    X12(I,I+1), LDX12, WORK )
+            CALL DLARF( 'L', M-Q-I+1, P-I, X12(I,I), 1, TAUQ2(I),
+     $                  X12(I,I+1), LDX12, WORK )
             IF ( M-P-I .GT. 0 ) THEN
-               CALL DLARF1F( 'L', M-Q-I+1, M-P-I, X12(I,I), 1,
-     $                       TAUQ2(I), X22(I,I+1), LDX22, WORK )
+               CALL DLARF( 'L', M-Q-I+1, M-P-I, X12(I,I), 1, TAUQ2(I),
+     $                     X22(I,I+1), LDX22, WORK )
             END IF
 *
          END DO
@@ -97925,16 +96199,16 @@
          DO I = Q + 1, P
 *
             CALL DSCAL( M-Q-I+1, -Z1*Z4, X12(I,I), 1 )
-            CALL DLARFGP( M-Q-I+1, X12(I,I), X12(I+1,I), 1,
-     $                    TAUQ2(I) )
+            CALL DLARFGP( M-Q-I+1, X12(I,I), X12(I+1,I), 1, TAUQ2(I) )
+            X12(I,I) = ONE
 *
             IF ( P .GT. I ) THEN
-               CALL DLARF1F( 'L', M-Q-I+1, P-I, X12(I,I), 1,
-     $                       TAUQ2(I), X12(I,I+1), LDX12, WORK )
+               CALL DLARF( 'L', M-Q-I+1, P-I, X12(I,I), 1, TAUQ2(I),
+     $                  X12(I,I+1), LDX12, WORK )
             END IF
             IF( M-P-Q .GE. 1 )
-     $         CALL DLARF1F( 'L', M-Q-I+1, M-P-Q, X12(I,I), 1,
-     $                       TAUQ2(I), X22(I,Q+1), LDX22, WORK )
+     $         CALL DLARF( 'L', M-Q-I+1, M-P-Q, X12(I,I), 1, TAUQ2(I),
+     $                     X22(I,Q+1), LDX22, WORK )
 *
          END DO
 *
@@ -97944,17 +96218,15 @@
 *
             CALL DSCAL( M-P-Q-I+1, Z2*Z4, X22(P+I,Q+I), 1 )
             IF ( M-P-Q .EQ. I ) THEN
-               CALL DLARFGP( M-P-Q-I+1, X22(P+I,Q+I), X22(P+I,Q+I),
-     $                       1,
+               CALL DLARFGP( M-P-Q-I+1, X22(P+I,Q+I), X22(P+I,Q+I), 1,
      $                       TAUQ2(P+I) )
             ELSE
-               CALL DLARFGP( M-P-Q-I+1, X22(P+I,Q+I), X22(P+I+1,Q+I),
-     $                       1,
+               CALL DLARFGP( M-P-Q-I+1, X22(P+I,Q+I), X22(P+I+1,Q+I), 1,
      $                       TAUQ2(P+I) )
-               CALL DLARF1F( 'L', M-P-Q-I+1, M-P-Q-I, X22(P+I,Q+I),
-     $                       1, TAUQ2(P+I), X22(P+I,Q+I+1), LDX22,
-     $                       WORK )
+               CALL DLARF( 'L', M-P-Q-I+1, M-P-Q-I, X22(P+I,Q+I), 1,
+     $                  TAUQ2(P+I), X22(P+I,Q+I+1), LDX22, WORK )
             END IF
+            X22(P+I,Q+I) = ONE
 *
          END DO
 *
@@ -98260,8 +96532,7 @@
 *> \ingroup uncsd
 *
 *  =====================================================================
-      RECURSIVE SUBROUTINE DORCSD( JOBU1, JOBU2, JOBV1T, JOBV2T,
-     $                             TRANS,
+      RECURSIVE SUBROUTINE DORCSD( JOBU1, JOBU2, JOBV1T, JOBV2T, TRANS,
      $                             SIGNS, M, P, Q, X11, LDX11, X12,
      $                             LDX12, X21, LDX21, X22, LDX22, THETA,
      $                             U1, LDU1, U2, LDU2, V1T, LDV1T, V2T,
@@ -98373,8 +96644,7 @@
          ELSE
             SIGNST = 'D'
          END IF
-         CALL DORCSD( JOBV1T, JOBV2T, JOBU1, JOBU2, TRANST, SIGNST,
-     $                M,
+         CALL DORCSD( JOBV1T, JOBV2T, JOBU1, JOBU2, TRANST, SIGNST, M,
      $                Q, P, X11, LDX11, X21, LDX21, X12, LDX12, X22,
      $                LDX22, THETA, V1T, LDV1T, V2T, LDV2T, U1, LDU1,
      $                U2, LDU2, WORK, LWORK, IWORK, INFO )
@@ -98464,8 +96734,7 @@
 *
 *     Transform to bidiagonal block form
 *
-      CALL DORBDB( TRANS, SIGNS, M, P, Q, X11, LDX11, X12, LDX12,
-     $             X21,
+      CALL DORBDB( TRANS, SIGNS, M, P, Q, X11, LDX11, X12, LDX12, X21,
      $             LDX21, X22, LDX22, THETA, WORK(IPHI), WORK(ITAUP1),
      $             WORK(ITAUP2), WORK(ITAUQ1), WORK(ITAUQ2),
      $             WORK(IORBDB), LORBDBWORK, CHILDINFO )
@@ -98475,8 +96744,7 @@
       IF( COLMAJOR ) THEN
          IF( WANTU1 .AND. P .GT. 0 ) THEN
             CALL DLACPY( 'L', P, Q, X11, LDX11, U1, LDU1 )
-            CALL DORGQR( P, P, Q, U1, LDU1, WORK(ITAUP1),
-     $                   WORK(IORGQR),
+            CALL DORGQR( P, P, Q, U1, LDU1, WORK(ITAUP1), WORK(IORGQR),
      $                   LORGQRWORK, INFO)
          END IF
          IF( WANTU2 .AND. M-P .GT. 0 ) THEN
@@ -98492,8 +96760,7 @@
                V1T(1,J) = ZERO
                V1T(J,1) = ZERO
             END DO
-            CALL DORGLQ( Q-1, Q-1, Q-1, V1T(2,2), LDV1T,
-     $                   WORK(ITAUQ1),
+            CALL DORGLQ( Q-1, Q-1, Q-1, V1T(2,2), LDV1T, WORK(ITAUQ1),
      $                   WORK(IORGLQ), LORGLQWORK, INFO )
          END IF
          IF( WANTV2T .AND. M-Q .GT. 0 ) THEN
@@ -98510,8 +96777,7 @@
       ELSE
          IF( WANTU1 .AND. P .GT. 0 ) THEN
             CALL DLACPY( 'U', Q, P, X11, LDX11, U1, LDU1 )
-            CALL DORGLQ( P, P, Q, U1, LDU1, WORK(ITAUP1),
-     $                   WORK(IORGLQ),
+            CALL DORGLQ( P, P, Q, U1, LDU1, WORK(ITAUP1), WORK(IORGLQ),
      $                   LORGLQWORK, INFO)
          END IF
          IF( WANTU2 .AND. M-P .GT. 0 ) THEN
@@ -98527,8 +96793,7 @@
                V1T(1,J) = ZERO
                V1T(J,1) = ZERO
             END DO
-            CALL DORGQR( Q-1, Q-1, Q-1, V1T(2,2), LDV1T,
-     $                   WORK(ITAUQ1),
+            CALL DORGQR( Q-1, Q-1, Q-1, V1T(2,2), LDV1T, WORK(ITAUQ1),
      $                   WORK(IORGQR), LORGQRWORK, INFO )
          END IF
          IF( WANTV2T .AND. M-Q .GT. 0 ) THEN
@@ -98542,8 +96807,7 @@
 *
 *     Compute the CSD of the matrix in bidiagonal-block form
 *
-      CALL DBBCSD( JOBU1, JOBU2, JOBV1T, JOBV2T, TRANS, M, P, Q,
-     $             THETA,
+      CALL DBBCSD( JOBU1, JOBU2, JOBV1T, JOBV2T, TRANS, M, P, Q, THETA,
      $             WORK(IPHI), U1, LDU1, U2, LDU2, V1T, LDV1T, V2T,
      $             LDV2T, WORK(IB11D), WORK(IB11E), WORK(IB12D),
      $             WORK(IB12E), WORK(IB21D), WORK(IB21E), WORK(IB22D),
@@ -98722,7 +96986,7 @@
       INTEGER            I, II, J, L
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DLARF1L, DSCAL, XERBLA
+      EXTERNAL           DLARF, DSCAL, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MAX
@@ -98765,9 +97029,8 @@
 *
 *        Apply H(i) to A(1:m-k+i,1:n-k+i) from the left
 *
-         !A(M-N+II, II) = ONE
-         CALL DLARF1L( 'Left', M-N+II, II-1, A( 1, II ), 1, TAU( I ),
-     $               A,
+         A( M-N+II, II ) = ONE
+         CALL DLARF( 'Left', M-N+II, II-1, A( 1, II ), 1, TAU( I ), A,
      $               LDA, WORK )
          CALL DSCAL( M-N+II-1, -TAU( I ), A( 1, II ), 1 )
          A( M-N+II, II ) = ONE - TAU( I )
@@ -98918,7 +97181,7 @@
       INTEGER            I, J, L
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DLARF1F, DSCAL, XERBLA
+      EXTERNAL           DLARF, DSCAL, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MAX
@@ -98961,7 +97224,8 @@
 *        Apply H(i) to A(i:m,i:n) from the left
 *
          IF( I.LT.N ) THEN
-            CALL DLARF1F( 'Left', M-I+1, N-I, A( I, I ), 1, TAU( I ),
+            A( I, I ) = ONE
+            CALL DLARF( 'Left', M-I+1, N-I, A( I, I ), 1, TAU( I ),
      $                  A( I, I+1 ), LDA, WORK )
          END IF
          IF( I.LT.M )
@@ -99134,8 +97398,7 @@
 *> \ingroup ungbr
 *
 *  =====================================================================
-      SUBROUTINE DORGBR( VECT, M, N, K, A, LDA, TAU, WORK, LWORK,
-     $                   INFO )
+      SUBROUTINE DORGBR( VECT, M, N, K, A, LDA, TAU, WORK, LWORK, INFO )
 *
 *  -- LAPACK computational routine --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -99438,8 +97701,7 @@
 *> \ingroup unghr
 *
 *  =====================================================================
-      SUBROUTINE DORGHR( N, ILO, IHI, A, LDA, TAU, WORK, LWORK,
-     $                   INFO )
+      SUBROUTINE DORGHR( N, ILO, IHI, A, LDA, TAU, WORK, LWORK, INFO )
 *
 *  -- LAPACK computational routine --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -99686,7 +97948,7 @@
       INTEGER            I, J, L
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DLARF1F, DSCAL, XERBLA
+      EXTERNAL           DLARF, DSCAL, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MAX
@@ -99734,7 +97996,8 @@
 *
          IF( I.LT.N ) THEN
             IF( I.LT.M ) THEN
-               CALL DLARF1F( 'Right', M-I, N-I+1, A( I, I ), LDA,
+               A( I, I ) = ONE
+               CALL DLARF( 'Right', M-I, N-I+1, A( I, I ), LDA,
      $                     TAU( I ), A( I+1, I ), LDA, WORK )
             END IF
             CALL DSCAL( N-I, -TAU( I ), A( I, I+1 ), LDA )
@@ -99965,8 +98228,7 @@
 *              determine the minimum value of NB.
 *
                NB = LWORK / LDWORK
-               NBMIN = MAX( 2, ILAENV( 2, 'DORGLQ', ' ', M, N, K,
-     $                      -1 ) )
+               NBMIN = MAX( 2, ILAENV( 2, 'DORGLQ', ' ', M, N, K, -1 ) )
             END IF
          END IF
       END IF
@@ -100007,14 +98269,12 @@
 *              Form the triangular factor of the block reflector
 *              H = H(i) H(i+1) . . . H(i+ib-1)
 *
-               CALL DLARFT( 'Forward', 'Rowwise', N-I+1, IB, A( I,
-     $                      I ),
+               CALL DLARFT( 'Forward', 'Rowwise', N-I+1, IB, A( I, I ),
      $                      LDA, TAU( I ), WORK, LDWORK )
 *
 *              Apply H**T to A(i+ib:m,i:n) from the right
 *
-               CALL DLARFB( 'Right', 'Transpose', 'Forward',
-     $                      'Rowwise',
+               CALL DLARFB( 'Right', 'Transpose', 'Forward', 'Rowwise',
      $                      M-I-IB+1, N-I+1, IB, A( I, I ), LDA, WORK,
      $                      LDWORK, A( I+IB, I ), LDA, WORK( IB+1 ),
      $                      LDWORK )
@@ -100022,8 +98282,7 @@
 *
 *           Apply H**T to columns i:n of current block
 *
-            CALL DORGL2( IB, N-I+1, IB, A( I, I ), LDA, TAU( I ),
-     $                   WORK,
+            CALL DORGL2( IB, N-I+1, IB, A( I, I ), LDA, TAU( I ), WORK,
      $                   IINFO )
 *
 *           Set columns 1:i-1 of current block to zero
@@ -100265,8 +98524,7 @@
 *              determine the minimum value of NB.
 *
                NB = LWORK / LDWORK
-               NBMIN = MAX( 2, ILAENV( 2, 'DORGQL', ' ', M, N, K,
-     $                      -1 ) )
+               NBMIN = MAX( 2, ILAENV( 2, 'DORGQL', ' ', M, N, K, -1 ) )
             END IF
          END IF
       END IF
@@ -100550,8 +98808,7 @@
 *              determine the minimum value of NB.
 *
                NB = LWORK / LDWORK
-               NBMIN = MAX( 2, ILAENV( 2, 'DORGQR', ' ', M, N, K,
-     $                      -1 ) )
+               NBMIN = MAX( 2, ILAENV( 2, 'DORGQR', ' ', M, N, K, -1 ) )
             END IF
          END IF
       END IF
@@ -100605,8 +98862,7 @@
 *
 *           Apply H to rows i:m of current block
 *
-            CALL DORG2R( M-I+1, IB, IB, A( I, I ), LDA, TAU( I ),
-     $                   WORK,
+            CALL DORG2R( M-I+1, IB, IB, A( I, I ), LDA, TAU( I ), WORK,
      $                   IINFO )
 *
 *           Set rows 1:i-1 of current block to zero
@@ -100807,9 +99063,8 @@
 *
 *        Apply H(i) to A(1:m-k+i,1:n-k+i) from the right
 *
-         !A( II, N-M+II ) = ONE
-         CALL DLARF1L( 'Right', II-1, N-M+II, A( II, 1 ), LDA,
-     $               TAU( I ),
+         A( II, N-M+II ) = ONE
+         CALL DLARF( 'Right', II-1, N-M+II, A( II, 1 ), LDA, TAU( I ),
      $               A, LDA, WORK )
          CALL DSCAL( N-M+II-1, -TAU( I ), A( II, 1 ), LDA )
          A( II, N-M+II ) = ONE - TAU( I )
@@ -101048,8 +99303,7 @@
 *              determine the minimum value of NB.
 *
                NB = LWORK / LDWORK
-               NBMIN = MAX( 2, ILAENV( 2, 'DORGRQ', ' ', M, N, K,
-     $                      -1 ) )
+               NBMIN = MAX( 2, ILAENV( 2, 'DORGRQ', ' ', M, N, K, -1 ) )
             END IF
          END IF
       END IF
@@ -101093,16 +99347,14 @@
 *
 *              Apply H**T to A(1:m-k+i-1,1:n-k+i+ib-1) from the right
 *
-               CALL DLARFB( 'Right', 'Transpose', 'Backward',
-     $                      'Rowwise',
+               CALL DLARFB( 'Right', 'Transpose', 'Backward', 'Rowwise',
      $                      II-1, N-K+I+IB-1, IB, A( II, 1 ), LDA, WORK,
      $                      LDWORK, A, LDA, WORK( IB+1 ), LDWORK )
             END IF
 *
 *           Apply H**T to columns 1:n-k+i+ib-1 of current block
 *
-            CALL DORGR2( IB, N-K+I+IB-1, IB, A( II, 1 ), LDA,
-     $                   TAU( I ),
+            CALL DORGR2( IB, N-K+I+IB-1, IB, A( II, 1 ), LDA, TAU( I ),
      $                   WORK, IINFO )
 *
 *           Set columns n-k+i+ib:n of current block to zero
@@ -101339,8 +99591,7 @@
 *
 *        Generate Q(1:n-1,1:n-1)
 *
-         CALL DORGQL( N-1, N-1, N-1, A, LDA, TAU, WORK, LWORK,
-     $                IINFO )
+         CALL DORGQL( N-1, N-1, N-1, A, LDA, TAU, WORK, LWORK, IINFO )
 *
       ELSE
 *
@@ -101474,6 +99725,7 @@
 *>          The i-th column must contain the vector which defines the
 *>          elementary reflector H(i), for i = 1,2,...,k, as returned by
 *>          DGEQLF in the last k columns of its array argument A.
+*>          A is modified by the routine but restored on exit.
 *> \endverbatim
 *>
 *> \param[in] LDA
@@ -101553,13 +99805,14 @@
 *     .. Local Scalars ..
       LOGICAL            LEFT, NOTRAN
       INTEGER            I, I1, I2, I3, MI, NI, NQ
+      DOUBLE PRECISION   AII
 *     ..
 *     .. External Functions ..
       LOGICAL            LSAME
       EXTERNAL           LSAME
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DLARF1L, XERBLA
+      EXTERNAL           DLARF, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MAX
@@ -101636,8 +99889,11 @@
 *
 *        Apply H(i)
 *
-         CALL DLARF1L( SIDE, MI, NI, A( 1, I ), 1, TAU( I ), C, LDC,
+         AII = A( NQ-K+I, I )
+         A( NQ-K+I, I ) = ONE
+         CALL DLARF( SIDE, MI, NI, A( 1, I ), 1, TAU( I ), C, LDC,
      $               WORK )
+         A( NQ-K+I, I ) = AII
    10 CONTINUE
       RETURN
 *
@@ -101744,6 +100000,7 @@
 *>          The i-th column must contain the vector which defines the
 *>          elementary reflector H(i), for i = 1,2,...,k, as returned by
 *>          DGEQRF in the first k columns of its array argument A.
+*>          A is modified by the routine but restored on exit.
 *> \endverbatim
 *>
 *> \param[in] LDA
@@ -101823,13 +100080,14 @@
 *     .. Local Scalars ..
       LOGICAL            LEFT, NOTRAN
       INTEGER            I, I1, I2, I3, IC, JC, MI, NI, NQ
+      DOUBLE PRECISION   AII
 *     ..
 *     .. External Functions ..
       LOGICAL            LSAME
       EXTERNAL           LSAME
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL            XERBLA, DLARF1F
+      EXTERNAL           DLARF, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MAX
@@ -101910,9 +100168,11 @@
 *
 *        Apply H(i)
 *
-         CALL DLARF1F( SIDE, MI, NI, A( I, I ), 1, TAU( I ), C( IC,
-     $               JC ),
+         AII = A( I, I )
+         A( I, I ) = ONE
+         CALL DLARF( SIDE, MI, NI, A( I, I ), 1, TAU( I ), C( IC, JC ),
      $               LDC, WORK )
+         A( I, I ) = AII
    10 CONTINUE
       RETURN
 *
@@ -102245,8 +100505,7 @@
                I1 = 1
                I2 = 2
             END IF
-            CALL DORMQR( SIDE, TRANS, MI, NI, NQ-1, A( 2, 1 ), LDA,
-     $                   TAU,
+            CALL DORMQR( SIDE, TRANS, MI, NI, NQ-1, A( 2, 1 ), LDA, TAU,
      $                   C( I1, I2 ), LDC, WORK, LWORK, IINFO )
          END IF
       ELSE
@@ -102516,8 +100775,7 @@
       END IF
       IF( .NOT.LEFT .AND. .NOT.LSAME( SIDE, 'R' ) ) THEN
          INFO = -1
-      ELSE IF( .NOT.LSAME( TRANS, 'N' ) .AND.
-     $         .NOT.LSAME( TRANS, 'T' ) )
+      ELSE IF( .NOT.LSAME( TRANS, 'N' ) .AND. .NOT.LSAME( TRANS, 'T' ) )
      $          THEN
          INFO = -2
       ELSE IF( M.LT.0 ) THEN
@@ -102683,6 +100941,7 @@
 *>          The i-th row must contain the vector which defines the
 *>          elementary reflector H(i), for i = 1,2,...,k, as returned by
 *>          DGELQF in the first k rows of its array argument A.
+*>          A is modified by the routine but restored on exit.
 *> \endverbatim
 *>
 *> \param[in] LDA
@@ -102760,13 +101019,14 @@
 *     .. Local Scalars ..
       LOGICAL            LEFT, NOTRAN
       INTEGER            I, I1, I2, I3, IC, JC, MI, NI, NQ
+      DOUBLE PRECISION   AII
 *     ..
 *     .. External Functions ..
       LOGICAL            LSAME
       EXTERNAL           LSAME
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DLARF1F, XERBLA
+      EXTERNAL           DLARF, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MAX
@@ -102847,8 +101107,11 @@
 *
 *        Apply H(i)
 *
-         CALL DLARF1F( SIDE, MI, NI, A( I, I ), LDA, TAU( I ),
+         AII = A( I, I )
+         A( I, I ) = ONE
+         CALL DLARF( SIDE, MI, NI, A( I, I ), LDA, TAU( I ),
      $               C( IC, JC ), LDC, WORK )
+         A( I, I ) = AII
    10 CONTINUE
       RETURN
 *
@@ -103098,8 +101361,7 @@
 *
 *        Compute the workspace requirements
 *
-         NB = MIN( NBMAX, ILAENV( 1, 'DORMLQ', SIDE // TRANS, M, N,
-     $             K,
+         NB = MIN( NBMAX, ILAENV( 1, 'DORMLQ', SIDE // TRANS, M, N, K,
      $        -1 ) )
          LWKOPT = NW*NB + TSIZE
          WORK( 1 ) = LWKOPT
@@ -103124,8 +101386,7 @@
       IF( NB.GT.1 .AND. NB.LT.K ) THEN
          IF( LWORK.LT.LWKOPT ) THEN
             NB = (LWORK-TSIZE) / LDWORK
-            NBMIN = MAX( 2, ILAENV( 2, 'DORMLQ', SIDE // TRANS, M, N,
-     $                   K,
+            NBMIN = MAX( 2, ILAENV( 2, 'DORMLQ', SIDE // TRANS, M, N, K,
      $              -1 ) )
          END IF
       END IF
@@ -103134,8 +101395,7 @@
 *
 *        Use unblocked code
 *
-         CALL DORML2( SIDE, TRANS, M, N, K, A, LDA, TAU, C, LDC,
-     $                WORK,
+         CALL DORML2( SIDE, TRANS, M, N, K, A, LDA, TAU, C, LDC, WORK,
      $                IINFO )
       ELSE
 *
@@ -103191,8 +101451,7 @@
 *
 *           Apply H or H**T
 *
-            CALL DLARFB( SIDE, TRANST, 'Forward', 'Rowwise', MI, NI,
-     $                   IB,
+            CALL DLARFB( SIDE, TRANST, 'Forward', 'Rowwise', MI, NI, IB,
      $                   A( I, I ), LDA, WORK( IWT ), LDT,
      $                   C( IC, JC ), LDC, WORK, LDWORK )
    10    CONTINUE
@@ -103448,8 +101707,7 @@
          IF( M.EQ.0 .OR. N.EQ.0 ) THEN
             LWKOPT = 1
          ELSE
-            NB = MIN( NBMAX, ILAENV( 1, 'DORMQL', SIDE // TRANS, M,
-     $                N,
+            NB = MIN( NBMAX, ILAENV( 1, 'DORMQL', SIDE // TRANS, M, N,
      $                               K, -1 ) )
             LWKOPT = NW*NB + TSIZE
          END IF
@@ -103474,8 +101732,7 @@
       IF( NB.GT.1 .AND. NB.LT.K ) THEN
          IF( LWORK.LT.LWKOPT ) THEN
             NB = (LWORK-TSIZE) / LDWORK
-            NBMIN = MAX( 2, ILAENV( 2, 'DORMQL', SIDE // TRANS, M, N,
-     $                   K,
+            NBMIN = MAX( 2, ILAENV( 2, 'DORMQL', SIDE // TRANS, M, N, K,
      $              -1 ) )
          END IF
       END IF
@@ -103484,8 +101741,7 @@
 *
 *        Use unblocked code
 *
-         CALL DORM2L( SIDE, TRANS, M, N, K, A, LDA, TAU, C, LDC,
-     $                WORK,
+         CALL DORM2L( SIDE, TRANS, M, N, K, A, LDA, TAU, C, LDC, WORK,
      $                IINFO )
       ELSE
 *
@@ -103531,8 +101787,7 @@
 *
 *           Apply H or H**T
 *
-            CALL DLARFB( SIDE, TRANS, 'Backward', 'Columnwise', MI,
-     $                   NI,
+            CALL DLARFB( SIDE, TRANS, 'Backward', 'Columnwise', MI, NI,
      $                   IB, A( 1, I ), LDA, WORK( IWT ), LDT, C, LDC,
      $                   WORK, LDWORK )
    10    CONTINUE
@@ -103785,8 +102040,7 @@
 *
 *        Compute the workspace requirements
 *
-         NB = MIN( NBMAX, ILAENV( 1, 'DORMQR', SIDE // TRANS, M, N,
-     $             K,
+         NB = MIN( NBMAX, ILAENV( 1, 'DORMQR', SIDE // TRANS, M, N, K,
      $        -1 ) )
          LWKOPT = NW*NB + TSIZE
          WORK( 1 ) = LWKOPT
@@ -103811,8 +102065,7 @@
       IF( NB.GT.1 .AND. NB.LT.K ) THEN
          IF( LWORK.LT.LWKOPT ) THEN
             NB = (LWORK-TSIZE) / LDWORK
-            NBMIN = MAX( 2, ILAENV( 2, 'DORMQR', SIDE // TRANS, M, N,
-     $                   K,
+            NBMIN = MAX( 2, ILAENV( 2, 'DORMQR', SIDE // TRANS, M, N, K,
      $              -1 ) )
          END IF
       END IF
@@ -103821,8 +102074,7 @@
 *
 *        Use unblocked code
 *
-         CALL DORM2R( SIDE, TRANS, M, N, K, A, LDA, TAU, C, LDC,
-     $                WORK,
+         CALL DORM2R( SIDE, TRANS, M, N, K, A, LDA, TAU, C, LDC, WORK,
      $                IINFO )
       ELSE
 *
@@ -103854,8 +102106,7 @@
 *           Form the triangular factor of the block reflector
 *           H = H(i) H(i+1) . . . H(i+ib-1)
 *
-            CALL DLARFT( 'Forward', 'Columnwise', NQ-I+1, IB, A( I,
-     $                   I ),
+            CALL DLARFT( 'Forward', 'Columnwise', NQ-I+1, IB, A( I, I ),
      $                   LDA, TAU( I ), WORK( IWT ), LDT )
             IF( LEFT ) THEN
 *
@@ -103873,8 +102124,7 @@
 *
 *           Apply H or H**T
 *
-            CALL DLARFB( SIDE, TRANS, 'Forward', 'Columnwise', MI,
-     $                   NI,
+            CALL DLARFB( SIDE, TRANS, 'Forward', 'Columnwise', MI, NI,
      $                   IB, A( I, I ), LDA, WORK( IWT ), LDT,
      $                   C( IC, JC ), LDC, WORK, LDWORK )
    10    CONTINUE
@@ -104335,8 +102585,7 @@
 *> \endverbatim
 *>
 *  =====================================================================
-      SUBROUTINE DORMR3( SIDE, TRANS, M, N, K, L, A, LDA, TAU, C,
-     $                   LDC,
+      SUBROUTINE DORMR3( SIDE, TRANS, M, N, K, L, A, LDA, TAU, C, LDC,
      $                   WORK, INFO )
 *
 *  -- LAPACK computational routine --
@@ -104703,8 +102952,7 @@
          IF( M.EQ.0 .OR. N.EQ.0 ) THEN
             LWKOPT = 1
          ELSE
-            NB = MIN( NBMAX, ILAENV( 1, 'DORMRQ', SIDE // TRANS, M,
-     $                N,
+            NB = MIN( NBMAX, ILAENV( 1, 'DORMRQ', SIDE // TRANS, M, N,
      $                               K, -1 ) )
             LWKOPT = NW*NB + TSIZE
          END IF
@@ -104729,8 +102977,7 @@
       IF( NB.GT.1 .AND. NB.LT.K ) THEN
          IF( LWORK.LT.LWKOPT ) THEN
             NB = (LWORK-TSIZE) / LDWORK
-            NBMIN = MAX( 2, ILAENV( 2, 'DORMRQ', SIDE // TRANS, M, N,
-     $                   K,
+            NBMIN = MAX( 2, ILAENV( 2, 'DORMRQ', SIDE // TRANS, M, N, K,
      $              -1 ) )
          END IF
       END IF
@@ -104739,8 +102986,7 @@
 *
 *        Use unblocked code
 *
-         CALL DORMR2( SIDE, TRANS, M, N, K, A, LDA, TAU, C, LDC,
-     $                WORK,
+         CALL DORMR2( SIDE, TRANS, M, N, K, A, LDA, TAU, C, LDC, WORK,
      $                IINFO )
       ELSE
 *
@@ -104987,8 +103233,7 @@
 *> \endverbatim
 *>
 *  =====================================================================
-      SUBROUTINE DORMRZ( SIDE, TRANS, M, N, K, L, A, LDA, TAU, C,
-     $                   LDC,
+      SUBROUTINE DORMRZ( SIDE, TRANS, M, N, K, L, A, LDA, TAU, C, LDC,
      $                   WORK, LWORK, INFO )
 *
 *  -- LAPACK computational routine --
@@ -105073,8 +103318,7 @@
          IF( M.EQ.0 .OR. N.EQ.0 ) THEN
             LWKOPT = 1
          ELSE
-            NB = MIN( NBMAX, ILAENV( 1, 'DORMRQ', SIDE // TRANS, M,
-     $                N,
+            NB = MIN( NBMAX, ILAENV( 1, 'DORMRQ', SIDE // TRANS, M, N,
      $                               K, -1 ) )
             LWKOPT = NW*NB + TSIZE
          END IF
@@ -105100,8 +103344,7 @@
       IF( NB.GT.1 .AND. NB.LT.K ) THEN
          IF( LWORK.LT.LWKOPT ) THEN
             NB = (LWORK-TSIZE) / LDWORK
-            NBMIN = MAX( 2, ILAENV( 2, 'DORMRQ', SIDE // TRANS, M, N,
-     $                   K,
+            NBMIN = MAX( 2, ILAENV( 2, 'DORMRQ', SIDE // TRANS, M, N, K,
      $              -1 ) )
          END IF
       END IF
@@ -105150,8 +103393,7 @@
 *           Form the triangular factor of the block reflector
 *           H = H(i+ib-1) . . . H(i+1) H(i)
 *
-            CALL DLARZT( 'Backward', 'Rowwise', L, IB, A( I, JA ),
-     $                   LDA,
+            CALL DLARZT( 'Backward', 'Rowwise', L, IB, A( I, JA ), LDA,
      $                   TAU( I ), WORK( IWT ), LDT )
 *
             IF( LEFT ) THEN
@@ -105352,8 +103594,7 @@
 *> \ingroup unmtr
 *
 *  =====================================================================
-      SUBROUTINE DORMTR( SIDE, UPLO, TRANS, M, N, A, LDA, TAU, C,
-     $                   LDC,
+      SUBROUTINE DORMTR( SIDE, UPLO, TRANS, M, N, A, LDA, TAU, C, LDC,
      $                   WORK, LWORK, INFO )
 *
 *  -- LAPACK computational routine --
@@ -105407,8 +103648,7 @@
          INFO = -1
       ELSE IF( .NOT.UPPER .AND. .NOT.LSAME( UPLO, 'L' ) ) THEN
          INFO = -2
-      ELSE IF( .NOT.LSAME( TRANS, 'N' ) .AND.
-     $         .NOT.LSAME( TRANS, 'T' ) )
+      ELSE IF( .NOT.LSAME( TRANS, 'N' ) .AND. .NOT.LSAME( TRANS, 'T' ) )
      $          THEN
          INFO = -3
       ELSE IF( M.LT.0 ) THEN
@@ -105471,8 +103711,7 @@
 *
 *        Q was determined by a call to DSYTRD with UPLO = 'U'
 *
-         CALL DORMQL( SIDE, TRANS, MI, NI, NQ-1, A( 1, 2 ), LDA, TAU,
-     $                C,
+         CALL DORMQL( SIDE, TRANS, MI, NI, NQ-1, A( 1, 2 ), LDA, TAU, C,
      $                LDC, WORK, LWORK, IINFO )
       ELSE
 *
@@ -105719,16 +103958,14 @@
 *
 *           Multiply by inv(U).
 *
-            CALL DLATBS( 'Upper', 'No transpose', 'Non-unit', NORMIN,
-     $                   N,
+            CALL DLATBS( 'Upper', 'No transpose', 'Non-unit', NORMIN, N,
      $                   KD, AB, LDAB, WORK, SCALEU, WORK( 2*N+1 ),
      $                   INFO )
          ELSE
 *
 *           Multiply by inv(L).
 *
-            CALL DLATBS( 'Lower', 'No transpose', 'Non-unit', NORMIN,
-     $                   N,
+            CALL DLATBS( 'Lower', 'No transpose', 'Non-unit', NORMIN, N,
      $                   KD, AB, LDAB, WORK, SCALEL, WORK( 2*N+1 ),
      $                   INFO )
             NORMIN = 'Y'
@@ -105891,8 +104128,7 @@
 *> \ingroup pbequ
 *
 *  =====================================================================
-      SUBROUTINE DPBEQU( UPLO, N, KD, AB, LDAB, S, SCOND, AMAX,
-     $                   INFO )
+      SUBROUTINE DPBEQU( UPLO, N, KD, AB, LDAB, S, SCOND, AMAX, INFO )
 *
 *  -- LAPACK computational routine --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -106230,8 +104466,7 @@
       INTEGER            ISAVE( 3 )
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DAXPY, DCOPY, DLACN2, DPBTRS, DSBMV,
-     $                   XERBLA
+      EXTERNAL           DAXPY, DCOPY, DLACN2, DPBTRS, DSBMV, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          ABS, MAX, MIN
@@ -106404,16 +104639,14 @@
 *
          KASE = 0
   100    CONTINUE
-         CALL DLACN2( N, WORK( 2*N+1 ), WORK( N+1 ), IWORK,
-     $                FERR( J ),
+         CALL DLACN2( N, WORK( 2*N+1 ), WORK( N+1 ), IWORK, FERR( J ),
      $                KASE, ISAVE )
          IF( KASE.NE.0 ) THEN
             IF( KASE.EQ.1 ) THEN
 *
 *              Multiply by diag(W)*inv(A**T).
 *
-               CALL DPBTRS( UPLO, N, KD, 1, AFB, LDAFB, WORK( N+1 ),
-     $                      N,
+               CALL DPBTRS( UPLO, N, KD, 1, AFB, LDAFB, WORK( N+1 ), N,
      $                      INFO )
                DO 110 I = 1, N
                   WORK( N+I ) = WORK( N+I )*WORK( I )
@@ -106425,8 +104658,7 @@
                DO 120 I = 1, N
                   WORK( N+I ) = WORK( N+I )*WORK( I )
   120          CONTINUE
-               CALL DPBTRS( UPLO, N, KD, 1, AFB, LDAFB, WORK( N+1 ),
-     $                      N,
+               CALL DPBTRS( UPLO, N, KD, 1, AFB, LDAFB, WORK( N+1 ), N,
      $                      INFO )
             END IF
             GO TO 100
@@ -106957,8 +105189,7 @@
 *     Test the input parameters.
 *
       INFO = 0
-      IF( .NOT.LSAME( UPLO, 'U' ) .AND.
-     $    .NOT.LSAME( UPLO, 'L' ) ) THEN
+      IF( .NOT.LSAME( UPLO, 'U' ) .AND. .NOT.LSAME( UPLO, 'L' ) ) THEN
          INFO = -1
       ELSE IF( N.LT.0 ) THEN
          INFO = -2
@@ -107330,8 +105561,7 @@
 *> \endverbatim
 *>
 *  =====================================================================
-      SUBROUTINE DPBSVX( FACT, UPLO, N, KD, NRHS, AB, LDAB, AFB,
-     $                   LDAFB,
+      SUBROUTINE DPBSVX( FACT, UPLO, N, KD, NRHS, AB, LDAB, AFB, LDAFB,
      $                   EQUED, S, B, LDB, X, LDX, RCOND, FERR, BERR,
      $                   WORK, IWORK, INFO )
 *
@@ -107368,8 +105598,7 @@
       EXTERNAL           LSAME, DLAMCH, DLANSB
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DCOPY, DLACPY, DLAQSB, DPBCON, DPBEQU,
-     $                   DPBRFS,
+      EXTERNAL           DCOPY, DLACPY, DLAQSB, DPBCON, DPBEQU, DPBRFS,
      $                   DPBTRF, DPBTRS, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
@@ -107392,9 +105621,7 @@
 *
 *     Test the input parameters.
 *
-      IF( .NOT.NOFACT .AND.
-     $    .NOT.EQUIL .AND.
-     $    .NOT.LSAME( FACT, 'F' ) )
+      IF( .NOT.NOFACT .AND. .NOT.EQUIL .AND. .NOT.LSAME( FACT, 'F' ) )
      $     THEN
          INFO = -1
       ELSE IF( .NOT.UPPER .AND. .NOT.LSAME( UPLO, 'L' ) ) THEN
@@ -107451,8 +105678,7 @@
 *
 *           Equilibrate the matrix.
 *
-            CALL DLAQSB( UPLO, N, KD, AB, LDAB, S, SCOND, AMAX,
-     $                   EQUED )
+            CALL DLAQSB( UPLO, N, KD, AB, LDAB, S, SCOND, AMAX, EQUED )
             RCEQU = LSAME( EQUED, 'Y' )
          END IF
       END IF
@@ -107500,8 +105726,7 @@
 *
 *     Compute the reciprocal of the condition number of A.
 *
-      CALL DPBCON( UPLO, N, KD, AFB, LDAFB, ANORM, RCOND, WORK,
-     $             IWORK,
+      CALL DPBCON( UPLO, N, KD, AFB, LDAFB, ANORM, RCOND, WORK, IWORK,
      $             INFO )
 *
 *     Compute the solution matrix X.
@@ -107512,8 +105737,7 @@
 *     Use iterative refinement to improve the computed solution and
 *     compute error bounds and backward error estimates for it.
 *
-      CALL DPBRFS( UPLO, N, KD, NRHS, AB, LDAB, AFB, LDAFB, B, LDB,
-     $             X,
+      CALL DPBRFS( UPLO, N, KD, NRHS, AB, LDAB, AFB, LDAFB, B, LDB, X,
      $             LDX, FERR, BERR, WORK, IWORK, INFO )
 *
 *     Transform the solution matrix X to a solution of the original
@@ -107974,8 +106198,7 @@
       EXTERNAL           LSAME, ILAENV
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DGEMM, DPBTF2, DPOTF2, DSYRK, DTRSM,
-     $                   XERBLA
+      EXTERNAL           DGEMM, DPBTF2, DPOTF2, DSYRK, DTRSM, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MIN
@@ -108102,8 +106325,7 @@
 *                    Update A23
 *
                      IF( I2.GT.0 )
-     $                  CALL DGEMM( 'Transpose', 'No Transpose', I2,
-     $                              I3,
+     $                  CALL DGEMM( 'Transpose', 'No Transpose', I2, I3,
      $                              IB, -ONE, AB( KD+1-IB, I+IB ),
      $                              LDAB-1, WORK, LDWORK, ONE,
      $                              AB( 1+IB, I+KD ), LDAB-1 )
@@ -108179,8 +106401,7 @@
 *
 *                    Update A22
 *
-                     CALL DSYRK( 'Lower', 'No Transpose', I2, IB,
-     $                           -ONE,
+                     CALL DSYRK( 'Lower', 'No Transpose', I2, IB, -ONE,
      $                           AB( 1+IB, I ), LDAB-1, ONE,
      $                           AB( 1, I+IB ), LDAB-1 )
                   END IF
@@ -108204,16 +106425,14 @@
 *                    Update A32
 *
                      IF( I2.GT.0 )
-     $                  CALL DGEMM( 'No transpose', 'Transpose', I3,
-     $                              I2,
+     $                  CALL DGEMM( 'No transpose', 'Transpose', I3, I2,
      $                              IB, -ONE, WORK, LDWORK,
      $                              AB( 1+IB, I ), LDAB-1, ONE,
      $                              AB( 1+KD-IB, I+IB ), LDAB-1 )
 *
 *                    Update A33
 *
-                     CALL DSYRK( 'Lower', 'No Transpose', I3, IB,
-     $                           -ONE,
+                     CALL DSYRK( 'Lower', 'No Transpose', I3, IB, -ONE,
      $                           WORK, LDWORK, ONE, AB( 1, I+KD ),
      $                           LDAB-1 )
 *
@@ -108428,8 +106647,7 @@
 *
 *           Solve U*X = B, overwriting B with X.
 *
-            CALL DTBSV( 'Upper', 'No transpose', 'Non-unit', N, KD,
-     $                  AB,
+            CALL DTBSV( 'Upper', 'No transpose', 'Non-unit', N, KD, AB,
      $                  LDAB, B( 1, J ), 1 )
    10    CONTINUE
       ELSE
@@ -108440,8 +106658,7 @@
 *
 *           Solve L*X = B, overwriting B with X.
 *
-            CALL DTBSV( 'Lower', 'No transpose', 'Non-unit', N, KD,
-     $                  AB,
+            CALL DTBSV( 'Lower', 'No transpose', 'Non-unit', N, KD, AB,
      $                  LDAB, B( 1, J ), 1 )
 *
 *           Solve L**T *X = B, overwriting B with X.
@@ -108748,8 +106965,7 @@
                CALL DPOTRF( 'L', N1, A( 0 ), N, INFO )
                IF( INFO.GT.0 )
      $            RETURN
-               CALL DTRSM( 'R', 'L', 'T', 'N', N2, N1, ONE, A( 0 ),
-     $                     N,
+               CALL DTRSM( 'R', 'L', 'T', 'N', N2, N1, ONE, A( 0 ), N,
      $                     A( N1 ), N )
                CALL DSYRK( 'U', 'N', N2, N1, -ONE, A( N1 ), N, ONE,
      $                     A( N ), N )
@@ -108766,8 +106982,7 @@
                CALL DPOTRF( 'L', N1, A( N2 ), N, INFO )
                IF( INFO.GT.0 )
      $            RETURN
-               CALL DTRSM( 'L', 'L', 'N', 'N', N1, N2, ONE, A( N2 ),
-     $                     N,
+               CALL DTRSM( 'L', 'L', 'N', 'N', N1, N2, ONE, A( N2 ), N,
      $                     A( 0 ), N )
                CALL DSYRK( 'U', 'T', N2, N1, -ONE, A( 0 ), N, ONE,
      $                     A( N1 ), N )
@@ -108790,11 +107005,9 @@
                CALL DPOTRF( 'U', N1, A( 0 ), N1, INFO )
                IF( INFO.GT.0 )
      $            RETURN
-               CALL DTRSM( 'L', 'U', 'T', 'N', N1, N2, ONE, A( 0 ),
-     $                     N1,
+               CALL DTRSM( 'L', 'U', 'T', 'N', N1, N2, ONE, A( 0 ), N1,
      $                     A( N1*N1 ), N1 )
-               CALL DSYRK( 'L', 'T', N2, N1, -ONE, A( N1*N1 ), N1,
-     $                     ONE,
+               CALL DSYRK( 'L', 'T', N2, N1, -ONE, A( N1*N1 ), N1, ONE,
      $                     A( 1 ), N1 )
                CALL DPOTRF( 'L', N2, A( 1 ), N1, INFO )
                IF( INFO.GT.0 )
@@ -108809,8 +107022,7 @@
                CALL DPOTRF( 'U', N1, A( N2*N2 ), N2, INFO )
                IF( INFO.GT.0 )
      $            RETURN
-               CALL DTRSM( 'R', 'U', 'N', 'N', N2, N1, ONE,
-     $                     A( N2*N2 ),
+               CALL DTRSM( 'R', 'U', 'N', 'N', N2, N1, ONE, A( N2*N2 ),
      $                     N2, A( 0 ), N2 )
                CALL DSYRK( 'L', 'N', N2, N1, -ONE, A( 0 ), N2, ONE,
      $                     A( N1*N2 ), N2 )
@@ -108839,8 +107051,7 @@
                CALL DPOTRF( 'L', K, A( 1 ), N+1, INFO )
                IF( INFO.GT.0 )
      $            RETURN
-               CALL DTRSM( 'R', 'L', 'T', 'N', K, K, ONE, A( 1 ),
-     $                     N+1,
+               CALL DTRSM( 'R', 'L', 'T', 'N', K, K, ONE, A( 1 ), N+1,
      $                     A( K+1 ), N+1 )
                CALL DSYRK( 'U', 'N', K, K, -ONE, A( K+1 ), N+1, ONE,
      $                     A( 0 ), N+1 )
@@ -108882,8 +107093,7 @@
      $            RETURN
                CALL DTRSM( 'L', 'U', 'T', 'N', K, K, ONE, A( K ), N1,
      $                     A( K*( K+1 ) ), K )
-               CALL DSYRK( 'L', 'T', K, K, -ONE, A( K*( K+1 ) ), K,
-     $                     ONE,
+               CALL DSYRK( 'L', 'T', K, K, -ONE, A( K*( K+1 ) ), K, ONE,
      $                     A( 0 ), K )
                CALL DPOTRF( 'L', K, A( 0 ), K, INFO )
                IF( INFO.GT.0 )
@@ -109134,8 +107344,7 @@
       EXTERNAL           LSAME
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           XERBLA, DTFTRI, DLAUUM, DTRMM,
-     $                   DSYRK
+      EXTERNAL           XERBLA, DTFTRI, DLAUUM, DTRMM, DSYRK
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MOD
@@ -109210,8 +107419,7 @@
                CALL DLAUUM( 'L', N1, A( 0 ), N, INFO )
                CALL DSYRK( 'L', 'T', N1, N2, ONE, A( N1 ), N, ONE,
      $                     A( 0 ), N )
-               CALL DTRMM( 'L', 'U', 'N', 'N', N2, N1, ONE, A( N ),
-     $                     N,
+               CALL DTRMM( 'L', 'U', 'N', 'N', N2, N1, ONE, A( N ), N,
      $                     A( N1 ), N )
                CALL DLAUUM( 'U', N2, A( N ), N, INFO )
 *
@@ -109224,8 +107432,7 @@
                CALL DLAUUM( 'L', N1, A( N2 ), N, INFO )
                CALL DSYRK( 'L', 'N', N1, N2, ONE, A( 0 ), N, ONE,
      $                     A( N2 ), N )
-               CALL DTRMM( 'R', 'U', 'T', 'N', N1, N2, ONE, A( N1 ),
-     $                     N,
+               CALL DTRMM( 'R', 'U', 'T', 'N', N1, N2, ONE, A( N1 ), N,
      $                     A( 0 ), N )
                CALL DLAUUM( 'U', N2, A( N1 ), N, INFO )
 *
@@ -109241,11 +107448,9 @@
 *              T1 -> a(0), T2 -> a(1), S -> a(0+N1*N1)
 *
                CALL DLAUUM( 'U', N1, A( 0 ), N1, INFO )
-               CALL DSYRK( 'U', 'N', N1, N2, ONE, A( N1*N1 ), N1,
-     $                     ONE,
+               CALL DSYRK( 'U', 'N', N1, N2, ONE, A( N1*N1 ), N1, ONE,
      $                     A( 0 ), N1 )
-               CALL DTRMM( 'R', 'L', 'N', 'N', N1, N2, ONE, A( 1 ),
-     $                     N1,
+               CALL DTRMM( 'R', 'L', 'N', 'N', N1, N2, ONE, A( 1 ), N1,
      $                     A( N1*N1 ), N1 )
                CALL DLAUUM( 'L', N2, A( 1 ), N1, INFO )
 *
@@ -109257,8 +107462,7 @@
                CALL DLAUUM( 'U', N1, A( N2*N2 ), N2, INFO )
                CALL DSYRK( 'U', 'T', N1, N2, ONE, A( 0 ), N2, ONE,
      $                     A( N2*N2 ), N2 )
-               CALL DTRMM( 'L', 'L', 'T', 'N', N2, N1, ONE,
-     $                     A( N1*N2 ),
+               CALL DTRMM( 'L', 'L', 'T', 'N', N2, N1, ONE, A( N1*N2 ),
      $                     N2, A( 0 ), N2 )
                CALL DLAUUM( 'L', N2, A( N1*N2 ), N2, INFO )
 *
@@ -109283,8 +107487,7 @@
                CALL DLAUUM( 'L', K, A( 1 ), N+1, INFO )
                CALL DSYRK( 'L', 'T', K, K, ONE, A( K+1 ), N+1, ONE,
      $                     A( 1 ), N+1 )
-               CALL DTRMM( 'L', 'U', 'N', 'N', K, K, ONE, A( 0 ),
-     $                     N+1,
+               CALL DTRMM( 'L', 'U', 'N', 'N', K, K, ONE, A( 0 ), N+1,
      $                     A( K+1 ), N+1 )
                CALL DLAUUM( 'U', K, A( 0 ), N+1, INFO )
 *
@@ -109297,8 +107500,7 @@
                CALL DLAUUM( 'L', K, A( K+1 ), N+1, INFO )
                CALL DSYRK( 'L', 'N', K, K, ONE, A( 0 ), N+1, ONE,
      $                     A( K+1 ), N+1 )
-               CALL DTRMM( 'R', 'U', 'T', 'N', K, K, ONE, A( K ),
-     $                     N+1,
+               CALL DTRMM( 'R', 'U', 'T', 'N', K, K, ONE, A( K ), N+1,
      $                     A( 0 ), N+1 )
                CALL DLAUUM( 'U', K, A( K ), N+1, INFO )
 *
@@ -109315,8 +107517,7 @@
 *              T1 -> a(0+k), T2 -> a(0+0), S -> a(0+k*(k+1)); lda=k
 *
                CALL DLAUUM( 'U', K, A( K ), K, INFO )
-               CALL DSYRK( 'U', 'N', K, K, ONE, A( K*( K+1 ) ), K,
-     $                     ONE,
+               CALL DSYRK( 'U', 'N', K, K, ONE, A( K*( K+1 ) ), K, ONE,
      $                     A( K ), K )
                CALL DTRMM( 'R', 'L', 'N', 'N', K, K, ONE, A( 0 ), K,
      $                     A( K*( K+1 ) ), K )
@@ -109331,8 +107532,7 @@
                CALL DLAUUM( 'U', K, A( K*( K+1 ) ), K, INFO )
                CALL DSYRK( 'U', 'T', K, K, ONE, A( 0 ), K, ONE,
      $                     A( K*( K+1 ) ), K )
-               CALL DTRMM( 'L', 'L', 'T', 'N', K, K, ONE, A( K*K ),
-     $                     K,
+               CALL DTRMM( 'L', 'L', 'T', 'N', K, K, ONE, A( K*K ), K,
      $                     A( 0 ), K )
                CALL DLAUUM( 'L', K, A( K*K ), K, INFO )
 *
@@ -109829,29 +108029,25 @@
 *
 *           Multiply by inv(U**T).
 *
-            CALL DLATRS( 'Upper', 'Transpose', 'Non-unit', NORMIN, N,
-     $                   A,
+            CALL DLATRS( 'Upper', 'Transpose', 'Non-unit', NORMIN, N, A,
      $                   LDA, WORK, SCALEL, WORK( 2*N+1 ), INFO )
             NORMIN = 'Y'
 *
 *           Multiply by inv(U).
 *
-            CALL DLATRS( 'Upper', 'No transpose', 'Non-unit', NORMIN,
-     $                   N,
+            CALL DLATRS( 'Upper', 'No transpose', 'Non-unit', NORMIN, N,
      $                   A, LDA, WORK, SCALEU, WORK( 2*N+1 ), INFO )
          ELSE
 *
 *           Multiply by inv(L).
 *
-            CALL DLATRS( 'Lower', 'No transpose', 'Non-unit', NORMIN,
-     $                   N,
+            CALL DLATRS( 'Lower', 'No transpose', 'Non-unit', NORMIN, N,
      $                   A, LDA, WORK, SCALEL, WORK( 2*N+1 ), INFO )
             NORMIN = 'Y'
 *
 *           Multiply by inv(L**T).
 *
-            CALL DLATRS( 'Lower', 'Transpose', 'Non-unit', NORMIN, N,
-     $                   A,
+            CALL DLATRS( 'Lower', 'Transpose', 'Non-unit', NORMIN, N, A,
      $                   LDA, WORK, SCALEU, WORK( 2*N+1 ), INFO )
          END IF
 *
@@ -110518,8 +108714,7 @@
       INTEGER            ISAVE( 3 )
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DAXPY, DCOPY, DLACN2, DPOTRS, DSYMV,
-     $                   XERBLA
+      EXTERNAL           DAXPY, DCOPY, DLACN2, DPOTRS, DSYMV, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          ABS, MAX
@@ -110687,16 +108882,14 @@
 *
          KASE = 0
   100    CONTINUE
-         CALL DLACN2( N, WORK( 2*N+1 ), WORK( N+1 ), IWORK,
-     $                FERR( J ),
+         CALL DLACN2( N, WORK( 2*N+1 ), WORK( N+1 ), IWORK, FERR( J ),
      $                KASE, ISAVE )
          IF( KASE.NE.0 ) THEN
             IF( KASE.EQ.1 ) THEN
 *
 *              Multiply by diag(W)*inv(A**T).
 *
-               CALL DPOTRS( UPLO, N, 1, AF, LDAF, WORK( N+1 ), N,
-     $                      INFO )
+               CALL DPOTRS( UPLO, N, 1, AF, LDAF, WORK( N+1 ), N, INFO )
                DO 110 I = 1, N
                   WORK( N+I ) = WORK( I )*WORK( N+I )
   110          CONTINUE
@@ -110707,8 +108900,7 @@
                DO 120 I = 1, N
                   WORK( N+I ) = WORK( I )*WORK( N+I )
   120          CONTINUE
-               CALL DPOTRS( UPLO, N, 1, AF, LDAF, WORK( N+1 ), N,
-     $                      INFO )
+               CALL DPOTRS( UPLO, N, 1, AF, LDAF, WORK( N+1 ), N, INFO )
             END IF
             GO TO 100
          END IF
@@ -110888,8 +109080,7 @@
 *     Test the input parameters.
 *
       INFO = 0
-      IF( .NOT.LSAME( UPLO, 'U' ) .AND.
-     $    .NOT.LSAME( UPLO, 'L' ) ) THEN
+      IF( .NOT.LSAME( UPLO, 'U' ) .AND. .NOT.LSAME( UPLO, 'L' ) ) THEN
          INFO = -1
       ELSE IF( N.LT.0 ) THEN
          INFO = -2
@@ -111223,8 +109414,7 @@
 *> \ingroup posvx
 *
 *  =====================================================================
-      SUBROUTINE DPOSVX( FACT, UPLO, N, NRHS, A, LDA, AF, LDAF,
-     $                   EQUED,
+      SUBROUTINE DPOSVX( FACT, UPLO, N, NRHS, A, LDA, AF, LDAF, EQUED,
      $                   S, B, LDB, X, LDX, RCOND, FERR, BERR, WORK,
      $                   IWORK, INFO )
 *
@@ -111261,8 +109451,7 @@
       EXTERNAL           LSAME, DLAMCH, DLANSY
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DLACPY, DLAQSY, DPOCON, DPOEQU, DPORFS,
-     $                   DPOTRF,
+      EXTERNAL           DLACPY, DLAQSY, DPOCON, DPOEQU, DPORFS, DPOTRF,
      $                   DPOTRS, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
@@ -111284,13 +109473,10 @@
 *
 *     Test the input parameters.
 *
-      IF( .NOT.NOFACT .AND.
-     $    .NOT.EQUIL .AND.
-     $    .NOT.LSAME( FACT, 'F' ) )
+      IF( .NOT.NOFACT .AND. .NOT.EQUIL .AND. .NOT.LSAME( FACT, 'F' ) )
      $     THEN
          INFO = -1
-      ELSE IF( .NOT.LSAME( UPLO, 'U' ) .AND.
-     $         .NOT.LSAME( UPLO, 'L' ) )
+      ELSE IF( .NOT.LSAME( UPLO, 'U' ) .AND. .NOT.LSAME( UPLO, 'L' ) )
      $          THEN
          INFO = -2
       ELSE IF( N.LT.0 ) THEN
@@ -111379,8 +109565,7 @@
 *
 *     Compute the reciprocal of the condition number of A.
 *
-      CALL DPOCON( UPLO, N, AF, LDAF, ANORM, RCOND, WORK, IWORK,
-     $             INFO )
+      CALL DPOCON( UPLO, N, AF, LDAF, ANORM, RCOND, WORK, IWORK, INFO )
 *
 *     Compute the solution matrix X.
 *
@@ -111627,8 +109812,7 @@
 *           Compute elements J+1:N of column J.
 *
             IF( J.LT.N ) THEN
-               CALL DGEMV( 'No transpose', N-J, J-1, -ONE, A( J+1,
-     $                     1 ),
+               CALL DGEMV( 'No transpose', N-J, J-1, -ONE, A( J+1, 1 ),
      $                     LDA, A( J, 1 ), LDA, ONE, A( J+1, J ), 1 )
                CALL DSCAL( N-J, ONE / AJJ, A( J+1, J ), 1 )
             END IF
@@ -111780,8 +109964,7 @@
       EXTERNAL           LSAME, ILAENV
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DGEMM, DPOTRF2, DSYRK, DTRSM,
-     $                   XERBLA
+      EXTERNAL           DGEMM, DPOTRF2, DSYRK, DTRSM, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MAX, MIN
@@ -111840,12 +110023,10 @@
 *
 *                 Compute the current block row.
 *
-                  CALL DGEMM( 'Transpose', 'No transpose', JB,
-     $                        N-J-JB+1,
+                  CALL DGEMM( 'Transpose', 'No transpose', JB, N-J-JB+1,
      $                        J-1, -ONE, A( 1, J ), LDA, A( 1, J+JB ),
      $                        LDA, ONE, A( J, J+JB ), LDA )
-                  CALL DTRSM( 'Left', 'Upper', 'Transpose',
-     $                        'Non-unit',
+                  CALL DTRSM( 'Left', 'Upper', 'Transpose', 'Non-unit',
      $                        JB, N-J-JB+1, ONE, A( J, J ), LDA,
      $                        A( J, J+JB ), LDA )
                END IF
@@ -111870,12 +110051,10 @@
 *
 *                 Compute the current block column.
 *
-                  CALL DGEMM( 'No transpose', 'Transpose', N-J-JB+1,
-     $                        JB,
+                  CALL DGEMM( 'No transpose', 'Transpose', N-J-JB+1, JB,
      $                        J-1, -ONE, A( J+JB, 1 ), LDA, A( J, 1 ),
      $                        LDA, ONE, A( J+JB, J ), LDA )
-                  CALL DTRSM( 'Right', 'Lower', 'Transpose',
-     $                        'Non-unit',
+                  CALL DTRSM( 'Right', 'Lower', 'Transpose', 'Non-unit',
      $                        N-J-JB+1, JB, ONE, A( J, J ), LDA,
      $                        A( J+JB, J ), LDA )
                END IF
@@ -112251,8 +110430,7 @@
 *     Test the input parameters.
 *
       INFO = 0
-      IF( .NOT.LSAME( UPLO, 'U' ) .AND.
-     $    .NOT.LSAME( UPLO, 'L' ) ) THEN
+      IF( .NOT.LSAME( UPLO, 'U' ) .AND. .NOT.LSAME( UPLO, 'L' ) ) THEN
          INFO = -1
       ELSE IF( N.LT.0 ) THEN
          INFO = -2
@@ -112458,8 +110636,7 @@
 *
 *        Solve U**T *X = B, overwriting B with X.
 *
-         CALL DTRSM( 'Left', 'Upper', 'Transpose', 'Non-unit', N,
-     $               NRHS,
+         CALL DTRSM( 'Left', 'Upper', 'Transpose', 'Non-unit', N, NRHS,
      $               ONE, A, LDA, B, LDB )
 *
 *        Solve U*X = B, overwriting B with X.
@@ -112477,8 +110654,7 @@
 *
 *        Solve L**T *X = B, overwriting B with X.
 *
-         CALL DTRSM( 'Left', 'Lower', 'Transpose', 'Non-unit', N,
-     $               NRHS,
+         CALL DTRSM( 'Left', 'Lower', 'Transpose', 'Non-unit', N, NRHS,
      $               ONE, A, LDA, B, LDB )
       END IF
 *
@@ -112603,8 +110779,7 @@
 *> \ingroup ppcon
 *
 *  =====================================================================
-      SUBROUTINE DPPCON( UPLO, N, AP, ANORM, RCOND, WORK, IWORK,
-     $                   INFO )
+      SUBROUTINE DPPCON( UPLO, N, AP, ANORM, RCOND, WORK, IWORK, INFO )
 *
 *  -- LAPACK computational routine --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -112694,15 +110869,13 @@
 *
 *           Multiply by inv(U).
 *
-            CALL DLATPS( 'Upper', 'No transpose', 'Non-unit', NORMIN,
-     $                   N,
+            CALL DLATPS( 'Upper', 'No transpose', 'Non-unit', NORMIN, N,
      $                   AP, WORK, SCALEU, WORK( 2*N+1 ), INFO )
          ELSE
 *
 *           Multiply by inv(L).
 *
-            CALL DLATPS( 'Lower', 'No transpose', 'Non-unit', NORMIN,
-     $                   N,
+            CALL DLATPS( 'Lower', 'No transpose', 'Non-unit', NORMIN, N,
      $                   AP, WORK, SCALEL, WORK( 2*N+1 ), INFO )
             NORMIN = 'Y'
 *
@@ -113138,8 +111311,7 @@
 *> \ingroup pprfs
 *
 *  =====================================================================
-      SUBROUTINE DPPRFS( UPLO, N, NRHS, AP, AFP, B, LDB, X, LDX,
-     $                   FERR,
+      SUBROUTINE DPPRFS( UPLO, N, NRHS, AP, AFP, B, LDB, X, LDX, FERR,
      $                   BERR, WORK, IWORK, INFO )
 *
 *  -- LAPACK computational routine --
@@ -113179,8 +111351,7 @@
       INTEGER            ISAVE( 3 )
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DAXPY, DCOPY, DLACN2, DPPTRS, DSPMV,
-     $                   XERBLA
+      EXTERNAL           DAXPY, DCOPY, DLACN2, DPPTRS, DSPMV, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          ABS, MAX
@@ -113243,8 +111414,7 @@
 *        Compute residual R = B - A * X
 *
          CALL DCOPY( N, B( 1, J ), 1, WORK( N+1 ), 1 )
-         CALL DSPMV( UPLO, N, -ONE, AP, X( 1, J ), 1, ONE,
-     $               WORK( N+1 ),
+         CALL DSPMV( UPLO, N, -ONE, AP, X( 1, J ), 1, ONE, WORK( N+1 ),
      $               1 )
 *
 *        Compute componentwise relative backward error from formula
@@ -113352,8 +111522,7 @@
 *
          KASE = 0
   100    CONTINUE
-         CALL DLACN2( N, WORK( 2*N+1 ), WORK( N+1 ), IWORK,
-     $                FERR( J ),
+         CALL DLACN2( N, WORK( 2*N+1 ), WORK( N+1 ), IWORK, FERR( J ),
      $                KASE, ISAVE )
          IF( KASE.NE.0 ) THEN
             IF( KASE.EQ.1 ) THEN
@@ -113565,8 +111734,7 @@
 *     Test the input parameters.
 *
       INFO = 0
-      IF( .NOT.LSAME( UPLO, 'U' ) .AND.
-     $    .NOT.LSAME( UPLO, 'L' ) ) THEN
+      IF( .NOT.LSAME( UPLO, 'U' ) .AND. .NOT.LSAME( UPLO, 'L' ) ) THEN
          INFO = -1
       ELSE IF( N.LT.0 ) THEN
          INFO = -2
@@ -113903,8 +112071,7 @@
 *> \endverbatim
 *>
 *  =====================================================================
-      SUBROUTINE DPPSVX( FACT, UPLO, N, NRHS, AP, AFP, EQUED, S, B,
-     $                   LDB,
+      SUBROUTINE DPPSVX( FACT, UPLO, N, NRHS, AP, AFP, EQUED, S, B, LDB,
      $                   X, LDX, RCOND, FERR, BERR, WORK, IWORK, INFO )
 *
 *  -- LAPACK driver routine --
@@ -113939,8 +112106,7 @@
       EXTERNAL           LSAME, DLAMCH, DLANSP
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DCOPY, DLACPY, DLAQSP, DPPCON, DPPEQU,
-     $                   DPPRFS,
+      EXTERNAL           DCOPY, DLACPY, DLAQSP, DPPCON, DPPEQU, DPPRFS,
      $                   DPPTRF, DPPTRS, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
@@ -113962,13 +112128,10 @@
 *
 *     Test the input parameters.
 *
-      IF( .NOT.NOFACT .AND.
-     $    .NOT.EQUIL .AND.
-     $    .NOT.LSAME( FACT, 'F' ) )
+      IF( .NOT.NOFACT .AND. .NOT.EQUIL .AND. .NOT.LSAME( FACT, 'F' ) )
      $     THEN
          INFO = -1
-      ELSE IF( .NOT.LSAME( UPLO, 'U' ) .AND.
-     $         .NOT.LSAME( UPLO, 'L' ) )
+      ELSE IF( .NOT.LSAME( UPLO, 'U' ) .AND. .NOT.LSAME( UPLO, 'L' ) )
      $          THEN
          INFO = -2
       ELSE IF( N.LT.0 ) THEN
@@ -114063,8 +112226,7 @@
 *     Use iterative refinement to improve the computed solution and
 *     compute error bounds and backward error estimates for it.
 *
-      CALL DPPRFS( UPLO, N, NRHS, AP, AFP, B, LDB, X, LDX, FERR,
-     $             BERR,
+      CALL DPPRFS( UPLO, N, NRHS, AP, AFP, B, LDB, X, LDX, FERR, BERR,
      $             WORK, IWORK, INFO )
 *
 *     Transform the solution matrix X to a solution of the original
@@ -114852,8 +113014,7 @@
 *> \ingroup pstf2
 *
 *  =====================================================================
-      SUBROUTINE DPSTF2( UPLO, N, A, LDA, PIV, RANK, TOL, WORK,
-     $                   INFO )
+      SUBROUTINE DPSTF2( UPLO, N, A, LDA, PIV, RANK, TOL, WORK, INFO )
 *
 *  -- LAPACK computational routine --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -114988,8 +113149,7 @@
                IF( PVT.LT.N )
      $            CALL DSWAP( N-PVT, A( J, PVT+1 ), LDA,
      $                        A( PVT, PVT+1 ), LDA )
-               CALL DSWAP( PVT-J-1, A( J, J+1 ), LDA, A( J+1, PVT ),
-     $                     1 )
+               CALL DSWAP( PVT-J-1, A( J, J+1 ), LDA, A( J+1, PVT ), 1 )
 *
 *              Swap dot products and PIV
 *
@@ -115050,11 +113210,9 @@
                A( PVT, PVT ) = A( J, J )
                CALL DSWAP( J-1, A( J, 1 ), LDA, A( PVT, 1 ), LDA )
                IF( PVT.LT.N )
-     $            CALL DSWAP( N-PVT, A( PVT+1, J ), 1, A( PVT+1,
-     $                        PVT ),
+     $            CALL DSWAP( N-PVT, A( PVT+1, J ), 1, A( PVT+1, PVT ),
      $                        1 )
-               CALL DSWAP( PVT-J-1, A( J+1, J ), 1, A( PVT, J+1 ),
-     $                     LDA )
+               CALL DSWAP( PVT-J-1, A( J+1, J ), 1, A( PVT, J+1 ), LDA )
 *
 *              Swap dot products and PIV
 *
@@ -115072,8 +113230,7 @@
 *           Compute elements J+1:N of column J
 *
             IF( J.LT.N ) THEN
-               CALL DGEMV( 'No Trans', N-J, J-1, -ONE, A( J+1, 1 ),
-     $                     LDA,
+               CALL DGEMV( 'No Trans', N-J, J-1, -ONE, A( J+1, 1 ), LDA,
      $                     A( J, 1 ), LDA, ONE, A( J+1, J ), 1 )
                CALL DSCAL( N-J, ONE / AJJ, A( J+1, J ), 1 )
             END IF
@@ -115241,8 +113398,7 @@
 *> \ingroup pstrf
 *
 *  =====================================================================
-      SUBROUTINE DPSTRF( UPLO, N, A, LDA, PIV, RANK, TOL, WORK,
-     $                   INFO )
+      SUBROUTINE DPSTRF( UPLO, N, A, LDA, PIV, RANK, TOL, WORK, INFO )
 *
 *  -- LAPACK computational routine --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -115276,8 +113432,7 @@
       EXTERNAL           DLAMCH, ILAENV, LSAME, DISNAN
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DGEMV, DPSTF2, DSCAL, DSWAP, DSYRK,
-     $                   XERBLA
+      EXTERNAL           DGEMV, DPSTF2, DSCAL, DSWAP, DSYRK, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MAX, MIN, SQRT, MAXLOC
@@ -115419,8 +113574,7 @@
 *                 Compute elements J+1:N of row J.
 *
                   IF( J.LT.N ) THEN
-                     CALL DGEMV( 'Trans', J-K, N-J, -ONE, A( K,
-     $                           J+1 ),
+                     CALL DGEMV( 'Trans', J-K, N-J, -ONE, A( K, J+1 ),
      $                           LDA, A( K, J ), 1, ONE, A( J, J+1 ),
      $                           LDA )
                      CALL DSCAL( N-J, ONE / AJJ, A( J, J+1 ), LDA )
@@ -115484,13 +113638,11 @@
 *                    Pivot OK, so can now swap pivot rows and columns
 *
                      A( PVT, PVT ) = A( J, J )
-                     CALL DSWAP( J-1, A( J, 1 ), LDA, A( PVT, 1 ),
-     $                           LDA )
+                     CALL DSWAP( J-1, A( J, 1 ), LDA, A( PVT, 1 ), LDA )
                      IF( PVT.LT.N )
      $                  CALL DSWAP( N-PVT, A( PVT+1, J ), 1,
      $                              A( PVT+1, PVT ), 1 )
-                     CALL DSWAP( PVT-J-1, A( J+1, J ), 1, A( PVT,
-     $                           J+1 ),
+                     CALL DSWAP( PVT-J-1, A( J+1, J ), 1, A( PVT, J+1 ),
      $                           LDA )
 *
 *                    Swap dot products and PIV
@@ -116839,8 +114991,7 @@
       EXTERNAL           LSAME, DLAMCH, DLANST
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DCOPY, DLACPY, DPTCON, DPTRFS, DPTTRF,
-     $                   DPTTRS,
+      EXTERNAL           DCOPY, DLACPY, DPTCON, DPTRFS, DPTTRF, DPTTRS,
      $                   XERBLA
 *     ..
 *     .. Intrinsic Functions ..
@@ -117802,8 +115953,7 @@
       EXTERNAL           LSAME, DLAMCH, DLANSB
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DLASCL, DSBTRD, DSCAL, DSTEQR, DSTERF,
-     $                   XERBLA
+      EXTERNAL           DLASCL, DSBTRD, DSCAL, DSTEQR, DSTERF, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          SQRT
@@ -117873,11 +116023,9 @@
       END IF
       IF( ISCALE.EQ.1 ) THEN
          IF( LOWER ) THEN
-            CALL DLASCL( 'B', KD, KD, ONE, SIGMA, N, N, AB, LDAB,
-     $                   INFO )
+            CALL DLASCL( 'B', KD, KD, ONE, SIGMA, N, N, AB, LDAB, INFO )
          ELSE
-            CALL DLASCL( 'Q', KD, KD, ONE, SIGMA, N, N, AB, LDAB,
-     $                   INFO )
+            CALL DLASCL( 'Q', KD, KD, ONE, SIGMA, N, N, AB, LDAB, INFO )
          END IF
       END IF
 *
@@ -117885,8 +116033,7 @@
 *
       INDE = 1
       INDWRK = INDE + N
-      CALL DSBTRD( JOBZ, UPLO, N, KD, AB, LDAB, W, WORK( INDE ), Z,
-     $             LDZ,
+      CALL DSBTRD( JOBZ, UPLO, N, KD, AB, LDAB, W, WORK( INDE ), Z, LDZ,
      $             WORK( INDWRK ), IINFO )
 *
 *     For eigenvalues only, call DSTERF.  For eigenvectors, call SSTEQR.
@@ -117894,8 +116041,7 @@
       IF( .NOT.WANTZ ) THEN
          CALL DSTERF( N, W, WORK( INDE ), INFO )
       ELSE
-         CALL DSTEQR( JOBZ, N, W, WORK( INDE ), Z, LDZ,
-     $                WORK( INDWRK ),
+         CALL DSTEQR( JOBZ, N, W, WORK( INDE ), Z, LDZ, WORK( INDWRK ),
      $                INFO )
       END IF
 *
@@ -118099,8 +116245,7 @@
 *> \ingroup hbevd
 *
 *  =====================================================================
-      SUBROUTINE DSBEVD( JOBZ, UPLO, N, KD, AB, LDAB, W, Z, LDZ,
-     $                   WORK,
+      SUBROUTINE DSBEVD( JOBZ, UPLO, N, KD, AB, LDAB, W, Z, LDZ, WORK,
      $                   LWORK, IWORK, LIWORK, INFO )
 *
 *  -- LAPACK driver routine --
@@ -118135,8 +116280,7 @@
       EXTERNAL           LSAME, DLAMCH, DLANSB
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DGEMM, DLACPY, DLASCL, DSBTRD, DSCAL,
-     $                   DSTEDC,
+      EXTERNAL           DGEMM, DLACPY, DLASCL, DSBTRD, DSCAL, DSTEDC,
      $                   DSTERF, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
@@ -118229,11 +116373,9 @@
       END IF
       IF( ISCALE.EQ.1 ) THEN
          IF( LOWER ) THEN
-            CALL DLASCL( 'B', KD, KD, ONE, SIGMA, N, N, AB, LDAB,
-     $                   INFO )
+            CALL DLASCL( 'B', KD, KD, ONE, SIGMA, N, N, AB, LDAB, INFO )
          ELSE
-            CALL DLASCL( 'Q', KD, KD, ONE, SIGMA, N, N, AB, LDAB,
-     $                   INFO )
+            CALL DLASCL( 'Q', KD, KD, ONE, SIGMA, N, N, AB, LDAB, INFO )
          END IF
       END IF
 *
@@ -118243,8 +116385,7 @@
       INDWRK = INDE + N
       INDWK2 = INDWRK + N*N
       LLWRK2 = LWORK - INDWK2 + 1
-      CALL DSBTRD( JOBZ, UPLO, N, KD, AB, LDAB, W, WORK( INDE ), Z,
-     $             LDZ,
+      CALL DSBTRD( JOBZ, UPLO, N, KD, AB, LDAB, W, WORK( INDE ), Z, LDZ,
      $             WORK( INDWRK ), IINFO )
 *
 *     For eigenvalues only, call DSTERF.  For eigenvectors, call SSTEDC.
@@ -118254,8 +116395,7 @@
       ELSE
          CALL DSTEDC( 'I', N, W, WORK( INDE ), WORK( INDWRK ), N,
      $                WORK( INDWK2 ), LLWRK2, IWORK, LIWORK, INFO )
-         CALL DGEMM( 'N', 'N', N, N, N, ONE, Z, LDZ, WORK( INDWRK ),
-     $               N,
+         CALL DGEMM( 'N', 'N', N, N, N, ONE, Z, LDZ, WORK( INDWRK ), N,
      $               ZERO, WORK( INDWK2 ), N )
          CALL DLACPY( 'A', N, N, WORK( INDWK2 ), N, Z, LDZ )
       END IF
@@ -118533,8 +116673,7 @@
 *> \ingroup hbevx
 *
 *  =====================================================================
-      SUBROUTINE DSBEVX( JOBZ, RANGE, UPLO, N, KD, AB, LDAB, Q, LDQ,
-     $                   VL,
+      SUBROUTINE DSBEVX( JOBZ, RANGE, UPLO, N, KD, AB, LDAB, Q, LDQ, VL,
      $                   VU, IL, IU, ABSTOL, M, W, Z, LDZ, WORK, IWORK,
      $                   IFAIL, INFO )
 *
@@ -118574,8 +116713,7 @@
       EXTERNAL           LSAME, DLAMCH, DLANSB
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DCOPY, DGEMV, DLACPY, DLASCL, DSBTRD,
-     $                   DSCAL,
+      EXTERNAL           DCOPY, DGEMV, DLACPY, DLASCL, DSBTRD, DSCAL,
      $                   DSTEBZ, DSTEIN, DSTEQR, DSTERF, DSWAP, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
@@ -118683,11 +116821,9 @@
       END IF
       IF( ISCALE.EQ.1 ) THEN
          IF( LOWER ) THEN
-            CALL DLASCL( 'B', KD, KD, ONE, SIGMA, N, N, AB, LDAB,
-     $                   INFO )
+            CALL DLASCL( 'B', KD, KD, ONE, SIGMA, N, N, AB, LDAB, INFO )
          ELSE
-            CALL DLASCL( 'Q', KD, KD, ONE, SIGMA, N, N, AB, LDAB,
-     $                   INFO )
+            CALL DLASCL( 'Q', KD, KD, ONE, SIGMA, N, N, AB, LDAB, INFO )
          END IF
          IF( ABSTOL.GT.0 )
      $      ABSTLL = ABSTOL*SIGMA
@@ -118972,8 +117108,7 @@
 *> \ingroup hbgst
 *
 *  =====================================================================
-      SUBROUTINE DSBGST( VECT, UPLO, N, KA, KB, AB, LDAB, BB, LDBB,
-     $                   X,
+      SUBROUTINE DSBGST( VECT, UPLO, N, KA, KB, AB, LDAB, BB, LDBB, X,
      $                   LDX, WORK, INFO )
 *
 *  -- LAPACK computational routine --
@@ -119006,8 +117141,7 @@
       EXTERNAL           LSAME
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DGER, DLAR2V, DLARGV, DLARTG, DLARTV,
-     $                   DLASET,
+      EXTERNAL           DGER, DLAR2V, DLARGV, DLARTG, DLARTV, DLASET,
      $                   DROT, DSCAL, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
@@ -119247,8 +117381,7 @@
 *           have been created outside the band
 *
             IF( NRT.GT.0 )
-     $         CALL DLARGV( NRT, AB( 1, J2T ), INCA, WORK( J2T-M ),
-     $                      KA1,
+     $         CALL DLARGV( NRT, AB( 1, J2T ), INCA, WORK( J2T-M ), KA1,
      $                      WORK( N+J2T-M ), KA1 )
             IF( NR.GT.0 ) THEN
 *
@@ -119472,8 +117605,7 @@
 *
 *                 generate rotation to annihilate a(i-k+ka+1,i)
 *
-                  CALL DLARTG( AB( KA1-K, I ), RA1,
-     $                         WORK( N+I-K+KA-M ),
+                  CALL DLARTG( AB( KA1-K, I ), RA1, WORK( N+I-K+KA-M ),
      $                         WORK( I-K+KA-M ), RA )
 *
 *                 create nonzero element a(i-k+ka+1,i-k) outside the
@@ -119509,8 +117641,7 @@
 *           have been created outside the band
 *
             IF( NRT.GT.0 )
-     $         CALL DLARGV( NRT, AB( KA1, J2T-KA ), INCA,
-     $                      WORK( J2T-M ),
+     $         CALL DLARGV( NRT, AB( KA1, J2T-KA ), INCA, WORK( J2T-M ),
      $                      KA1, WORK( N+J2T-M ), KA1 )
             IF( NR.GT.0 ) THEN
 *
@@ -119525,8 +117656,7 @@
 *              apply rotations in 1st set from both sides to diagonal
 *              blocks
 *
-               CALL DLAR2V( NR, AB( 1, J2 ), AB( 1, J2+1 ), AB( 2,
-     $                      J2 ),
+               CALL DLAR2V( NR, AB( 1, J2 ), AB( 1, J2+1 ), AB( 2, J2 ),
      $                      INCA, WORK( N+J2-M ), WORK( J2-M ), KA1 )
 *
             END IF
@@ -119607,8 +117737,7 @@
 *              generate rotations in 2nd set to annihilate elements
 *              which have been created outside the band
 *
-               CALL DLARGV( NR, AB( KA1, J2-KA ), INCA, WORK( J2 ),
-     $                      KA1,
+               CALL DLARGV( NR, AB( KA1, J2-KA ), INCA, WORK( J2 ), KA1,
      $                      WORK( N+J2 ), KA1 )
 *
 *              apply rotations in 2nd set from the left
@@ -119622,8 +117751,7 @@
 *              apply rotations in 2nd set from both sides to diagonal
 *              blocks
 *
-               CALL DLAR2V( NR, AB( 1, J2 ), AB( 1, J2+1 ), AB( 2,
-     $                      J2 ),
+               CALL DLAR2V( NR, AB( 1, J2 ), AB( 1, J2+1 ), AB( 2, J2 ),
      $                      INCA, WORK( N+J2 ), WORK( J2 ), KA1 )
 *
             END IF
@@ -119762,8 +117890,7 @@
 *
                CALL DSCAL( NX, ONE / BII, X( 1, I ), 1 )
                IF( KBT.GT.0 )
-     $            CALL DGER( NX, KBT, -ONE, X( 1, I ), 1, BB( KB,
-     $                       I+1 ),
+     $            CALL DGER( NX, KBT, -ONE, X( 1, I ), 1, BB( KB, I+1 ),
      $                       LDBB-1, X( 1, I+1 ), LDX )
             END IF
 *
@@ -119821,8 +117948,7 @@
 *           have been created outside the band
 *
             IF( NRT.GT.0 )
-     $         CALL DLARGV( NRT, AB( 1, J1+KA ), INCA, WORK( J1 ),
-     $                      KA1,
+     $         CALL DLARGV( NRT, AB( 1, J1+KA ), INCA, WORK( J1 ), KA1,
      $                      WORK( N+J1 ), KA1 )
             IF( NR.GT.0 ) THEN
 *
@@ -119922,8 +118048,7 @@
 *              generate rotations in 2nd set to annihilate elements
 *              which have been created outside the band
 *
-               CALL DLARGV( NR, AB( 1, J1+KA ), INCA,
-     $                      WORK( M-KB+J1 ),
+               CALL DLARGV( NR, AB( 1, J1+KA ), INCA, WORK( M-KB+J1 ),
      $                      KA1, WORK( N+M-KB+J1 ), KA1 )
 *
 *              apply rotations in 2nd set from the left
@@ -120029,8 +118154,7 @@
 *
                CALL DSCAL( NX, ONE / BII, X( 1, I ), 1 )
                IF( KBT.GT.0 )
-     $            CALL DGER( NX, KBT, -ONE, X( 1, I ), 1, BB( 2, I ),
-     $                       1,
+     $            CALL DGER( NX, KBT, -ONE, X( 1, I ), 1, BB( 2, I ), 1,
      $                       X( 1, I+1 ), LDX )
             END IF
 *
@@ -120088,16 +118212,14 @@
 *           have been created outside the band
 *
             IF( NRT.GT.0 )
-     $         CALL DLARGV( NRT, AB( KA1, J1 ), INCA, WORK( J1 ),
-     $                      KA1,
+     $         CALL DLARGV( NRT, AB( KA1, J1 ), INCA, WORK( J1 ), KA1,
      $                      WORK( N+J1 ), KA1 )
             IF( NR.GT.0 ) THEN
 *
 *              apply rotations in 1st set from the right
 *
                DO 810 L = 1, KA - 1
-                  CALL DLARTV( NR, AB( L+1, J1 ), INCA, AB( L+2,
-     $                         J1-1 ),
+                  CALL DLARTV( NR, AB( L+1, J1 ), INCA, AB( L+2, J1-1 ),
      $                         INCA, WORK( N+J1 ), WORK( J1 ), KA1 )
   810          CONTINUE
 *
@@ -120195,8 +118317,7 @@
 *              apply rotations in 2nd set from the right
 *
                DO 890 L = 1, KA - 1
-                  CALL DLARTV( NR, AB( L+1, J1 ), INCA, AB( L+2,
-     $                         J1-1 ),
+                  CALL DLARTV( NR, AB( L+1, J1 ), INCA, AB( L+2, J1-1 ),
      $                         INCA, WORK( N+M-KB+J1 ), WORK( M-KB+J1 ),
      $                         KA1 )
   890          CONTINUE
@@ -120436,8 +118557,7 @@
 *> \ingroup hbgv
 *
 *  =====================================================================
-      SUBROUTINE DSBGV( JOBZ, UPLO, N, KA, KB, AB, LDAB, BB, LDBB, W,
-     $                  Z,
+      SUBROUTINE DSBGV( JOBZ, UPLO, N, KA, KB, AB, LDAB, BB, LDBB, W, Z,
      $                  LDZ, WORK, INFO )
 *
 *  -- LAPACK driver routine --
@@ -120465,8 +118585,7 @@
       EXTERNAL           LSAME
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DPBSTF, DSBGST, DSBTRD, DSTEQR, DSTERF,
-     $                   XERBLA
+      EXTERNAL           DPBSTF, DSBGST, DSBTRD, DSTEQR, DSTERF, XERBLA
 *     ..
 *     .. Executable Statements ..
 *
@@ -120525,8 +118644,7 @@
       ELSE
          VECT = 'N'
       END IF
-      CALL DSBTRD( VECT, UPLO, N, KA, AB, LDAB, W, WORK( INDE ), Z,
-     $             LDZ,
+      CALL DSBTRD( VECT, UPLO, N, KA, AB, LDAB, W, WORK( INDE ), Z, LDZ,
      $             WORK( INDWRK ), IINFO )
 *
 *     For eigenvalues only, call DSTERF.  For eigenvectors, call SSTEQR.
@@ -120534,8 +118652,7 @@
       IF( .NOT.WANTZ ) THEN
          CALL DSTERF( N, W, WORK( INDE ), INFO )
       ELSE
-         CALL DSTEQR( JOBZ, N, W, WORK( INDE ), Z, LDZ,
-     $                WORK( INDWRK ),
+         CALL DSTEQR( JOBZ, N, W, WORK( INDE ), Z, LDZ, WORK( INDWRK ),
      $                INFO )
       END IF
       RETURN
@@ -120761,8 +118878,7 @@
 *>     Mark Fahey, Department of Mathematics, Univ. of Kentucky, USA
 *
 *  =====================================================================
-      SUBROUTINE DSBGVD( JOBZ, UPLO, N, KA, KB, AB, LDAB, BB, LDBB,
-     $                   W,
+      SUBROUTINE DSBGVD( JOBZ, UPLO, N, KA, KB, AB, LDAB, BB, LDBB, W,
      $                   Z, LDZ, WORK, LWORK, IWORK, LIWORK, INFO )
 *
 *  -- LAPACK driver routine --
@@ -120796,8 +118912,7 @@
       EXTERNAL           LSAME
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DGEMM, DLACPY, DPBSTF, DSBGST, DSBTRD,
-     $                   DSTEDC,
+      EXTERNAL           DGEMM, DLACPY, DPBSTF, DSBGST, DSBTRD, DSTEDC,
      $                   DSTERF, XERBLA
 *     ..
 *     .. Executable Statements ..
@@ -120885,8 +119000,7 @@
       ELSE
          VECT = 'N'
       END IF
-      CALL DSBTRD( VECT, UPLO, N, KA, AB, LDAB, W, WORK( INDE ), Z,
-     $             LDZ,
+      CALL DSBTRD( VECT, UPLO, N, KA, AB, LDAB, W, WORK( INDE ), Z, LDZ,
      $             WORK( INDWRK ), IINFO )
 *
 *     For eigenvalues only, call DSTERF. For eigenvectors, call SSTEDC.
@@ -120896,8 +119010,7 @@
       ELSE
          CALL DSTEDC( 'I', N, W, WORK( INDE ), WORK( INDWRK ), N,
      $                WORK( INDWK2 ), LLWRK2, IWORK, LIWORK, INFO )
-         CALL DGEMM( 'N', 'N', N, N, N, ONE, Z, LDZ, WORK( INDWRK ),
-     $               N,
+         CALL DGEMM( 'N', 'N', N, N, N, ONE, Z, LDZ, WORK( INDWRK ), N,
      $               ZERO, WORK( INDWK2 ), N )
          CALL DLACPY( 'A', N, N, WORK( INDWK2 ), N, Z, LDZ )
       END IF
@@ -121238,8 +119351,7 @@
       EXTERNAL           LSAME
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DCOPY, DGEMV, DLACPY, DPBSTF, DSBGST,
-     $                   DSBTRD,
+      EXTERNAL           DCOPY, DGEMV, DLACPY, DPBSTF, DSBGST, DSBTRD,
      $                   DSTEBZ, DSTEIN, DSTEQR, DSTERF, DSWAP, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
@@ -121619,8 +119731,7 @@
       DOUBLE PRECISION   TEMP
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DLAR2V, DLARGV, DLARTG, DLARTV, DLASET,
-     $                   DROT,
+      EXTERNAL           DLAR2V, DLARGV, DLARTG, DLARTV, DLASET, DROT,
      $                   XERBLA
 *     ..
 *     .. Intrinsic Functions ..
@@ -121702,8 +119813,7 @@
 *                    generate plane rotations to annihilate nonzero
 *                    elements which have been created outside the band
 *
-                     CALL DLARGV( NR, AB( 1, J1-1 ), INCA,
-     $                            WORK( J1 ),
+                     CALL DLARGV( NR, AB( 1, J1-1 ), INCA, WORK( J1 ),
      $                            KD1, D( J1 ), KD1 )
 *
 *                    apply rotations from the right
@@ -121774,8 +119884,7 @@
                               NRT = NR
                            END IF
                            IF( NRT.GT.0 )
-     $                        CALL DLARTV( NRT, AB( KD-L, J1+L ),
-     $                                     INCA,
+     $                        CALL DLARTV( NRT, AB( KD-L, J1+L ), INCA,
      $                                     AB( KD-L+1, J1+L ), INCA,
      $                                     D( J1 ), WORK( J1 ), KD1 )
    30                   CONTINUE
@@ -121783,8 +119892,7 @@
                         J1END = J1 + KD1*( NR-2 )
                         IF( J1END.GE.J1 ) THEN
                            DO 40 JIN = J1, J1END, KD1
-                              CALL DROT( KD-1, AB( KD-1, JIN+1 ),
-     $                                   INCX,
+                              CALL DROT( KD-1, AB( KD-1, JIN+1 ), INCX,
      $                                   AB( KD, JIN+1 ), INCX,
      $                                   D( JIN ), WORK( JIN ) )
    40                      CONTINUE
@@ -121819,15 +119927,13 @@
                            IQB = MAX( 1, J-IBL )
                            NQ = 1 + IQAEND - IQB
                            IQAEND = MIN( IQAEND+KD, IQEND )
-                           CALL DROT( NQ, Q( IQB, J-1 ), 1, Q( IQB,
-     $                                J ),
+                           CALL DROT( NQ, Q( IQB, J-1 ), 1, Q( IQB, J ),
      $                                1, D( J ), WORK( J ) )
    50                   CONTINUE
                      ELSE
 *
                         DO 60 J = J1, J2, KD1
-                           CALL DROT( N, Q( 1, J-1 ), 1, Q( 1, J ),
-     $                                1,
+                           CALL DROT( N, Q( 1, J-1 ), 1, Q( 1, J ), 1,
      $                                D( J ), WORK( J ) )
    60                   CONTINUE
                      END IF
@@ -121910,8 +120016,7 @@
 *
                      IF( NR.GT.2*KD-1 ) THEN
                         DO 130 L = 1, KD - 1
-                           CALL DLARTV( NR, AB( KD1-L, J1-KD1+L ),
-     $                                  INCA,
+                           CALL DLARTV( NR, AB( KD1-L, J1-KD1+L ), INCA,
      $                                  AB( KD1-L+1, J1-KD1+L ), INCA,
      $                                  D( J1 ), WORK( J1 ), KD1 )
   130                   CONTINUE
@@ -121969,8 +120074,7 @@
                               NRT = NR
                            END IF
                            IF( NRT.GT.0 )
-     $                        CALL DLARTV( NRT, AB( L+2, J1-1 ),
-     $                                     INCA,
+     $                        CALL DLARTV( NRT, AB( L+2, J1-1 ), INCA,
      $                                     AB( L+1, J1 ), INCA, D( J1 ),
      $                                     WORK( J1 ), KD1 )
   150                   CONTINUE
@@ -122015,15 +120119,13 @@
                            IQB = MAX( 1, J-IBL )
                            NQ = 1 + IQAEND - IQB
                            IQAEND = MIN( IQAEND+KD, IQEND )
-                           CALL DROT( NQ, Q( IQB, J-1 ), 1, Q( IQB,
-     $                                J ),
+                           CALL DROT( NQ, Q( IQB, J-1 ), 1, Q( IQB, J ),
      $                                1, D( J ), WORK( J ) )
   170                   CONTINUE
                      ELSE
 *
                         DO 180 J = J1, J2, KD1
-                           CALL DROT( N, Q( 1, J-1 ), 1, Q( 1, J ),
-     $                                1,
+                           CALL DROT( N, Q( 1, J-1 ), 1, Q( 1, J ), 1,
      $                                D( J ), WORK( J ) )
   180                   CONTINUE
                      END IF
@@ -122240,8 +120342,7 @@
 *> \ingroup hfrk
 *
 *  =====================================================================
-      SUBROUTINE DSFRK( TRANSR, UPLO, TRANS, N, K, ALPHA, A, LDA,
-     $                  BETA,
+      SUBROUTINE DSFRK( TRANSR, UPLO, TRANS, N, K, ALPHA, A, LDA, BETA,
      $                  C )
 *
 *  -- LAPACK computational routine --
@@ -122362,11 +120463,9 @@
 *
                   CALL DSYRK( 'L', 'N', N1, K, ALPHA, A( 1, 1 ), LDA,
      $                        BETA, C( 1 ), N )
-                  CALL DSYRK( 'U', 'N', N2, K, ALPHA, A( N1+1, 1 ),
-     $                        LDA,
+                  CALL DSYRK( 'U', 'N', N2, K, ALPHA, A( N1+1, 1 ), LDA,
      $                        BETA, C( N+1 ), N )
-                  CALL DGEMM( 'N', 'T', N2, N1, K, ALPHA, A( N1+1,
-     $                        1 ),
+                  CALL DGEMM( 'N', 'T', N2, N1, K, ALPHA, A( N1+1, 1 ),
      $                        LDA, A( 1, 1 ), LDA, BETA, C( N1+1 ), N )
 *
                ELSE
@@ -122375,11 +120474,9 @@
 *
                   CALL DSYRK( 'L', 'T', N1, K, ALPHA, A( 1, 1 ), LDA,
      $                        BETA, C( 1 ), N )
-                  CALL DSYRK( 'U', 'T', N2, K, ALPHA, A( 1, N1+1 ),
-     $                        LDA,
+                  CALL DSYRK( 'U', 'T', N2, K, ALPHA, A( 1, N1+1 ), LDA,
      $                        BETA, C( N+1 ), N )
-                  CALL DGEMM( 'T', 'N', N2, N1, K, ALPHA, A( 1,
-     $                        N1+1 ),
+                  CALL DGEMM( 'T', 'N', N2, N1, K, ALPHA, A( 1, N1+1 ),
      $                        LDA, A( 1, 1 ), LDA, BETA, C( N1+1 ), N )
 *
                END IF
@@ -122394,8 +120491,7 @@
 *
                   CALL DSYRK( 'L', 'N', N1, K, ALPHA, A( 1, 1 ), LDA,
      $                        BETA, C( N2+1 ), N )
-                  CALL DSYRK( 'U', 'N', N2, K, ALPHA, A( N2, 1 ),
-     $                        LDA,
+                  CALL DSYRK( 'U', 'N', N2, K, ALPHA, A( N2, 1 ), LDA,
      $                        BETA, C( N1+1 ), N )
                   CALL DGEMM( 'N', 'T', N1, N2, K, ALPHA, A( 1, 1 ),
      $                        LDA, A( N2, 1 ), LDA, BETA, C( 1 ), N )
@@ -122406,8 +120502,7 @@
 *
                   CALL DSYRK( 'L', 'T', N1, K, ALPHA, A( 1, 1 ), LDA,
      $                        BETA, C( N2+1 ), N )
-                  CALL DSYRK( 'U', 'T', N2, K, ALPHA, A( 1, N2 ),
-     $                        LDA,
+                  CALL DSYRK( 'U', 'T', N2, K, ALPHA, A( 1, N2 ), LDA,
      $                        BETA, C( N1+1 ), N )
                   CALL DGEMM( 'T', 'N', N1, N2, K, ALPHA, A( 1, 1 ),
      $                        LDA, A( 1, N2 ), LDA, BETA, C( 1 ), N )
@@ -122430,8 +120525,7 @@
 *
                   CALL DSYRK( 'U', 'N', N1, K, ALPHA, A( 1, 1 ), LDA,
      $                        BETA, C( 1 ), N1 )
-                  CALL DSYRK( 'L', 'N', N2, K, ALPHA, A( N1+1, 1 ),
-     $                        LDA,
+                  CALL DSYRK( 'L', 'N', N2, K, ALPHA, A( N1+1, 1 ), LDA,
      $                        BETA, C( 2 ), N1 )
                   CALL DGEMM( 'N', 'T', N1, N2, K, ALPHA, A( 1, 1 ),
      $                        LDA, A( N1+1, 1 ), LDA, BETA,
@@ -122443,8 +120537,7 @@
 *
                   CALL DSYRK( 'U', 'T', N1, K, ALPHA, A( 1, 1 ), LDA,
      $                        BETA, C( 1 ), N1 )
-                  CALL DSYRK( 'L', 'T', N2, K, ALPHA, A( 1, N1+1 ),
-     $                        LDA,
+                  CALL DSYRK( 'L', 'T', N2, K, ALPHA, A( 1, N1+1 ), LDA,
      $                        BETA, C( 2 ), N1 )
                   CALL DGEMM( 'T', 'N', N1, N2, K, ALPHA, A( 1, 1 ),
      $                        LDA, A( 1, N1+1 ), LDA, BETA,
@@ -122462,11 +120555,9 @@
 *
                   CALL DSYRK( 'U', 'N', N1, K, ALPHA, A( 1, 1 ), LDA,
      $                        BETA, C( N2*N2+1 ), N2 )
-                  CALL DSYRK( 'L', 'N', N2, K, ALPHA, A( N1+1, 1 ),
-     $                        LDA,
+                  CALL DSYRK( 'L', 'N', N2, K, ALPHA, A( N1+1, 1 ), LDA,
      $                        BETA, C( N1*N2+1 ), N2 )
-                  CALL DGEMM( 'N', 'T', N2, N1, K, ALPHA, A( N1+1,
-     $                        1 ),
+                  CALL DGEMM( 'N', 'T', N2, N1, K, ALPHA, A( N1+1, 1 ),
      $                        LDA, A( 1, 1 ), LDA, BETA, C( 1 ), N2 )
 *
                ELSE
@@ -122475,11 +120566,9 @@
 *
                   CALL DSYRK( 'U', 'T', N1, K, ALPHA, A( 1, 1 ), LDA,
      $                        BETA, C( N2*N2+1 ), N2 )
-                  CALL DSYRK( 'L', 'T', N2, K, ALPHA, A( 1, N1+1 ),
-     $                        LDA,
+                  CALL DSYRK( 'L', 'T', N2, K, ALPHA, A( 1, N1+1 ), LDA,
      $                        BETA, C( N1*N2+1 ), N2 )
-                  CALL DGEMM( 'T', 'N', N2, N1, K, ALPHA, A( 1,
-     $                        N1+1 ),
+                  CALL DGEMM( 'T', 'N', N2, N1, K, ALPHA, A( 1, N1+1 ),
      $                        LDA, A( 1, 1 ), LDA, BETA, C( 1 ), N2 )
 *
                END IF
@@ -122506,11 +120595,9 @@
 *
                   CALL DSYRK( 'L', 'N', NK, K, ALPHA, A( 1, 1 ), LDA,
      $                        BETA, C( 2 ), N+1 )
-                  CALL DSYRK( 'U', 'N', NK, K, ALPHA, A( NK+1, 1 ),
-     $                        LDA,
+                  CALL DSYRK( 'U', 'N', NK, K, ALPHA, A( NK+1, 1 ), LDA,
      $                        BETA, C( 1 ), N+1 )
-                  CALL DGEMM( 'N', 'T', NK, NK, K, ALPHA, A( NK+1,
-     $                        1 ),
+                  CALL DGEMM( 'N', 'T', NK, NK, K, ALPHA, A( NK+1, 1 ),
      $                        LDA, A( 1, 1 ), LDA, BETA, C( NK+2 ),
      $                        N+1 )
 *
@@ -122520,11 +120607,9 @@
 *
                   CALL DSYRK( 'L', 'T', NK, K, ALPHA, A( 1, 1 ), LDA,
      $                        BETA, C( 2 ), N+1 )
-                  CALL DSYRK( 'U', 'T', NK, K, ALPHA, A( 1, NK+1 ),
-     $                        LDA,
+                  CALL DSYRK( 'U', 'T', NK, K, ALPHA, A( 1, NK+1 ), LDA,
      $                        BETA, C( 1 ), N+1 )
-                  CALL DGEMM( 'T', 'N', NK, NK, K, ALPHA, A( 1,
-     $                        NK+1 ),
+                  CALL DGEMM( 'T', 'N', NK, NK, K, ALPHA, A( 1, NK+1 ),
      $                        LDA, A( 1, 1 ), LDA, BETA, C( NK+2 ),
      $                        N+1 )
 *
@@ -122540,8 +120625,7 @@
 *
                   CALL DSYRK( 'L', 'N', NK, K, ALPHA, A( 1, 1 ), LDA,
      $                        BETA, C( NK+2 ), N+1 )
-                  CALL DSYRK( 'U', 'N', NK, K, ALPHA, A( NK+1, 1 ),
-     $                        LDA,
+                  CALL DSYRK( 'U', 'N', NK, K, ALPHA, A( NK+1, 1 ), LDA,
      $                        BETA, C( NK+1 ), N+1 )
                   CALL DGEMM( 'N', 'T', NK, NK, K, ALPHA, A( 1, 1 ),
      $                        LDA, A( NK+1, 1 ), LDA, BETA, C( 1 ),
@@ -122553,8 +120637,7 @@
 *
                   CALL DSYRK( 'L', 'T', NK, K, ALPHA, A( 1, 1 ), LDA,
      $                        BETA, C( NK+2 ), N+1 )
-                  CALL DSYRK( 'U', 'T', NK, K, ALPHA, A( 1, NK+1 ),
-     $                        LDA,
+                  CALL DSYRK( 'U', 'T', NK, K, ALPHA, A( 1, NK+1 ), LDA,
      $                        BETA, C( NK+1 ), N+1 )
                   CALL DGEMM( 'T', 'N', NK, NK, K, ALPHA, A( 1, 1 ),
      $                        LDA, A( 1, NK+1 ), LDA, BETA, C( 1 ),
@@ -122578,8 +120661,7 @@
 *
                   CALL DSYRK( 'U', 'N', NK, K, ALPHA, A( 1, 1 ), LDA,
      $                        BETA, C( NK+1 ), NK )
-                  CALL DSYRK( 'L', 'N', NK, K, ALPHA, A( NK+1, 1 ),
-     $                        LDA,
+                  CALL DSYRK( 'L', 'N', NK, K, ALPHA, A( NK+1, 1 ), LDA,
      $                        BETA, C( 1 ), NK )
                   CALL DGEMM( 'N', 'T', NK, NK, K, ALPHA, A( 1, 1 ),
      $                        LDA, A( NK+1, 1 ), LDA, BETA,
@@ -122591,8 +120673,7 @@
 *
                   CALL DSYRK( 'U', 'T', NK, K, ALPHA, A( 1, 1 ), LDA,
      $                        BETA, C( NK+1 ), NK )
-                  CALL DSYRK( 'L', 'T', NK, K, ALPHA, A( 1, NK+1 ),
-     $                        LDA,
+                  CALL DSYRK( 'L', 'T', NK, K, ALPHA, A( 1, NK+1 ), LDA,
      $                        BETA, C( 1 ), NK )
                   CALL DGEMM( 'T', 'N', NK, NK, K, ALPHA, A( 1, 1 ),
      $                        LDA, A( 1, NK+1 ), LDA, BETA,
@@ -122610,11 +120691,9 @@
 *
                   CALL DSYRK( 'U', 'N', NK, K, ALPHA, A( 1, 1 ), LDA,
      $                        BETA, C( NK*( NK+1 )+1 ), NK )
-                  CALL DSYRK( 'L', 'N', NK, K, ALPHA, A( NK+1, 1 ),
-     $                        LDA,
+                  CALL DSYRK( 'L', 'N', NK, K, ALPHA, A( NK+1, 1 ), LDA,
      $                        BETA, C( NK*NK+1 ), NK )
-                  CALL DGEMM( 'N', 'T', NK, NK, K, ALPHA, A( NK+1,
-     $                        1 ),
+                  CALL DGEMM( 'N', 'T', NK, NK, K, ALPHA, A( NK+1, 1 ),
      $                        LDA, A( 1, 1 ), LDA, BETA, C( 1 ), NK )
 *
                ELSE
@@ -122623,11 +120702,9 @@
 *
                   CALL DSYRK( 'U', 'T', NK, K, ALPHA, A( 1, 1 ), LDA,
      $                        BETA, C( NK*( NK+1 )+1 ), NK )
-                  CALL DSYRK( 'L', 'T', NK, K, ALPHA, A( 1, NK+1 ),
-     $                        LDA,
+                  CALL DSYRK( 'L', 'T', NK, K, ALPHA, A( 1, NK+1 ), LDA,
      $                        BETA, C( NK*NK+1 ), NK )
-                  CALL DGEMM( 'T', 'N', NK, NK, K, ALPHA, A( 1,
-     $                        NK+1 ),
+                  CALL DGEMM( 'T', 'N', NK, NK, K, ALPHA, A( 1, NK+1 ),
      $                        LDA, A( 1, 1 ), LDA, BETA, C( 1 ), NK )
 *
                END IF
@@ -122765,8 +120842,7 @@
 *> \ingroup hpcon
 *
 *  =====================================================================
-      SUBROUTINE DSPCON( UPLO, N, AP, IPIV, ANORM, RCOND, WORK,
-     $                   IWORK,
+      SUBROUTINE DSPCON( UPLO, N, AP, IPIV, ANORM, RCOND, WORK, IWORK,
      $                   INFO )
 *
 *  -- LAPACK computational routine --
@@ -123039,8 +121115,7 @@
       EXTERNAL           LSAME, DLAMCH, DLANSP
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DOPGTR, DSCAL, DSPTRD, DSTEQR, DSTERF,
-     $                   XERBLA
+      EXTERNAL           DOPGTR, DSCAL, DSPTRD, DSTEQR, DSTERF, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          SQRT
@@ -123054,8 +121129,7 @@
       INFO = 0
       IF( .NOT.( WANTZ .OR. LSAME( JOBZ, 'N' ) ) ) THEN
          INFO = -1
-      ELSE IF( .NOT.( LSAME( UPLO, 'U' ) .OR.
-     $         LSAME( UPLO, 'L' ) ) )
+      ELSE IF( .NOT.( LSAME( UPLO, 'U' ) .OR. LSAME( UPLO, 'L' ) ) )
      $          THEN
          INFO = -2
       ELSE IF( N.LT.0 ) THEN
@@ -123109,8 +121183,7 @@
 *
       INDE = 1
       INDTAU = INDE + N
-      CALL DSPTRD( UPLO, N, AP, W, WORK( INDE ), WORK( INDTAU ),
-     $             IINFO )
+      CALL DSPTRD( UPLO, N, AP, W, WORK( INDE ), WORK( INDTAU ), IINFO )
 *
 *     For eigenvalues only, call DSTERF.  For eigenvectors, first call
 *     DOPGTR to generate the orthogonal matrix, then call DSTEQR.
@@ -123121,8 +121194,7 @@
          INDWRK = INDTAU + N
          CALL DOPGTR( UPLO, N, AP, WORK( INDTAU ), Z, LDZ,
      $                WORK( INDWRK ), IINFO )
-         CALL DSTEQR( JOBZ, N, W, WORK( INDE ), Z, LDZ,
-     $                WORK( INDTAU ),
+         CALL DSTEQR( JOBZ, N, W, WORK( INDE ), Z, LDZ, WORK( INDTAU ),
      $                INFO )
       END IF
 *
@@ -123346,8 +121418,7 @@
       EXTERNAL           LSAME, DLAMCH, DLANSP
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DOPMTR, DSCAL, DSPTRD, DSTEDC, DSTERF,
-     $                   XERBLA
+      EXTERNAL           DOPMTR, DSCAL, DSPTRD, DSTEDC, DSTERF, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          SQRT
@@ -123362,8 +121433,7 @@
       INFO = 0
       IF( .NOT.( WANTZ .OR. LSAME( JOBZ, 'N' ) ) ) THEN
          INFO = -1
-      ELSE IF( .NOT.( LSAME( UPLO, 'U' ) .OR.
-     $         LSAME( UPLO, 'L' ) ) )
+      ELSE IF( .NOT.( LSAME( UPLO, 'U' ) .OR. LSAME( UPLO, 'L' ) ) )
      $          THEN
          INFO = -2
       ELSE IF( N.LT.0 ) THEN
@@ -123442,8 +121512,7 @@
 *
       INDE = 1
       INDTAU = INDE + N
-      CALL DSPTRD( UPLO, N, AP, W, WORK( INDE ), WORK( INDTAU ),
-     $             IINFO )
+      CALL DSPTRD( UPLO, N, AP, W, WORK( INDE ), WORK( INDTAU ), IINFO )
 *
 *     For eigenvalues only, call DSTERF.  For eigenvectors, first call
 *     DSTEDC to generate the eigenvector matrix, WORK(INDWRK), of the
@@ -123455,11 +121524,9 @@
       ELSE
          INDWRK = INDTAU + N
          LLWORK = LWORK - INDWRK + 1
-         CALL DSTEDC( 'I', N, W, WORK( INDE ), Z, LDZ,
-     $                WORK( INDWRK ),
+         CALL DSTEDC( 'I', N, W, WORK( INDE ), Z, LDZ, WORK( INDWRK ),
      $                LLWORK, IWORK, LIWORK, INFO )
-         CALL DOPMTR( 'L', UPLO, 'N', N, N, AP, WORK( INDTAU ), Z,
-     $                LDZ,
+         CALL DOPMTR( 'L', UPLO, 'N', N, N, AP, WORK( INDTAU ), Z, LDZ,
      $                WORK( INDWRK ), IINFO )
       END IF
 *
@@ -123744,8 +121811,7 @@
       EXTERNAL           LSAME, DLAMCH, DLANSP
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DCOPY, DOPGTR, DOPMTR, DSCAL, DSPTRD,
-     $                   DSTEBZ,
+      EXTERNAL           DCOPY, DOPGTR, DOPMTR, DSCAL, DSPTRD, DSTEBZ,
      $                   DSTEIN, DSTEQR, DSTERF, DSWAP, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
@@ -123765,8 +121831,7 @@
          INFO = -1
       ELSE IF( .NOT.( ALLEIG .OR. VALEIG .OR. INDEIG ) ) THEN
          INFO = -2
-      ELSE IF( .NOT.( LSAME( UPLO, 'L' ) .OR.
-     $         LSAME( UPLO, 'U' ) ) )
+      ELSE IF( .NOT.( LSAME( UPLO, 'L' ) .OR. LSAME( UPLO, 'U' ) ) )
      $          THEN
          INFO = -3
       ELSE IF( N.LT.0 ) THEN
@@ -123918,8 +121983,7 @@
 *        Apply orthogonal matrix used in reduction to tridiagonal
 *        form to eigenvectors returned by DSTEIN.
 *
-         CALL DOPMTR( 'L', UPLO, 'N', N, M, AP, WORK( INDTAU ), Z,
-     $                LDZ,
+         CALL DOPMTR( 'L', UPLO, 'N', N, M, AP, WORK( INDTAU ), Z, LDZ,
      $                WORK( INDWRK ), IINFO )
       END IF
 *
@@ -124107,8 +122171,7 @@
       DOUBLE PRECISION   AJJ, AKK, BJJ, BKK, CT
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DAXPY, DSCAL, DSPMV, DSPR2, DTPMV,
-     $                   DTPSV,
+      EXTERNAL           DAXPY, DSCAL, DSPMV, DSPR2, DTPMV, DTPSV,
      $                   XERBLA
 *     ..
 *     .. External Functions ..
@@ -124154,8 +122217,7 @@
                CALL DSPMV( UPLO, J-1, -ONE, AP, BP( J1 ), 1, ONE,
      $                     AP( J1 ), 1 )
                CALL DSCAL( J-1, ONE / BJJ, AP( J1 ), 1 )
-               AP( JJ ) = ( AP( JJ )-DDOT( J-1, AP( J1 ), 1,
-     $             BP( J1 ),
+               AP( JJ ) = ( AP( JJ )-DDOT( J-1, AP( J1 ), 1, BP( J1 ),
      $                    1 ) ) / BJJ
    10       CONTINUE
          ELSE
@@ -124400,8 +122462,7 @@
 *> \ingroup hpgv
 *
 *  =====================================================================
-      SUBROUTINE DSPGV( ITYPE, JOBZ, UPLO, N, AP, BP, W, Z, LDZ,
-     $                  WORK,
+      SUBROUTINE DSPGV( ITYPE, JOBZ, UPLO, N, AP, BP, W, Z, LDZ, WORK,
      $                  INFO )
 *
 *  -- LAPACK driver routine --
@@ -124429,8 +122490,7 @@
       EXTERNAL           LSAME
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DPPTRF, DSPEV, DSPGST, DTPMV, DTPSV,
-     $                   XERBLA
+      EXTERNAL           DPPTRF, DSPEV, DSPGST, DTPMV, DTPSV, XERBLA
 *     ..
 *     .. Executable Statements ..
 *
@@ -124720,8 +122780,7 @@
 *>     Mark Fahey, Department of Mathematics, Univ. of Kentucky, USA
 *
 *  =====================================================================
-      SUBROUTINE DSPGVD( ITYPE, JOBZ, UPLO, N, AP, BP, W, Z, LDZ,
-     $                   WORK,
+      SUBROUTINE DSPGVD( ITYPE, JOBZ, UPLO, N, AP, BP, W, Z, LDZ, WORK,
      $                   LWORK, IWORK, LIWORK, INFO )
 *
 *  -- LAPACK driver routine --
@@ -124750,8 +122809,7 @@
       EXTERNAL           LSAME
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DPPTRF, DSPEVD, DSPGST, DTPMV, DTPSV,
-     $                   XERBLA
+      EXTERNAL           DPPTRF, DSPEVD, DSPGST, DTPMV, DTPSV, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          DBLE, MAX
@@ -125175,8 +123233,7 @@
       EXTERNAL           LSAME
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DPPTRF, DSPEVX, DSPGST, DTPMV, DTPSV,
-     $                   XERBLA
+      EXTERNAL           DPPTRF, DSPEVX, DSPGST, DTPMV, DTPSV, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MIN
@@ -125243,8 +123300,7 @@
 *     Transform problem to standard eigenvalue problem and solve.
 *
       CALL DSPGST( ITYPE, UPLO, N, AP, BP, INFO )
-      CALL DSPEVX( JOBZ, RANGE, UPLO, N, AP, VL, VU, IL, IU, ABSTOL,
-     $             M,
+      CALL DSPEVX( JOBZ, RANGE, UPLO, N, AP, VL, VU, IL, IU, ABSTOL, M,
      $             W, Z, LDZ, WORK, IWORK, IFAIL, INFO )
 *
       IF( WANTZ ) THEN
@@ -125468,8 +123524,7 @@
 *> \ingroup hprfs
 *
 *  =====================================================================
-      SUBROUTINE DSPRFS( UPLO, N, NRHS, AP, AFP, IPIV, B, LDB, X,
-     $                   LDX,
+      SUBROUTINE DSPRFS( UPLO, N, NRHS, AP, AFP, IPIV, B, LDB, X, LDX,
      $                   FERR, BERR, WORK, IWORK, INFO )
 *
 *  -- LAPACK computational routine --
@@ -125509,8 +123564,7 @@
       INTEGER            ISAVE( 3 )
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DAXPY, DCOPY, DLACN2, DSPMV, DSPTRS,
-     $                   XERBLA
+      EXTERNAL           DAXPY, DCOPY, DLACN2, DSPMV, DSPTRS, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          ABS, MAX
@@ -125573,8 +123627,7 @@
 *        Compute residual R = B - A * X
 *
          CALL DCOPY( N, B( 1, J ), 1, WORK( N+1 ), 1 )
-         CALL DSPMV( UPLO, N, -ONE, AP, X( 1, J ), 1, ONE,
-     $               WORK( N+1 ),
+         CALL DSPMV( UPLO, N, -ONE, AP, X( 1, J ), 1, ONE, WORK( N+1 ),
      $               1 )
 *
 *        Compute componentwise relative backward error from formula
@@ -125643,8 +123696,7 @@
 *
 *           Update solution and try again.
 *
-            CALL DSPTRS( UPLO, N, 1, AFP, IPIV, WORK( N+1 ), N,
-     $                   INFO )
+            CALL DSPTRS( UPLO, N, 1, AFP, IPIV, WORK( N+1 ), N, INFO )
             CALL DAXPY( N, ONE, WORK( N+1 ), 1, X( 1, J ), 1 )
             LSTRES = BERR( J )
             COUNT = COUNT + 1
@@ -125683,8 +123735,7 @@
 *
          KASE = 0
   100    CONTINUE
-         CALL DLACN2( N, WORK( 2*N+1 ), WORK( N+1 ), IWORK,
-     $                FERR( J ),
+         CALL DLACN2( N, WORK( 2*N+1 ), WORK( N+1 ), IWORK, FERR( J ),
      $                KASE, ISAVE )
          IF( KASE.NE.0 ) THEN
             IF( KASE.EQ.1 ) THEN
@@ -125917,8 +123968,7 @@
 *     Test the input parameters.
 *
       INFO = 0
-      IF( .NOT.LSAME( UPLO, 'U' ) .AND.
-     $    .NOT.LSAME( UPLO, 'L' ) ) THEN
+      IF( .NOT.LSAME( UPLO, 'U' ) .AND. .NOT.LSAME( UPLO, 'L' ) ) THEN
          INFO = -1
       ELSE IF( N.LT.0 ) THEN
          INFO = -2
@@ -126220,8 +124270,7 @@
 *> \endverbatim
 *>
 *  =====================================================================
-      SUBROUTINE DSPSVX( FACT, UPLO, N, NRHS, AP, AFP, IPIV, B, LDB,
-     $                   X,
+      SUBROUTINE DSPSVX( FACT, UPLO, N, NRHS, AP, AFP, IPIV, B, LDB, X,
      $                   LDX, RCOND, FERR, BERR, WORK, IWORK, INFO )
 *
 *  -- LAPACK driver routine --
@@ -126255,8 +124304,7 @@
       EXTERNAL           LSAME, DLAMCH, DLANSP
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DCOPY, DLACPY, DSPCON, DSPRFS, DSPTRF,
-     $                   DSPTRS,
+      EXTERNAL           DCOPY, DLACPY, DSPCON, DSPRFS, DSPTRF, DSPTRS,
      $                   XERBLA
 *     ..
 *     .. Intrinsic Functions ..
@@ -126270,8 +124318,7 @@
       NOFACT = LSAME( FACT, 'N' )
       IF( .NOT.NOFACT .AND. .NOT.LSAME( FACT, 'F' ) ) THEN
          INFO = -1
-      ELSE IF( .NOT.LSAME( UPLO, 'U' ) .AND.
-     $         .NOT.LSAME( UPLO, 'L' ) )
+      ELSE IF( .NOT.LSAME( UPLO, 'U' ) .AND. .NOT.LSAME( UPLO, 'L' ) )
      $          THEN
          INFO = -2
       ELSE IF( N.LT.0 ) THEN
@@ -126309,8 +124356,7 @@
 *
 *     Compute the reciprocal of the condition number of A.
 *
-      CALL DSPCON( UPLO, N, AFP, IPIV, ANORM, RCOND, WORK, IWORK,
-     $             INFO )
+      CALL DSPCON( UPLO, N, AFP, IPIV, ANORM, RCOND, WORK, IWORK, INFO )
 *
 *     Compute the solution vectors X.
 *
@@ -126320,8 +124366,7 @@
 *     Use iterative refinement to improve the computed solutions and
 *     compute error bounds and backward error estimates for them.
 *
-      CALL DSPRFS( UPLO, N, NRHS, AP, AFP, IPIV, B, LDB, X, LDX,
-     $             FERR,
+      CALL DSPRFS( UPLO, N, NRHS, AP, AFP, IPIV, B, LDB, X, LDX, FERR,
      $             BERR, WORK, IWORK, INFO )
 *
 *     Set INFO = N+1 if the matrix is singular to working precision.
@@ -126602,8 +124647,7 @@
 *
 *              Compute  y := tau * A * v  storing y in TAU(i:n-1)
 *
-               CALL DSPMV( UPLO, N-I, TAUI, AP( I1I1 ), AP( II+1 ),
-     $                     1,
+               CALL DSPMV( UPLO, N-I, TAUI, AP( I1I1 ), AP( II+1 ), 1,
      $                     ZERO, TAU( I ), 1 )
 *
 *              Compute  w := y - 1/2 * tau * (y**T *v) * v
@@ -126615,8 +124659,7 @@
 *              Apply the transformation as a rank-2 update:
 *                 A := A - v * w**T - w * v**T
 *
-               CALL DSPR2( UPLO, N-I, -ONE, AP( II+1 ), 1, TAU( I ),
-     $                     1,
+               CALL DSPR2( UPLO, N-I, -ONE, AP( II+1 ), 1, TAU( I ), 1,
      $                     AP( I1I1 ) )
 *
                AP( II+1 ) = E( I )
@@ -127135,8 +125178,7 @@
 *              submatrix A(k:n,k:n)
 *
                IF( KP.LT.N )
-     $            CALL DSWAP( N-KP, AP( KNC+KP-KK+1 ), 1,
-     $                        AP( KPC+1 ),
+     $            CALL DSWAP( N-KP, AP( KNC+KP-KK+1 ), 1, AP( KPC+1 ),
      $                        1 )
                KX = KNC + KP - KK
                DO 80 J = KK + 1, KP - 1
@@ -127466,8 +125508,7 @@
 *
             IF( K.GT.1 ) THEN
                CALL DCOPY( K-1, AP( KC ), 1, WORK, 1 )
-               CALL DSPMV( UPLO, K-1, -ONE, AP, WORK, 1, ZERO,
-     $                     AP( KC ),
+               CALL DSPMV( UPLO, K-1, -ONE, AP, WORK, 1, ZERO, AP( KC ),
      $                     1 )
                AP( KC+K-1 ) = AP( KC+K-1 ) -
      $                        DDOT( K-1, WORK, 1, AP( KC ), 1 )
@@ -127492,14 +125533,12 @@
 *
             IF( K.GT.1 ) THEN
                CALL DCOPY( K-1, AP( KC ), 1, WORK, 1 )
-               CALL DSPMV( UPLO, K-1, -ONE, AP, WORK, 1, ZERO,
-     $                     AP( KC ),
+               CALL DSPMV( UPLO, K-1, -ONE, AP, WORK, 1, ZERO, AP( KC ),
      $                     1 )
                AP( KC+K-1 ) = AP( KC+K-1 ) -
      $                        DDOT( K-1, WORK, 1, AP( KC ), 1 )
                AP( KCNEXT+K-1 ) = AP( KCNEXT+K-1 ) -
-     $                            DDOT( K-1, AP( KC ), 1,
-     $                                  AP( KCNEXT ),
+     $                            DDOT( K-1, AP( KC ), 1, AP( KCNEXT ),
      $                            1 )
                CALL DCOPY( K-1, AP( KCNEXT ), 1, WORK, 1 )
                CALL DSPMV( UPLO, K-1, -ONE, AP, WORK, 1, ZERO,
@@ -127573,8 +125612,7 @@
                CALL DCOPY( N-K, AP( KC+1 ), 1, WORK, 1 )
                CALL DSPMV( UPLO, N-K, -ONE, AP( KC+N-K+1 ), WORK, 1,
      $                     ZERO, AP( KC+1 ), 1 )
-               AP( KC ) = AP( KC ) - DDOT( N-K, WORK, 1, AP( KC+1 ),
-     $             1 )
+               AP( KC ) = AP( KC ) - DDOT( N-K, WORK, 1, AP( KC+1 ), 1 )
             END IF
             KSTEP = 1
          ELSE
@@ -127596,17 +125634,14 @@
 *
             IF( K.LT.N ) THEN
                CALL DCOPY( N-K, AP( KC+1 ), 1, WORK, 1 )
-               CALL DSPMV( UPLO, N-K, -ONE, AP( KC+( N-K+1 ) ), WORK,
-     $                     1,
+               CALL DSPMV( UPLO, N-K, -ONE, AP( KC+( N-K+1 ) ), WORK, 1,
      $                     ZERO, AP( KC+1 ), 1 )
-               AP( KC ) = AP( KC ) - DDOT( N-K, WORK, 1, AP( KC+1 ),
-     $             1 )
+               AP( KC ) = AP( KC ) - DDOT( N-K, WORK, 1, AP( KC+1 ), 1 )
                AP( KCNEXT+1 ) = AP( KCNEXT+1 ) -
      $                          DDOT( N-K, AP( KC+1 ), 1,
      $                          AP( KCNEXT+2 ), 1 )
                CALL DCOPY( N-K, AP( KCNEXT+2 ), 1, WORK, 1 )
-               CALL DSPMV( UPLO, N-K, -ONE, AP( KC+( N-K+1 ) ), WORK,
-     $                     1,
+               CALL DSPMV( UPLO, N-K, -ONE, AP( KC+( N-K+1 ) ), WORK, 1,
      $                     ZERO, AP( KCNEXT+2 ), 1 )
                AP( KCNEXT ) = AP( KCNEXT ) -
      $                        DDOT( N-K, WORK, 1, AP( KCNEXT+2 ), 1 )
@@ -127921,8 +125956,7 @@
 *           Multiply by inv(U**T(K)), where U(K) is the transformation
 *           stored in column K of A.
 *
-            CALL DGEMV( 'Transpose', K-1, NRHS, -ONE, B, LDB,
-     $                  AP( KC ),
+            CALL DGEMV( 'Transpose', K-1, NRHS, -ONE, B, LDB, AP( KC ),
      $                  1, ONE, B( K, 1 ), LDB )
 *
 *           Interchange rows K and IPIV(K).
@@ -127939,8 +125973,7 @@
 *           Multiply by inv(U**T(K+1)), where U(K+1) is the transformation
 *           stored in columns K and K+1 of A.
 *
-            CALL DGEMV( 'Transpose', K-1, NRHS, -ONE, B, LDB,
-     $                  AP( KC ),
+            CALL DGEMV( 'Transpose', K-1, NRHS, -ONE, B, LDB, AP( KC ),
      $                  1, ONE, B( K, 1 ), LDB )
             CALL DGEMV( 'Transpose', K-1, NRHS, -ONE, B, LDB,
      $                  AP( KC+K ), 1, ONE, B( K+1, 1 ), LDB )
@@ -128011,8 +126044,7 @@
 *           stored in columns K and K+1 of A.
 *
             IF( K.LT.N-1 ) THEN
-               CALL DGER( N-K-1, NRHS, -ONE, AP( KC+2 ), 1, B( K,
-     $                    1 ),
+               CALL DGER( N-K-1, NRHS, -ONE, AP( KC+2 ), 1, B( K, 1 ),
      $                    LDB, B( K+2, 1 ), LDB )
                CALL DGER( N-K-1, NRHS, -ONE, AP( KC+N-K+2 ), 1,
      $                    B( K+1, 1 ), LDB, B( K+2, 1 ), LDB )
@@ -128371,8 +126403,7 @@
 *> \ingroup stebz
 *
 *  =====================================================================
-      SUBROUTINE DSTEBZ( RANGE, ORDER, N, VL, VU, IL, IU, ABSTOL, D,
-     $                   E,
+      SUBROUTINE DSTEBZ( RANGE, ORDER, N, VL, VU, IL, IU, ABSTOL, D, E,
      $                   M, NSPLIT, W, IBLOCK, ISPLIT, WORK, IWORK,
      $                   INFO )
 *
@@ -128586,8 +126617,7 @@
          IWORK( 5 ) = IL - 1
          IWORK( 6 ) = IU
 *
-         CALL DLAEBZ( 3, ITMAX, N, 2, 2, NB, ATOLI, RTOLI, PIVMIN, D,
-     $                E,
+         CALL DLAEBZ( 3, ITMAX, N, 2, 2, NB, ATOLI, RTOLI, PIVMIN, D, E,
      $                WORK, IWORK( 5 ), WORK( N+1 ), WORK( N+5 ), IOUT,
      $                IWORK, W, IBLOCK, IINFO )
 *
@@ -128729,8 +126759,7 @@
 *
             ITMAX = INT( ( LOG( GU-GL+PIVMIN )-LOG( PIVMIN ) ) /
      $              LOG( TWO ) ) + 2
-            CALL DLAEBZ( 2, ITMAX, IN, IN, 1, NB, ATOLI, RTOLI,
-     $                   PIVMIN,
+            CALL DLAEBZ( 2, ITMAX, IN, IN, 1, NB, ATOLI, RTOLI, PIVMIN,
      $                   D( IBEGIN ), E( IBEGIN ), WORK( IBEGIN ),
      $                   IDUMMA, WORK( N+1 ), WORK( N+2*IN+1 ), IOUT,
      $                   IWORK, W( M+1 ), IBLOCK( M+1 ), IINFO )
@@ -129087,8 +127116,7 @@
       EXTERNAL           LSAME, ILAENV, DLAMCH, DLANST
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DGEMM, DLACPY, DLAED0, DLASCL, DLASET,
-     $                   DLASRT,
+      EXTERNAL           DGEMM, DLACPY, DLAED0, DLASCL, DLASET, DLASRT,
      $                   DSTEQR, DSTERF, DSWAP, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
@@ -129253,11 +127281,9 @@
 *              Scale.
 *
                ORGNRM = DLANST( 'M', M, D( START ), E( START ) )
-               CALL DLASCL( 'G', 0, 0, ORGNRM, ONE, M, 1, D( START ),
-     $                      M,
+               CALL DLASCL( 'G', 0, 0, ORGNRM, ONE, M, 1, D( START ), M,
      $                      INFO )
-               CALL DLASCL( 'G', 0, 0, ORGNRM, ONE, M-1, 1,
-     $                      E( START ),
+               CALL DLASCL( 'G', 0, 0, ORGNRM, ONE, M-1, 1, E( START ),
      $                      M-1, INFO )
 *
                IF( ICOMPZ.EQ.1 ) THEN
@@ -129276,8 +127302,7 @@
 *
 *              Scale back.
 *
-               CALL DLASCL( 'G', 0, 0, ONE, ORGNRM, M, 1, D( START ),
-     $                      M,
+               CALL DLASCL( 'G', 0, 0, ONE, ORGNRM, M, 1, D( START ), M,
      $                      INFO )
 *
             ELSE
@@ -129287,8 +127312,7 @@
 *                 the length of D, we must solve the sub-problem in a
 *                 workspace and then multiply back into Z.
 *
-                  CALL DSTEQR( 'I', M, D( START ), E( START ), WORK,
-     $                         M,
+                  CALL DSTEQR( 'I', M, D( START ), E( START ), WORK, M,
      $                         WORK( M*M+1 ), INFO )
                   CALL DLACPY( 'A', N, M, Z( 1, START ), LDZ,
      $                         WORK( STOREZ ), N )
@@ -129862,8 +127886,7 @@
       EXTERNAL           IDAMAX, DDOT, DLAMCH, DNRM2
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DAXPY, DCOPY, DLAGTF, DLAGTS, DLARNV,
-     $                   DSCAL,
+      EXTERNAL           DAXPY, DCOPY, DLAGTF, DLAGTS, DLARNV, DSCAL,
      $                   XERBLA
 *     ..
 *     .. Intrinsic Functions ..
@@ -130007,8 +128030,7 @@
 *           Compute LU factors with partial pivoting  ( PT = LU )
 *
             TOL = ZERO
-            CALL DLAGTF( BLKSIZ, WORK( INDRV4+1 ), XJ,
-     $                   WORK( INDRV2+2 ),
+            CALL DLAGTF( BLKSIZ, WORK( INDRV4+1 ), XJ, WORK( INDRV2+2 ),
      $                   WORK( INDRV3+1 ), TOL, WORK( INDRV5+1 ), IWORK,
      $                   IINFO )
 *
@@ -130029,8 +128051,7 @@
 *
 *           Solve the system LU = Pb.
 *
-            CALL DLAGTS( -1, BLKSIZ, WORK( INDRV4+1 ),
-     $                   WORK( INDRV2+2 ),
+            CALL DLAGTS( -1, BLKSIZ, WORK( INDRV4+1 ), WORK( INDRV2+2 ),
      $                   WORK( INDRV3+1 ), WORK( INDRV5+1 ), IWORK,
      $                   WORK( INDRV1+1 ), TOL, IINFO )
 *
@@ -130043,8 +128064,7 @@
      $         GPIND = J
             IF( GPIND.NE.J ) THEN
                DO 80 I = GPIND, J - 1
-                  ZTR = -DDOT( BLKSIZ, WORK( INDRV1+1 ), 1, Z( B1,
-     $                         I ),
+                  ZTR = -DDOT( BLKSIZ, WORK( INDRV1+1 ), 1, Z( B1, I ),
      $                  1 )
                   CALL DAXPY( BLKSIZ, ZTR, Z( B1, I ), 1,
      $                        WORK( INDRV1+1 ), 1 )
@@ -130469,8 +128489,7 @@
       EXTERNAL           LSAME, DLAMCH, DLANST
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DCOPY, DLAE2, DLAEV2, DLARRC, DLARRE,
-     $                   DLARRJ,
+      EXTERNAL           DCOPY, DLAE2, DLAEV2, DLARRC, DLARRE, DLARRJ,
      $                   DLARRR, DLARRV, DLASRT, DSCAL, DSWAP, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
@@ -131066,8 +129085,7 @@
       EXTERNAL           LSAME, DLAMCH, DLANST, DLAPY2
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DLAE2, DLAEV2, DLARTG, DLASCL, DLASET,
-     $                   DLASR,
+      EXTERNAL           DLAE2, DLAEV2, DLARTG, DLASCL, DLASET, DLASR,
      $                   DLASRT, DSWAP, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
@@ -131173,15 +129191,13 @@
      $   GO TO 10
       IF( ANORM.GT.SSFMAX ) THEN
          ISCALE = 1
-         CALL DLASCL( 'G', 0, 0, ANORM, SSFMAX, LEND-L+1, 1, D( L ),
-     $                N,
+         CALL DLASCL( 'G', 0, 0, ANORM, SSFMAX, LEND-L+1, 1, D( L ), N,
      $                INFO )
          CALL DLASCL( 'G', 0, 0, ANORM, SSFMAX, LEND-L, 1, E( L ), N,
      $                INFO )
       ELSE IF( ANORM.LT.SSFMIN ) THEN
          ISCALE = 2
-         CALL DLASCL( 'G', 0, 0, ANORM, SSFMIN, LEND-L+1, 1, D( L ),
-     $                N,
+         CALL DLASCL( 'G', 0, 0, ANORM, SSFMIN, LEND-L+1, 1, D( L ), N,
      $                INFO )
          CALL DLASCL( 'G', 0, 0, ANORM, SSFMIN, LEND-L, 1, E( L ), N,
      $                INFO )
@@ -131224,8 +129240,7 @@
 *
          IF( M.EQ.L+1 ) THEN
             IF( ICOMPZ.GT.0 ) THEN
-               CALL DLAEV2( D( L ), E( L ), D( L+1 ), RT1, RT2, C,
-     $                      S )
+               CALL DLAEV2( D( L ), E( L ), D( L+1 ), RT1, RT2, C, S )
                WORK( L ) = C
                WORK( N-1+L ) = S
                CALL DLASR( 'R', 'V', 'B', N, 2, WORK( L ),
@@ -131284,8 +129299,7 @@
 *
          IF( ICOMPZ.GT.0 ) THEN
             MM = M - L + 1
-            CALL DLASR( 'R', 'V', 'B', N, MM, WORK( L ),
-     $                  WORK( N-1+L ),
+            CALL DLASR( 'R', 'V', 'B', N, MM, WORK( L ), WORK( N-1+L ),
      $                  Z( 1, L ), LDZ )
          END IF
 *
@@ -131333,8 +129347,7 @@
 *
          IF( M.EQ.L-1 ) THEN
             IF( ICOMPZ.GT.0 ) THEN
-               CALL DLAEV2( D( L-1 ), E( L-1 ), D( L ), RT1, RT2, C,
-     $                      S )
+               CALL DLAEV2( D( L-1 ), E( L-1 ), D( L ), RT1, RT2, C, S )
                WORK( M ) = C
                WORK( N-1+M ) = S
                CALL DLASR( 'R', 'V', 'F', N, 2, WORK( M ),
@@ -131393,8 +129406,7 @@
 *
          IF( ICOMPZ.GT.0 ) THEN
             MM = L - M + 1
-            CALL DLASR( 'R', 'V', 'F', N, MM, WORK( M ),
-     $                  WORK( N-1+M ),
+            CALL DLASR( 'R', 'V', 'F', N, MM, WORK( M ), WORK( N-1+M ),
      $                  Z( 1, M ), LDZ )
          END IF
 *
@@ -131420,14 +129432,12 @@
       IF( ISCALE.EQ.1 ) THEN
          CALL DLASCL( 'G', 0, 0, SSFMAX, ANORM, LENDSV-LSV+1, 1,
      $                D( LSV ), N, INFO )
-         CALL DLASCL( 'G', 0, 0, SSFMAX, ANORM, LENDSV-LSV, 1,
-     $                E( LSV ),
+         CALL DLASCL( 'G', 0, 0, SSFMAX, ANORM, LENDSV-LSV, 1, E( LSV ),
      $                N, INFO )
       ELSE IF( ISCALE.EQ.2 ) THEN
          CALL DLASCL( 'G', 0, 0, SSFMIN, ANORM, LENDSV-LSV+1, 1,
      $                D( LSV ), N, INFO )
-         CALL DLASCL( 'G', 0, 0, SSFMIN, ANORM, LENDSV-LSV, 1,
-     $                E( LSV ),
+         CALL DLASCL( 'G', 0, 0, SSFMIN, ANORM, LENDSV-LSV, 1, E( LSV ),
      $                N, INFO )
       END IF
 *
@@ -131671,15 +129681,13 @@
      $   GO TO 10
       IF( (ANORM.GT.SSFMAX) ) THEN
          ISCALE = 1
-         CALL DLASCL( 'G', 0, 0, ANORM, SSFMAX, LEND-L+1, 1, D( L ),
-     $                N,
+         CALL DLASCL( 'G', 0, 0, ANORM, SSFMAX, LEND-L+1, 1, D( L ), N,
      $                INFO )
          CALL DLASCL( 'G', 0, 0, ANORM, SSFMAX, LEND-L, 1, E( L ), N,
      $                INFO )
       ELSE IF( ANORM.LT.SSFMIN ) THEN
          ISCALE = 2
-         CALL DLASCL( 'G', 0, 0, ANORM, SSFMIN, LEND-L+1, 1, D( L ),
-     $                N,
+         CALL DLASCL( 'G', 0, 0, ANORM, SSFMIN, LEND-L+1, 1, D( L ), N,
      $                INFO )
          CALL DLASCL( 'G', 0, 0, ANORM, SSFMIN, LEND-L, 1, E( L ), N,
      $                INFO )
@@ -132412,8 +130420,7 @@
       IF( .NOT.WANTZ ) THEN
          CALL DSTERF( N, D, E, INFO )
       ELSE
-         CALL DSTEDC( 'I', N, D, E, Z, LDZ, WORK, LWORK, IWORK,
-     $                LIWORK,
+         CALL DSTEDC( 'I', N, D, E, Z, LDZ, WORK, LWORK, IWORK, LIWORK,
      $                INFO )
       END IF
 *
@@ -132730,8 +130737,7 @@
 *>       California at Berkeley, USA \n
 *>
 *  =====================================================================
-      SUBROUTINE DSTEVR( JOBZ, RANGE, N, D, E, VL, VU, IL, IU,
-     $                   ABSTOL,
+      SUBROUTINE DSTEVR( JOBZ, RANGE, N, D, E, VL, VU, IL, IU, ABSTOL,
      $                   M, W, Z, LDZ, ISUPPZ, WORK, LWORK, IWORK,
      $                   LIWORK, INFO )
 *
@@ -132772,8 +130778,7 @@
       EXTERNAL           LSAME, ILAENV, DLAMCH, DLANST
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DCOPY, DSCAL, DSTEBZ, DSTEMR, DSTEIN,
-     $                   DSTERF,
+      EXTERNAL           DCOPY, DSCAL, DSTEBZ, DSTEMR, DSTEIN, DSTERF,
      $                   DSWAP, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
@@ -132955,14 +130960,12 @@
          ORDER = 'E'
       END IF
 
-      CALL DSTEBZ( RANGE, ORDER, N, VLL, VUU, IL, IU, ABSTOL, D, E,
-     $             M,
+      CALL DSTEBZ( RANGE, ORDER, N, VLL, VUU, IL, IU, ABSTOL, D, E, M,
      $             NSPLIT, W, IWORK( INDIBL ), IWORK( INDISP ), WORK,
      $             IWORK( INDIWO ), INFO )
 *
       IF( WANTZ ) THEN
-         CALL DSTEIN( N, D, E, M, W, IWORK( INDIBL ),
-     $                IWORK( INDISP ),
+         CALL DSTEIN( N, D, E, M, W, IWORK( INDIBL ), IWORK( INDISP ),
      $                Z, LDZ, WORK, IWORK( INDIWO ), IWORK( INDIFL ),
      $                INFO )
       END IF
@@ -133239,8 +131242,7 @@
 *> \ingroup stevx
 *
 *  =====================================================================
-      SUBROUTINE DSTEVX( JOBZ, RANGE, N, D, E, VL, VU, IL, IU,
-     $                   ABSTOL,
+      SUBROUTINE DSTEVX( JOBZ, RANGE, N, D, E, VL, VU, IL, IU, ABSTOL,
      $                   M, W, Z, LDZ, WORK, IWORK, IFAIL, INFO )
 *
 *  -- LAPACK driver routine --
@@ -133277,8 +131279,7 @@
       EXTERNAL           LSAME, DLAMCH, DLANST
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DCOPY, DSCAL, DSTEBZ, DSTEIN, DSTEQR,
-     $                   DSTERF,
+      EXTERNAL           DCOPY, DSCAL, DSTEBZ, DSTEIN, DSTEQR, DSTERF,
      $                   DSWAP, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
@@ -133396,8 +131397,7 @@
          IF( .NOT.WANTZ ) THEN
             CALL DSTERF( N, W, WORK, INFO )
          ELSE
-            CALL DSTEQR( 'I', N, W, WORK, Z, LDZ, WORK( INDWRK ),
-     $                   INFO )
+            CALL DSTEQR( 'I', N, W, WORK, Z, LDZ, WORK( INDWRK ), INFO )
             IF( INFO.EQ.0 ) THEN
                DO 10 I = 1, N
                   IFAIL( I ) = 0
@@ -133421,8 +131421,7 @@
       INDWRK = 1
       INDISP = 1 + N
       INDIWO = INDISP + N
-      CALL DSTEBZ( RANGE, ORDER, N, VLL, VUU, IL, IU, ABSTOL, D, E,
-     $             M,
+      CALL DSTEBZ( RANGE, ORDER, N, VLL, VUU, IL, IU, ABSTOL, D, E, M,
      $             NSPLIT, W, IWORK( 1 ), IWORK( INDISP ),
      $             WORK( INDWRK ), IWORK( INDIWO ), INFO )
 *
@@ -134212,8 +132211,7 @@
 *>  Tech report version: http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.3.1679
 *>
 *  =====================================================================
-      SUBROUTINE DSYEQUB( UPLO, N, A, LDA, S, SCOND, AMAX, WORK,
-     $                    INFO )
+      SUBROUTINE DSYEQUB( UPLO, N, A, LDA, S, SCOND, AMAX, WORK, INFO )
 *
 *  -- LAPACK computational routine --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -134258,8 +132256,7 @@
 *     Test the input parameters.
 *
       INFO = 0
-      IF ( .NOT. ( LSAME( UPLO, 'U' ) .OR.
-     $     LSAME( UPLO, 'L' ) ) ) THEN
+      IF ( .NOT. ( LSAME( UPLO, 'U' ) .OR. LSAME( UPLO, 'L' ) ) ) THEN
          INFO = -1
       ELSE IF ( N .LT. 0 ) THEN
          INFO = -2
@@ -134580,8 +132577,7 @@
       EXTERNAL           LSAME, ILAENV, DLAMCH, DLANSY
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DLASCL, DORGTR, DSCAL, DSTEQR, DSTERF,
-     $                   DSYTRD,
+      EXTERNAL           DLASCL, DORGTR, DSCAL, DSTEQR, DSTERF, DSYTRD,
      $                   XERBLA
 *     ..
 *     .. Intrinsic Functions ..
@@ -134674,11 +132670,9 @@
       IF( .NOT.WANTZ ) THEN
          CALL DSTERF( N, W, WORK( INDE ), INFO )
       ELSE
-         CALL DORGTR( UPLO, N, A, LDA, WORK( INDTAU ),
-     $                WORK( INDWRK ),
+         CALL DORGTR( UPLO, N, A, LDA, WORK( INDTAU ), WORK( INDWRK ),
      $                LLWORK, IINFO )
-         CALL DSTEQR( JOBZ, N, W, WORK( INDE ), A, LDA,
-     $                WORK( INDTAU ),
+         CALL DSTEQR( JOBZ, N, W, WORK( INDE ), A, LDA, WORK( INDTAU ),
      $                INFO )
       END IF
 *
@@ -134800,7 +132794,8 @@
 *>
 *> \param[out] WORK
 *> \verbatim
-*>          WORK is DOUBLE PRECISION array, dimension (MAX(1,LWORK))
+*>          WORK is DOUBLE PRECISION array,
+*>                                         dimension (LWORK)
 *>          On exit, if INFO = 0, WORK(1) returns the optimal LWORK.
 *> \endverbatim
 *>
@@ -134876,8 +132871,7 @@
 
 *>
 *  =====================================================================
-      SUBROUTINE DSYEVD( JOBZ, UPLO, N, A, LDA, W, WORK, LWORK,
-     $                   IWORK,
+      SUBROUTINE DSYEVD( JOBZ, UPLO, N, A, LDA, W, WORK, LWORK, IWORK,
      $                   LIWORK, INFO )
 *
 *  -- LAPACK driver routine --
@@ -134914,8 +132908,7 @@
       EXTERNAL           LSAME, DLAMCH, DLANSY, ILAENV
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DLACPY, DLASCL, DORMTR, DSCAL, DSTEDC,
-     $                   DSTERF,
+      EXTERNAL           DLACPY, DLASCL, DORMTR, DSCAL, DSTEDC, DSTERF,
      $                   DSYTRD, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
@@ -134955,8 +132948,7 @@
                LWMIN = 2*N + 1
             END IF
             LOPT = MAX( LWMIN, 2*N +
-     $                  N*ILAENV( 1, 'DSYTRD', UPLO, N, -1, -1,
-     $                            -1 ) )
+     $                  N*ILAENV( 1, 'DSYTRD', UPLO, N, -1, -1, -1 ) )
             LIOPT = LIWMIN
          END IF
          WORK( 1 ) = LOPT
@@ -135092,16 +133084,9 @@
 *> \verbatim
 *>
 *> DSYEVR computes selected eigenvalues and, optionally, eigenvectors
-*> of a real symmetric matrix A. Eigenvalues and eigenvectors can be
-*> selected by specifying either a range of values or a range of indices
-*> for the desired eigenvalues. Invocations with different choices for
-*> these parameters may result in the computation of slightly different
-*> eigenvalues and/or eigenvectors for the same matrix. The reason for
-*> this behavior is that there exists a variety of algorithms (each
-*> performing best for a particular set of options) with DSYEVR
-*> attempting to select the best based on the various parameters. In all
-*> cases, the computed values are accurate within the limits of finite
-*> precision arithmetic.
+*> of a real symmetric matrix A.  Eigenvalues and eigenvectors can be
+*> selected by specifying either a range of values or a range of
+*> indices for the desired eigenvalues.
 *>
 *> DSYEVR first reduces the matrix A to tridiagonal form T with a call
 *> to DSYTRD.  Then, whenever possible, DSYEVR calls DSTEMR to compute
@@ -135165,9 +133150,6 @@
 *>          JOBZ is CHARACTER*1
 *>          = 'N':  Compute eigenvalues only;
 *>          = 'V':  Compute eigenvalues and eigenvectors.
-*>
-*>          This parameter influences the choice of the algorithm and
-*>          may alter the computed values.
 *> \endverbatim
 *>
 *> \param[in] RANGE
@@ -135179,9 +133161,6 @@
 *>          = 'I': the IL-th through IU-th eigenvalues will be found.
 *>          For RANGE = 'V' or 'I' and IU - IL < N - 1, DSTEBZ and
 *>          DSTEIN are called
-*>
-*>          This parameter influences the choice of the algorithm and
-*>          may alter the computed values.
 *> \endverbatim
 *>
 *> \param[in] UPLO
@@ -135337,8 +133316,7 @@
 *> \param[in] LWORK
 *> \verbatim
 *>          LWORK is INTEGER
-*>          The dimension of the array WORK.
-*>          If N <= 1, LWORK >= 1, else LWORK >= 26*N.
+*>          The dimension of the array WORK.  LWORK >= max(1,26*N).
 *>          For optimal efficiency, LWORK >= (NB+6)*N,
 *>          where NB is the max of the blocksize for DSYTRD and DORMTR
 *>          returned by ILAENV.
@@ -135352,14 +133330,13 @@
 *> \param[out] IWORK
 *> \verbatim
 *>          IWORK is INTEGER array, dimension (MAX(1,LIWORK))
-*>          On exit, if INFO = 0, IWORK(1) returns the optimal LIWORK.
+*>          On exit, if INFO = 0, IWORK(1) returns the optimal LWORK.
 *> \endverbatim
 *>
 *> \param[in] LIWORK
 *> \verbatim
 *>          LIWORK is INTEGER
-*>          The dimension of the array IWORK.
-*>          If N <= 1, LIWORK >= 1, else LIWORK >= 10*N.
+*>          The dimension of the array IWORK.  LIWORK >= max(1,10*N).
 *>
 *>          If LIWORK = -1, then a workspace query is assumed; the
 *>          routine only calculates the optimal size of the IWORK array,
@@ -135396,8 +133373,7 @@
 *>       California at Berkeley, USA \n
 *>
 *  =====================================================================
-      SUBROUTINE DSYEVR( JOBZ, RANGE, UPLO, N, A, LDA, VL, VU, IL,
-     $                   IU,
+      SUBROUTINE DSYEVR( JOBZ, RANGE, UPLO, N, A, LDA, VL, VU, IL, IU,
      $                   ABSTOL, M, W, Z, LDZ, ISUPPZ, WORK, LWORK,
      $                   IWORK, LIWORK, INFO )
 *
@@ -135439,8 +133415,7 @@
       EXTERNAL           LSAME, ILAENV, DLAMCH, DLANSY
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DCOPY, DORMTR, DSCAL, DSTEBZ, DSTEMR,
-     $                   DSTEIN,
+      EXTERNAL           DCOPY, DORMTR, DSCAL, DSTEBZ, DSTEMR, DSTEIN,
      $                   DSTERF, DSWAP, DSYTRD, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
@@ -135460,13 +133435,8 @@
 *
       LQUERY = ( ( LWORK.EQ.-1 ) .OR. ( LIWORK.EQ.-1 ) )
 *
-      IF( N.LE.1 ) THEN
-         LWMIN  = 1
-         LIWMIN = 1
-      ELSE
-         LWMIN  = 26*N
-         LIWMIN = 10*N
-      END IF
+      LWMIN = MAX( 1, 26*N )
+      LIWMIN = MAX( 1, 10*N )
 *
       INFO = 0
       IF( .NOT.( WANTZ .OR. LSAME( JOBZ, 'N' ) ) ) THEN
@@ -135525,7 +133495,7 @@
       END IF
 *
       IF( N.EQ.1 ) THEN
-         WORK( 1 ) = 1
+         WORK( 1 ) = 7
          IF( ALLEIG .OR. INDEIG ) THEN
             M = 1
             W( 1 ) = A( 1, 1 )
@@ -135700,8 +133670,7 @@
 *
          INDWKN = INDE
          LLWRKN = LWORK - INDWKN + 1
-         CALL DORMTR( 'L', UPLO, 'N', N, M, A, LDA, WORK( INDTAU ),
-     $                Z,
+         CALL DORMTR( 'L', UPLO, 'N', N, M, A, LDA, WORK( INDTAU ), Z,
      $                LDZ, WORK( INDWKN ), LLWRKN, IINFO )
       END IF
 *
@@ -136001,8 +133970,7 @@
 *> \ingroup heevx
 *
 *  =====================================================================
-      SUBROUTINE DSYEVX( JOBZ, RANGE, UPLO, N, A, LDA, VL, VU, IL,
-     $                   IU,
+      SUBROUTINE DSYEVX( JOBZ, RANGE, UPLO, N, A, LDA, VL, VU, IL, IU,
      $                   ABSTOL, M, W, Z, LDZ, WORK, LWORK, IWORK,
      $                   IFAIL, INFO )
 *
@@ -136044,8 +134012,7 @@
       EXTERNAL           LSAME, ILAENV, DLAMCH, DLANSY
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DCOPY, DLACPY, DORGTR, DORMTR, DSCAL,
-     $                   DSTEBZ,
+      EXTERNAL           DCOPY, DLACPY, DORGTR, DORMTR, DSCAL, DSTEBZ,
      $                   DSTEIN, DSTEQR, DSTERF, DSWAP, DSYTRD, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
@@ -136094,15 +134061,14 @@
       IF( INFO.EQ.0 ) THEN
          IF( N.LE.1 ) THEN
             LWKMIN = 1
-            LWKOPT = 1
+            WORK( 1 ) = LWKMIN
          ELSE
             LWKMIN = 8*N
             NB = ILAENV( 1, 'DSYTRD', UPLO, N, -1, -1, -1 )
-            NB = MAX( NB, ILAENV( 1, 'DORMTR', UPLO, N, -1, -1,
-     $                -1 ) )
+            NB = MAX( NB, ILAENV( 1, 'DORMTR', UPLO, N, -1, -1, -1 ) )
             LWKOPT = MAX( LWKMIN, ( NB + 3 )*N )
+            WORK( 1 ) = LWKOPT
          END IF
-         WORK( 1 ) = LWKOPT
 *
          IF( LWORK.LT.LWKMIN .AND. .NOT.LQUERY )
      $      INFO = -17
@@ -136251,8 +134217,7 @@
 *
          INDWKN = INDE
          LLWRKN = LWORK - INDWKN + 1
-         CALL DORMTR( 'L', UPLO, 'N', N, M, A, LDA, WORK( INDTAU ),
-     $                Z,
+         CALL DORMTR( 'L', UPLO, 'N', N, M, A, LDA, WORK( INDTAU ), Z,
      $                LDZ, WORK( INDWKN ), LLWRKN, IINFO )
       END IF
 *
@@ -136458,8 +134423,7 @@
       DOUBLE PRECISION   AKK, BKK, CT
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DAXPY, DSCAL, DSYR2, DTRMV, DTRSV,
-     $                   XERBLA
+      EXTERNAL           DAXPY, DSCAL, DSYR2, DTRMV, DTRSV, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MAX
@@ -136531,12 +134495,10 @@
                IF( K.LT.N ) THEN
                   CALL DSCAL( N-K, ONE / BKK, A( K+1, K ), 1 )
                   CT = -HALF*AKK
-                  CALL DAXPY( N-K, CT, B( K+1, K ), 1, A( K+1, K ),
-     $                        1 )
+                  CALL DAXPY( N-K, CT, B( K+1, K ), 1, A( K+1, K ), 1 )
                   CALL DSYR2( UPLO, N-K, -ONE, A( K+1, K ), 1,
      $                        B( K+1, K ), 1, A( K+1, K+1 ), LDA )
-                  CALL DAXPY( N-K, CT, B( K+1, K ), 1, A( K+1, K ),
-     $                        1 )
+                  CALL DAXPY( N-K, CT, B( K+1, K ), 1, A( K+1, K ), 1 )
                   CALL DTRSV( UPLO, 'No transpose', 'Non-unit', N-K,
      $                        B( K+1, K+1 ), LDB, A( K+1, K ), 1 )
                END IF
@@ -136557,8 +134519,7 @@
      $                     LDB, A( 1, K ), 1 )
                CT = HALF*AKK
                CALL DAXPY( K-1, CT, B( 1, K ), 1, A( 1, K ), 1 )
-               CALL DSYR2( UPLO, K-1, ONE, A( 1, K ), 1, B( 1, K ),
-     $                     1,
+               CALL DSYR2( UPLO, K-1, ONE, A( 1, K ), 1, B( 1, K ), 1,
      $                     A, LDA )
                CALL DAXPY( K-1, CT, B( 1, K ), 1, A( 1, K ), 1 )
                CALL DSCAL( K-1, BKK, A( 1, K ), 1 )
@@ -136574,8 +134535,7 @@
 *
                AKK = A( K, K )
                BKK = B( K, K )
-               CALL DTRMV( UPLO, 'Transpose', 'Non-unit', K-1, B,
-     $                     LDB,
+               CALL DTRMV( UPLO, 'Transpose', 'Non-unit', K-1, B, LDB,
      $                     A( K, 1 ), LDA )
                CT = HALF*AKK
                CALL DAXPY( K-1, CT, B( K, 1 ), LDB, A( K, 1 ), LDA )
@@ -136742,8 +134702,7 @@
       INTEGER            K, KB, NB
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DSYGS2, DSYMM, DSYR2K, DTRMM, DTRSM,
-     $                   XERBLA
+      EXTERNAL           DSYGS2, DSYMM, DSYR2K, DTRMM, DTRSM, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MAX, MIN
@@ -136806,15 +134765,13 @@
                   CALL DSYGS2( ITYPE, UPLO, KB, A( K, K ), LDA,
      $                         B( K, K ), LDB, INFO )
                   IF( K+KB.LE.N ) THEN
-                     CALL DTRSM( 'Left', UPLO, 'Transpose',
-     $                           'Non-unit',
+                     CALL DTRSM( 'Left', UPLO, 'Transpose', 'Non-unit',
      $                           KB, N-K-KB+1, ONE, B( K, K ), LDB,
      $                           A( K, K+KB ), LDA )
                      CALL DSYMM( 'Left', UPLO, KB, N-K-KB+1, -HALF,
      $                           A( K, K ), LDA, B( K, K+KB ), LDB, ONE,
      $                           A( K, K+KB ), LDA )
-                     CALL DSYR2K( UPLO, 'Transpose', N-K-KB+1, KB,
-     $                            -ONE,
+                     CALL DSYR2K( UPLO, 'Transpose', N-K-KB+1, KB, -ONE,
      $                            A( K, K+KB ), LDA, B( K, K+KB ), LDB,
      $                            ONE, A( K+KB, K+KB ), LDA )
                      CALL DSYMM( 'Left', UPLO, KB, N-K-KB+1, -HALF,
@@ -136838,8 +134795,7 @@
                   CALL DSYGS2( ITYPE, UPLO, KB, A( K, K ), LDA,
      $                         B( K, K ), LDB, INFO )
                   IF( K+KB.LE.N ) THEN
-                     CALL DTRSM( 'Right', UPLO, 'Transpose',
-     $                           'Non-unit',
+                     CALL DTRSM( 'Right', UPLO, 'Transpose', 'Non-unit',
      $                           N-K-KB+1, KB, ONE, B( K, K ), LDB,
      $                           A( K+KB, K ), LDA )
                      CALL DSYMM( 'Right', UPLO, N-K-KB+1, KB, -HALF,
@@ -136868,17 +134824,14 @@
 *
 *                 Update the upper triangle of A(1:k+kb-1,1:k+kb-1)
 *
-                  CALL DTRMM( 'Left', UPLO, 'No transpose',
-     $                        'Non-unit',
+                  CALL DTRMM( 'Left', UPLO, 'No transpose', 'Non-unit',
      $                        K-1, KB, ONE, B, LDB, A( 1, K ), LDA )
-                  CALL DSYMM( 'Right', UPLO, K-1, KB, HALF, A( K,
-     $                        K ),
+                  CALL DSYMM( 'Right', UPLO, K-1, KB, HALF, A( K, K ),
      $                        LDA, B( 1, K ), LDB, ONE, A( 1, K ), LDA )
                   CALL DSYR2K( UPLO, 'No transpose', K-1, KB, ONE,
      $                         A( 1, K ), LDA, B( 1, K ), LDB, ONE, A,
      $                         LDA )
-                  CALL DSYMM( 'Right', UPLO, K-1, KB, HALF, A( K,
-     $                        K ),
+                  CALL DSYMM( 'Right', UPLO, K-1, KB, HALF, A( K, K ),
      $                        LDA, B( 1, K ), LDB, ONE, A( 1, K ), LDA )
                   CALL DTRMM( 'Right', UPLO, 'Transpose', 'Non-unit',
      $                        K-1, KB, ONE, B( K, K ), LDB, A( 1, K ),
@@ -136895,8 +134848,7 @@
 *
 *                 Update the lower triangle of A(1:k+kb-1,1:k+kb-1)
 *
-                  CALL DTRMM( 'Right', UPLO, 'No transpose',
-     $                        'Non-unit',
+                  CALL DTRMM( 'Right', UPLO, 'No transpose', 'Non-unit',
      $                        KB, K-1, ONE, B, LDB, A( K, 1 ), LDA )
                   CALL DSYMM( 'Left', UPLO, KB, K-1, HALF, A( K, K ),
      $                        LDA, B( K, 1 ), LDB, ONE, A( K, 1 ), LDA )
@@ -136905,8 +134857,7 @@
      $                         LDA )
                   CALL DSYMM( 'Left', UPLO, KB, K-1, HALF, A( K, K ),
      $                        LDA, B( K, 1 ), LDB, ONE, A( K, 1 ), LDA )
-                  CALL DTRMM( 'Left', UPLO, 'Transpose', 'Non-unit',
-     $                        KB,
+                  CALL DTRMM( 'Left', UPLO, 'Transpose', 'Non-unit', KB,
      $                        K-1, ONE, B( K, K ), LDB, A( K, 1 ), LDA )
                   CALL DSYGS2( ITYPE, UPLO, KB, A( K, K ), LDA,
      $                         B( K, K ), LDB, INFO )
@@ -137091,8 +135042,7 @@
 *> \ingroup hegv
 *
 *  =====================================================================
-      SUBROUTINE DSYGV( ITYPE, JOBZ, UPLO, N, A, LDA, B, LDB, W,
-     $                  WORK,
+      SUBROUTINE DSYGV( ITYPE, JOBZ, UPLO, N, A, LDA, B, LDB, W, WORK,
      $                  LWORK, INFO )
 *
 *  -- LAPACK driver routine --
@@ -137124,8 +135074,7 @@
       EXTERNAL           LSAME, ILAENV
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DPOTRF, DSYEV, DSYGST, DTRMM, DTRSM,
-     $                   XERBLA
+      EXTERNAL           DPOTRF, DSYEV, DSYGST, DTRMM, DTRSM, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MAX
@@ -137207,8 +135156,7 @@
                TRANS = 'T'
             END IF
 *
-            CALL DTRSM( 'Left', UPLO, TRANS, 'Non-unit', N, NEIG,
-     $                  ONE,
+            CALL DTRSM( 'Left', UPLO, TRANS, 'Non-unit', N, NEIG, ONE,
      $                  B, LDB, A, LDA )
 *
          ELSE IF( ITYPE.EQ.3 ) THEN
@@ -137222,8 +135170,7 @@
                TRANS = 'N'
             END IF
 *
-            CALL DTRMM( 'Left', UPLO, TRANS, 'Non-unit', N, NEIG,
-     $                  ONE,
+            CALL DTRMM( 'Left', UPLO, TRANS, 'Non-unit', N, NEIG, ONE,
      $                  B, LDB, A, LDA )
          END IF
       END IF
@@ -137452,8 +135399,7 @@
 *>     Mark Fahey, Department of Mathematics, Univ. of Kentucky, USA
 *>
 *  =====================================================================
-      SUBROUTINE DSYGVD( ITYPE, JOBZ, UPLO, N, A, LDA, B, LDB, W,
-     $                   WORK,
+      SUBROUTINE DSYGVD( ITYPE, JOBZ, UPLO, N, A, LDA, B, LDB, W, WORK,
      $                   LWORK, IWORK, LIWORK, INFO )
 *
 *  -- LAPACK driver routine --
@@ -137485,8 +135431,7 @@
       EXTERNAL           LSAME
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DPOTRF, DSYEVD, DSYGST, DTRMM, DTRSM,
-     $                   XERBLA
+      EXTERNAL           DPOTRF, DSYEVD, DSYGST, DTRMM, DTRSM, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          DBLE, MAX
@@ -137560,8 +135505,7 @@
 *     Transform problem to standard eigenvalue problem and solve.
 *
       CALL DSYGST( ITYPE, UPLO, N, A, LDA, B, LDB, INFO )
-      CALL DSYEVD( JOBZ, UPLO, N, A, LDA, W, WORK, LWORK, IWORK,
-     $             LIWORK,
+      CALL DSYEVD( JOBZ, UPLO, N, A, LDA, W, WORK, LWORK, IWORK, LIWORK,
      $             INFO )
       LOPT = INT( MAX( DBLE( LOPT ), DBLE( WORK( 1 ) ) ) )
       LIOPT = INT( MAX( DBLE( LIOPT ), DBLE( IWORK( 1 ) ) ) )
@@ -137937,8 +135881,7 @@
       EXTERNAL           LSAME, ILAENV
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DPOTRF, DSYEVX, DSYGST, DTRMM, DTRSM,
-     $                   XERBLA
+      EXTERNAL           DPOTRF, DSYEVX, DSYGST, DTRMM, DTRSM, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MAX, MIN
@@ -138023,8 +135966,7 @@
 *     Transform problem to standard eigenvalue problem and solve.
 *
       CALL DSYGST( ITYPE, UPLO, N, A, LDA, B, LDB, INFO )
-      CALL DSYEVX( JOBZ, RANGE, UPLO, N, A, LDA, VL, VU, IL, IU,
-     $             ABSTOL,
+      CALL DSYEVX( JOBZ, RANGE, UPLO, N, A, LDA, VL, VU, IL, IU, ABSTOL,
      $             M, W, Z, LDZ, WORK, LWORK, IWORK, IFAIL, INFO )
 *
       IF( WANTZ ) THEN
@@ -138044,8 +135986,7 @@
                TRANS = 'T'
             END IF
 *
-            CALL DTRSM( 'Left', UPLO, TRANS, 'Non-unit', N, M, ONE,
-     $                  B,
+            CALL DTRSM( 'Left', UPLO, TRANS, 'Non-unit', N, M, ONE, B,
      $                  LDB, Z, LDZ )
 *
          ELSE IF( ITYPE.EQ.3 ) THEN
@@ -138059,8 +136000,7 @@
                TRANS = 'N'
             END IF
 *
-            CALL DTRMM( 'Left', UPLO, TRANS, 'Non-unit', N, M, ONE,
-     $                  B,
+            CALL DTRMM( 'Left', UPLO, TRANS, 'Non-unit', N, M, ONE, B,
      $                  LDB, Z, LDZ )
          END IF
       END IF
@@ -138262,8 +136202,7 @@
 *> \ingroup herfs
 *
 *  =====================================================================
-      SUBROUTINE DSYRFS( UPLO, N, NRHS, A, LDA, AF, LDAF, IPIV, B,
-     $                   LDB,
+      SUBROUTINE DSYRFS( UPLO, N, NRHS, A, LDA, AF, LDAF, IPIV, B, LDB,
      $                   X, LDX, FERR, BERR, WORK, IWORK, INFO )
 *
 *  -- LAPACK computational routine --
@@ -138303,8 +136242,7 @@
       INTEGER            ISAVE( 3 )
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DAXPY, DCOPY, DLACN2, DSYMV, DSYTRS,
-     $                   XERBLA
+      EXTERNAL           DAXPY, DCOPY, DLACN2, DSYMV, DSYTRS, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          ABS, MAX
@@ -138473,16 +136411,14 @@
 *
          KASE = 0
   100    CONTINUE
-         CALL DLACN2( N, WORK( 2*N+1 ), WORK( N+1 ), IWORK,
-     $                FERR( J ),
+         CALL DLACN2( N, WORK( 2*N+1 ), WORK( N+1 ), IWORK, FERR( J ),
      $                KASE, ISAVE )
          IF( KASE.NE.0 ) THEN
             IF( KASE.EQ.1 ) THEN
 *
 *              Multiply by diag(W)*inv(A**T).
 *
-               CALL DSYTRS( UPLO, N, 1, AF, LDAF, IPIV, WORK( N+1 ),
-     $                      N,
+               CALL DSYTRS( UPLO, N, 1, AF, LDAF, IPIV, WORK( N+1 ), N,
      $                      INFO )
                DO 110 I = 1, N
                   WORK( N+I ) = WORK( I )*WORK( N+I )
@@ -138494,8 +136430,7 @@
                DO 120 I = 1, N
                   WORK( N+I ) = WORK( I )*WORK( N+I )
   120          CONTINUE
-               CALL DSYTRS( UPLO, N, 1, AF, LDAF, IPIV, WORK( N+1 ),
-     $                      N,
+               CALL DSYTRS( UPLO, N, 1, AF, LDAF, IPIV, WORK( N+1 ), N,
      $                      INFO )
             END IF
             GO TO 100
@@ -138723,8 +136658,7 @@
 *
       INFO = 0
       LQUERY = ( LWORK.EQ.-1 )
-      IF( .NOT.LSAME( UPLO, 'U' ) .AND.
-     $    .NOT.LSAME( UPLO, 'L' ) ) THEN
+      IF( .NOT.LSAME( UPLO, 'U' ) .AND. .NOT.LSAME( UPLO, 'L' ) ) THEN
          INFO = -1
       ELSE IF( N.LT.0 ) THEN
          INFO = -2
@@ -139065,8 +136999,7 @@
 *> \ingroup hesvx
 *
 *  =====================================================================
-      SUBROUTINE DSYSVX( FACT, UPLO, N, NRHS, A, LDA, AF, LDAF, IPIV,
-     $                   B,
+      SUBROUTINE DSYSVX( FACT, UPLO, N, NRHS, A, LDA, AF, LDAF, IPIV, B,
      $                   LDB, X, LDX, RCOND, FERR, BERR, WORK, LWORK,
      $                   IWORK, INFO )
 *
@@ -139093,7 +137026,7 @@
 *     ..
 *     .. Local Scalars ..
       LOGICAL            LQUERY, NOFACT
-      INTEGER            LWKMIN, LWKOPT, NB
+      INTEGER            LWKOPT, NB
       DOUBLE PRECISION   ANORM
 *     ..
 *     .. External Functions ..
@@ -139103,8 +137036,7 @@
       EXTERNAL           LSAME, ILAENV, DLAMCH, DLANSY
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DLACPY, DSYCON, DSYRFS, DSYTRF, DSYTRS,
-     $                   XERBLA
+      EXTERNAL           DLACPY, DSYCON, DSYRFS, DSYTRF, DSYTRS, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MAX
@@ -139116,11 +137048,9 @@
       INFO = 0
       NOFACT = LSAME( FACT, 'N' )
       LQUERY = ( LWORK.EQ.-1 )
-      LWKMIN = MAX( 1, 3*N )
       IF( .NOT.NOFACT .AND. .NOT.LSAME( FACT, 'F' ) ) THEN
          INFO = -1
-      ELSE IF( .NOT.LSAME( UPLO, 'U' ) .AND.
-     $         .NOT.LSAME( UPLO, 'L' ) )
+      ELSE IF( .NOT.LSAME( UPLO, 'U' ) .AND. .NOT.LSAME( UPLO, 'L' ) )
      $          THEN
          INFO = -2
       ELSE IF( N.LT.0 ) THEN
@@ -139135,12 +137065,12 @@
          INFO = -11
       ELSE IF( LDX.LT.MAX( 1, N ) ) THEN
          INFO = -13
-      ELSE IF( LWORK.LT.LWKMIN .AND. .NOT.LQUERY ) THEN
+      ELSE IF( LWORK.LT.MAX( 1, 3*N ) .AND. .NOT.LQUERY ) THEN
          INFO = -18
       END IF
 *
       IF( INFO.EQ.0 ) THEN
-         LWKOPT = LWKMIN
+         LWKOPT = MAX( 1, 3*N )
          IF( NOFACT ) THEN
             NB = ILAENV( 1, 'DSYTRF', UPLO, N, -1, -1, -1 )
             LWKOPT = MAX( LWKOPT, N*NB )
@@ -139176,8 +137106,7 @@
 *
 *     Compute the reciprocal of the condition number of A.
 *
-      CALL DSYCON( UPLO, N, AF, LDAF, IPIV, ANORM, RCOND, WORK,
-     $             IWORK,
+      CALL DSYCON( UPLO, N, AF, LDAF, IPIV, ANORM, RCOND, WORK, IWORK,
      $             INFO )
 *
 *     Compute the solution vectors X.
@@ -139627,8 +137556,7 @@
 *
 *              Compute  x := tau * A * v  storing x in TAU(1:i)
 *
-               CALL DSYMV( UPLO, I, TAUI, A, LDA, A( 1, I+1 ), 1,
-     $                     ZERO,
+               CALL DSYMV( UPLO, I, TAUI, A, LDA, A( 1, I+1 ), 1, ZERO,
      $                     TAU, 1 )
 *
 *              Compute  w := x - 1/2 * tau * (x**T * v) * v
@@ -139674,16 +137602,14 @@
 *
 *              Compute  w := x - 1/2 * tau * (x**T * v) * v
 *
-               ALPHA = -HALF*TAUI*DDOT( N-I, TAU( I ), 1, A( I+1,
-     $                                  I ),
+               ALPHA = -HALF*TAUI*DDOT( N-I, TAU( I ), 1, A( I+1, I ),
      $                 1 )
                CALL DAXPY( N-I, ALPHA, A( I+1, I ), 1, TAU( I ), 1 )
 *
 *              Apply the transformation as a rank-2 update:
 *                 A := A - v * w**T - w * v**T
 *
-               CALL DSYR2( UPLO, N-I, -ONE, A( I+1, I ), 1, TAU( I ),
-     $                     1,
+               CALL DSYR2( UPLO, N-I, -ONE, A( I+1, I ), 1, TAU( I ), 1,
      $                     A( I+1, I+1 ), LDA )
 *
                A( I+1, I ) = E( I )
@@ -139985,8 +137911,7 @@
             COLMAX = ZERO
          END IF
 *
-         IF( (MAX( ABSAKK, COLMAX ).EQ.ZERO) .OR.
-     $       DISNAN(ABSAKK) ) THEN
+         IF( (MAX( ABSAKK, COLMAX ).EQ.ZERO) .OR. DISNAN(ABSAKK) ) THEN
 *
 *           Column K is zero or underflow, or contains a NaN:
 *           set INFO and continue
@@ -140156,8 +138081,7 @@
             COLMAX = ZERO
          END IF
 *
-         IF( (MAX( ABSAKK, COLMAX ).EQ.ZERO) .OR.
-     $       DISNAN(ABSAKK) ) THEN
+         IF( (MAX( ABSAKK, COLMAX ).EQ.ZERO) .OR. DISNAN(ABSAKK) ) THEN
 *
 *           Column K is zero or underflow, or contains a NaN:
 *           set INFO and continue
@@ -140179,8 +138103,7 @@
                JMAX = K - 1 + IDAMAX( IMAX-K, A( IMAX, K ), LDA )
                ROWMAX = ABS( A( IMAX, JMAX ) )
                IF( IMAX.LT.N ) THEN
-                  JMAX = IMAX + IDAMAX( N-IMAX, A( IMAX+1, IMAX ),
-     $                                  1 )
+                  JMAX = IMAX + IDAMAX( N-IMAX, A( IMAX+1, IMAX ), 1 )
                   ROWMAX = MAX( ROWMAX, ABS( A( JMAX, IMAX ) ) )
                END IF
 *
@@ -140212,8 +138135,7 @@
 *              submatrix A(k:n,k:n)
 *
                IF( KP.LT.N )
-     $            CALL DSWAP( N-KP, A( KP+1, KK ), 1, A( KP+1, KP ),
-     $                        1 )
+     $            CALL DSWAP( N-KP, A( KP+1, KK ), 1, A( KP+1, KP ), 1 )
                CALL DSWAP( KP-KK-1, A( KK+1, KK ), 1, A( KP, KK+1 ),
      $                     LDA )
                T = A( KK, KK )
@@ -140500,8 +138422,7 @@
 *> \endverbatim
 *>
 *  =====================================================================
-      SUBROUTINE DSYTRD( UPLO, N, A, LDA, D, E, TAU, WORK, LWORK,
-     $                   INFO )
+      SUBROUTINE DSYTRD( UPLO, N, A, LDA, D, E, TAU, WORK, LWORK, INFO )
 *
 *  -- LAPACK computational routine --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -140560,7 +138481,7 @@
 *        Determine the block size.
 *
          NB = ILAENV( 1, 'DSYTRD', UPLO, N, -1, -1, -1 )
-         LWKOPT = MAX( 1, N*NB )
+         LWKOPT = N*NB
          WORK( 1 ) = LWKOPT
       END IF
 *
@@ -140628,8 +138549,7 @@
 *           Update the unreduced submatrix A(1:i-1,1:i-1), using an
 *           update of the form:  A := A - V*W**T - W*V**T
 *
-            CALL DSYR2K( UPLO, 'No transpose', I-1, NB, -ONE, A( 1,
-     $                   I ),
+            CALL DSYR2K( UPLO, 'No transpose', I-1, NB, -ONE, A( 1, I ),
      $                   LDA, WORK, LDWORK, ONE, A, LDA )
 *
 *           Copy superdiagonal elements back into A, and diagonal
@@ -140794,7 +138714,7 @@
 *> \param[in] LWORK
 *> \verbatim
 *>          LWORK is INTEGER
-*>          The length of WORK.  LWORK >= 1.  For best performance
+*>          The length of WORK.  LWORK >=1.  For best performance
 *>          LWORK >= N*NB, where NB is the block size returned by ILAENV.
 *>
 *>          If LWORK = -1, then a workspace query is assumed; the routine
@@ -140936,8 +138856,7 @@
          IWS = LDWORK*NB
          IF( LWORK.LT.IWS ) THEN
             NB = MAX( LWORK / LDWORK, 1 )
-            NBMIN = MAX( 2, ILAENV( 2, 'DSYTRF', UPLO, N, -1, -1,
-     $                   -1 ) )
+            NBMIN = MAX( 2, ILAENV( 2, 'DSYTRF', UPLO, N, -1, -1, -1 ) )
          END IF
       ELSE
          IWS = 1
@@ -141007,15 +138926,13 @@
 *           Factorize columns k:k+kb-1 of A and use blocked code to
 *           update columns k+kb:n
 *
-            CALL DLASYF( UPLO, N-K+1, NB, KB, A( K, K ), LDA,
-     $                   IPIV( K ),
+            CALL DLASYF( UPLO, N-K+1, NB, KB, A( K, K ), LDA, IPIV( K ),
      $                   WORK, LDWORK, IINFO )
          ELSE
 *
 *           Use unblocked code to factorize columns k:n of A
 *
-            CALL DSYTF2( UPLO, N-K+1, A( K, K ), LDA, IPIV( K ),
-     $                   IINFO )
+            CALL DSYTF2( UPLO, N-K+1, A( K, K ), LDA, IPIV( K ), IINFO )
             KB = N - K + 1
          END IF
 *
@@ -141042,7 +138959,6 @@
       END IF
 *
    40 CONTINUE
-*
       WORK( 1 ) = LWKOPT
       RETURN
 *
@@ -141299,8 +139215,7 @@
                A( K, K ) = A( K, K ) - DDOT( K-1, WORK, 1, A( 1, K ),
      $                     1 )
                A( K, K+1 ) = A( K, K+1 ) -
-     $                       DDOT( K-1, A( 1, K ), 1, A( 1, K+1 ),
-     $                             1 )
+     $                       DDOT( K-1, A( 1, K ), 1, A( 1, K+1 ), 1 )
                CALL DCOPY( K-1, A( 1, K+1 ), 1, WORK, 1 )
                CALL DSYMV( UPLO, K-1, -ONE, A, LDA, WORK, 1, ZERO,
      $                     A( 1, K+1 ), 1 )
@@ -141359,11 +139274,9 @@
 *
             IF( K.LT.N ) THEN
                CALL DCOPY( N-K, A( K+1, K ), 1, WORK, 1 )
-               CALL DSYMV( UPLO, N-K, -ONE, A( K+1, K+1 ), LDA, WORK,
-     $                     1,
+               CALL DSYMV( UPLO, N-K, -ONE, A( K+1, K+1 ), LDA, WORK, 1,
      $                     ZERO, A( K+1, K ), 1 )
-               A( K, K ) = A( K, K ) - DDOT( N-K, WORK, 1, A( K+1,
-     $            K ),
+               A( K, K ) = A( K, K ) - DDOT( N-K, WORK, 1, A( K+1, K ),
      $                     1 )
             END IF
             KSTEP = 1
@@ -141386,19 +139299,15 @@
 *
             IF( K.LT.N ) THEN
                CALL DCOPY( N-K, A( K+1, K ), 1, WORK, 1 )
-               CALL DSYMV( UPLO, N-K, -ONE, A( K+1, K+1 ), LDA, WORK,
-     $                     1,
+               CALL DSYMV( UPLO, N-K, -ONE, A( K+1, K+1 ), LDA, WORK, 1,
      $                     ZERO, A( K+1, K ), 1 )
-               A( K, K ) = A( K, K ) - DDOT( N-K, WORK, 1, A( K+1,
-     $            K ),
+               A( K, K ) = A( K, K ) - DDOT( N-K, WORK, 1, A( K+1, K ),
      $                     1 )
                A( K, K-1 ) = A( K, K-1 ) -
-     $                       DDOT( N-K, A( K+1, K ), 1, A( K+1,
-     $                             K-1 ),
+     $                       DDOT( N-K, A( K+1, K ), 1, A( K+1, K-1 ),
      $                       1 )
                CALL DCOPY( N-K, A( K+1, K-1 ), 1, WORK, 1 )
-               CALL DSYMV( UPLO, N-K, -ONE, A( K+1, K+1 ), LDA, WORK,
-     $                     1,
+               CALL DSYMV( UPLO, N-K, -ONE, A( K+1, K+1 ), LDA, WORK, 1,
      $                     ZERO, A( K+1, K-1 ), 1 )
                A( K-1, K-1 ) = A( K-1, K-1 ) -
      $                         DDOT( N-K, WORK, 1, A( K+1, K-1 ), 1 )
@@ -141525,16 +139434,16 @@
 *>
 *> \param[out] WORK
 *> \verbatim
-*>          WORK is DOUBLE PRECISION array, dimension (MAX(1,LWORK))
+*>          WORK is DOUBLE PRECISION array, dimension (N+NB+1)*(NB+3)
 *> \endverbatim
 *>
 *> \param[in] LWORK
 *> \verbatim
 *>          LWORK is INTEGER
 *>          The dimension of the array WORK.
-*>          If N = 0, LWORK >= 1, else LWORK >= (N+NB+1)*(NB+3).
+*>          WORK is size >= (N+NB+1)*(NB+3)
 *>          If LWORK = -1, then a workspace query is assumed; the routine
-*>          calculates:
+*>           calculates:
 *>              - the optimal size of the WORK array, returns
 *>          this value as the first entry of the WORK array,
 *>              - and no error message related to LWORK is issued by XERBLA.
@@ -141596,13 +139505,9 @@
       INFO = 0
       UPPER = LSAME( UPLO, 'U' )
       LQUERY = ( LWORK.EQ.-1 )
-*
 *     Get blocksize
-*
       NBMAX = ILAENV( 1, 'DSYTRI2', UPLO, N, -1, -1, -1 )
-      IF( N.EQ.0 ) THEN
-         MINSIZE = 1
-      ELSE IF( NBMAX.GE.N ) THEN
+      IF ( NBMAX .GE. N ) THEN
          MINSIZE = N
       ELSE
          MINSIZE = (N+NBMAX+1)*(NBMAX+3)
@@ -141614,29 +139519,28 @@
          INFO = -2
       ELSE IF( LDA.LT.MAX( 1, N ) ) THEN
          INFO = -4
-      ELSE IF( LWORK.LT.MINSIZE .AND. .NOT.LQUERY ) THEN
+      ELSE IF (LWORK .LT. MINSIZE .AND. .NOT.LQUERY ) THEN
          INFO = -7
       END IF
+*
+*     Quick return if possible
+*
 *
       IF( INFO.NE.0 ) THEN
          CALL XERBLA( 'DSYTRI2', -INFO )
          RETURN
       ELSE IF( LQUERY ) THEN
-         WORK( 1 ) = MINSIZE
+         WORK(1)=MINSIZE
          RETURN
       END IF
-*
-*     Quick return if possible
-*
       IF( N.EQ.0 )
      $   RETURN
 
-      IF( NBMAX.GE.N ) THEN
+      IF( NBMAX .GE. N ) THEN
          CALL DSYTRI( UPLO, N, A, LDA, IPIV, WORK, INFO )
       ELSE
          CALL DSYTRI2X( UPLO, N, A, LDA, IPIV, WORK, NBMAX, INFO )
       END IF
-*
       RETURN
 *
 *     End of DSYTRI2
@@ -142026,10 +139930,8 @@
             DO WHILE ( I .LE. N )
                IF( IPIV(I) .GT. 0 ) THEN
                   IP=IPIV(I)
-                 IF (I .LT. IP) CALL DSYSWAPR( UPLO, N, A, LDA, I ,
-     $                IP )
-                 IF (I .GT. IP) CALL DSYSWAPR( UPLO, N, A, LDA, IP ,
-     $                I )
+                 IF (I .LT. IP) CALL DSYSWAPR( UPLO, N, A, LDA, I ,IP )
+                 IF (I .GT. IP) CALL DSYSWAPR( UPLO, N, A, LDA, IP ,I )
                ELSE
                  IP=-IPIV(I)
                  I=I+1
@@ -142214,16 +140116,12 @@
             DO WHILE ( I .GE. 1 )
                IF( IPIV(I) .GT. 0 ) THEN
                   IP=IPIV(I)
-                 IF (I .LT. IP) CALL DSYSWAPR( UPLO, N, A, LDA, I ,
-     $                IP  )
-                 IF (I .GT. IP) CALL DSYSWAPR( UPLO, N, A, LDA, IP ,
-     $                I )
+                 IF (I .LT. IP) CALL DSYSWAPR( UPLO, N, A, LDA, I ,IP  )
+                 IF (I .GT. IP) CALL DSYSWAPR( UPLO, N, A, LDA, IP ,I )
                ELSE
                  IP=-IPIV(I)
-                 IF ( I .LT. IP) CALL DSYSWAPR( UPLO, N, A, LDA, I ,
-     $                IP )
-                 IF ( I .GT. IP) CALL DSYSWAPR( UPLO, N, A, LDA, IP,
-     $                I )
+                 IF ( I .LT. IP) CALL DSYSWAPR( UPLO, N, A, LDA, I ,IP )
+                 IF ( I .GT. IP) CALL DSYSWAPR( UPLO, N, A, LDA, IP, I )
                  I=I-1
                ENDIF
                I=I-1
@@ -142508,8 +140406,7 @@
 *           Multiply by inv(U**T(K)), where U(K) is the transformation
 *           stored in column K of A.
 *
-            CALL DGEMV( 'Transpose', K-1, NRHS, -ONE, B, LDB, A( 1,
-     $                  K ),
+            CALL DGEMV( 'Transpose', K-1, NRHS, -ONE, B, LDB, A( 1, K ),
      $                  1, ONE, B( K, 1 ), LDB )
 *
 *           Interchange rows K and IPIV(K).
@@ -142525,8 +140422,7 @@
 *           Multiply by inv(U**T(K+1)), where U(K+1) is the transformation
 *           stored in columns K and K+1 of A.
 *
-            CALL DGEMV( 'Transpose', K-1, NRHS, -ONE, B, LDB, A( 1,
-     $                  K ),
+            CALL DGEMV( 'Transpose', K-1, NRHS, -ONE, B, LDB, A( 1, K ),
      $                  1, ONE, B( K, 1 ), LDB )
             CALL DGEMV( 'Transpose', K-1, NRHS, -ONE, B, LDB,
      $                  A( 1, K+1 ), 1, ONE, B( K+1, 1 ), LDB )
@@ -142594,8 +140490,7 @@
 *           stored in columns K and K+1 of A.
 *
             IF( K.LT.N-1 ) THEN
-               CALL DGER( N-K-1, NRHS, -ONE, A( K+2, K ), 1, B( K,
-     $                    1 ),
+               CALL DGER( N-K-1, NRHS, -ONE, A( K+2, K ), 1, B( K, 1 ),
      $                    LDB, B( K+2, 1 ), LDB )
                CALL DGER( N-K-1, NRHS, -ONE, A( K+2, K+1 ), 1,
      $                    B( K+1, 1 ), LDB, B( K+2, 1 ), LDB )
@@ -142842,8 +140737,7 @@
       EXTERNAL           LSAME
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DSCAL, DSYCONV, DSWAP, DTRSM,
-     $                   XERBLA
+      EXTERNAL           DSCAL, DSYCONV, DSWAP, DTRSM, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MAX
@@ -143180,8 +141074,7 @@
 *> \ingroup tbcon
 *
 *  =====================================================================
-      SUBROUTINE DTBCON( NORM, UPLO, DIAG, N, KD, AB, LDAB, RCOND,
-     $                   WORK,
+      SUBROUTINE DTBCON( NORM, UPLO, DIAG, N, KD, AB, LDAB, RCOND, WORK,
      $                   IWORK, INFO )
 *
 *  -- LAPACK computational routine --
@@ -143281,22 +141174,19 @@
          END IF
          KASE = 0
    10    CONTINUE
-         CALL DLACN2( N, WORK( N+1 ), WORK, IWORK, AINVNM, KASE,
-     $                ISAVE )
+         CALL DLACN2( N, WORK( N+1 ), WORK, IWORK, AINVNM, KASE, ISAVE )
          IF( KASE.NE.0 ) THEN
             IF( KASE.EQ.KASE1 ) THEN
 *
 *              Multiply by inv(A).
 *
-               CALL DLATBS( UPLO, 'No transpose', DIAG, NORMIN, N,
-     $                      KD,
+               CALL DLATBS( UPLO, 'No transpose', DIAG, NORMIN, N, KD,
      $                      AB, LDAB, WORK, SCALE, WORK( 2*N+1 ), INFO )
             ELSE
 *
 *              Multiply by inv(A**T).
 *
-               CALL DLATBS( UPLO, 'Transpose', DIAG, NORMIN, N, KD,
-     $                      AB,
+               CALL DLATBS( UPLO, 'Transpose', DIAG, NORMIN, N, KD, AB,
      $                      LDAB, WORK, SCALE, WORK( 2*N+1 ), INFO )
             END IF
             NORMIN = 'Y'
@@ -143545,8 +141435,7 @@
       INTEGER            ISAVE( 3 )
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DAXPY, DCOPY, DLACN2, DTBMV, DTBSV,
-     $                   XERBLA
+      EXTERNAL           DAXPY, DCOPY, DLACN2, DTBMV, DTBSV, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          ABS, MAX, MIN
@@ -143767,8 +141656,7 @@
 *
          KASE = 0
   210    CONTINUE
-         CALL DLACN2( N, WORK( 2*N+1 ), WORK( N+1 ), IWORK,
-     $                FERR( J ),
+         CALL DLACN2( N, WORK( 2*N+1 ), WORK( N+1 ), IWORK, FERR( J ),
      $                KASE, ISAVE )
          IF( KASE.NE.0 ) THEN
             IF( KASE.EQ.1 ) THEN
@@ -143850,14 +141738,8 @@
 *>
 *>    A * X = B  or  A**T * X = B,
 *>
-*> where A is a triangular band matrix of order N, and B is an N-by-NRHS matrix.
-*>
-*> This subroutine verifies that A is nonsingular, but callers should note that only exact
-*> singularity is detected. It is conceivable for one or more diagonal elements of A to be
-*> subnormally tiny numbers without this subroutine signalling an error.
-*>
-*> If a possible loss of numerical precision due to near-singular matrices is a concern, the
-*> caller should verify that A is nonsingular within some tolerance before calling this subroutine.
+*> where A is a triangular band matrix of order N, and B is an
+*> N-by NRHS matrix.  A check is made to verify that A is nonsingular.
 *> \endverbatim
 *
 *  Arguments:
@@ -143942,7 +141824,7 @@
 *>          INFO is INTEGER
 *>          = 0:  successful exit
 *>          < 0:  if INFO = -i, the i-th argument had an illegal value
-*>          > 0:  if INFO = i, the i-th diagonal element of A is exactly zero,
+*>          > 0:  if INFO = i, the i-th diagonal element of A is zero,
 *>                indicating that the matrix is singular and the
 *>                solutions X have not been computed.
 *> \endverbatim
@@ -144003,8 +141885,7 @@
       IF( .NOT.UPPER .AND. .NOT.LSAME( UPLO, 'L' ) ) THEN
          INFO = -1
       ELSE IF( .NOT.LSAME( TRANS, 'N' ) .AND. .NOT.
-     $         LSAME( TRANS, 'T' ) .AND.
-     $                .NOT.LSAME( TRANS, 'C' ) ) THEN
+     $         LSAME( TRANS, 'T' ) .AND. .NOT.LSAME( TRANS, 'C' ) ) THEN
          INFO = -2
       ELSE IF( .NOT.NOUNIT .AND. .NOT.LSAME( DIAG, 'U' ) ) THEN
          INFO = -3
@@ -144049,8 +141930,7 @@
 *     Solve A * X = B  or  A**T * X = B.
 *
       DO 30 J = 1, NRHS
-         CALL DTBSV( UPLO, TRANS, DIAG, N, KD, AB, LDAB, B( 1, J ),
-     $               1 )
+         CALL DTBSV( UPLO, TRANS, DIAG, N, KD, AB, LDAB, B( 1, J ), 1 )
    30 CONTINUE
 *
       RETURN
@@ -144201,8 +142081,7 @@
 *> \param[in] A
 *> \verbatim
 *>          A is DOUBLE PRECISION array, dimension (NT)
-*>           NT = N*(N+1)/2 if SIDE='R' and NT = M*(M+1)/2 otherwise.
-*>           On entry, the matrix A in RFP Format.
+*>           NT = N*(N+1)/2. On entry, the matrix A in RFP Format.
 *>           RFP Format is described by TRANSR, UPLO and N as follows:
 *>           If TRANSR='N' then RFP A is (0:N,0:K-1) when N is even;
 *>           K=N/2. RFP A is (0:N-1,0:K) when N is odd; K=N/2. If
@@ -144333,8 +142212,7 @@
 *> \endverbatim
 *
 *  =====================================================================
-      SUBROUTINE DTFSM( TRANSR, SIDE, UPLO, TRANS, DIAG, M, N, ALPHA,
-     $                  A,
+      SUBROUTINE DTFSM( TRANSR, SIDE, UPLO, TRANS, DIAG, M, N, ALPHA, A,
      $                  B, LDB )
 *
 *  -- LAPACK computational routine --
@@ -144389,8 +142267,7 @@
          INFO = -3
       ELSE IF( .NOT.NOTRANS .AND. .NOT.LSAME( TRANS, 'T' ) ) THEN
          INFO = -4
-      ELSE IF( .NOT.LSAME( DIAG, 'N' ) .AND.
-     $         .NOT.LSAME( DIAG, 'U' ) )
+      ELSE IF( .NOT.LSAME( DIAG, 'N' ) .AND. .NOT.LSAME( DIAG, 'U' ) )
      $         THEN
          INFO = -5
       ELSE IF( M.LT.0 ) THEN
@@ -144462,15 +142339,12 @@
 *                    TRANS = 'N'
 *
                      IF( M.EQ.1 ) THEN
-                        CALL DTRSM( 'L', 'L', 'N', DIAG, M1, N,
-     $                              ALPHA,
+                        CALL DTRSM( 'L', 'L', 'N', DIAG, M1, N, ALPHA,
      $                              A, M, B, LDB )
                      ELSE
-                        CALL DTRSM( 'L', 'L', 'N', DIAG, M1, N,
-     $                              ALPHA,
+                        CALL DTRSM( 'L', 'L', 'N', DIAG, M1, N, ALPHA,
      $                              A( 0 ), M, B, LDB )
-                        CALL DGEMM( 'N', 'N', M2, N, M1, -ONE,
-     $                              A( M1 ),
+                        CALL DGEMM( 'N', 'N', M2, N, M1, -ONE, A( M1 ),
      $                              M, B, LDB, ALPHA, B( M1, 0 ), LDB )
                         CALL DTRSM( 'L', 'U', 'T', DIAG, M2, N, ONE,
      $                              A( M ), M, B( M1, 0 ), LDB )
@@ -144482,15 +142356,12 @@
 *                    TRANS = 'T'
 *
                      IF( M.EQ.1 ) THEN
-                        CALL DTRSM( 'L', 'L', 'T', DIAG, M1, N,
-     $                              ALPHA,
+                        CALL DTRSM( 'L', 'L', 'T', DIAG, M1, N, ALPHA,
      $                              A( 0 ), M, B, LDB )
                      ELSE
-                        CALL DTRSM( 'L', 'U', 'N', DIAG, M2, N,
-     $                              ALPHA,
+                        CALL DTRSM( 'L', 'U', 'N', DIAG, M2, N, ALPHA,
      $                              A( M ), M, B( M1, 0 ), LDB )
-                        CALL DGEMM( 'T', 'N', M1, N, M2, -ONE,
-     $                              A( M1 ),
+                        CALL DGEMM( 'T', 'N', M1, N, M2, -ONE, A( M1 ),
      $                              M, B( M1, 0 ), LDB, ALPHA, B, LDB )
                         CALL DTRSM( 'L', 'L', 'T', DIAG, M1, N, ONE,
      $                              A( 0 ), M, B, LDB )
@@ -144509,8 +142380,7 @@
 *
                      CALL DTRSM( 'L', 'L', 'N', DIAG, M1, N, ALPHA,
      $                           A( M2 ), M, B, LDB )
-                     CALL DGEMM( 'T', 'N', M2, N, M1, -ONE, A( 0 ),
-     $                           M,
+                     CALL DGEMM( 'T', 'N', M2, N, M1, -ONE, A( 0 ), M,
      $                           B, LDB, ALPHA, B( M1, 0 ), LDB )
                      CALL DTRSM( 'L', 'U', 'T', DIAG, M2, N, ONE,
      $                           A( M1 ), M, B( M1, 0 ), LDB )
@@ -144522,8 +142392,7 @@
 *
                      CALL DTRSM( 'L', 'U', 'N', DIAG, M2, N, ALPHA,
      $                           A( M1 ), M, B( M1, 0 ), LDB )
-                     CALL DGEMM( 'N', 'N', M1, N, M2, -ONE, A( 0 ),
-     $                           M,
+                     CALL DGEMM( 'N', 'N', M1, N, M2, -ONE, A( 0 ), M,
      $                           B( M1, 0 ), LDB, ALPHA, B, LDB )
                      CALL DTRSM( 'L', 'L', 'T', DIAG, M1, N, ONE,
      $                           A( M2 ), M, B, LDB )
@@ -144546,12 +142415,10 @@
 *                    TRANS = 'N'
 *
                      IF( M.EQ.1 ) THEN
-                        CALL DTRSM( 'L', 'U', 'T', DIAG, M1, N,
-     $                              ALPHA,
+                        CALL DTRSM( 'L', 'U', 'T', DIAG, M1, N, ALPHA,
      $                              A( 0 ), M1, B, LDB )
                      ELSE
-                        CALL DTRSM( 'L', 'U', 'T', DIAG, M1, N,
-     $                              ALPHA,
+                        CALL DTRSM( 'L', 'U', 'T', DIAG, M1, N, ALPHA,
      $                              A( 0 ), M1, B, LDB )
                         CALL DGEMM( 'T', 'N', M2, N, M1, -ONE,
      $                              A( M1*M1 ), M1, B, LDB, ALPHA,
@@ -144566,12 +142433,10 @@
 *                    TRANS = 'T'
 *
                      IF( M.EQ.1 ) THEN
-                        CALL DTRSM( 'L', 'U', 'N', DIAG, M1, N,
-     $                              ALPHA,
+                        CALL DTRSM( 'L', 'U', 'N', DIAG, M1, N, ALPHA,
      $                              A( 0 ), M1, B, LDB )
                      ELSE
-                        CALL DTRSM( 'L', 'L', 'T', DIAG, M2, N,
-     $                              ALPHA,
+                        CALL DTRSM( 'L', 'L', 'T', DIAG, M2, N, ALPHA,
      $                              A( 1 ), M1, B( M1, 0 ), LDB )
                         CALL DGEMM( 'N', 'N', M1, N, M2, -ONE,
      $                              A( M1*M1 ), M1, B( M1, 0 ), LDB,
@@ -144593,8 +142458,7 @@
 *
                      CALL DTRSM( 'L', 'U', 'T', DIAG, M1, N, ALPHA,
      $                           A( M2*M2 ), M2, B, LDB )
-                     CALL DGEMM( 'N', 'N', M2, N, M1, -ONE, A( 0 ),
-     $                           M2,
+                     CALL DGEMM( 'N', 'N', M2, N, M1, -ONE, A( 0 ), M2,
      $                           B, LDB, ALPHA, B( M1, 0 ), LDB )
                      CALL DTRSM( 'L', 'L', 'N', DIAG, M2, N, ONE,
      $                           A( M1*M2 ), M2, B( M1, 0 ), LDB )
@@ -144606,8 +142470,7 @@
 *
                      CALL DTRSM( 'L', 'L', 'T', DIAG, M2, N, ALPHA,
      $                           A( M1*M2 ), M2, B( M1, 0 ), LDB )
-                     CALL DGEMM( 'T', 'N', M1, N, M2, -ONE, A( 0 ),
-     $                           M2,
+                     CALL DGEMM( 'T', 'N', M1, N, M2, -ONE, A( 0 ), M2,
      $                           B( M1, 0 ), LDB, ALPHA, B, LDB )
                      CALL DTRSM( 'L', 'U', 'N', DIAG, M1, N, ONE,
      $                           A( M2*M2 ), M2, B, LDB )
@@ -144667,8 +142530,7 @@
 *
                      CALL DTRSM( 'L', 'L', 'N', DIAG, K, N, ALPHA,
      $                           A( K+1 ), M+1, B, LDB )
-                     CALL DGEMM( 'T', 'N', K, N, K, -ONE, A( 0 ),
-     $                           M+1,
+                     CALL DGEMM( 'T', 'N', K, N, K, -ONE, A( 0 ), M+1,
      $                           B, LDB, ALPHA, B( K, 0 ), LDB )
                      CALL DTRSM( 'L', 'U', 'T', DIAG, K, N, ONE,
      $                           A( K ), M+1, B( K, 0 ), LDB )
@@ -144679,8 +142541,7 @@
 *                    and TRANS = 'T'
                      CALL DTRSM( 'L', 'U', 'N', DIAG, K, N, ALPHA,
      $                           A( K ), M+1, B( K, 0 ), LDB )
-                     CALL DGEMM( 'N', 'N', K, N, K, -ONE, A( 0 ),
-     $                           M+1,
+                     CALL DGEMM( 'N', 'N', K, N, K, -ONE, A( 0 ), M+1,
      $                           B( K, 0 ), LDB, ALPHA, B, LDB )
                      CALL DTRSM( 'L', 'L', 'T', DIAG, K, N, ONE,
      $                           A( K+1 ), M+1, B, LDB )
@@ -144736,8 +142597,7 @@
 *
                      CALL DTRSM( 'L', 'U', 'T', DIAG, K, N, ALPHA,
      $                           A( K*( K+1 ) ), K, B, LDB )
-                     CALL DGEMM( 'N', 'N', K, N, K, -ONE, A( 0 ), K,
-     $                           B,
+                     CALL DGEMM( 'N', 'N', K, N, K, -ONE, A( 0 ), K, B,
      $                           LDB, ALPHA, B( K, 0 ), LDB )
                      CALL DTRSM( 'L', 'L', 'N', DIAG, K, N, ONE,
      $                           A( K*K ), K, B( K, 0 ), LDB )
@@ -144803,8 +142663,7 @@
 *
                      CALL DTRSM( 'R', 'U', 'T', DIAG, M, N2, ALPHA,
      $                           A( N ), N, B( 0, N1 ), LDB )
-                     CALL DGEMM( 'N', 'N', M, N1, N2, -ONE, B( 0,
-     $                           N1 ),
+                     CALL DGEMM( 'N', 'N', M, N1, N2, -ONE, B( 0, N1 ),
      $                           LDB, A( N1 ), N, ALPHA, B( 0, 0 ),
      $                           LDB )
                      CALL DTRSM( 'R', 'L', 'N', DIAG, M, N1, ONE,
@@ -144817,8 +142676,7 @@
 *
                      CALL DTRSM( 'R', 'L', 'T', DIAG, M, N1, ALPHA,
      $                           A( 0 ), N, B( 0, 0 ), LDB )
-                     CALL DGEMM( 'N', 'T', M, N2, N1, -ONE, B( 0,
-     $                           0 ),
+                     CALL DGEMM( 'N', 'T', M, N2, N1, -ONE, B( 0, 0 ),
      $                           LDB, A( N1 ), N, ALPHA, B( 0, N1 ),
      $                           LDB )
                      CALL DTRSM( 'R', 'U', 'N', DIAG, M, N2, ONE,
@@ -144837,8 +142695,7 @@
 *
                      CALL DTRSM( 'R', 'L', 'T', DIAG, M, N1, ALPHA,
      $                           A( N2 ), N, B( 0, 0 ), LDB )
-                     CALL DGEMM( 'N', 'N', M, N2, N1, -ONE, B( 0,
-     $                           0 ),
+                     CALL DGEMM( 'N', 'N', M, N2, N1, -ONE, B( 0, 0 ),
      $                           LDB, A( 0 ), N, ALPHA, B( 0, N1 ),
      $                           LDB )
                      CALL DTRSM( 'R', 'U', 'N', DIAG, M, N2, ONE,
@@ -144851,8 +142708,7 @@
 *
                      CALL DTRSM( 'R', 'U', 'T', DIAG, M, N2, ALPHA,
      $                           A( N1 ), N, B( 0, N1 ), LDB )
-                     CALL DGEMM( 'N', 'T', M, N1, N2, -ONE, B( 0,
-     $                           N1 ),
+                     CALL DGEMM( 'N', 'T', M, N1, N2, -ONE, B( 0, N1 ),
      $                           LDB, A( 0 ), N, ALPHA, B( 0, 0 ), LDB )
                      CALL DTRSM( 'R', 'L', 'N', DIAG, M, N1, ONE,
      $                           A( N2 ), N, B( 0, 0 ), LDB )
@@ -144876,8 +142732,7 @@
 *
                      CALL DTRSM( 'R', 'L', 'N', DIAG, M, N2, ALPHA,
      $                           A( 1 ), N1, B( 0, N1 ), LDB )
-                     CALL DGEMM( 'N', 'T', M, N1, N2, -ONE, B( 0,
-     $                           N1 ),
+                     CALL DGEMM( 'N', 'T', M, N1, N2, -ONE, B( 0, N1 ),
      $                           LDB, A( N1*N1 ), N1, ALPHA, B( 0, 0 ),
      $                           LDB )
                      CALL DTRSM( 'R', 'U', 'T', DIAG, M, N1, ONE,
@@ -144890,8 +142745,7 @@
 *
                      CALL DTRSM( 'R', 'U', 'N', DIAG, M, N1, ALPHA,
      $                           A( 0 ), N1, B( 0, 0 ), LDB )
-                     CALL DGEMM( 'N', 'N', M, N2, N1, -ONE, B( 0,
-     $                           0 ),
+                     CALL DGEMM( 'N', 'N', M, N2, N1, -ONE, B( 0, 0 ),
      $                           LDB, A( N1*N1 ), N1, ALPHA, B( 0, N1 ),
      $                           LDB )
                      CALL DTRSM( 'R', 'L', 'T', DIAG, M, N2, ONE,
@@ -144910,8 +142764,7 @@
 *
                      CALL DTRSM( 'R', 'U', 'N', DIAG, M, N1, ALPHA,
      $                           A( N2*N2 ), N2, B( 0, 0 ), LDB )
-                     CALL DGEMM( 'N', 'T', M, N2, N1, -ONE, B( 0,
-     $                           0 ),
+                     CALL DGEMM( 'N', 'T', M, N2, N1, -ONE, B( 0, 0 ),
      $                           LDB, A( 0 ), N2, ALPHA, B( 0, N1 ),
      $                           LDB )
                      CALL DTRSM( 'R', 'L', 'T', DIAG, M, N2, ONE,
@@ -144924,8 +142777,7 @@
 *
                      CALL DTRSM( 'R', 'L', 'N', DIAG, M, N2, ALPHA,
      $                           A( N1*N2 ), N2, B( 0, N1 ), LDB )
-                     CALL DGEMM( 'N', 'N', M, N1, N2, -ONE, B( 0,
-     $                           N1 ),
+                     CALL DGEMM( 'N', 'N', M, N1, N2, -ONE, B( 0, N1 ),
      $                           LDB, A( 0 ), N2, ALPHA, B( 0, 0 ),
      $                           LDB )
                      CALL DTRSM( 'R', 'U', 'T', DIAG, M, N1, ONE,
@@ -145333,8 +143185,7 @@
          INFO = -1
       ELSE IF( .NOT.LOWER .AND. .NOT.LSAME( UPLO, 'U' ) ) THEN
          INFO = -2
-      ELSE IF( .NOT.LSAME( DIAG, 'N' ) .AND.
-     $         .NOT.LSAME( DIAG, 'U' ) )
+      ELSE IF( .NOT.LSAME( DIAG, 'N' ) .AND. .NOT.LSAME( DIAG, 'U' ) )
      $         THEN
          INFO = -3
       ELSE IF( N.LT.0 ) THEN
@@ -145397,8 +143248,7 @@
      $            INFO = INFO + N1
                IF( INFO.GT.0 )
      $            RETURN
-               CALL DTRMM( 'L', 'U', 'T', DIAG, N2, N1, ONE, A( N ),
-     $                     N,
+               CALL DTRMM( 'L', 'U', 'T', DIAG, N2, N1, ONE, A( N ), N,
      $                     A( N1 ), N )
 *
             ELSE
@@ -145410,8 +143260,7 @@
                CALL DTRTRI( 'L', DIAG, N1, A( N2 ), N, INFO )
                IF( INFO.GT.0 )
      $            RETURN
-               CALL DTRMM( 'L', 'L', 'T', DIAG, N1, N2, -ONE,
-     $                     A( N2 ),
+               CALL DTRMM( 'L', 'L', 'T', DIAG, N1, N2, -ONE, A( N2 ),
      $                     N, A( 0 ), N )
                CALL DTRTRI( 'U', DIAG, N2, A( N1 ), N, INFO )
                IF( INFO.GT.0 )
@@ -145490,8 +143339,7 @@
      $            INFO = INFO + K
                IF( INFO.GT.0 )
      $            RETURN
-               CALL DTRMM( 'L', 'U', 'T', DIAG, K, K, ONE, A( 0 ),
-     $                     N+1,
+               CALL DTRMM( 'L', 'U', 'T', DIAG, K, K, ONE, A( 0 ), N+1,
      $                     A( K+1 ), N+1 )
 *
             ELSE
@@ -145510,8 +143358,7 @@
      $            INFO = INFO + K
                IF( INFO.GT.0 )
      $            RETURN
-               CALL DTRMM( 'R', 'U', 'N', DIAG, K, K, ONE, A( K ),
-     $                     N+1,
+               CALL DTRMM( 'R', 'U', 'N', DIAG, K, K, ONE, A( K ), N+1,
      $                     A( 0 ), N+1 )
             END IF
          ELSE
@@ -145527,8 +143374,7 @@
                CALL DTRTRI( 'U', DIAG, K, A( K ), K, INFO )
                IF( INFO.GT.0 )
      $            RETURN
-               CALL DTRMM( 'L', 'U', 'N', DIAG, K, K, -ONE, A( K ),
-     $                     K,
+               CALL DTRMM( 'L', 'U', 'N', DIAG, K, K, -ONE, A( K ), K,
      $                     A( K*( K+1 ) ), K )
                CALL DTRTRI( 'L', DIAG, K, A( 0 ), K, INFO )
                IF( INFO.GT.0 )
@@ -145553,8 +143399,7 @@
      $            INFO = INFO + K
                IF( INFO.GT.0 )
      $            RETURN
-               CALL DTRMM( 'L', 'L', 'N', DIAG, K, K, ONE, A( K*K ),
-     $                     K,
+               CALL DTRMM( 'L', 'L', 'N', DIAG, K, K, ONE, A( K*K ), K,
      $                     A( 0 ), K )
             END IF
          END IF
@@ -146910,8 +144755,7 @@
       EXTERNAL           LSAME, DLAMCH
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DGEMV, DLACPY, DLAG2, DLALN2,
-     $                   XERBLA
+      EXTERNAL           DGEMV, DLACPY, DLAG2, DLALN2, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          ABS, MAX, MIN
@@ -147338,8 +145182,7 @@
 *              Solve  ( a A - b B )  y = SUM(,)
 *              with scaling and perturbation of the denominator
 *
-               CALL DLALN2( .TRUE., NA, NW, DMIN, ACOEF, S( J, J ),
-     $                      LDS,
+               CALL DLALN2( .TRUE., NA, NW, DMIN, ACOEF, S( J, J ), LDS,
      $                      BDIAG( 1 ), BDIAG( 2 ), SUM, 2, BCOEFR,
      $                      BCOEFI, WORK( 2*N+J ), N, SCALE, TEMP,
      $                      IINFO )
@@ -147365,13 +145208,11 @@
      $                        WORK( ( JW+2 )*N+JE ), 1, ZERO,
      $                        WORK( ( JW+4 )*N+1 ), 1 )
   170          CONTINUE
-               CALL DLACPY( ' ', N, NW, WORK( 4*N+1 ), N, VL( 1,
-     $                      JE ),
+               CALL DLACPY( ' ', N, NW, WORK( 4*N+1 ), N, VL( 1, JE ),
      $                      LDVL )
                IBEG = 1
             ELSE
-               CALL DLACPY( ' ', N, NW, WORK( 2*N+1 ), N, VL( 1,
-     $                      IEIG ),
+               CALL DLACPY( ' ', N, NW, WORK( 2*N+1 ), N, VL( 1, IEIG ),
      $                      LDVL )
                IBEG = JE
             END IF
@@ -147530,8 +145371,7 @@
 *
 *              Complex eigenvalue
 *
-               CALL DLAG2( S( JE-1, JE-1 ), LDS, P( JE-1, JE-1 ),
-     $                     LDP,
+               CALL DLAG2( S( JE-1, JE-1 ), LDS, P( JE-1, JE-1 ), LDP,
      $                     SAFMIN*SAFETY, ACOEF, TEMP, BCOEFR, TEMP2,
      $                     BCOEFI )
                IF( BCOEFI.EQ.ZERO ) THEN
@@ -148051,8 +145891,7 @@
       EXTERNAL           DLAMCH
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DGEMM, DGEQR2, DGERQ2, DLACPY, DLAGV2,
-     $                   DLARTG,
+      EXTERNAL           DGEMM, DGEQR2, DGERQ2, DLACPY, DLAGV2, DLARTG,
      $                   DLASET, DLASSQ, DORG2R, DORGR2, DORM2R, DORMR2,
      $                   DROT, DSCAL, DTGSY2
 *     ..
@@ -148131,12 +145970,10 @@
          CALL DROT( 2, T( 1, 1 ), 1, T( 1, 2 ), 1, IR( 1, 1 ),
      $              IR( 2, 1 ) )
          IF( SA.GE.SB ) THEN
-            CALL DLARTG( S( 1, 1 ), S( 2, 1 ), LI( 1, 1 ), LI( 2,
-     $                   1 ),
+            CALL DLARTG( S( 1, 1 ), S( 2, 1 ), LI( 1, 1 ), LI( 2, 1 ),
      $                   DDUM )
          ELSE
-            CALL DLARTG( T( 1, 1 ), T( 2, 1 ), LI( 1, 1 ), LI( 2,
-     $                   1 ),
+            CALL DLARTG( T( 1, 1 ), T( 2, 1 ), LI( 1, 1 ), LI( 2, 1 ),
      $                   DDUM )
          END IF
          CALL DROT( 2, S( 1, 1 ), LDST, S( 2, 1 ), LDST, LI( 1, 1 ),
@@ -148161,28 +145998,22 @@
 *               and
 *               F-norm((B-QL**H*T*QR)) <= O(EPS*F-norm((B)))
 *
-            CALL DLACPY( 'Full', M, M, A( J1, J1 ), LDA,
-     $                   WORK( M*M+1 ),
+            CALL DLACPY( 'Full', M, M, A( J1, J1 ), LDA, WORK( M*M+1 ),
      $                   M )
-            CALL DGEMM( 'N', 'N', M, M, M, ONE, LI, LDST, S, LDST,
-     $                  ZERO,
+            CALL DGEMM( 'N', 'N', M, M, M, ONE, LI, LDST, S, LDST, ZERO,
      $                  WORK, M )
-            CALL DGEMM( 'N', 'T', M, M, M, -ONE, WORK, M, IR, LDST,
-     $                  ONE,
+            CALL DGEMM( 'N', 'T', M, M, M, -ONE, WORK, M, IR, LDST, ONE,
      $                  WORK( M*M+1 ), M )
             DSCALE = ZERO
             DSUM = ONE
             CALL DLASSQ( M*M, WORK( M*M+1 ), 1, DSCALE, DSUM )
             SA = DSCALE*SQRT( DSUM )
 *
-            CALL DLACPY( 'Full', M, M, B( J1, J1 ), LDB,
-     $                   WORK( M*M+1 ),
+            CALL DLACPY( 'Full', M, M, B( J1, J1 ), LDB, WORK( M*M+1 ),
      $                   M )
-            CALL DGEMM( 'N', 'N', M, M, M, ONE, LI, LDST, T, LDST,
-     $                  ZERO,
+            CALL DGEMM( 'N', 'N', M, M, M, ONE, LI, LDST, T, LDST, ZERO,
      $                  WORK, M )
-            CALL DGEMM( 'N', 'T', M, M, M, -ONE, WORK, M, IR, LDST,
-     $                  ONE,
+            CALL DGEMM( 'N', 'T', M, M, M, -ONE, WORK, M, IR, LDST, ONE,
      $                  WORK( M*M+1 ), M )
             DSCALE = ZERO
             DSUM = ONE
@@ -148282,13 +146113,11 @@
 *
          CALL DGEMM( 'T', 'N', M, M, M, ONE, LI, LDST, S, LDST, ZERO,
      $               WORK, M )
-         CALL DGEMM( 'N', 'T', M, M, M, ONE, WORK, M, IR, LDST, ZERO,
-     $               S,
+         CALL DGEMM( 'N', 'T', M, M, M, ONE, WORK, M, IR, LDST, ZERO, S,
      $               LDST )
          CALL DGEMM( 'T', 'N', M, M, M, ONE, LI, LDST, T, LDST, ZERO,
      $               WORK, M )
-         CALL DGEMM( 'N', 'T', M, M, M, ONE, WORK, M, IR, LDST, ZERO,
-     $               T,
+         CALL DGEMM( 'N', 'T', M, M, M, ONE, WORK, M, IR, LDST, ZERO, T,
      $               LDST )
          CALL DLACPY( 'F', M, M, S, LDST, SCPY, LDST )
          CALL DLACPY( 'F', M, M, T, LDST, TCPY, LDST )
@@ -148301,13 +146130,11 @@
          CALL DGERQ2( M, M, T, LDST, TAUR, WORK, LINFO )
          IF( LINFO.NE.0 )
      $      GO TO 70
-         CALL DORMR2( 'R', 'T', M, M, M, T, LDST, TAUR, S, LDST,
-     $                WORK,
+         CALL DORMR2( 'R', 'T', M, M, M, T, LDST, TAUR, S, LDST, WORK,
      $                LINFO )
          IF( LINFO.NE.0 )
      $      GO TO 70
-         CALL DORMR2( 'L', 'N', M, M, M, T, LDST, TAUR, IR, LDST,
-     $                WORK,
+         CALL DORMR2( 'L', 'N', M, M, M, T, LDST, TAUR, IR, LDST, WORK,
      $                LINFO )
          IF( LINFO.NE.0 )
      $      GO TO 70
@@ -148327,11 +146154,9 @@
          CALL DGEQR2( M, M, TCPY, LDST, TAUL, WORK, LINFO )
          IF( LINFO.NE.0 )
      $      GO TO 70
-         CALL DORM2R( 'L', 'T', M, M, M, TCPY, LDST, TAUL, SCPY,
-     $                LDST,
+         CALL DORM2R( 'L', 'T', M, M, M, TCPY, LDST, TAUL, SCPY, LDST,
      $                WORK, INFO )
-         CALL DORM2R( 'R', 'N', M, M, M, TCPY, LDST, TAUL, LICOP,
-     $                LDST,
+         CALL DORM2R( 'R', 'N', M, M, M, TCPY, LDST, TAUL, LICOP, LDST,
      $                WORK, INFO )
          IF( LINFO.NE.0 )
      $      GO TO 70
@@ -148369,28 +146194,22 @@
 *               and
 *               F-norm((B-QL**H*T*QR)) <= O(EPS*F-norm((B)))
 *
-            CALL DLACPY( 'Full', M, M, A( J1, J1 ), LDA,
-     $                   WORK( M*M+1 ),
+            CALL DLACPY( 'Full', M, M, A( J1, J1 ), LDA, WORK( M*M+1 ),
      $                   M )
-            CALL DGEMM( 'N', 'N', M, M, M, ONE, LI, LDST, S, LDST,
-     $                  ZERO,
+            CALL DGEMM( 'N', 'N', M, M, M, ONE, LI, LDST, S, LDST, ZERO,
      $                  WORK, M )
-            CALL DGEMM( 'N', 'N', M, M, M, -ONE, WORK, M, IR, LDST,
-     $                  ONE,
+            CALL DGEMM( 'N', 'N', M, M, M, -ONE, WORK, M, IR, LDST, ONE,
      $                  WORK( M*M+1 ), M )
             DSCALE = ZERO
             DSUM = ONE
             CALL DLASSQ( M*M, WORK( M*M+1 ), 1, DSCALE, DSUM )
             SA = DSCALE*SQRT( DSUM )
 *
-            CALL DLACPY( 'Full', M, M, B( J1, J1 ), LDB,
-     $                   WORK( M*M+1 ),
+            CALL DLACPY( 'Full', M, M, B( J1, J1 ), LDB, WORK( M*M+1 ),
      $                   M )
-            CALL DGEMM( 'N', 'N', M, M, M, ONE, LI, LDST, T, LDST,
-     $                  ZERO,
+            CALL DGEMM( 'N', 'N', M, M, M, ONE, LI, LDST, T, LDST, ZERO,
      $                  WORK, M )
-            CALL DGEMM( 'N', 'N', M, M, M, -ONE, WORK, M, IR, LDST,
-     $                  ONE,
+            CALL DGEMM( 'N', 'N', M, M, M, -ONE, WORK, M, IR, LDST, ONE,
      $                  WORK( M*M+1 ), M )
             DSCALE = ZERO
             DSUM = ONE
@@ -148420,8 +146239,7 @@
          T( 1, 1 ) = ONE
          IDUM = LWORK - M*M - 2
          IF( N2.GT.1 ) THEN
-            CALL DLAGV2( A( J1, J1 ), LDA, B( J1, J1 ), LDB, AR, AI,
-     $                   BE,
+            CALL DLAGV2( A( J1, J1 ), LDA, B( J1, J1 ), LDB, AR, AI, BE,
      $                   WORK( 1 ), WORK( 2 ), T( 1, 1 ), T( 2, 1 ) )
             WORK( M+1 ) = -WORK( 2 )
             WORK( M+2 ) = WORK( 1 )
@@ -148432,8 +146250,7 @@
          T( M, M ) = ONE
 *
          IF( N1.GT.1 ) THEN
-            CALL DLAGV2( A( J1+N2, J1+N2 ), LDA, B( J1+N2, J1+N2 ),
-     $                   LDB,
+            CALL DLAGV2( A( J1+N2, J1+N2 ), LDA, B( J1+N2, J1+N2 ), LDB,
      $                   TAUR, TAUL, WORK( M*M+1 ), WORK( N2*M+N2+1 ),
      $                   WORK( N2*M+N2+2 ), T( N2+1, N2+1 ),
      $                   T( M, M-1 ) )
@@ -148442,17 +146259,13 @@
             T( M, M ) = T( N2+1, N2+1 )
             T( M-1, M ) = -T( M, M-1 )
          END IF
-         CALL DGEMM( 'T', 'N', N2, N1, N2, ONE, WORK, M, A( J1,
-     $               J1+N2 ),
+         CALL DGEMM( 'T', 'N', N2, N1, N2, ONE, WORK, M, A( J1, J1+N2 ),
      $               LDA, ZERO, WORK( M*M+1 ), N2 )
-         CALL DLACPY( 'Full', N2, N1, WORK( M*M+1 ), N2, A( J1,
-     $                J1+N2 ),
+         CALL DLACPY( 'Full', N2, N1, WORK( M*M+1 ), N2, A( J1, J1+N2 ),
      $                LDA )
-         CALL DGEMM( 'T', 'N', N2, N1, N2, ONE, WORK, M, B( J1,
-     $               J1+N2 ),
+         CALL DGEMM( 'T', 'N', N2, N1, N2, ONE, WORK, M, B( J1, J1+N2 ),
      $               LDB, ZERO, WORK( M*M+1 ), N2 )
-         CALL DLACPY( 'Full', N2, N1, WORK( M*M+1 ), N2, B( J1,
-     $                J1+N2 ),
+         CALL DLACPY( 'Full', N2, N1, WORK( M*M+1 ), N2, B( J1, J1+N2 ),
      $                LDB )
          CALL DGEMM( 'N', 'N', M, M, M, ONE, LI, LDST, WORK, M, ZERO,
      $               WORK( M*M+1 ), M )
@@ -148904,8 +146717,7 @@
 *
 *              Swap two 1-by-1 blocks.
 *
-               CALL DTGEX2( WANTQ, WANTZ, N, A, LDA, B, LDB, Q, LDQ,
-     $                      Z,
+               CALL DTGEX2( WANTQ, WANTZ, N, A, LDA, B, LDB, Q, LDQ, Z,
      $                      LDZ, HERE, 1, 1, WORK, LWORK, INFO )
                IF( INFO.NE.0 ) THEN
                   ILST = HERE
@@ -148923,8 +146735,7 @@
 *
 *                 2-by-2 block did not split.
 *
-                  CALL DTGEX2( WANTQ, WANTZ, N, A, LDA, B, LDB, Q,
-     $                         LDQ,
+                  CALL DTGEX2( WANTQ, WANTZ, N, A, LDA, B, LDB, Q, LDQ,
      $                         Z, LDZ, HERE, 1, NBNEXT, WORK, LWORK,
      $                         INFO )
                   IF( INFO.NE.0 ) THEN
@@ -148936,16 +146747,14 @@
 *
 *                 2-by-2 block did split.
 *
-                  CALL DTGEX2( WANTQ, WANTZ, N, A, LDA, B, LDB, Q,
-     $                         LDQ,
+                  CALL DTGEX2( WANTQ, WANTZ, N, A, LDA, B, LDB, Q, LDQ,
      $                         Z, LDZ, HERE, 1, 1, WORK, LWORK, INFO )
                   IF( INFO.NE.0 ) THEN
                      ILST = HERE
                      RETURN
                   END IF
                   HERE = HERE + 1
-                  CALL DTGEX2( WANTQ, WANTZ, N, A, LDA, B, LDB, Q,
-     $                         LDQ,
+                  CALL DTGEX2( WANTQ, WANTZ, N, A, LDA, B, LDB, Q, LDQ,
      $                         Z, LDZ, HERE, 1, 1, WORK, LWORK, INFO )
                   IF( INFO.NE.0 ) THEN
                      ILST = HERE
@@ -149011,8 +146820,7 @@
 *
 *              Swap two 1-by-1 blocks.
 *
-               CALL DTGEX2( WANTQ, WANTZ, N, A, LDA, B, LDB, Q, LDQ,
-     $                      Z,
+               CALL DTGEX2( WANTQ, WANTZ, N, A, LDA, B, LDB, Q, LDQ, Z,
      $                      LDZ, HERE, NBNEXT, 1, WORK, LWORK, INFO )
                IF( INFO.NE.0 ) THEN
                   ILST = HERE
@@ -149029,8 +146837,7 @@
 *
 *                 2-by-2 block did not split.
 *
-                  CALL DTGEX2( WANTQ, WANTZ, N, A, LDA, B, LDB, Q,
-     $                         LDQ,
+                  CALL DTGEX2( WANTQ, WANTZ, N, A, LDA, B, LDB, Q, LDQ,
      $                         Z, LDZ, HERE-1, 2, 1, WORK, LWORK, INFO )
                   IF( INFO.NE.0 ) THEN
                      ILST = HERE
@@ -149041,16 +146848,14 @@
 *
 *                 2-by-2 block did split.
 *
-                  CALL DTGEX2( WANTQ, WANTZ, N, A, LDA, B, LDB, Q,
-     $                         LDQ,
+                  CALL DTGEX2( WANTQ, WANTZ, N, A, LDA, B, LDB, Q, LDQ,
      $                         Z, LDZ, HERE, 1, 1, WORK, LWORK, INFO )
                   IF( INFO.NE.0 ) THEN
                      ILST = HERE
                      RETURN
                   END IF
                   HERE = HERE - 1
-                  CALL DTGEX2( WANTQ, WANTZ, N, A, LDA, B, LDB, Q,
-     $                         LDQ,
+                  CALL DTGEX2( WANTQ, WANTZ, N, A, LDA, B, LDB, Q, LDQ,
      $                         Z, LDZ, HERE, 1, 1, WORK, LWORK, INFO )
                   IF( INFO.NE.0 ) THEN
                      ILST = HERE
@@ -149517,8 +147322,7 @@
 *> \endverbatim
 *>
 *  =====================================================================
-      SUBROUTINE DTGSEN( IJOB, WANTQ, WANTZ, SELECT, N, A, LDA, B,
-     $                   LDB,
+      SUBROUTINE DTGSEN( IJOB, WANTQ, WANTZ, SELECT, N, A, LDA, B, LDB,
      $                   ALPHAR, ALPHAI, BETA, Q, LDQ, Z, LDZ, M, PL,
      $                   PR, DIF, WORK, LWORK, IWORK, LIWORK, INFO )
 *
@@ -149559,8 +147363,7 @@
       INTEGER            ISAVE( 3 )
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DLACN2, DLACPY, DLAG2, DLASSQ, DTGEXC,
-     $                   DTGSYL,
+      EXTERNAL           DLACN2, DLACPY, DLAG2, DLASSQ, DTGEXC, DTGSYL,
      $                   XERBLA
 *     ..
 *     .. External Functions ..
@@ -149708,8 +147511,7 @@
 *
                KK = K
                IF( K.NE.KS )
-     $            CALL DTGEXC( WANTQ, WANTZ, N, A, LDA, B, LDB, Q,
-     $                         LDQ,
+     $            CALL DTGEXC( WANTQ, WANTZ, N, A, LDA, B, LDB, Q, LDQ,
      $                         Z, LDZ, KK, KS, WORK, LWORK, IERR )
 *
                IF( IERR.GT.0 ) THEN
@@ -149743,8 +147545,7 @@
          I = N1 + 1
          IJB = 0
          CALL DLACPY( 'Full', N1, N2, A( 1, I ), LDA, WORK, N1 )
-         CALL DLACPY( 'Full', N1, N2, B( 1, I ), LDB,
-     $                WORK( N1*N2+1 ),
+         CALL DLACPY( 'Full', N1, N2, B( 1, I ), LDB, WORK( N1*N2+1 ),
      $                N1 )
          CALL DTGSYL( 'N', IJB, N1, N2, A, LDA, A( I, I ), LDA, WORK,
      $                N1, B, LDB, B( I, I ), LDB, WORK( N1*N2+1 ), N1,
@@ -149786,16 +147587,14 @@
 *
 *           Frobenius norm-based Difu-estimate.
 *
-            CALL DTGSYL( 'N', IJB, N1, N2, A, LDA, A( I, I ), LDA,
-     $                   WORK,
+            CALL DTGSYL( 'N', IJB, N1, N2, A, LDA, A( I, I ), LDA, WORK,
      $                   N1, B, LDB, B( I, I ), LDB, WORK( N1*N2+1 ),
      $                   N1, DSCALE, DIF( 1 ), WORK( 2*N1*N2+1 ),
      $                   LWORK-2*N1*N2, IWORK, IERR )
 *
 *           Frobenius norm-based Difl-estimate.
 *
-            CALL DTGSYL( 'N', IJB, N2, N1, A( I, I ), LDA, A, LDA,
-     $                   WORK,
+            CALL DTGSYL( 'N', IJB, N2, N1, A( I, I ), LDA, A, LDA, WORK,
      $                   N2, B( I, I ), LDB, B, LDB, WORK( N1*N2+1 ),
      $                   N2, DSCALE, DIF( 2 ), WORK( 2*N1*N2+1 ),
      $                   LWORK-2*N1*N2, IWORK, IERR )
@@ -149824,8 +147623,7 @@
 *
 *                 Solve generalized Sylvester equation.
 *
-                  CALL DTGSYL( 'N', IJB, N1, N2, A, LDA, A( I, I ),
-     $                         LDA,
+                  CALL DTGSYL( 'N', IJB, N1, N2, A, LDA, A( I, I ), LDA,
      $                         WORK, N1, B, LDB, B( I, I ), LDB,
      $                         WORK( N1*N2+1 ), N1, DSCALE, DIF( 1 ),
      $                         WORK( 2*N1*N2+1 ), LWORK-2*N1*N2, IWORK,
@@ -149834,8 +147632,7 @@
 *
 *                 Solve the transposed variant.
 *
-                  CALL DTGSYL( 'T', IJB, N1, N2, A, LDA, A( I, I ),
-     $                         LDA,
+                  CALL DTGSYL( 'T', IJB, N1, N2, A, LDA, A( I, I ), LDA,
      $                         WORK, N1, B, LDB, B( I, I ), LDB,
      $                         WORK( N1*N2+1 ), N1, DSCALE, DIF( 1 ),
      $                         WORK( 2*N1*N2+1 ), LWORK-2*N1*N2, IWORK,
@@ -149855,8 +147652,7 @@
 *
 *                 Solve generalized Sylvester equation.
 *
-                  CALL DTGSYL( 'N', IJB, N2, N1, A( I, I ), LDA, A,
-     $                         LDA,
+                  CALL DTGSYL( 'N', IJB, N2, N1, A( I, I ), LDA, A, LDA,
      $                         WORK, N2, B( I, I ), LDB, B, LDB,
      $                         WORK( N1*N2+1 ), N2, DSCALE, DIF( 2 ),
      $                         WORK( 2*N1*N2+1 ), LWORK-2*N1*N2, IWORK,
@@ -149865,8 +147661,7 @@
 *
 *                 Solve the transposed variant.
 *
-                  CALL DTGSYL( 'T', IJB, N2, N1, A( I, I ), LDA, A,
-     $                         LDA,
+                  CALL DTGSYL( 'T', IJB, N2, N1, A( I, I ), LDA, A, LDA,
      $                         WORK, N2, B( I, I ), LDB, B, LDB,
      $                         WORK( N1*N2+1 ), N2, DSCALE, DIF( 2 ),
      $                         WORK( 2*N1*N2+1 ), LWORK-2*N1*N2, IWORK,
@@ -149908,8 +147703,7 @@
                WORK( 6 ) = B( K+1, K )
                WORK( 7 ) = B( K, K+1 )
                WORK( 8 ) = B( K+1, K+1 )
-               CALL DLAG2( WORK, 2, WORK( 5 ), 2, SMLNUM*EPS,
-     $                     BETA( K ),
+               CALL DLAG2( WORK, 2, WORK( 5 ), 2, SMLNUM*EPS, BETA( K ),
      $                     BETA( K+1 ), ALPHAR( K ), ALPHAR( K+1 ),
      $                     ALPHAI( K ) )
                ALPHAI( K+1 ) = -ALPHAI( K )
@@ -150357,8 +148151,7 @@
       EXTERNAL           LSAME
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DCOPY, DLAGS2, DLAPLL, DLARTG, DLASET,
-     $                   DROT,
+      EXTERNAL           DCOPY, DLAGS2, DLAPLL, DLARTG, DLASET, DROT,
      $                   DSCAL, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
@@ -150381,13 +148174,9 @@
       INFO = 0
       IF( .NOT.( INITU .OR. WANTU .OR. LSAME( JOBU, 'N' ) ) ) THEN
          INFO = -1
-      ELSE IF( .NOT.( INITV .OR.
-     $         WANTV .OR.
-     $         LSAME( JOBV, 'N' ) ) ) THEN
+      ELSE IF( .NOT.( INITV .OR. WANTV .OR. LSAME( JOBV, 'N' ) ) ) THEN
          INFO = -2
-      ELSE IF( .NOT.( INITQ .OR.
-     $         WANTQ .OR.
-     $         LSAME( JOBQ, 'N' ) ) ) THEN
+      ELSE IF( .NOT.( INITQ .OR. WANTQ .OR. LSAME( JOBQ, 'N' ) ) ) THEN
          INFO = -3
       ELSE IF( M.LT.0 ) THEN
          INFO = -4
@@ -150457,8 +148246,7 @@
 *              Update (K+I)-th and (K+J)-th rows of matrix A: U**T *A
 *
                IF( K+J.LE.M )
-     $            CALL DROT( L, A( K+J, N-L+1 ), LDA, A( K+I,
-     $                       N-L+1 ),
+     $            CALL DROT( L, A( K+J, N-L+1 ), LDA, A( K+I, N-L+1 ),
      $                       LDA, CSU, SNU )
 *
 *              Update I-th and J-th rows of matrix B: V**T *B
@@ -150492,12 +148280,10 @@
      $                       SNU )
 *
                IF( WANTV )
-     $            CALL DROT( P, V( 1, J ), 1, V( 1, I ), 1, CSV,
-     $                       SNV )
+     $            CALL DROT( P, V( 1, J ), 1, V( 1, I ), 1, CSV, SNV )
 *
                IF( WANTQ )
-     $            CALL DROT( N, Q( 1, N-L+J ), 1, Q( 1, N-L+I ), 1,
-     $                       CSQ,
+     $            CALL DROT( N, Q( 1, N-L+J ), 1, Q( 1, N-L+I ), 1, CSQ,
      $                       SNQ )
 *
    10       CONTINUE
@@ -150514,8 +148300,7 @@
             ERROR = ZERO
             DO 30 I = 1, MIN( L, M-K )
                CALL DCOPY( L-I+1, A( K+I, N-L+I ), LDA, WORK, 1 )
-               CALL DCOPY( L-I+1, B( I, N-L+I ), LDB, WORK( L+1 ),
-     $                     1 )
+               CALL DCOPY( L-I+1, B( I, N-L+I ), LDB, WORK( L+1 ), 1 )
                CALL DLAPLL( L-I+1, WORK, 1, WORK( L+1 ), 1, SSMIN )
                ERROR = MAX( ERROR, SSMIN )
    30       CONTINUE
@@ -150560,19 +148345,16 @@
      $            CALL DSCAL( P, -ONE, V( 1, I ), 1 )
             END IF
 *
-            CALL DLARTG( ABS( GAMMA ), ONE, BETA( K+I ),
-     $                   ALPHA( K+I ),
+            CALL DLARTG( ABS( GAMMA ), ONE, BETA( K+I ), ALPHA( K+I ),
      $                   RWK )
 *
             IF( ALPHA( K+I ).GE.BETA( K+I ) ) THEN
-               CALL DSCAL( L-I+1, ONE / ALPHA( K+I ), A( K+I,
-     $                     N-L+I ),
+               CALL DSCAL( L-I+1, ONE / ALPHA( K+I ), A( K+I, N-L+I ),
      $                     LDA )
             ELSE
                CALL DSCAL( L-I+1, ONE / BETA( K+I ), B( I, N-L+I ),
      $                     LDB )
-               CALL DCOPY( L-I+1, B( I, N-L+I ), LDB, A( K+I,
-     $                     N-L+I ),
+               CALL DCOPY( L-I+1, B( I, N-L+I ), LDB, A( K+I, N-L+I ),
      $                     LDA )
             END IF
 *
@@ -151030,8 +148812,7 @@
       EXTERNAL           LSAME, DDOT, DLAMCH, DLAPY2, DNRM2
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DGEMV, DLACPY, DLAG2, DTGEXC, DTGSYL,
-     $                   XERBLA
+      EXTERNAL           DGEMV, DLACPY, DLAG2, DTGEXC, DTGSYL, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MAX, MIN, SQRT
@@ -151169,8 +148950,7 @@
      $                DNRM2( N, VR( 1, KS+1 ), 1 ) )
                LNRM = DLAPY2( DNRM2( N, VL( 1, KS ), 1 ),
      $                DNRM2( N, VL( 1, KS+1 ), 1 ) )
-               CALL DGEMV( 'N', N, N, ONE, A, LDA, VR( 1, KS ), 1,
-     $                     ZERO,
+               CALL DGEMV( 'N', N, N, ONE, A, LDA, VR( 1, KS ), 1, ZERO,
      $                     WORK, 1 )
                TMPRR = DDOT( N, WORK, 1, VL( 1, KS ), 1 )
                TMPRI = DDOT( N, WORK, 1, VL( 1, KS+1 ), 1 )
@@ -151180,8 +148960,7 @@
                TMPIR = DDOT( N, WORK, 1, VL( 1, KS ), 1 )
                UHAV = TMPRR + TMPII
                UHAVI = TMPIR - TMPRI
-               CALL DGEMV( 'N', N, N, ONE, B, LDB, VR( 1, KS ), 1,
-     $                     ZERO,
+               CALL DGEMV( 'N', N, N, ONE, B, LDB, VR( 1, KS ), 1, ZERO,
      $                     WORK, 1 )
                TMPRR = DDOT( N, WORK, 1, VL( 1, KS ), 1 )
                TMPRI = DDOT( N, WORK, 1, VL( 1, KS+1 ), 1 )
@@ -151203,12 +148982,10 @@
 *
                RNRM = DNRM2( N, VR( 1, KS ), 1 )
                LNRM = DNRM2( N, VL( 1, KS ), 1 )
-               CALL DGEMV( 'N', N, N, ONE, A, LDA, VR( 1, KS ), 1,
-     $                     ZERO,
+               CALL DGEMV( 'N', N, N, ONE, A, LDA, VR( 1, KS ), 1, ZERO,
      $                     WORK, 1 )
                UHAV = DDOT( N, WORK, 1, VL( 1, KS ), 1 )
-               CALL DGEMV( 'N', N, N, ONE, B, LDB, VR( 1, KS ), 1,
-     $                     ZERO,
+               CALL DGEMV( 'N', N, N, ONE, B, LDB, VR( 1, KS ), 1, ZERO,
      $                     WORK, 1 )
                UHBV = DDOT( N, WORK, 1, VL( 1, KS ), 1 )
                COND = DLAPY2( UHAV, UHBV )
@@ -151260,8 +149037,7 @@
             IFST = K
             ILST = 1
 *
-            CALL DTGEXC( .FALSE., .FALSE., N, WORK, N, WORK( N*N+1 ),
-     $                   N,
+            CALL DTGEXC( .FALSE., .FALSE., N, WORK, N, WORK( N*N+1 ), N,
      $                   DUMMY, 1, DUMMY1, 1, IFST, ILST,
      $                   WORK( N*N*2+1 ), LWORK-2*N*N, IERR )
 *
@@ -151287,8 +149063,7 @@
                ELSE
                   I = N*N + 1
                   IZ = 2*N*N + 1
-                  CALL DTGSYL( 'N', DIFDRI, N2, N1,
-     $                         WORK( N*N1+N1+1 ),
+                  CALL DTGSYL( 'N', DIFDRI, N2, N1, WORK( N*N1+N1+1 ),
      $                         N, WORK, N, WORK( N1+1 ), N,
      $                         WORK( N*N1+N1+I ), N, WORK( I ), N,
      $                         WORK( N1+I ), N, SCALE, DIF( KS ),
@@ -151582,8 +149357,7 @@
 *>     Umea University, S-901 87 Umea, Sweden.
 *
 *  =====================================================================
-      SUBROUTINE DTGSY2( TRANS, IJOB, M, N, A, LDA, B, LDB, C, LDC,
-     $                   D,
+      SUBROUTINE DTGSY2( TRANS, IJOB, M, N, A, LDA, B, LDB, C, LDC, D,
      $                   LDD, E, LDE, F, LDF, SCALE, RDSUM, RDSCAL,
      $                   IWORK, PQ, INFO )
 *
@@ -151628,8 +149402,7 @@
       EXTERNAL           LSAME
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DAXPY, DCOPY, DGEMM, DGEMV, DGER,
-     $                   DGESC2,
+      EXTERNAL           DAXPY, DCOPY, DGEMM, DGEMV, DGER, DGESC2,
      $                   DGETC2, DLASET, DLATDF, DSCAL, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
@@ -151782,11 +149555,9 @@
 *
                   IF( I.GT.1 ) THEN
                      ALPHA = -RHS( 1 )
-                     CALL DAXPY( IS-1, ALPHA, A( 1, IS ), 1, C( 1,
-     $                           JS ),
+                     CALL DAXPY( IS-1, ALPHA, A( 1, IS ), 1, C( 1, JS ),
      $                           1 )
-                     CALL DAXPY( IS-1, ALPHA, D( 1, IS ), 1, F( 1,
-     $                           JS ),
+                     CALL DAXPY( IS-1, ALPHA, D( 1, IS ), 1, F( 1, JS ),
      $                           1 )
                   END IF
                   IF( J.LT.Q ) THEN
@@ -151859,11 +149630,9 @@
 *                 equation.
 *
                   IF( I.GT.1 ) THEN
-                     CALL DGER( IS-1, NB, -ONE, A( 1, IS ), 1,
-     $                          RHS( 1 ),
+                     CALL DGER( IS-1, NB, -ONE, A( 1, IS ), 1, RHS( 1 ),
      $                          1, C( 1, JS ), LDC )
-                     CALL DGER( IS-1, NB, -ONE, D( 1, IS ), 1,
-     $                          RHS( 1 ),
+                     CALL DGER( IS-1, NB, -ONE, D( 1, IS ), 1, RHS( 1 ),
      $                          1, F( 1, JS ), LDF )
                   END IF
                   IF( J.LT.Q ) THEN
@@ -151871,11 +149640,9 @@
      $                           C( IS, JE+1 ), LDC )
                      CALL DAXPY( N-JE, RHS( 3 ), E( JS, JE+1 ), LDE,
      $                           F( IS, JE+1 ), LDF )
-                     CALL DAXPY( N-JE, RHS( 4 ), B( JSP1, JE+1 ),
-     $                           LDB,
+                     CALL DAXPY( N-JE, RHS( 4 ), B( JSP1, JE+1 ), LDB,
      $                           C( IS, JE+1 ), LDC )
-                     CALL DAXPY( N-JE, RHS( 4 ), E( JSP1, JE+1 ),
-     $                           LDE,
+                     CALL DAXPY( N-JE, RHS( 4 ), E( JSP1, JE+1 ), LDE,
      $                           F( IS, JE+1 ), LDF )
                   END IF
 *
@@ -151941,11 +149708,9 @@
 *                 equation.
 *
                   IF( I.GT.1 ) THEN
-                     CALL DGEMV( 'N', IS-1, MB, -ONE, A( 1, IS ),
-     $                           LDA,
+                     CALL DGEMV( 'N', IS-1, MB, -ONE, A( 1, IS ), LDA,
      $                           RHS( 1 ), 1, ONE, C( 1, JS ), 1 )
-                     CALL DGEMV( 'N', IS-1, MB, -ONE, D( 1, IS ),
-     $                           LDD,
+                     CALL DGEMV( 'N', IS-1, MB, -ONE, D( 1, IS ), LDD,
      $                           RHS( 1 ), 1, ONE, F( 1, JS ), 1 )
                   END IF
                   IF( J.LT.Q ) THEN
@@ -152003,8 +149768,7 @@
                   II = MB*NB + 1
                   DO 80 JJ = 0, NB - 1
                      CALL DCOPY( MB, C( IS, JS+JJ ), 1, RHS( K ), 1 )
-                     CALL DCOPY( MB, F( IS, JS+JJ ), 1, RHS( II ),
-     $                           1 )
+                     CALL DCOPY( MB, F( IS, JS+JJ ), 1, RHS( II ), 1 )
                      K = K + MB
                      II = II + MB
    80             CONTINUE
@@ -152035,8 +149799,7 @@
                   II = MB*NB + 1
                   DO 100 JJ = 0, NB - 1
                      CALL DCOPY( MB, RHS( K ), 1, C( IS, JS+JJ ), 1 )
-                     CALL DCOPY( MB, RHS( II ), 1, F( IS, JS+JJ ),
-     $                           1 )
+                     CALL DCOPY( MB, RHS( II ), 1, F( IS, JS+JJ ), 1 )
                      K = K + MB
                      II = II + MB
   100             CONTINUE
@@ -152054,12 +149817,10 @@
                   END IF
                   IF( J.LT.Q ) THEN
                      K = MB*NB + 1
-                     CALL DGEMM( 'N', 'N', MB, N-JE, NB, ONE,
-     $                           RHS( K ),
+                     CALL DGEMM( 'N', 'N', MB, N-JE, NB, ONE, RHS( K ),
      $                           MB, B( JS, JE+1 ), LDB, ONE,
      $                           C( IS, JE+1 ), LDC )
-                     CALL DGEMM( 'N', 'N', MB, N-JE, NB, ONE,
-     $                           RHS( K ),
+                     CALL DGEMM( 'N', 'N', MB, N-JE, NB, ONE, RHS( K ),
      $                           MB, E( JS, JE+1 ), LDE, ONE,
      $                           F( IS, JE+1 ), LDF )
                   END IF
@@ -152110,8 +149871,7 @@
                   IF( IERR.GT.0 )
      $               INFO = IERR
 *
-                  CALL DGESC2( ZDIM, Z, LDZ, RHS, IPIV, JPIV,
-     $                         SCALOC )
+                  CALL DGESC2( ZDIM, Z, LDZ, RHS, IPIV, JPIV, SCALOC )
                   IF( SCALOC.NE.ONE ) THEN
                      DO 130 K = 1, N
                         CALL DSCAL( M, SCALOC, C( 1, K ), 1 )
@@ -152130,12 +149890,10 @@
 *
                   IF( J.GT.P+2 ) THEN
                      ALPHA = RHS( 1 )
-                     CALL DAXPY( JS-1, ALPHA, B( 1, JS ), 1, F( IS,
-     $                           1 ),
+                     CALL DAXPY( JS-1, ALPHA, B( 1, JS ), 1, F( IS, 1 ),
      $                           LDF )
                      ALPHA = RHS( 2 )
-                     CALL DAXPY( JS-1, ALPHA, E( 1, JS ), 1, F( IS,
-     $                           1 ),
+                     CALL DAXPY( JS-1, ALPHA, E( 1, JS ), 1, F( IS, 1 ),
      $                           LDF )
                   END IF
                   IF( I.LT.P ) THEN
@@ -152183,8 +149941,7 @@
                   CALL DGETC2( ZDIM, Z, LDZ, IPIV, JPIV, IERR )
                   IF( IERR.GT.0 )
      $               INFO = IERR
-                  CALL DGESC2( ZDIM, Z, LDZ, RHS, IPIV, JPIV,
-     $                         SCALOC )
+                  CALL DGESC2( ZDIM, Z, LDZ, RHS, IPIV, JPIV, SCALOC )
                   IF( SCALOC.NE.ONE ) THEN
                      DO 140 K = 1, N
                         CALL DSCAL( M, SCALOC, C( 1, K ), 1 )
@@ -152257,8 +150014,7 @@
                   IF( IERR.GT.0 )
      $               INFO = IERR
 *
-                  CALL DGESC2( ZDIM, Z, LDZ, RHS, IPIV, JPIV,
-     $                         SCALOC )
+                  CALL DGESC2( ZDIM, Z, LDZ, RHS, IPIV, JPIV, SCALOC )
                   IF( SCALOC.NE.ONE ) THEN
                      DO 150 K = 1, N
                         CALL DSCAL( M, SCALOC, C( 1, K ), 1 )
@@ -152278,11 +150034,9 @@
 *                 equation.
 *
                   IF( J.GT.P+2 ) THEN
-                     CALL DGER( MB, JS-1, ONE, RHS( 1 ), 1, B( 1,
-     $                          JS ),
+                     CALL DGER( MB, JS-1, ONE, RHS( 1 ), 1, B( 1, JS ),
      $                          1, F( IS, 1 ), LDF )
-                     CALL DGER( MB, JS-1, ONE, RHS( 3 ), 1, E( 1,
-     $                          JS ),
+                     CALL DGER( MB, JS-1, ONE, RHS( 3 ), 1, E( 1, JS ),
      $                          1, F( IS, 1 ), LDF )
                   END IF
                   IF( I.LT.P ) THEN
@@ -152342,8 +150096,7 @@
                   II = MB*NB + 1
                   DO 160 JJ = 0, NB - 1
                      CALL DCOPY( MB, C( IS, JS+JJ ), 1, RHS( K ), 1 )
-                     CALL DCOPY( MB, F( IS, JS+JJ ), 1, RHS( II ),
-     $                           1 )
+                     CALL DCOPY( MB, F( IS, JS+JJ ), 1, RHS( II ), 1 )
                      K = K + MB
                      II = II + MB
   160             CONTINUE
@@ -152355,8 +150108,7 @@
                   IF( IERR.GT.0 )
      $               INFO = IERR
 *
-                  CALL DGESC2( ZDIM, Z, LDZ, RHS, IPIV, JPIV,
-     $                         SCALOC )
+                  CALL DGESC2( ZDIM, Z, LDZ, RHS, IPIV, JPIV, SCALOC )
                   IF( SCALOC.NE.ONE ) THEN
                      DO 170 K = 1, N
                         CALL DSCAL( M, SCALOC, C( 1, K ), 1 )
@@ -152371,8 +150123,7 @@
                   II = MB*NB + 1
                   DO 180 JJ = 0, NB - 1
                      CALL DCOPY( MB, RHS( K ), 1, C( IS, JS+JJ ), 1 )
-                     CALL DCOPY( MB, RHS( II ), 1, F( IS, JS+JJ ),
-     $                           1 )
+                     CALL DCOPY( MB, RHS( II ), 1, F( IS, JS+JJ ), 1 )
                      K = K + MB
                      II = II + MB
   180             CONTINUE
@@ -152703,8 +150454,7 @@
 *> \endverbatim
 *>
 *  =====================================================================
-      SUBROUTINE DTGSYL( TRANS, IJOB, M, N, A, LDA, B, LDB, C, LDC,
-     $                   D,
+      SUBROUTINE DTGSYL( TRANS, IJOB, M, N, A, LDA, B, LDB, C, LDC, D,
      $                   LDD, E, LDE, F, LDF, SCALE, DIF, WORK, LWORK,
      $                   IWORK, INFO )
 *
@@ -152745,8 +150495,7 @@
       EXTERNAL           LSAME, ILAENV
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DGEMM, DLACPY, DLASET, DSCAL, DTGSY2,
-     $                   XERBLA
+      EXTERNAL           DGEMM, DLACPY, DLASET, DSCAL, DTGSY2, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          DBLE, MAX, SQRT
@@ -152849,8 +150598,7 @@
             DSCALE = ZERO
             DSUM = ONE
             PQ = 0
-            CALL DTGSY2( TRANS, IFUNC, M, N, A, LDA, B, LDB, C, LDC,
-     $                   D,
+            CALL DTGSY2( TRANS, IFUNC, M, N, A, LDA, B, LDB, C, LDC, D,
      $                   LDD, E, LDE, F, LDF, SCALE, DSUM, DSCALE,
      $                   IWORK, PQ, INFO )
             IF( DSCALE.NE.ZERO ) THEN
@@ -152944,8 +150692,7 @@
                   IE = IWORK( I+1 ) - 1
                   MB = IE - IS + 1
                   PPQQ = 0
-                  CALL DTGSY2( TRANS, IFUNC, MB, NB, A( IS, IS ),
-     $                         LDA,
+                  CALL DTGSY2( TRANS, IFUNC, MB, NB, A( IS, IS ), LDA,
      $                         B( JS, JS ), LDB, C( IS, JS ), LDC,
      $                         D( IS, IS ), LDD, E( JS, JS ), LDE,
      $                         F( IS, JS ), LDF, SCALOC, DSUM, DSCALE,
@@ -153064,12 +150811,10 @@
 *              Substitute R(I, J) and L(I, J) into remaining equation.
 *
                IF( J.GT.P+2 ) THEN
-                  CALL DGEMM( 'N', 'T', MB, JS-1, NB, ONE, C( IS,
-     $                        JS ),
+                  CALL DGEMM( 'N', 'T', MB, JS-1, NB, ONE, C( IS, JS ),
      $                        LDC, B( 1, JS ), LDB, ONE, F( IS, 1 ),
      $                        LDF )
-                  CALL DGEMM( 'N', 'T', MB, JS-1, NB, ONE, F( IS,
-     $                        JS ),
+                  CALL DGEMM( 'N', 'T', MB, JS-1, NB, ONE, F( IS, JS ),
      $                        LDF, E( 1, JS ), LDE, ONE, F( IS, 1 ),
      $                        LDF )
                END IF
@@ -153316,15 +151061,13 @@
          END IF
          KASE = 0
    10    CONTINUE
-         CALL DLACN2( N, WORK( N+1 ), WORK, IWORK, AINVNM, KASE,
-     $                ISAVE )
+         CALL DLACN2( N, WORK( N+1 ), WORK, IWORK, AINVNM, KASE, ISAVE )
          IF( KASE.NE.0 ) THEN
             IF( KASE.EQ.KASE1 ) THEN
 *
 *              Multiply by inv(A).
 *
-               CALL DLATPS( UPLO, 'No transpose', DIAG, NORMIN, N,
-     $                      AP,
+               CALL DLATPS( UPLO, 'No transpose', DIAG, NORMIN, N, AP,
      $                      WORK, SCALE, WORK( 2*N+1 ), INFO )
             ELSE
 *
@@ -153572,8 +151315,7 @@
 *> \endverbatim
 *>
 *  =====================================================================
-      SUBROUTINE DTPMQRT( SIDE, TRANS, M, N, K, L, NB, V, LDV, T,
-     $                    LDT,
+      SUBROUTINE DTPMQRT( SIDE, TRANS, M, N, K, L, NB, V, LDV, T, LDT,
      $                    A, LDA, B, LDB, WORK, INFO )
 *
 *  -- LAPACK computational routine --
@@ -154722,8 +152464,7 @@
 *
          CALL DGEMM( 'N', 'T', M, N-L, K, -ONE, WORK, LDWORK,
      $               V, LDV, ONE, B, LDB )
-         CALL DGEMM( 'N', 'T', M, L, K-L, -ONE, WORK( 1, KP ),
-     $               LDWORK,
+         CALL DGEMM( 'N', 'T', M, L, K-L, -ONE, WORK( 1, KP ), LDWORK,
      $               V( NP, KP ), LDV, ONE, B( 1, NP ), LDB )
          CALL DTRMM( 'R', 'U', 'T', 'N', M, L, ONE, V( NP, 1 ), LDV,
      $               WORK, LDWORK )
@@ -154964,8 +152705,7 @@
 *
          CALL DGEMM( 'N', 'N', M, N-L, K, -ONE, WORK, LDWORK,
      $               V, LDV, ONE, B, LDB )
-         CALL DGEMM( 'N', 'N', M, L, K-L, -ONE, WORK( 1, KP ),
-     $               LDWORK,
+         CALL DGEMM( 'N', 'N', M, L, K-L, -ONE, WORK( 1, KP ), LDWORK,
      $               V( KP, NP ), LDV, ONE, B( 1, NP ), LDB )
          CALL DTRMM( 'R', 'L', 'N', 'N', M, L, ONE, V( 1, NP ), LDV,
      $               WORK, LDWORK )
@@ -155273,8 +153013,7 @@
 *> \ingroup tprfs
 *
 *  =====================================================================
-      SUBROUTINE DTPRFS( UPLO, TRANS, DIAG, N, NRHS, AP, B, LDB, X,
-     $                   LDX,
+      SUBROUTINE DTPRFS( UPLO, TRANS, DIAG, N, NRHS, AP, B, LDB, X, LDX,
      $                   FERR, BERR, WORK, IWORK, INFO )
 *
 *  -- LAPACK computational routine --
@@ -155309,8 +153048,7 @@
       INTEGER            ISAVE( 3 )
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DAXPY, DCOPY, DLACN2, DTPMV, DTPSV,
-     $                   XERBLA
+      EXTERNAL           DAXPY, DCOPY, DLACN2, DTPMV, DTPSV, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          ABS, MAX
@@ -155534,16 +153272,14 @@
 *
          KASE = 0
   210    CONTINUE
-         CALL DLACN2( N, WORK( 2*N+1 ), WORK( N+1 ), IWORK,
-     $                FERR( J ),
+         CALL DLACN2( N, WORK( 2*N+1 ), WORK( N+1 ), IWORK, FERR( J ),
      $                KASE, ISAVE )
          IF( KASE.NE.0 ) THEN
             IF( KASE.EQ.1 ) THEN
 *
 *              Multiply by diag(W)*inv(op(A)**T).
 *
-               CALL DTPSV( UPLO, TRANST, DIAG, N, AP, WORK( N+1 ),
-     $                     1 )
+               CALL DTPSV( UPLO, TRANST, DIAG, N, AP, WORK( N+1 ), 1 )
                DO 220 I = 1, N
                   WORK( N+I ) = WORK( I )*WORK( N+I )
   220          CONTINUE
@@ -155853,14 +153589,9 @@
 *>
 *>    A * X = B  or  A**T * X = B,
 *>
-*> where A is a triangular matrix of order N stored in packed format, and B is an N-by-NRHS matrix.
-*>
-*> This subroutine verifies that A is nonsingular, but callers should note that only exact
-*> singularity is detected. It is conceivable for one or more diagonal elements of A to be
-*> subnormally tiny numbers without this subroutine signalling an error.
-*>
-*> If a possible loss of numerical precision due to near-singular matrices is a concern, the
-*> caller should verify that A is nonsingular within some tolerance before calling this subroutine.
+*> where A is a triangular matrix of order N stored in packed format,
+*> and B is an N-by-NRHS matrix.  A check is made to verify that A is
+*> nonsingular.
 *> \endverbatim
 *
 *  Arguments:
@@ -155930,7 +153661,7 @@
 *>          INFO is INTEGER
 *>          = 0:  successful exit
 *>          < 0:  if INFO = -i, the i-th argument had an illegal value
-*>          > 0:  if INFO = i, the i-th diagonal element of A is exactly zero,
+*>          > 0:  if INFO = i, the i-th diagonal element of A is zero,
 *>                indicating that the matrix is singular and the
 *>                solutions X have not been computed.
 *> \endverbatim
@@ -155946,8 +153677,7 @@
 *> \ingroup tptrs
 *
 *  =====================================================================
-      SUBROUTINE DTPTRS( UPLO, TRANS, DIAG, N, NRHS, AP, B, LDB,
-     $                   INFO )
+      SUBROUTINE DTPTRS( UPLO, TRANS, DIAG, N, NRHS, AP, B, LDB, INFO )
 *
 *  -- LAPACK computational routine --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -155991,8 +153721,7 @@
       IF( .NOT.UPPER .AND. .NOT.LSAME( UPLO, 'L' ) ) THEN
          INFO = -1
       ELSE IF( .NOT.LSAME( TRANS, 'N' ) .AND. .NOT.
-     $         LSAME( TRANS, 'T' ) .AND.
-     $                .NOT.LSAME( TRANS, 'C' ) ) THEN
+     $         LSAME( TRANS, 'T' ) .AND. .NOT.LSAME( TRANS, 'C' ) ) THEN
          INFO = -2
       ELSE IF( .NOT.NOUNIT .AND. .NOT.LSAME( DIAG, 'U' ) ) THEN
          INFO = -3
@@ -156949,8 +154678,7 @@
          END IF
          KASE = 0
    10    CONTINUE
-         CALL DLACN2( N, WORK( N+1 ), WORK, IWORK, AINVNM, KASE,
-     $                ISAVE )
+         CALL DLACN2( N, WORK( N+1 ), WORK, IWORK, AINVNM, KASE, ISAVE )
          IF( KASE.NE.0 ) THEN
             IF( KASE.EQ.KASE1 ) THEN
 *
@@ -156962,8 +154690,7 @@
 *
 *              Multiply by inv(A**T).
 *
-               CALL DLATRS( UPLO, 'Transpose', DIAG, NORMIN, N, A,
-     $                      LDA,
+               CALL DLATRS( UPLO, 'Transpose', DIAG, NORMIN, N, A, LDA,
      $                      WORK, SCALE, WORK( 2*N+1 ), INFO )
             END IF
             NORMIN = 'Y'
@@ -157211,8 +154938,7 @@
 *> \endverbatim
 *>
 *  =====================================================================
-      SUBROUTINE DTREVC( SIDE, HOWMNY, SELECT, N, T, LDT, VL, LDVL,
-     $                   VR,
+      SUBROUTINE DTREVC( SIDE, HOWMNY, SELECT, N, T, LDT, VL, LDVL, VR,
      $                   LDVR, MM, M, WORK, INFO )
 *
 *  -- LAPACK computational routine --
@@ -157249,8 +154975,7 @@
       EXTERNAL           LSAME, IDAMAX, DDOT, DLAMCH
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DAXPY, DCOPY, DGEMV, DLALN2, DSCAL,
-     $                   XERBLA
+      EXTERNAL           DAXPY, DCOPY, DGEMV, DLALN2, DSCAL, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          ABS, MAX, SQRT
@@ -157427,8 +155152,7 @@
 *
 *                    1-by-1 diagonal block
 *
-                     CALL DLALN2( .FALSE., 1, 1, SMIN, ONE, T( J,
-     $                            J ),
+                     CALL DLALN2( .FALSE., 1, 1, SMIN, ONE, T( J, J ),
      $                            LDT, ONE, ONE, WORK( J+N ), N, WR,
      $                            ZERO, X, 2, SCALE, XNORM, IERR )
 *
@@ -157559,8 +155283,7 @@
 *
 *                    1-by-1 diagonal block
 *
-                     CALL DLALN2( .FALSE., 1, 2, SMIN, ONE, T( J,
-     $                            J ),
+                     CALL DLALN2( .FALSE., 1, 2, SMIN, ONE, T( J, J ),
      $                            LDT, ONE, ONE, WORK( J+N ), N, WR, WI,
      $                            X, 2, SCALE, XNORM, IERR )
 *
@@ -157670,8 +155393,7 @@
      $                           WORK( 1+N2 ), 1, WORK( KI+N2 ),
      $                           VR( 1, KI ), 1 )
                   ELSE
-                     CALL DSCAL( N, WORK( KI-1+N ), VR( 1, KI-1 ),
-     $                           1 )
+                     CALL DSCAL( N, WORK( KI-1+N ), VR( 1, KI-1 ), 1 )
                      CALL DSCAL( N, WORK( KI+N2 ), VR( 1, KI ), 1 )
                   END IF
 *
@@ -157780,8 +155502,7 @@
 *
 *                    Solve (T(J,J)-WR)**T*X = WORK
 *
-                     CALL DLALN2( .FALSE., 1, 1, SMIN, ONE, T( J,
-     $                            J ),
+                     CALL DLALN2( .FALSE., 1, 1, SMIN, ONE, T( J, J ),
      $                            LDT, ONE, ONE, WORK( J+N ), N, WR,
      $                            ZERO, X, 2, SCALE, XNORM, IERR )
 *
@@ -157841,8 +155562,7 @@
 *              Copy the vector x or Q*x to VL and normalize.
 *
                IF( .NOT.OVER ) THEN
-                  CALL DCOPY( N-KI+1, WORK( KI+N ), 1, VL( KI, IS ),
-     $                        1 )
+                  CALL DCOPY( N-KI+1, WORK( KI+N ), 1, VL( KI, IS ), 1 )
 *
                   II = IDAMAX( N-KI+1, VL( KI, IS ), 1 ) + KI - 1
                   REMAX = ONE / ABS( VL( II, IS ) )
@@ -157855,8 +155575,7 @@
                ELSE
 *
                   IF( KI.LT.N )
-     $               CALL DGEMV( 'N', N, N-KI, ONE, VL( 1, KI+1 ),
-     $                           LDVL,
+     $               CALL DGEMV( 'N', N, N-KI, ONE, VL( 1, KI+1 ), LDVL,
      $                           WORK( KI+1+N ), 1, WORK( KI+N ),
      $                           VL( 1, KI ), 1 )
 *
@@ -157935,8 +155654,7 @@
 *
 *                    Solve (T(J,J)-(WR-i*WI))*(X11+i*X12)= WK+I*WK2
 *
-                     CALL DLALN2( .FALSE., 1, 2, SMIN, ONE, T( J,
-     $                            J ),
+                     CALL DLALN2( .FALSE., 1, 2, SMIN, ONE, T( J, J ),
      $                            LDT, ONE, ONE, WORK( J+N ), N, WR,
      $                            -WI, X, 2, SCALE, XNORM, IERR )
 *
@@ -157981,8 +155699,7 @@
      $                               WORK( KI+2+N ), 1 )
 *
                      WORK( J+1+N2 ) = WORK( J+1+N2 ) -
-     $                                DDOT( J-KI-2, T( KI+2, J+1 ),
-     $                                      1,
+     $                                DDOT( J-KI-2, T( KI+2, J+1 ), 1,
      $                                WORK( KI+2+N2 ), 1 )
 *
 *                    Solve 2-by-2 complex linear equation
@@ -158013,10 +155730,8 @@
 *              Copy the vector x or Q*x to VL and normalize.
 *
                IF( .NOT.OVER ) THEN
-                  CALL DCOPY( N-KI+1, WORK( KI+N ), 1, VL( KI, IS ),
-     $                        1 )
-                  CALL DCOPY( N-KI+1, WORK( KI+N2 ), 1, VL( KI,
-     $                        IS+1 ),
+                  CALL DCOPY( N-KI+1, WORK( KI+N ), 1, VL( KI, IS ), 1 )
+                  CALL DCOPY( N-KI+1, WORK( KI+N2 ), 1, VL( KI, IS+1 ),
      $                        1 )
 *
                   EMAX = ZERO
@@ -158042,8 +155757,7 @@
      $                           WORK( KI+1+N2 ), VL( 1, KI+1 ), 1 )
                   ELSE
                      CALL DSCAL( N, WORK( KI+N ), VL( 1, KI ), 1 )
-                     CALL DSCAL( N, WORK( KI+1+N2 ), VL( 1, KI+1 ),
-     $                           1 )
+                     CALL DSCAL( N, WORK( KI+1+N2 ), VL( 1, KI+1 ), 1 )
                   END IF
 *
                   EMAX = ZERO
@@ -158353,8 +156067,7 @@
       EXTERNAL           LSAME, IDAMAX, ILAENV, DDOT, DLAMCH
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DAXPY, DCOPY, DGEMV, DLALN2, DSCAL,
-     $                   XERBLA,
+      EXTERNAL           DAXPY, DCOPY, DGEMV, DLALN2, DSCAL, XERBLA,
      $                   DGEMM, DLASET, DLACPY
 *     ..
 *     .. Intrinsic Functions ..
@@ -158569,8 +156282,7 @@
 *
 *                    1-by-1 diagonal block
 *
-                     CALL DLALN2( .FALSE., 1, 1, SMIN, ONE, T( J,
-     $                            J ),
+                     CALL DLALN2( .FALSE., 1, 1, SMIN, ONE, T( J, J ),
      $                            LDT, ONE, ONE, WORK( J+IV*N ), N, WR,
      $                            ZERO, X, 2, SCALE, XNORM, IERR )
 *
@@ -158637,8 +156349,7 @@
                IF( .NOT.OVER ) THEN
 *                 ------------------------------
 *                 no back-transform: copy x to VR and normalize.
-                  CALL DCOPY( KI, WORK( 1 + IV*N ), 1, VR( 1, IS ),
-     $                        1 )
+                  CALL DCOPY( KI, WORK( 1 + IV*N ), 1, VR( 1, IS ), 1 )
 *
                   II = IDAMAX( KI, VR( 1, IS ), 1 )
                   REMAX = ONE / ABS( VR( II, IS ) )
@@ -158717,8 +156428,7 @@
 *
 *                    1-by-1 diagonal block
 *
-                     CALL DLALN2( .FALSE., 1, 2, SMIN, ONE, T( J,
-     $                            J ),
+                     CALL DLALN2( .FALSE., 1, 2, SMIN, ONE, T( J, J ),
      $                            LDT, ONE, ONE, WORK( J+(IV-1)*N ), N,
      $                            WR, WI, X, 2, SCALE, XNORM, IERR )
 *
@@ -158736,10 +156446,8 @@
 *                    Scale if necessary
 *
                      IF( SCALE.NE.ONE ) THEN
-                        CALL DSCAL( KI, SCALE, WORK( 1+(IV-1)*N ),
-     $                              1 )
-                        CALL DSCAL( KI, SCALE, WORK( 1+(IV  )*N ),
-     $                              1 )
+                        CALL DSCAL( KI, SCALE, WORK( 1+(IV-1)*N ), 1 )
+                        CALL DSCAL( KI, SCALE, WORK( 1+(IV  )*N ), 1 )
                      END IF
                      WORK( J+(IV-1)*N ) = X( 1, 1 )
                      WORK( J+(IV  )*N ) = X( 1, 2 )
@@ -158778,10 +156486,8 @@
 *                    Scale if necessary
 *
                      IF( SCALE.NE.ONE ) THEN
-                        CALL DSCAL( KI, SCALE, WORK( 1+(IV-1)*N ),
-     $                              1 )
-                        CALL DSCAL( KI, SCALE, WORK( 1+(IV  )*N ),
-     $                              1 )
+                        CALL DSCAL( KI, SCALE, WORK( 1+(IV-1)*N ), 1 )
+                        CALL DSCAL( KI, SCALE, WORK( 1+(IV  )*N ), 1 )
                      END IF
                      WORK( J-1+(IV-1)*N ) = X( 1, 1 )
                      WORK( J  +(IV-1)*N ) = X( 2, 1 )
@@ -158806,10 +156512,8 @@
                IF( .NOT.OVER ) THEN
 *                 ------------------------------
 *                 no back-transform: copy x to VR and normalize.
-                  CALL DCOPY( KI, WORK( 1+(IV-1)*N ), 1, VR(1,IS-1),
-     $                        1 )
-                  CALL DCOPY( KI, WORK( 1+(IV  )*N ), 1, VR(1,IS  ),
-     $                        1 )
+                  CALL DCOPY( KI, WORK( 1+(IV-1)*N ), 1, VR(1,IS-1), 1 )
+                  CALL DCOPY( KI, WORK( 1+(IV  )*N ), 1, VR(1,IS  ), 1 )
 *
                   EMAX = ZERO
                   DO 100 K = 1, KI
@@ -158836,10 +156540,8 @@
      $                           WORK( 1  + (IV)*N ), 1,
      $                           WORK( KI + (IV)*N ), VR( 1, KI ), 1 )
                   ELSE
-                     CALL DSCAL( N, WORK(KI-1+(IV-1)*N), VR(1,KI-1),
-     $                           1)
-                     CALL DSCAL( N, WORK(KI  +(IV  )*N), VR(1,KI  ),
-     $                           1)
+                     CALL DSCAL( N, WORK(KI-1+(IV-1)*N), VR(1,KI-1), 1)
+                     CALL DSCAL( N, WORK(KI  +(IV  )*N), VR(1,KI  ), 1)
                   END IF
 *
                   EMAX = ZERO
@@ -159018,16 +156720,14 @@
 *
 *                    Solve [ T(J,J) - WR ]**T * X = WORK
 *
-                     CALL DLALN2( .FALSE., 1, 1, SMIN, ONE, T( J,
-     $                            J ),
+                     CALL DLALN2( .FALSE., 1, 1, SMIN, ONE, T( J, J ),
      $                            LDT, ONE, ONE, WORK( J+IV*N ), N, WR,
      $                            ZERO, X, 2, SCALE, XNORM, IERR )
 *
 *                    Scale if necessary
 *
                      IF( SCALE.NE.ONE )
-     $                  CALL DSCAL( N-KI+1, SCALE, WORK( KI+IV*N ),
-     $                              1 )
+     $                  CALL DSCAL( N-KI+1, SCALE, WORK( KI+IV*N ), 1 )
                      WORK( J+IV*N ) = X( 1, 1 )
                      VMAX = MAX( ABS( WORK( J+IV*N ) ), VMAX )
                      VCRIT = BIGNUM / VMAX
@@ -159052,8 +156752,7 @@
      $                                      WORK( KI+1+IV*N ), 1 )
 *
                      WORK( J+1+IV*N ) = WORK( J+1+IV*N ) -
-     $                                  DDOT( J-KI-1, T( KI+1, J+1 ),
-     $                                        1,
+     $                                  DDOT( J-KI-1, T( KI+1, J+1 ), 1,
      $                                        WORK( KI+1+IV*N ), 1 )
 *
 *                    Solve
@@ -159067,8 +156766,7 @@
 *                    Scale if necessary
 *
                      IF( SCALE.NE.ONE )
-     $                  CALL DSCAL( N-KI+1, SCALE, WORK( KI+IV*N ),
-     $                              1 )
+     $                  CALL DSCAL( N-KI+1, SCALE, WORK( KI+IV*N ), 1 )
                      WORK( J  +IV*N ) = X( 1, 1 )
                      WORK( J+1+IV*N ) = X( 2, 1 )
 *
@@ -159174,37 +156872,30 @@
 *
                      IF( WORK( J ).GT.VCRIT ) THEN
                         REC = ONE / VMAX
-                        CALL DSCAL( N-KI+1, REC, WORK(KI+(IV  )*N),
-     $                              1 )
-                        CALL DSCAL( N-KI+1, REC, WORK(KI+(IV+1)*N),
-     $                              1 )
+                        CALL DSCAL( N-KI+1, REC, WORK(KI+(IV  )*N), 1 )
+                        CALL DSCAL( N-KI+1, REC, WORK(KI+(IV+1)*N), 1 )
                         VMAX = ONE
                         VCRIT = BIGNUM
                      END IF
 *
                      WORK( J+(IV  )*N ) = WORK( J+(IV)*N ) -
-     $                                  DDOT( J-KI-2, T( KI+2, J ),
-     $                                        1,
+     $                                  DDOT( J-KI-2, T( KI+2, J ), 1,
      $                                        WORK( KI+2+(IV)*N ), 1 )
                      WORK( J+(IV+1)*N ) = WORK( J+(IV+1)*N ) -
-     $                                  DDOT( J-KI-2, T( KI+2, J ),
-     $                                        1,
+     $                                  DDOT( J-KI-2, T( KI+2, J ), 1,
      $                                        WORK( KI+2+(IV+1)*N ), 1 )
 *
 *                    Solve [ T(J,J)-(WR-i*WI) ]*(X11+i*X12)= WK+I*WK2
 *
-                     CALL DLALN2( .FALSE., 1, 2, SMIN, ONE, T( J,
-     $                            J ),
+                     CALL DLALN2( .FALSE., 1, 2, SMIN, ONE, T( J, J ),
      $                            LDT, ONE, ONE, WORK( J+IV*N ), N, WR,
      $                            -WI, X, 2, SCALE, XNORM, IERR )
 *
 *                    Scale if necessary
 *
                      IF( SCALE.NE.ONE ) THEN
-                        CALL DSCAL( N-KI+1, SCALE, WORK(KI+(IV  )*N),
-     $                              1)
-                        CALL DSCAL( N-KI+1, SCALE, WORK(KI+(IV+1)*N),
-     $                              1)
+                        CALL DSCAL( N-KI+1, SCALE, WORK(KI+(IV  )*N), 1)
+                        CALL DSCAL( N-KI+1, SCALE, WORK(KI+(IV+1)*N), 1)
                      END IF
                      WORK( J+(IV  )*N ) = X( 1, 1 )
                      WORK( J+(IV+1)*N ) = X( 1, 2 )
@@ -159222,10 +156913,8 @@
                      BETA = MAX( WORK( J ), WORK( J+1 ) )
                      IF( BETA.GT.VCRIT ) THEN
                         REC = ONE / VMAX
-                        CALL DSCAL( N-KI+1, REC, WORK(KI+(IV  )*N),
-     $                              1 )
-                        CALL DSCAL( N-KI+1, REC, WORK(KI+(IV+1)*N),
-     $                              1 )
+                        CALL DSCAL( N-KI+1, REC, WORK(KI+(IV  )*N), 1 )
+                        CALL DSCAL( N-KI+1, REC, WORK(KI+(IV+1)*N), 1 )
                         VMAX = ONE
                         VCRIT = BIGNUM
                      END IF
@@ -159239,13 +156928,11 @@
      $                                      WORK( KI+2+(IV+1)*N ), 1 )
 *
                      WORK( J+1+(IV  )*N ) = WORK( J+1+(IV)*N ) -
-     $                                DDOT( J-KI-2, T( KI+2, J+1 ),
-     $                                      1,
+     $                                DDOT( J-KI-2, T( KI+2, J+1 ), 1,
      $                                      WORK( KI+2+(IV)*N ), 1 )
 *
                      WORK( J+1+(IV+1)*N ) = WORK( J+1+(IV+1)*N ) -
-     $                                DDOT( J-KI-2, T( KI+2, J+1 ),
-     $                                      1,
+     $                                DDOT( J-KI-2, T( KI+2, J+1 ), 1,
      $                                      WORK( KI+2+(IV+1)*N ), 1 )
 *
 *                    Solve 2-by-2 complex linear equation
@@ -159259,10 +156946,8 @@
 *                    Scale if necessary
 *
                      IF( SCALE.NE.ONE ) THEN
-                        CALL DSCAL( N-KI+1, SCALE, WORK(KI+(IV  )*N),
-     $                              1)
-                        CALL DSCAL( N-KI+1, SCALE, WORK(KI+(IV+1)*N),
-     $                              1)
+                        CALL DSCAL( N-KI+1, SCALE, WORK(KI+(IV  )*N), 1)
+                        CALL DSCAL( N-KI+1, SCALE, WORK(KI+(IV+1)*N), 1)
                      END IF
                      WORK( J  +(IV  )*N ) = X( 1, 1 )
                      WORK( J  +(IV+1)*N ) = X( 1, 2 )
@@ -159315,10 +157000,8 @@
      $                           WORK( KI+1 + (IV+1)*N ),
      $                           VL( 1, KI+1 ), 1 )
                   ELSE
-                     CALL DSCAL( N, WORK(KI+  (IV  )*N), VL(1, KI  ),
-     $                           1)
-                     CALL DSCAL( N, WORK(KI+1+(IV+1)*N), VL(1, KI+1),
-     $                           1)
+                     CALL DSCAL( N, WORK(KI+  (IV  )*N), VL(1, KI  ), 1)
+                     CALL DSCAL( N, WORK(KI+1+(IV+1)*N), VL(1, KI+1), 1)
                   END IF
 *
                   EMAX = ZERO
@@ -159703,8 +157386,7 @@
 *
 *              Swap two 1 by 1 blocks, no problems possible
 *
-               CALL DLAEXC( WANTQ, N, T, LDT, Q, LDQ, HERE, 1,
-     $                      NBNEXT,
+               CALL DLAEXC( WANTQ, N, T, LDT, Q, LDQ, HERE, 1, NBNEXT,
      $                      WORK, INFO )
                HERE = HERE + 1
             ELSE
@@ -159730,8 +157412,7 @@
 *
                   CALL DLAEXC( WANTQ, N, T, LDT, Q, LDQ, HERE, 1, 1,
      $                         WORK, INFO )
-                  CALL DLAEXC( WANTQ, N, T, LDT, Q, LDQ, HERE+1, 1,
-     $                         1,
+                  CALL DLAEXC( WANTQ, N, T, LDT, Q, LDQ, HERE+1, 1, 1,
      $                         WORK, INFO )
                   HERE = HERE + 2
                END IF
@@ -159756,8 +157437,7 @@
                IF( T( HERE-1, HERE-2 ).NE.ZERO )
      $            NBNEXT = 2
             END IF
-            CALL DLAEXC( WANTQ, N, T, LDT, Q, LDQ, HERE-NBNEXT,
-     $                   NBNEXT,
+            CALL DLAEXC( WANTQ, N, T, LDT, Q, LDQ, HERE-NBNEXT, NBNEXT,
      $                   NBF, WORK, INFO )
             IF( INFO.NE.0 ) THEN
                ILST = HERE
@@ -159782,8 +157462,7 @@
                IF( T( HERE-1, HERE-2 ).NE.ZERO )
      $            NBNEXT = 2
             END IF
-            CALL DLAEXC( WANTQ, N, T, LDT, Q, LDQ, HERE-NBNEXT,
-     $                   NBNEXT,
+            CALL DLAEXC( WANTQ, N, T, LDT, Q, LDQ, HERE-NBNEXT, NBNEXT,
      $                   1, WORK, INFO )
             IF( INFO.NE.0 ) THEN
                ILST = HERE
@@ -159793,8 +157472,7 @@
 *
 *              Swap two 1 by 1 blocks, no problems possible
 *
-               CALL DLAEXC( WANTQ, N, T, LDT, Q, LDQ, HERE, NBNEXT,
-     $                      1,
+               CALL DLAEXC( WANTQ, N, T, LDT, Q, LDQ, HERE, NBNEXT, 1,
      $                      WORK, INFO )
                HERE = HERE - 1
             ELSE
@@ -159807,8 +157485,7 @@
 *
 *                 2 by 2 Block did not split
 *
-                  CALL DLAEXC( WANTQ, N, T, LDT, Q, LDQ, HERE-1, 2,
-     $                         1,
+                  CALL DLAEXC( WANTQ, N, T, LDT, Q, LDQ, HERE-1, 2, 1,
      $                         WORK, INFO )
                   IF( INFO.NE.0 ) THEN
                      ILST = HERE
@@ -159821,8 +157498,7 @@
 *
                   CALL DLAEXC( WANTQ, N, T, LDT, Q, LDQ, HERE, 1, 1,
      $                         WORK, INFO )
-                  CALL DLAEXC( WANTQ, N, T, LDT, Q, LDQ, HERE-1, 1,
-     $                         1,
+                  CALL DLAEXC( WANTQ, N, T, LDT, Q, LDQ, HERE-1, 1, 1,
      $                         WORK, INFO )
                   HERE = HERE - 2
                END IF
@@ -160017,8 +157693,7 @@
 *> \ingroup trrfs
 *
 *  =====================================================================
-      SUBROUTINE DTRRFS( UPLO, TRANS, DIAG, N, NRHS, A, LDA, B, LDB,
-     $                   X,
+      SUBROUTINE DTRRFS( UPLO, TRANS, DIAG, N, NRHS, A, LDA, B, LDB, X,
      $                   LDX, FERR, BERR, WORK, IWORK, INFO )
 *
 *  -- LAPACK computational routine --
@@ -160053,8 +157728,7 @@
       INTEGER            ISAVE( 3 )
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DAXPY, DCOPY, DLACN2, DTRMV, DTRSV,
-     $                   XERBLA
+      EXTERNAL           DAXPY, DCOPY, DLACN2, DTRMV, DTRSV, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          ABS, MAX
@@ -160268,16 +157942,14 @@
 *
          KASE = 0
   210    CONTINUE
-         CALL DLACN2( N, WORK( 2*N+1 ), WORK( N+1 ), IWORK,
-     $                FERR( J ),
+         CALL DLACN2( N, WORK( 2*N+1 ), WORK( N+1 ), IWORK, FERR( J ),
      $                KASE, ISAVE )
          IF( KASE.NE.0 ) THEN
             IF( KASE.EQ.1 ) THEN
 *
 *              Multiply by diag(W)*inv(op(A)**T).
 *
-               CALL DTRSV( UPLO, TRANST, DIAG, N, A, LDA,
-     $                     WORK( N+1 ),
+               CALL DTRSV( UPLO, TRANST, DIAG, N, A, LDA, WORK( N+1 ),
      $                     1 )
                DO 220 I = 1, N
                   WORK( N+I ) = WORK( I )*WORK( N+I )
@@ -160621,8 +158293,7 @@
 *> \endverbatim
 *>
 *  =====================================================================
-      SUBROUTINE DTRSEN( JOB, COMPQ, SELECT, N, T, LDT, Q, LDQ, WR,
-     $                   WI,
+      SUBROUTINE DTRSEN( JOB, COMPQ, SELECT, N, T, LDT, Q, LDQ, WR, WI,
      $                   M, S, SEP, WORK, LWORK, IWORK, LIWORK, INFO )
 *
 *  -- LAPACK computational routine --
@@ -160663,8 +158334,7 @@
       EXTERNAL           LSAME, DLANGE
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DLACN2, DLACPY, DTREXC, DTRSYL,
-     $                   XERBLA
+      EXTERNAL           DLACN2, DLACPY, DTREXC, DTRSYL, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          ABS, MAX, SQRT
@@ -160785,8 +158455,7 @@
                IERR = 0
                KK = K
                IF( K.NE.KS )
-     $            CALL DTREXC( COMPQ, N, T, LDT, Q, LDQ, KK, KS,
-     $                         WORK,
+     $            CALL DTREXC( COMPQ, N, T, LDT, Q, LDQ, KK, KS, WORK,
      $                         IERR )
                IF( IERR.EQ.1 .OR. IERR.EQ.2 ) THEN
 *
@@ -160834,8 +158503,7 @@
          EST = ZERO
          KASE = 0
    30    CONTINUE
-         CALL DLACN2( NN, WORK( NN+1 ), WORK, IWORK, EST, KASE,
-     $                ISAVE )
+         CALL DLACN2( NN, WORK( NN+1 ), WORK, IWORK, EST, KASE, ISAVE )
          IF( KASE.NE.0 ) THEN
             IF( KASE.EQ.1 ) THEN
 *
@@ -161143,8 +158811,7 @@
 *> \endverbatim
 *>
 *  =====================================================================
-      SUBROUTINE DTRSNA( JOB, HOWMNY, SELECT, N, T, LDT, VL, LDVL,
-     $                   VR,
+      SUBROUTINE DTRSNA( JOB, HOWMNY, SELECT, N, T, LDT, VL, LDVL, VR,
      $                   LDVR, S, SEP, MM, M, WORK, LDWORK, IWORK,
      $                   INFO )
 *
@@ -161185,8 +158852,7 @@
       EXTERNAL           LSAME, DDOT, DLAMCH, DLAPY2, DNRM2
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DLACN2, DLACPY, DLAQTR, DTREXC,
-     $                   XERBLA
+      EXTERNAL           DLACN2, DLACPY, DLAQTR, DTREXC, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          ABS, MAX, SQRT
@@ -161326,12 +158992,10 @@
 *              Complex eigenvalue.
 *
                PROD1 = DDOT( N, VR( 1, KS ), 1, VL( 1, KS ), 1 )
-               PROD1 = PROD1 + DDOT( N, VR( 1, KS+1 ), 1, VL( 1,
-     $                               KS+1 ),
+               PROD1 = PROD1 + DDOT( N, VR( 1, KS+1 ), 1, VL( 1, KS+1 ),
      $                 1 )
                PROD2 = DDOT( N, VL( 1, KS ), 1, VR( 1, KS+1 ), 1 )
-               PROD2 = PROD2 - DDOT( N, VL( 1, KS+1 ), 1, VR( 1,
-     $                               KS ),
+               PROD2 = PROD2 - DDOT( N, VL( 1, KS+1 ), 1, VR( 1, KS ),
      $                 1 )
                RNRM = DLAPY2( DNRM2( N, VR( 1, KS ), 1 ),
      $                DNRM2( N, VR( 1, KS+1 ), 1 ) )
@@ -161354,8 +159018,7 @@
             CALL DLACPY( 'Full', N, N, T, LDT, WORK, LDWORK )
             IFST = K
             ILST = 1
-            CALL DTREXC( 'No Q', N, WORK, LDWORK, DUMMY, 1, IFST,
-     $                   ILST,
+            CALL DTREXC( 'No Q', N, WORK, LDWORK, DUMMY, 1, IFST, ILST,
      $                   WORK( 1, N+1 ), IERR )
 *
             IF( IERR.EQ.1 .OR. IERR.EQ.2 ) THEN
@@ -161423,8 +159086,7 @@
                EST = ZERO
                KASE = 0
    50          CONTINUE
-               CALL DLACN2( NN, WORK( 1, N+2 ), WORK( 1, N+4 ),
-     $                      IWORK,
+               CALL DLACN2( NN, WORK( 1, N+2 ), WORK( 1, N+4 ), IWORK,
      $                      EST, KASE, ISAVE )
                IF( KASE.NE.0 ) THEN
                   IF( KASE.EQ.1 ) THEN
@@ -161432,8 +159094,7 @@
 *
 *                       Real eigenvalue: solve C**T*x = scale*c.
 *
-                        CALL DLAQTR( .TRUE., .TRUE., N-1, WORK( 2,
-     $                               2 ),
+                        CALL DLAQTR( .TRUE., .TRUE., N-1, WORK( 2, 2 ),
      $                               LDWORK, DUMMY, DUMM, SCALE,
      $                               WORK( 1, N+4 ), WORK( 1, N+6 ),
      $                               IERR )
@@ -161442,8 +159103,7 @@
 *                       Complex eigenvalue: solve
 *                       C**T*(p+iq) = scale*(c+id) in real arithmetic.
 *
-                        CALL DLAQTR( .TRUE., .FALSE., N-1, WORK( 2,
-     $                               2 ),
+                        CALL DLAQTR( .TRUE., .FALSE., N-1, WORK( 2, 2 ),
      $                               LDWORK, WORK( 1, N+1 ), MU, SCALE,
      $                               WORK( 1, N+4 ), WORK( 1, N+6 ),
      $                               IERR )
@@ -161453,8 +159113,7 @@
 *
 *                       Real eigenvalue: solve C*x = scale*c.
 *
-                        CALL DLAQTR( .FALSE., .TRUE., N-1, WORK( 2,
-     $                               2 ),
+                        CALL DLAQTR( .FALSE., .TRUE., N-1, WORK( 2, 2 ),
      $                               LDWORK, DUMMY, DUMM, SCALE,
      $                               WORK( 1, N+4 ), WORK( 1, N+6 ),
      $                               IERR )
@@ -162083,8 +159742,7 @@
                   SUMR = DDOT( L1-1, C( K2, 1 ), LDC, B( 1, L2 ), 1 )
                   VEC( 2, 2 ) = C( K2, L2 ) - ( SUML+SGN*SUMR )
 *
-                  CALL DLASY2( .TRUE., .FALSE., ISGN, 2, 2, A( K1,
-     $                         K1 ),
+                  CALL DLASY2( .TRUE., .FALSE., ISGN, 2, 2, A( K1, K1 ),
      $                         LDA, B( L1, L1 ), LDB, VEC, 2, SCALOC, X,
      $                         2, XNORM, IERR )
                   IF( IERR.NE.0 )
@@ -162268,8 +159926,7 @@
      $                   B( L2, MIN( L2+1, N ) ), LDB )
                   VEC( 2, 2 ) = C( K2, L2 ) - ( SUML+SGN*SUMR )
 *
-                  CALL DLASY2( .TRUE., .TRUE., ISGN, 2, 2, A( K1,
-     $                         K1 ),
+                  CALL DLASY2( .TRUE., .TRUE., ISGN, 2, 2, A( K1, K1 ),
      $                         LDA, B( L1, L1 ), LDB, VEC, 2, SCALOC, X,
      $                         2, XNORM, IERR )
                   IF( IERR.NE.0 )
@@ -162462,8 +160119,7 @@
      $                   B( L2, MIN( L2+1, N ) ), LDB )
                   VEC( 2, 2 ) = C( K2, L2 ) - ( SUML+SGN*SUMR )
 *
-                  CALL DLASY2( .FALSE., .TRUE., ISGN, 2, 2, A( K1,
-     $                         K1 ),
+                  CALL DLASY2( .FALSE., .TRUE., ISGN, 2, 2, A( K1, K1 ),
      $                         LDA, B( L1, L1 ), LDB, VEC, 2, SCALOC, X,
      $                         2, XNORM, IERR )
                   IF( IERR.NE.0 )
@@ -162899,11 +160555,9 @@
 *
 *              Compute rows 1:j-1 of current block column
 *
-               CALL DTRMM( 'Left', 'Upper', 'No transpose', DIAG,
-     $                     J-1,
+               CALL DTRMM( 'Left', 'Upper', 'No transpose', DIAG, J-1,
      $                     JB, ONE, A, LDA, A( 1, J ), LDA )
-               CALL DTRSM( 'Right', 'Upper', 'No transpose', DIAG,
-     $                     J-1,
+               CALL DTRSM( 'Right', 'Upper', 'No transpose', DIAG, J-1,
      $                     JB, -ONE, A( J, J ), LDA, A( 1, J ), LDA )
 *
 *              Compute inverse of current diagonal block
@@ -162982,14 +160636,8 @@
 *>
 *>    A * X = B  or  A**T * X = B,
 *>
-*> where A is a triangular matrix of order N, and B is an N-by-NRHS matrix.
-*>
-*> This subroutine verifies that A is nonsingular, but callers should note that only exact
-*> singularity is detected. It is conceivable for one or more diagonal elements of A to be
-*> subnormally tiny numbers without this subroutine signalling an error.
-*>
-*> If a possible loss of numerical precision due to near-singular matrices is a concern, the
-*> caller should verify that A is nonsingular within some tolerance before calling this subroutine.
+*> where A is a triangular matrix of order N, and B is an N-by-NRHS
+*> matrix.  A check is made to verify that A is nonsingular.
 *> \endverbatim
 *
 *  Arguments:
@@ -163068,7 +160716,7 @@
 *>          INFO is INTEGER
 *>          = 0:  successful exit
 *>          < 0: if INFO = -i, the i-th argument had an illegal value
-*>          > 0:  if INFO = i, the i-th diagonal element of A is exactly zero,
+*>          > 0: if INFO = i, the i-th diagonal element of A is zero,
 *>               indicating that the matrix is singular and the solutions
 *>               X have not been computed.
 *> \endverbatim
@@ -163124,12 +160772,10 @@
 *
       INFO = 0
       NOUNIT = LSAME( DIAG, 'N' )
-      IF( .NOT.LSAME( UPLO, 'U' ) .AND.
-     $    .NOT.LSAME( UPLO, 'L' ) ) THEN
+      IF( .NOT.LSAME( UPLO, 'U' ) .AND. .NOT.LSAME( UPLO, 'L' ) ) THEN
          INFO = -1
       ELSE IF( .NOT.LSAME( TRANS, 'N' ) .AND. .NOT.
-     $         LSAME( TRANS, 'T' ) .AND.
-     $                .NOT.LSAME( TRANS, 'C' ) ) THEN
+     $         LSAME( TRANS, 'T' ) .AND. .NOT.LSAME( TRANS, 'C' ) ) THEN
          INFO = -2
       ELSE IF( .NOT.NOUNIT .AND. .NOT.LSAME( DIAG, 'U' ) ) THEN
          INFO = -3
@@ -164030,8 +161676,7 @@
 *           Use a Householder reflection to zero the kth row of A.
 *           First set up the reflection.
 *
-            CALL DLARFG( N-M+1, A( K, K ), A( K, M1 ), LDA,
-     $                   TAU( K ) )
+            CALL DLARFG( N-M+1, A( K, K ), A( K, M1 ), LDA, TAU( K ) )
 *
             IF( ( TAU( K ).NE.ZERO ) .AND. ( K.GT.1 ) ) THEN
 *
@@ -164053,8 +161698,8 @@
 *              and       B      := B      - tau*w*z( k )**T.
 *
                CALL DAXPY( K-1, -TAU( K ), TAU, 1, A( 1, K ), 1 )
-               CALL DGER( K-1, N-M, -TAU( K ), TAU, 1, A( K, M1 ),
-     $                    LDA, A( 1, M1 ), LDA )
+               CALL DGER( K-1, N-M, -TAU( K ), TAU, 1, A( K, M1 ), LDA,
+     $                    A( 1, M1 ), LDA )
             END IF
    20    CONTINUE
       END IF
@@ -164346,8 +161991,7 @@
 *              Form the triangular factor of the block reflector
 *              H = H(i+ib-1) . . . H(i+1) H(i)
 *
-               CALL DLARZT( 'Backward', 'Rowwise', N-M, IB, A( I,
-     $                      M1 ),
+               CALL DLARZT( 'Backward', 'Rowwise', N-M, IB, A( I, M1 ),
      $                      LDA, TAU( I ), WORK, LDWORK )
 *
 *              Apply H to A(1:i-1,i:n) from the right
@@ -165805,7 +163449,7 @@
 *  =====================================================================
       VERS_MAJOR = 3
       VERS_MINOR = 12
-      VERS_PATCH = 1
+      VERS_PATCH = 0
 *  =====================================================================
 *
       RETURN
@@ -165813,7 +163457,7 @@
 # 1 "SRC/iparam2stage.F"
 # 1 "<built-in>" 1
 # 1 "<built-in>" 3
-# 423 "<built-in>" 3
+# 417 "<built-in>" 3
 # 1 "<command line>" 1
 # 1 "<built-in>" 2
 # 1 "SRC/iparam2stage.F" 2
@@ -166432,8 +164076,7 @@
 *> \endverbatim
 *>
 *  =====================================================================
-      INTEGER FUNCTION IPARMQ( ISPEC, NAME, OPTS, N, ILO, IHI,
-     $                         LWORK )
+      INTEGER FUNCTION IPARMQ( ISPEC, NAME, OPTS, N, ILO, IHI, LWORK )
 *
 *  -- LAPACK auxiliary routine --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -166689,8 +164332,7 @@
 *
       IF( INT( DROUNDUP_LWORK ) .LT. LWORK ) THEN
 *         Force round up of LWORK
-          DROUNDUP_LWORK = DROUNDUP_LWORK *
-     $                     ( 1.0D+0 + EPSILON(0.0D+0) )
+          DROUNDUP_LWORK = DROUNDUP_LWORK * ( 1.0D+0 + EPSILON(0.0D+0) )
       ENDIF
 *
       RETURN

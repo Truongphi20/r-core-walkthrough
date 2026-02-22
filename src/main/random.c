@@ -1,6 +1,6 @@
 /*
  *  R : A Computer Language for Statistical Data Analysis
- *  Copyright (C) 1997--2025  The R Core Team
+ *  Copyright (C) 1997--2022  The R Core Team
  *  Copyright (C) 1995, 1996  Robert Gentleman and Ross Ihaka
  *  Copyright (C) 2003--2018  The R Foundation
  *
@@ -39,17 +39,17 @@ NORET static void invalid(SEXP call)
     error(_("invalid arguments"));
 }
 
-static bool
+static Rboolean
 random1(double (*f) (double), double *a, R_xlen_t na, double *x, R_xlen_t n)
 {
-    bool naflag = false;
+    Rboolean naflag = FALSE;
     double ai;
     R_xlen_t i, ia;
     errno = 0;
     MOD_ITERATE1(n, na, i, ia, {
 	ai = a[ia];
 	x[i] = f(ai);
-	if (ISNAN(x[i])) naflag = true;
+	if (ISNAN(x[i])) naflag = TRUE;
     });
     return(naflag);
 }
@@ -95,7 +95,7 @@ attribute_hidden SEXP do_random1(SEXP call, SEXP op, SEXP args, SEXP rho)
 	warning(_("NAs produced"));
     }
     else {
-	bool naflag = false;
+	Rboolean naflag = FALSE;
 	PROTECT(a = coerceVector(CADR(args), REALSXP));
 	GetRNGstate();
 	switch (PRIMVAL(op)) {
@@ -118,19 +118,19 @@ attribute_hidden SEXP do_random1(SEXP call, SEXP op, SEXP args, SEXP rho)
     return x;
 }
 
-static bool random2(double (*f) (double, double),
+static Rboolean random2(double (*f) (double, double),
 			double *a, R_xlen_t na, double *b, R_xlen_t nb,
 			double *x, R_xlen_t n)
 {
     double ai, bi;
     R_xlen_t i, ia, ib;
-    bool naflag = false;
+    Rboolean naflag = FALSE;
     errno = 0;
     MOD_ITERATE2(n, na, nb, i, ia, ib, {
 	ai = a[ia];
 	bi = b[ib];
 	x[i] = f(ai, bi);
-	if (ISNAN(x[i])) naflag = true;
+	if (ISNAN(x[i])) naflag = TRUE;
     });
     return(naflag);
 }
@@ -178,7 +178,7 @@ attribute_hidden SEXP do_random2(SEXP call, SEXP op, SEXP args, SEXP rho)
 	warning(_("NAs produced"));
     }
     else {
-	bool naflag = false;
+	Rboolean naflag = FALSE;
 	PROTECT(a = coerceVector(CADR(args), REALSXP));
 	PROTECT(b = coerceVector(CADDR(args), REALSXP));
 	GetRNGstate();
@@ -210,21 +210,21 @@ attribute_hidden SEXP do_random2(SEXP call, SEXP op, SEXP args, SEXP rho)
     return x;
 }
 
-static bool
+static Rboolean
 random3(double (*f) (double, double, double), double *a,
 	R_xlen_t na, double *b, R_xlen_t nb, double *c, R_xlen_t nc,
 	double *x, R_xlen_t n)
 {
     double ai, bi, ci;
     R_xlen_t i, ia, ib, ic;
-    bool naflag = false;
+    Rboolean naflag = FALSE;
     errno = 0;
     MOD_ITERATE3(n, na, nb, nc, i, ia, ib, ic, {
 	ai = a[ia];
 	bi = b[ib];
 	ci = c[ic];
 	x[i] = f(ai, bi, ci);
-	if (ISNAN(x[i])) naflag = true;
+	if (ISNAN(x[i])) naflag = TRUE;
     });
     return(naflag);
 }
@@ -277,7 +277,7 @@ attribute_hidden SEXP do_random3(SEXP call, SEXP op, SEXP args, SEXP rho)
 	warning(_("NAs produced"));
     }
     else {
-	bool naflag = false;
+	Rboolean naflag = FALSE;
 	PROTECT(a = coerceVector(a, REALSXP));
 	PROTECT(b = coerceVector(b, REALSXP));
 	PROTECT(c = coerceVector(c, REALSXP));
@@ -345,8 +345,9 @@ static void ProbSampleReplace(int n, double *p, int *perm, int nans, int *ans)
 static void
 walker_ProbSampleReplace(int n, double *p, int *a, int nans, int *ans)
 {
-    int *HL;
-    double *q;
+    double *q, rU;
+    int i, j, k;
+    int *HL, *H, *L;
 
     /* Create the alias tables.
        The idea is that for HL[0] ... L-1 label the entries with q < 1
@@ -363,28 +364,26 @@ walker_ProbSampleReplace(int n, double *p, int *a, int nans, int *ans)
 	HL = R_Calloc(n, int);
 	q = R_Calloc(n, double);
     }
-    int *H = HL, *L = HL + n;
-    for (int i = 0; i < n; i++) {
+    H = HL - 1; L = HL + n;
+    for (i = 0; i < n; i++) {
 	q[i] = p[i] * n;
-	if (q[i] < 1.) *H++ = i; else *--L = i;
+	if (q[i] < 1.) *++H = i; else *--L = i;
     }
-    if (H > HL && L < HL + n) { /* So some q[i] are >= 1 and some < 1 */
-	for (int k = 0; k < n - 1; k++) {
-	    int i = HL[k];
-	    int j = *L;
+    if (H >= HL && L < HL + n) { /* So some q[i] are >= 1 and some < 1 */
+	for (k = 0; k < n - 1; k++) {
+	    i = HL[k];
+	    j = *L;
 	    a[i] = j;
-	    q[j] += q[i] - 1.;
+	    q[j] += q[i] - 1;
 	    if (q[j] < 1.) L++;
 	    if(L >= HL + n) break; /* now all are >= 1 */
 	}
     }
-    for (int i = 0; i < n; i++) q[i] += i;
+    for (i = 0; i < n; i++) q[i] += i;
 
     /* generate sample */
     Sampletype Sample_kind = R_sample_kind();
-    double rU;
-    for (int i = 0; i < nans; i++) {
-	int k;
+    for (i = 0; i < nans; i++) {
 	if (Sample_kind == ROUNDING) {
 	    rU = unif_rand() * n;
 	    k = (int) rU;
@@ -437,7 +436,7 @@ static void ProbSampleNoReplace(int n, double *p, int *perm,
     }
 }
 
-static void FixupProb(double *p, int n, int require_k, bool replace)
+static void FixupProb(double *p, int n, int require_k, Rboolean replace)
 {
     double sum = 0.0;
     int npos = 0;
@@ -491,7 +490,7 @@ attribute_hidden SEXP do_sample(SEXP call, SEXP op, SEXP args, SEXP rho)
 	double *p = REAL(prob);
 	if (length(prob) != n)
 	    error(_("incorrect number of probabilities"));
-	FixupProb(p, n, k, (bool) replace);
+	FixupProb(p, n, k, (Rboolean) replace);
 	PROTECT(x = allocVector(INTSXP, n));
 	if (replace) {
 	    int i, nc = 0;

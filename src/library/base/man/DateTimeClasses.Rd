@@ -1,6 +1,6 @@
 % File src/library/base/man/DateTimeClasses.Rd
 % Part of the R package, https://www.R-project.org
-% Copyright 1995-2025 R Core Team
+% Copyright 1995-2024 R Core Team
 % Distributed under GPL 2 or later
 
 \name{DateTimeClasses}
@@ -60,8 +60,7 @@
   representing calendar dates and times.
 }
 \usage{
-\method{print}{POSIXct}(x, tz = "", usetz = TRUE, max = NULL,
-      digits = getOption("digits.secs"), \dots)
+\method{print}{POSIXct}(x, tz = "", usetz = TRUE, max = NULL, \dots)
 
 \method{summary}{POSIXct}(object, digits = 15, \dots)
 
@@ -69,8 +68,6 @@
 \special{z + time}
 \special{time - z}
 \special{time1 lop time2}
-
-.leap.seconds
 }
 \arguments{
   \item{x, object}{an object to be printed or summarized from one of the
@@ -79,9 +76,7 @@
   \item{max}{numeric or \code{NULL}, specifying the maximal number of
     entries to be printed.  By default, when \code{NULL},
     \code{\link{getOption}("max.print")} used.}
-  \item{digits}{number of digits to format fractional seconds in the case
-    of \code{print()};
-    number of \emph{significant} digits for the computations:
+  \item{digits}{number of significant digits for the computations:
     should be high enough to represent the least important time unit
     exactly.}
   \item{\dots}{further arguments to be passed from or to other methods.}
@@ -123,13 +118,6 @@
   Be aware that \code{"POSIXlt"} objects will be interpreted as being in
   the current time zone for these operations unless a time zone has been
   specified.
-
-  Further implemented methods comprise \code{\link{mean}},
-  \code{\link{summary}}, \code{\link{unique}}, \code{\link{is.finite}},
-  \code{\link{length<-}}, \code{\link{pretty}},\dots; also
-  \pkg{graphics} package's \code{\link{hist}} and \code{\link{Axis}};
-  use \code{\link{methods}(class = "POSIXt")}, \code{.. class = "POSIXlt"}
-  and \code{"POSIXct"} to see more.
 
   Both classes may have an attribute \code{"tzone"}, specifying the time
   zone.  Note however that their meaning differ, see the section
@@ -210,7 +198,7 @@
   }
   The components must be in this order: that was only minimally checked
   prior to \R 4.3.0.  All objects created in \R 4.3.0 have the optional
-  components.  From earlier versions of \R, the last two components will
+  components.  From earlier versions of \R, he last two components will
   not be present for times in UTC and are platform-dependent.  Currently
   \code{gmtoff} is set on almost all current platforms: those based on
   BSD or \code{glibc} (including Linux and macOS) and those using the
@@ -218,7 +206,7 @@
   default macOS).
 
   Note that the internal list structure is somewhat hidden, as many
-  methods (including \code{\link{length}()}, \code{\link{print}()} and
+  methods (including \code{\link{length}(x)}, \code{\link{print}()} and
   \code{\link{str}()}) apply to the abstract date-time vector, as for
   \code{"POSIXct"}.  One can extract and replace \emph{single}
   components via \code{[} indexing with \emph{two} indices (see the
@@ -324,11 +312,13 @@
   \code{\link{round.POSIXt}} and \code{\link{trunc.POSIXt}} for methods
   for these classes.
 
-  \code{\link{weekdays}}, for convenience extraction functions (also
-  including \code{months()}, \code{quarters()}, \code{julian()}).
+  \code{\link{weekdays}} for convenience extraction functions.
 }
 \references{
-  \bibshow{R:Ripley+Hornik:2001}
+  Ripley, B. D. and Hornik, K. (2001).
+  \dQuote{Date-time classes.}
+  \emph{R News}, \bold{1}(2), 8--11.
+  \url{https://www.r-project.org/doc/Rnews/Rnews_2001-2.pdf}.
 }
 
 \section{Warnings}{
@@ -346,20 +336,17 @@
   The \emph{order} of the list components of \code{"POSIXlt"} objects
   must not be changed, as several C-based conversion methods rely on the
   order for efficiency.
-
-  Do not use \code{\link{identical}()} on objects of class \code{"POSIXct"},
-  rather \code{\link{==}} or \code{\link{all.equal}}.
-  Their \code{\link{storage.mode}} may be \code{"double"} or
-  \code{"integer"} and you should not rely on which is chosen.
 }
-\examples{\dontdiff{
+\examples{
+\dontdiff{
 (z <- Sys.time())             # the current date, as class "POSIXct"
 
 Sys.time() - 3600             # an hour ago
 
 as.POSIXlt(Sys.time(), "GMT") # the current time in GMT
-format(.leap.seconds)         # the leap seconds in your time zone}
+format(.leap.seconds)         # the leap seconds in your time zone
 print(.leap.seconds, tz = "America/Los_Angeles")  # and in Seattle's
+}
 
 ## look at *internal* representation of "POSIXlt" :
 leapS <- as.POSIXlt(.leap.seconds)
@@ -372,6 +359,19 @@ data.frame(unclass(leapS))
 ## Extracting *single* components of POSIXlt objects:
 leapS[1 : 5, "year"]
 leapS[17:22, "mon" ]
+
+##  length(.) <- n   now works for "POSIXct" and "POSIXlt" :
+for(lpS in list(.leap.seconds, leapS)) {
+    ls <- lpS; length(ls) <- 12
+    l2 <- lpS; length(l2) <- 5 + length(lpS)
+    stopifnot(exprs = {
+      ## length(.) <- * is compatible to subsetting/indexing:
+      identical(ls, lpS[seq_along(ls)])
+      identical(l2, lpS[seq_along(l2)])
+      ## has filled with NA's
+      is.na(l2[(length(lpS)+1):length(l2)])
+    })
+}% for %
 }
 \keyword{utilities}
 \keyword{chron}

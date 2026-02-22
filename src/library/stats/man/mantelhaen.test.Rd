@@ -68,9 +68,9 @@ mantelhaen.test(x, y = NULL, z = NULL,
 }
 \details{
   If \code{x} is an array, each dimension must be at least 2, and
-  the entries should be nonnegative integers.  \code{NA}s are not
+  the entries should be nonnegative integers.  \code{NA}'s are not
   allowed.  Otherwise, \code{x}, \code{y} and \code{z} must have the
-  same length.  Triples containing \code{NA}s are removed.  All
+  same length.  Triples containing \code{NA}'s are removed.  All
   variables must take at least two different values.
 }
 \note{
@@ -83,8 +83,14 @@ mantelhaen.test(x, y = NULL, z = NULL,
   See also the example below.
 }
 \references{
-  \bibinfo{R:Agresti:1990}{footer}{Pages 230--235.}
-  \bibshow{R:Agresti:1990, R:Agresti:2002}
+  Alan Agresti (1990).
+  \emph{Categorical data analysis}.
+  New York: Wiley.
+  Pages 230--235.
+
+  Alan Agresti (2002).
+  \emph{Categorical data analysis} (second edition).
+  New York: Wiley.
 }
 \examples{
 ## Agresti (1990), pages 231--237, Penicillin and Rabbits

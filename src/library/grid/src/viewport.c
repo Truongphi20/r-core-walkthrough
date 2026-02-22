@@ -42,8 +42,7 @@ SEXP viewportClipSXP(SEXP vp) {
     return VECTOR_ELT(vp, VP_CLIP);
 }
 
-// This can be NA_LOGICAL, and it is tested for that in grd.c
-int viewportClip(SEXP vp) {
+Rboolean viewportClip(SEXP vp) {
     return LOGICAL(VECTOR_ELT(vp, VP_CLIP))[0];
 }
 
@@ -51,11 +50,11 @@ SEXP viewportMaskSXP(SEXP vp) {
     return(VECTOR_ELT(vp, VP_MASK));
 }
 
-bool viewportMask(SEXP vp) {
+Rboolean viewportMask(SEXP vp) {
     SEXP mask = viewportMaskSXP(vp);
     if (!isLogical(mask))
         error(_("Mask is not logical value ('none' or 'inherit')"));
-    return asBool(VECTOR_ELT(vp, VP_MASK));
+    return LOGICAL(VECTOR_ELT(vp, VP_MASK))[0];
 }
 
 double viewportXScaleMin(SEXP vp) {
@@ -211,7 +210,7 @@ void gcontextFromViewport(SEXP vp, const pGEcontext gc, pGEDevDesc dd) {
  * values of the parent.  Otherwise, we have to recurse and recalculate
  * everything from scratch.
  */
-void calcViewportTransform(SEXP vp, SEXP parent, bool incremental,
+void calcViewportTransform(SEXP vp, SEXP parent, Rboolean incremental,
 			   pGEDevDesc dd)
 {
     int i, j;
@@ -389,7 +388,7 @@ void initVP(pGEDevDesc dd)
     SEXP gsd = (SEXP) dd->gesd[gridRegisterIndex]->systemSpecific;
     PROTECT(vpfnname = findFun(install("grid.top.level.vp"), R_gridEvalEnv));
     PROTECT(vpfn = lang1(vpfnname));
-    PROTECT(vp = Rf_eval_with_gd(vpfn, R_GlobalEnv, dd));
+    PROTECT(vp = eval(vpfn, R_GlobalEnv));
     /* 
      * Set the "native" scale of the top viewport to be the
      * natural device coordinate system (e.g., points in 

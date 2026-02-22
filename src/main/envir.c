@@ -1,6 +1,6 @@
 /*
  *  R : A Computer Language for Statistical Data Analysis
- *  Copyright (C) 1999--2025  The R Core Team.
+ *  Copyright (C) 1999--2023  The R Core Team.
  *  Copyright (C) 1995, 1996  Robert Gentleman and Ross Ihaka
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -94,7 +94,7 @@
 #define R_USE_SIGNALS 1
 #include <Defn.h>
 #include <Internal.h>
-#include <R_ext/ObjectTable.h>
+#include <R_ext/Callbacks.h>
 
 #define FAST_BASE_CACHE_LOOKUP  /* Define to enable fast lookups of symbols */
 				/*    in global cache from base environment */
@@ -157,7 +157,7 @@ static void setActiveValue(SEXP fun, SEXP val)
     SEXP arg = lang2(qfun, val);
     SEXP expr = lang2(fun, arg);
     PROTECT(expr);
-    eval(expr, R_BaseEnv);
+    eval(expr, R_GlobalEnv);
     UNPROTECT(1);
 }
 
@@ -167,8 +167,6 @@ static SEXP getActiveValue(SEXP fun)
     PROTECT(expr);
     expr = eval(expr, R_GlobalEnv);
     UNPROTECT(1);
-    /* mark unmutable to prevent mutations in complex assignments */
-    MARK_NOT_MUTABLE(expr);
     return expr;
 }
 
@@ -176,7 +174,7 @@ static SEXP getActiveValue(SEXP fun)
 #define ISNULL(x) ((x) == R_NilValue)
 
 /* Function to determine whethr an environment contains special symbols */
-attribute_hidden Rboolean R_envHasNoSpecialSymbols (SEXP env)
+Rboolean R_envHasNoSpecialSymbols (SEXP env)
 {
     SEXP frame;
 
@@ -226,7 +224,7 @@ attribute_hidden Rboolean R_envHasNoSpecialSymbols (SEXP env)
    and hash tables get saved as part of environments so changing it
    is a major decision.
  */
-attribute_hidden int R_Newhashpjw(const char *s)
+int attribute_hidden R_Newhashpjw(const char *s)
 {
     char *p;
     unsigned h = 0, g;
@@ -871,7 +869,7 @@ attribute_hidden void unbindVar(SEXP symbol, SEXP rho)
   findVarLocInFrame
 
   Look up the location of the value of a symbol in a
-  single environment frame.  Almost like R_findVarInFrame, but
+  single environment frame.  Almost like findVarInFrame, but
   does not return the value. R_NilValue if not found.
 
   Callers set *canCache = TRUE or NULL
@@ -980,7 +978,7 @@ void R_SetVarLocValue(R_varloc_t vl, SEXP value)
 
 /*----------------------------------------------------------------------
 
-  R_findVarInFrame
+  findVarInFrame
 
   Look up the value of a symbol in a single environment frame.	This
   is the basic building block of all variable lookups.
@@ -993,7 +991,6 @@ void R_SetVarLocValue(R_varloc_t vl, SEXP value)
   symbol in this frame (FALSE).  This is used for get() and exists().
 */
 
-// In Rinternals.h
 SEXP findVarInFrame3(SEXP rho, SEXP symbol, Rboolean doGet)
 {
     int hashcode;
@@ -1089,19 +1086,15 @@ Rboolean R_existsVarInFrame(SEXP rho, SEXP symbol)
 	    SET_HASHASH(c, 1);
 	}
 	hashcode = HASHVALUE(c) % HASHSIZE(HASHTAB(rho));
+	/* Will return 'R_UnboundValue' if not found */
 	return R_HashExists(hashcode, symbol, HASHTAB(rho));
     }
     return FALSE;
 }
 
-attribute_hidden SEXP R_findVarInFrame(SEXP rho, SEXP symbol)
-{
-    return findVarInFrame3(rho, symbol, TRUE);
-}
-
 SEXP findVarInFrame(SEXP rho, SEXP symbol)
 {
-    return R_findVarInFrame(rho, symbol);
+    return findVarInFrame3(rho, symbol, TRUE);
 }
 
 /*----------------------------------------------------------------------
@@ -1162,12 +1155,12 @@ void readS3VarsFromFrame(SEXP rho,
 slowpath:
     /* fall back to the slow but general implementation */
 
-    *dotGeneric = R_findVarInFrame(rho, R_dot_Generic);
-    *dotClass = R_findVarInFrame(rho, R_dot_Class);
-    *dotMethod = R_findVarInFrame(rho, R_dot_Method);
-    *dotGroup = R_findVarInFrame(rho, R_dot_Group);
-    *dotGenericCallEnv = R_findVarInFrame(rho, R_dot_GenericCallEnv);
-    *dotGenericDefEnv = R_findVarInFrame(rho, R_dot_GenericDefEnv);
+    *dotGeneric = findVarInFrame3(rho, R_dot_Generic, TRUE);
+    *dotClass = findVarInFrame3(rho, R_dot_Class, TRUE);
+    *dotMethod = findVarInFrame3(rho, R_dot_Method, TRUE);
+    *dotGroup = findVarInFrame3(rho, R_dot_Group, TRUE);
+    *dotGenericCallEnv = findVarInFrame3(rho, R_dot_GenericCallEnv, TRUE);
+    *dotGenericDefEnv = findVarInFrame3(rho, R_dot_GenericDefEnv, TRUE);
 }
 
 
@@ -1219,7 +1212,7 @@ static R_INLINE SEXP findGlobalVar(SEXP symbol)
 }
 #endif
 
-attribute_hidden SEXP R_findVar(SEXP symbol, SEXP rho)
+SEXP findVar(SEXP symbol, SEXP rho)
 {
     SEXP vl;
 
@@ -1234,7 +1227,7 @@ attribute_hidden SEXP R_findVar(SEXP symbol, SEXP rho)
        will also handle all frames if rho is a global frame other than
        R_GlobalEnv */
     while (rho != R_GlobalEnv && rho != R_EmptyEnv) {
-	vl = R_findVarInFrame(rho, symbol);
+	vl = findVarInFrame3(rho, symbol, TRUE /* get rather than exists */);
 	if (vl != R_UnboundValue) return (vl);
 	rho = ENCLOS(rho);
     }
@@ -1244,17 +1237,12 @@ attribute_hidden SEXP R_findVar(SEXP symbol, SEXP rho)
 	return R_UnboundValue;
 #else
     while (rho != R_EmptyEnv) {
-	vl = R_findVarInFrame(rho, symbol);
+	vl = findVarInFrame3(rho, symbol, TRUE);
 	if (vl != R_UnboundValue) return (vl);
 	rho = ENCLOS(rho);
     }
     return R_UnboundValue;
 #endif
-}
-
-SEXP findVar(SEXP symbol, SEXP rho)
-{
-    return R_findVar(symbol, rho);
 }
 
 static SEXP findVarLoc(SEXP symbol, SEXP rho)
@@ -1282,7 +1270,7 @@ static SEXP findVarLoc(SEXP symbol, SEXP rho)
 	return R_NilValue;
 #else
     while (rho != R_EmptyEnv) {
-	vl = R_findVarInLocFrame(rho, symbol, NULL);
+	vl = findVarInLocFrame(rho, symbol, NULL);
 	if (vl != R_NilValue) return vl;
 	rho = ENCLOS(rho);
     }
@@ -1290,9 +1278,9 @@ static SEXP findVarLoc(SEXP symbol, SEXP rho)
 #endif
 }
 
-R_varloc_t R_findVarLoc(SEXP symbol, SEXP rho)
+R_varloc_t R_findVarLoc(SEXP rho, SEXP symbol)
 {
-    SEXP binding = findVarLoc(symbol, rho);
+    SEXP binding = findVarLoc(rho, symbol);
     R_varloc_t val;
     val.cell = binding == R_NilValue ? NULL : binding;
     return val;
@@ -1313,7 +1301,7 @@ findVar1(SEXP symbol, SEXP rho, SEXPTYPE mode, int inherits)
 {
     SEXP vl;
     while (rho != R_EmptyEnv) {
-	vl = R_findVarInFrame(rho, symbol);
+	vl = findVarInFrame3(rho, symbol, TRUE);
 	if (vl != R_UnboundValue) {
 	    if (mode == ANYSXP) return vl;
 	    if (TYPEOF(vl) == PROMSXP) {
@@ -1432,7 +1420,7 @@ SEXP ddfind(int i, SEXP rho)
     if(i <= 0)
 	error(_("indexing '...' with non-positive index %d"), i);
     /* first look for ... symbol  */
-    SEXP vl = R_findVar(R_DotsSymbol, rho);
+    SEXP vl = findVar(R_DotsSymbol, rho);
     if (vl != R_UnboundValue) {
 	if (length_DOTS(vl) >= i) {
 	    vl = nthcdr(vl, i - 1);
@@ -1470,7 +1458,7 @@ attribute_hidden SEXP do_dotsElt(SEXP call, SEXP op, SEXP args, SEXP env)
 attribute_hidden SEXP do_dotsLength(SEXP call, SEXP op, SEXP args, SEXP env)
 {
     checkArity(op, args);
-    SEXP vl = R_findVar(R_DotsSymbol, env);
+    SEXP vl = findVar(R_DotsSymbol, env);
     if (vl == R_UnboundValue)
 	error(_("incorrect context: the current call has no '...' to look in"));
     // else
@@ -1480,7 +1468,7 @@ attribute_hidden SEXP do_dotsLength(SEXP call, SEXP op, SEXP args, SEXP env)
 attribute_hidden SEXP do_dotsNames(SEXP call, SEXP op, SEXP args, SEXP env)
 {
     checkArity(op, args);
-    SEXP vl = R_findVar(R_DotsSymbol, env);
+    SEXP vl = findVar(R_DotsSymbol, env);
     PROTECT(vl);
     if (vl == R_UnboundValue)
 	error(_("incorrect context: the current call has no '...' to look in"));
@@ -1526,7 +1514,7 @@ SEXP dynamicfindVar(SEXP symbol, RCNTXT *cptr)
     SEXP vl;
     while (cptr != R_ToplevelContext) {
 	if (cptr->callflag & CTXT_FUNCTION) {
-	    vl = R_findVarInFrame(cptr->cloenv, symbol);
+	    vl = findVarInFrame3(cptr->cloenv, symbol, TRUE);
 	    if (vl != R_UnboundValue) return vl;
 	}
 	cptr = cptr->nextcontext;
@@ -1576,9 +1564,9 @@ SEXP findFun3(SEXP symbol, SEXP rho, SEXP call)
 	    vl = findGlobalVar(symbol);
 #endif
 	else
-	    vl = R_findVarInFrame(rho, symbol);
+	    vl = findVarInFrame3(rho, symbol, TRUE);
 #else
-	vl = R_findVarInFrame(rho, symbol);
+	vl = findVarInFrame3(rho, symbol, TRUE);
 #endif
 	if (vl != R_UnboundValue) {
 	    if (TYPEOF(vl) == PROMSXP) {
@@ -1594,8 +1582,9 @@ SEXP findFun3(SEXP symbol, SEXP rho, SEXP call)
 		TYPEOF(vl) == SPECIALSXP)
 		return (vl);
 	    if (vl == R_MissingArg)
-	        R_MissingArgError(symbol, call, "getMissingError");
-
+		errorcall(call,
+		      _("argument \"%s\" is missing, with no default"),
+		      CHAR(PRINTNAME(symbol)));
 	}
 	rho = ENCLOS(rho);
     }
@@ -1680,7 +1669,7 @@ void defineVar(SEXP symbol, SEXP value, SEXP rho)
 	    }
 	    hashcode = HASHVALUE(c) % HASHSIZE(HASHTAB(rho));
 	    R_HashSet(hashcode, symbol, HASHTAB(rho), value,
-		      (Rboolean) FRAME_IS_LOCKED(rho));
+		      FRAME_IS_LOCKED(rho));
 	    if (R_HashSizeCheck(HASHTAB(rho)))
 		SET_HASHTAB(rho, R_HashResize(HASHTAB(rho)));
 	}
@@ -2104,9 +2093,7 @@ attribute_hidden SEXP do_get(SEXP call, SEXP op, SEXP args, SEXP rho)
 
     /* envir :	originally, the "where=" argument */
 
-    if (TYPEOF(CADR(args)) == ENVSXP)
-	genv = CADR(args);
-    else if (TYPEOF(CADR(args)) == REALSXP || TYPEOF(CADR(args)) == INTSXP) {
+    if (TYPEOF(CADR(args)) == REALSXP || TYPEOF(CADR(args)) == INTSXP) {
 	where = asInteger(CADR(args));
 	genv = R_sysframe(where, R_GlobalContext);
     }
@@ -2114,6 +2101,8 @@ attribute_hidden SEXP do_get(SEXP call, SEXP op, SEXP args, SEXP rho)
 	error(_("use of NULL environment is defunct"));
 	genv = R_NilValue;  /* -Wall */
     }
+    else if (TYPEOF(CADR(args)) == ENVSXP)
+	genv = CADR(args);
     else if(TYPEOF((genv = simple_as_environment(CADR(args)))) != ENVSXP) {
 	error(_("invalid '%s' argument"), "envir");
 	genv = R_NilValue;  /* -Wall */
@@ -2139,11 +2128,10 @@ attribute_hidden SEXP do_get(SEXP call, SEXP op, SEXP args, SEXP rho)
 	error(_("invalid '%s' argument"), "inherits");
 
     /* Search for the object */
-    rval = findVar1mode(t1, genv, gmode, wants_S4, ginherits,
-			(Rboolean) PRIMVAL(op));
-    if (rval == R_MissingArg) { // signal a *classed* error:
-	R_MissingArgError(t1, call, "getMissingError");
-    }
+    rval = findVar1mode(t1, genv, gmode, wants_S4, ginherits, PRIMVAL(op));
+    if (rval == R_MissingArg)
+	error(_("argument \"%s\" is missing, with no default"),
+	      CHAR(PRINTNAME(t1)));
 
     switch (PRIMVAL(op) ) {
     case 0: // exists(.) :
@@ -2283,37 +2271,6 @@ attribute_hidden SEXP do_mget(SEXP call, SEXP op, SEXP args, SEXP rho)
     return(ans);
 }
 
-// In Rinternals.h
-SEXP R_getVarEx(SEXP sym, SEXP rho, Rboolean inherits, SEXP ifnotfound)
-{
-    if (TYPEOF(sym) != SYMSXP)
-	error(_("first argument to '%s' must be a symbol"), __func__);
-    if (TYPEOF(rho) != ENVSXP)
-	error(_("second argument to '%s' must be an environment"), __func__);
-
-    SEXP val = inherits ? R_findVar(sym, rho) : R_findVarInFrame(rho, sym);
-    if (val == R_MissingArg)
-	R_MissingArgError_c(EncodeChar(PRINTNAME(sym)), getLexicalCall(rho), "getVarExError");
-    else if (val == R_UnboundValue)
-	return ifnotfound;
-    else if (TYPEOF(val) == PROMSXP) {
-	PROTECT(val);
-	val = eval(val, rho);
-	UNPROTECT(1);
-    }
-    return val;
-}
-
-// In Rinternals.h
-SEXP R_getVar(SEXP sym, SEXP rho, Rboolean inherits)
-{
-    SEXP val = R_getVarEx(sym, rho, inherits, R_UnboundValue);
-    if (val == R_UnboundValue)
-	error(_("object '%s' not found"), EncodeChar(PRINTNAME(sym)));
-    return val;
-}
-
-
 /*----------------------------------------------------------------------
 
   do_missing
@@ -2397,7 +2354,7 @@ Rboolean R_isMissing(SEXP symbol, SEXP rho)
 		int oldseen = PRSEEN(CAR(vl));
 		SET_PRSEEN(CAR(vl), 1);
 		PROTECT(vl);
-		Rboolean val = R_isMissing(PREXPR(CAR(vl)), PRENV(CAR(vl)));
+		int val = R_isMissing(PREXPR(CAR(vl)), PRENV(CAR(vl)));
 		UNPROTECT(1); /* vl */
 		/* The oldseen value will usually be 0, but might be 2
 		   from an interrupted evaluation. LT */
@@ -2940,12 +2897,11 @@ attribute_hidden SEXP do_ls(SEXP call, SEXP op, SEXP args, SEXP rho)
     int sort_nms = asLogical(CADDR(args)); /* sorted = TRUE/FALSE */
     if (sort_nms == NA_LOGICAL) sort_nms = 0;
 
-    return R_lsInternal3(env, (Rboolean) all, (Rboolean) sort_nms);
+    return R_lsInternal3(env, all, sort_nms);
 }
 
 /* takes an environment, a boolean indicating whether to get all
    names and a boolean if sorted is desired */
-// In Rinternals.h
 SEXP R_lsInternal3(SEXP env, Rboolean all, Rboolean sorted)
 {
     if(IS_USER_DATABASE(env)) {
@@ -2986,7 +2942,6 @@ SEXP R_lsInternal3(SEXP env, Rboolean all, Rboolean sorted)
 }
 
 /* non-API version used in several packages */
-// in Rinternals.h
 SEXP R_lsInternal(SEXP env, Rboolean all)
 {
     return R_lsInternal3(env, all, TRUE);
@@ -3055,7 +3010,7 @@ attribute_hidden SEXP do_env2list(SEXP call, SEXP op, SEXP args, SEXP rho)
 	SEXP sind = PROTECT(allocVector(INTSXP, k));
 	int *indx = INTEGER(sind);
 	for (int i = 0; i < k; i++) indx[i] = i;
-	orderVector1(indx, k, names, /* nalast */ true, /* decreasing */ false,
+	orderVector1(indx, k, names, /* nalast */ TRUE, /* decreasing */ FALSE,
 		     R_NilValue);
 	SEXP ans2   = PROTECT(allocVector(VECSXP, k));
 	SEXP names2 = PROTECT(allocVector(STRSXP, k));
@@ -3310,7 +3265,7 @@ do_as_environment(SEXP call, SEXP op, SEXP args, SEXP rho)
 {
     SEXP arg = CAR(args), ans;
     checkArity(op, args);
-    check1arg(args, call, "x");
+    check1arg(args, call, "object");
     if(isEnvironment(arg))
 	return arg;
     /* DispatchOrEval internal generic: as.environment */
@@ -3406,7 +3361,7 @@ attribute_hidden SEXP do_lockEnv(SEXP call, SEXP op, SEXP args, SEXP rho)
     Rboolean bindings;
     checkArity(op, args);
     frame = CAR(args);
-    bindings = asRbool(CADR(args), call);
+    bindings = asLogical(CADR(args));
     R_LockEnvironment(frame, bindings);
     return R_NilValue;
 }
@@ -3538,7 +3493,7 @@ Rboolean R_BindingIsActive(SEXP sym, SEXP env)
     }
 }
 
-attribute_hidden Rboolean R_HasFancyBindings(SEXP rho)
+Rboolean R_HasFancyBindings(SEXP rho)
 {
     if (IS_HASHED(rho)) {
 	SEXP table, chain;
@@ -3682,7 +3637,7 @@ SEXP R_NewEnv(SEXP enclos, int hash, int size)
 	return NewEnvironment(R_NilValue, R_NilValue, enclos);
 }
 
-attribute_hidden void R_RestoreHashCount(SEXP rho)
+void R_RestoreHashCount(SEXP rho)
 {
     if (IS_HASHED(rho)) {
 	SEXP table;
@@ -3729,13 +3684,13 @@ SEXP R_PackageEnvName(SEXP rho)
 	return R_NilValue;
 }
 
-attribute_hidden SEXP R_FindPackageEnv(SEXP info)
+SEXP R_FindPackageEnv(SEXP info)
 {
     SEXP expr, val;
     PROTECT(info);
     SEXP s_findPackageEnv = install("findPackageEnv");
     PROTECT(expr = LCONS(s_findPackageEnv, LCONS(info, R_NilValue)));
-    val = eval(expr, R_BaseEnv);
+    val = eval(expr, R_GlobalEnv);
     UNPROTECT(2);
     return val;
 }
@@ -3745,10 +3700,10 @@ Rboolean R_IsNamespaceEnv(SEXP rho)
     if (rho == R_BaseNamespace)
 	return TRUE;
     else if (TYPEOF(rho) == ENVSXP) {
-	SEXP info = R_findVarInFrame(rho, R_NamespaceSymbol);
+	SEXP info = findVarInFrame3(rho, R_NamespaceSymbol, TRUE);
 	if (info != R_UnboundValue && TYPEOF(info) == ENVSXP) {
 	    PROTECT(info);
-	    SEXP spec = R_findVarInFrame(info, install("spec"));
+	    SEXP spec = findVarInFrame3(info, install("spec"), TRUE);
 	    UNPROTECT(1);
 	    if (spec != R_UnboundValue &&
 		TYPEOF(spec) == STRSXP && LENGTH(spec) > 0)
@@ -3776,10 +3731,10 @@ SEXP R_NamespaceEnvSpec(SEXP rho)
     if (rho == R_BaseNamespace)
 	return R_BaseNamespaceName;
     else if (TYPEOF(rho) == ENVSXP) {
-	SEXP info = R_findVarInFrame(rho, R_NamespaceSymbol);
+	SEXP info = findVarInFrame3(rho, R_NamespaceSymbol, TRUE);
 	if (info != R_UnboundValue && TYPEOF(info) == ENVSXP) {
 	    PROTECT(info);
-	    SEXP spec = R_findVarInFrame(info, install("spec"));
+	    SEXP spec = findVarInFrame3(info, install("spec"), TRUE);
 	    UNPROTECT(1);
 	    if (spec != R_UnboundValue &&
 		TYPEOF(spec) == STRSXP && LENGTH(spec) > 0)
@@ -3798,7 +3753,7 @@ SEXP R_FindNamespace(SEXP info)
     PROTECT(info);
     SEXP s_getNamespace = install("getNamespace");
     PROTECT(expr = LCONS(s_getNamespace, LCONS(info, R_NilValue)));
-    val = eval(expr, R_BaseEnv);
+    val = eval(expr, R_GlobalEnv);
     UNPROTECT(2);
     return val;
 }
@@ -3827,7 +3782,7 @@ attribute_hidden SEXP do_regNS(SEXP call, SEXP op, SEXP args, SEXP rho)
     checkArity(op, args);
     name = checkNSname(call, CAR(args));
     val = CADR(args);
-    if (R_findVarInFrame(R_NamespaceRegistry, name) != R_UnboundValue)
+    if (findVarInFrame(R_NamespaceRegistry, name) != R_UnboundValue)
 	errorcall(call, _("namespace already registered"));
     defineVar(name, val, R_NamespaceRegistry);
     return R_NilValue;
@@ -3840,7 +3795,7 @@ attribute_hidden SEXP do_unregNS(SEXP call, SEXP op, SEXP args, SEXP rho)
     int hashcode;
     checkArity(op, args);
     name = checkNSname(call, CAR(args));
-    if (R_findVarInFrame(R_NamespaceRegistry, name) == R_UnboundValue)
+    if (findVarInFrame(R_NamespaceRegistry, name) == R_UnboundValue)
 	errorcall(call, _("namespace not registered"));
     if( !HASHASH(PRINTNAME(name)))
 	hashcode = R_Newhashpjw(CHAR(PRINTNAME(name)));
@@ -3858,7 +3813,7 @@ attribute_hidden SEXP do_getRegNS(SEXP call, SEXP op, SEXP args, SEXP rho)
     checkArity(op, args);
     name = checkNSname(call, PROTECT(coerceVector(CAR(args), SYMSXP)));
     UNPROTECT(1);
-    val = R_findVarInFrame(R_NamespaceRegistry, name);
+    val = findVarInFrame(R_NamespaceRegistry, name);
 
     switch(PRIMVAL(op)) {
     case 0: // get..()
@@ -3874,7 +3829,6 @@ attribute_hidden SEXP do_getRegNS(SEXP call, SEXP op, SEXP args, SEXP rho)
     return R_NilValue; // -Wall
 }
 
-// .Internal(getNamespaceRegistry())
 attribute_hidden SEXP do_getNSRegistry(SEXP call, SEXP op, SEXP args, SEXP rho)
 {
     checkArity(op, args);
@@ -3883,7 +3837,7 @@ attribute_hidden SEXP do_getNSRegistry(SEXP call, SEXP op, SEXP args, SEXP rho)
 
 static SEXP getVarValInFrame(SEXP rho, SEXP sym, int unbound_ok)
 {
-    SEXP val = R_findVarInFrame(rho, sym);
+    SEXP val = findVarInFrame(rho, sym);
     if (! unbound_ok && val == R_UnboundValue)
 	error(_("object '%s' not found"), EncodeChar(PRINTNAME(sym)));
     if (TYPEOF(val) == PROMSXP) {
@@ -3942,7 +3896,7 @@ attribute_hidden SEXP R_getNSValue(SEXP call, SEXP ns, SEXP name, int exported)
 	PROTECT(ns);
     else {
 	SEXP pkg = checkNSname(call, ns);
-	ns = R_findVarInFrame(R_NamespaceRegistry, pkg);
+	ns = findVarInFrame(R_NamespaceRegistry, pkg);
 	if (ns == R_UnboundValue)
 	    ns = callR1(R_loadNamespaceSymbol, pkg);
 	PROTECT(ns);
@@ -3989,7 +3943,7 @@ attribute_hidden SEXP R_getNSValue(SEXP call, SEXP ns, SEXP name, int exported)
     return NULL; /* not reached */
 }
 
-attribute_hidden SEXP do_getNSValue(SEXP call, SEXP op, SEXP args, SEXP rho)
+SEXP do_getNSValue(SEXP call, SEXP op, SEXP args, SEXP rho)
 {
     checkArity(op, args);
     SEXP ns = CAR(args);
@@ -4327,7 +4281,7 @@ SEXP mkCharLenCE(const char *name, int len, cetype_t enc)
 	   representing this string, and EncodeString() is the most
 	   comprehensive */
 	c = allocCharsxp(len);
-	if (len) memcpy(CHAR_RW(c), name, len);
+	memcpy(CHAR_RW(c), name, len);
 	switch(enc) {
 	case CE_UTF8: SET_UTF8(c); break;
 	case CE_LATIN1: SET_LATIN1(c); break;
@@ -4365,7 +4319,7 @@ SEXP mkCharLenCE(const char *name, int len, cetype_t enc)
     if (cval == R_NilValue) {
 	/* no cached value; need to allocate one and add to the cache */
 	PROTECT(cval = allocCharsxp(len));
-	if (len) memcpy(CHAR_RW(cval), name, len);
+	memcpy(CHAR_RW(cval), name, len);
 	switch(enc) {
 	case CE_NATIVE:
 	    break;          /* don't set encoding */
@@ -4561,7 +4515,7 @@ attribute_hidden SEXP do_topenv(SEXP call, SEXP op, SEXP args, SEXP rho) {
     return topenv(target, envir);
 }
 
-attribute_hidden Rboolean isUnmodifiedSpecSym(SEXP sym, SEXP env) {
+Rboolean attribute_hidden isUnmodifiedSpecSym(SEXP sym, SEXP env) {
     if (!IS_SPECIAL_SYMBOL(sym))
 	return FALSE;
     for(;env != R_EmptyEnv; env = ENCLOS(env))
@@ -4571,7 +4525,6 @@ attribute_hidden Rboolean isUnmodifiedSpecSym(SEXP sym, SEXP env) {
     return TRUE;
 }
 
-attribute_hidden
 void findFunctionForBodyInNamespace(SEXP body, SEXP nsenv, SEXP nsname) {
     if (R_IsNamespaceEnv(nsenv) != TRUE)
 	error("argument 'nsenv' is not a namespace");

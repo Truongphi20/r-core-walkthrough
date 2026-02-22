@@ -2,7 +2,7 @@
 
 options(useFancyQuotes=FALSE)
 env <- as.environment("package:datasets")
-d <- setdiff(ls(env), "sunspot.month") # don't want .names, nor "changing" one
+d <- ls(env) # don't want .names
 for(f in d) {
     cat("\n** structure of dataset ", f, "\n", sep="")
     str(get(f, envir=env, inherits=FALSE))

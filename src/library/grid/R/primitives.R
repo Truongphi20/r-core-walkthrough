@@ -797,8 +797,8 @@ validDetails.xspline <- function(x) {
       x$shape <- rep(x$shape, length.out=nx)
       # Watch out for id or id.length!
       index <- xsplineIndex(x)
-      first <- vapply(index, min, 0)
-      last <- vapply(index, max, 0)
+      first <- sapply(index, min)
+      last <- sapply(index, max)
       x$shape[c(first, last)] <- 0
   }
   x

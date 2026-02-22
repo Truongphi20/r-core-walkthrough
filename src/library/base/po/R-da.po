@@ -14,7 +14,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: R 3.2.0\n"
 "Report-Msgid-Bugs-To: bugs.r-project.org\n"
-"POT-Creation-Date: 2025-03-31 11:50\n"
+"POT-Creation-Date: 2024-03-27 16:14\n"
 "PO-Revision-Date: 2015-03-25 14:20+0200\n"
 "Last-Translator: Joe Hansen <joedalton2@yahoo.dk>\n"
 "Language-Team: Danish <debian-l10n-danish@lists.debian.org>\n"
@@ -45,6 +45,13 @@ msgstr "Se help(\"Deprecated\") og help(\"%s-deprecated\")."
 msgid "See help(\"Deprecated\")"
 msgstr "Se help(\"Deprecated\")"
 
+msgid "unsupported value of _R_DEPRECATED_IS_R_,"
+msgstr ""
+
+#, fuzzy
+msgid ", will be ignored"
+msgstr "'drop'-argument vil blive ignoreret"
+
 msgid "argument to 'La.svd' must be numeric or complex"
 msgstr "argument for 'La.svd' skal være numerisk eller kompleks"
 
@@ -68,19 +75,21 @@ msgstr "andet argument skal være en liste"
 msgid "'iconvlist' is not available on this system"
 msgstr "'iconvlist' er ikke tilgængelig på dette system"
 
-#, fuzzy
-msgid "'kind' must be a character string (RNG to be used)."
+msgid "'kind' must be a character string of length 1 (RNG to be used)."
 msgstr "'kind' skal være en tegnstreng af længde 1 (RNG vil blive brugt)."
 
 msgid "'%s' is not a valid abbreviation of an RNG"
 msgstr "'%s' er ikke en gyldig forkortelse for en RNG"
 
-#, fuzzy
-msgid "'%s' must be a character string"
-msgstr "argument 'object' skal deparse til en enkel tegnstreng"
+msgid "'normal.kind' must be a character string of length 1"
+msgstr "'normal.kind' skal være en tegnstreng af længde 1"
 
 msgid "'%s' is not a valid choice"
 msgstr "'%s' er ikke et gyldigt valg"
+
+#, fuzzy
+msgid "'sample.kind' must be a character string of length 1"
+msgstr "'normal.kind' skal være en tegnstreng af længde 1"
 
 msgid "malformed version string"
 msgstr "forkert udformet versionsstreng"
@@ -220,6 +229,10 @@ msgstr "kan kun skrive tegnobjekter"
 #, fuzzy
 msgid "'headers' must have names and must not be NA"
 msgstr "'X' skal have navngivne dimnavne"
+
+#, fuzzy
+msgid "'name' must be a single character string"
+msgstr "argument 'object' skal deparse til en enkel tegnstreng"
 
 msgid "'origin' must be one of 'start', 'current' or 'end'"
 msgstr "'origin' skal være en af 'start', 'current' eller 'end'"
@@ -420,20 +433,29 @@ msgstr "unær %s er ikke defineret for »Date«-objekter"
 msgid "%s not defined for \"Date\" objects"
 msgstr "%s er ikke defineret for »Date«-objekter"
 
-#, fuzzy
-msgid "'%s' must be of length 1"
+msgid "'from' must be specified"
+msgstr "'from' skal angives"
+
+msgid "'from' must be a \"Date\" object"
+msgstr "'from' skal være et »Date«-objekt"
+
+msgid "'from' must be of length 1"
+msgstr "'from' skal være af længde 1"
+
+msgid "'to' must be a \"Date\" object"
+msgstr "'to' skal være et »Date«-objekt"
+
+msgid "'to' must be of length 1"
 msgstr "'to' skal være af længde 1"
 
-msgid "without 'by', at least one of 'to' and 'from' must be specified"
-msgstr ""
+msgid "'length.out' must be of length 1"
+msgstr "'length.out' skal være af længde 1"
 
-#, fuzzy
-msgid "without 'by', when one of 'to', 'from' is missing, 'length.out' / 'along.with' must be specified"
+msgid "exactly two of 'to', 'by' and 'length.out' / 'along.with' must be specified"
 msgstr "præcist to af 'to', 'by' og 'length.out' / 'along.with' skal være angivet"
 
-#, fuzzy
-msgid "given 'by', exactly two of 'to', 'from' and 'length.out' / 'along.with' must be specified"
-msgstr "præcist to af 'to', 'by' og 'length.out' / 'along.with' skal være angivet"
+msgid "'by' must be of length 1"
+msgstr "'by' skal være af længde 1"
 
 msgid "invalid 'by' string"
 msgstr "ugyldig 'by'-streng"
@@ -452,6 +474,9 @@ msgstr "'x' skal være et datotidsobjekt"
 
 msgid "invalid specification of 'breaks'"
 msgstr "ugyldig specifikation for 'breaks'"
+
+msgid "'origin' must be of length one"
+msgstr "'origin' skal være af længde en"
 
 msgid "'lag' and 'differences' must be integers >= 1"
 msgstr "'lag' og 'differences' skal være heltal >=1"
@@ -511,13 +536,11 @@ msgstr "begge argumenter for * kan ikke være »difftime«-objekter"
 msgid "second argument of / cannot be a \"difftime\" object"
 msgstr "andet argument af / kan ikke være et »difftime«-objekt"
 
-#, fuzzy
-msgid "exactly three of 'to', 'from', 'by' and 'length.out' / 'along.with' must be specified"
-msgstr "præcist to af 'to', 'by' og 'length.out' / 'along.with' skal være angivet"
+msgid "'from' must be a \"POSIXt\" object"
+msgstr "'from' skal være et »POSIXt«-objekt"
 
-#, fuzzy
-msgid "'%s' must be a \"%s\" object"
-msgstr "'to' skal være et »Date«-objekt"
+msgid "'to' must be a \"POSIXt\" object"
+msgstr "'to' skal være et »POSIXt«-objekt"
 
 #, fuzzy
 msgid "component subscript must be a character string"
@@ -525,9 +548,6 @@ msgstr "argument 'object' skal deparse til en enkel tegnstreng"
 
 msgid "no Olson database found"
 msgstr "ingen Olson-database fundet"
-
-msgid "No element named \"%s\" found in x, did you mean x[, \"%1$s\"] instead?"
-msgstr ""
 
 msgid "'file' must be a character string or connection"
 msgstr "'file' skal være en tegnstreng eller forbindelse"
@@ -666,6 +686,9 @@ msgstr "ingen filer/mappe at henvise til"
 msgid "no files to link to"
 msgstr "ingen filer at henvise til"
 
+msgid "'package' must be of length 1"
+msgstr "'package' skal være på længde 1"
+
 msgid "no file found"
 msgstr "ingen fil fundet"
 
@@ -691,6 +714,10 @@ msgstr ""
 
 msgid "class of 'x' was discarded"
 msgstr "klasse for 'x' blev fjernet"
+
+#, fuzzy
+msgid "'flag' must be a string, i.e., of length 1"
+msgstr "'arg' skal have længden 1"
 
 #, fuzzy
 msgid "'flag' should contain only characters from [0+- #'I]"
@@ -964,7 +991,7 @@ msgid "nothing specified to be save()d"
 msgstr "intet angivet som skal save()d"
 
 #, fuzzy
-msgid "'%s' must be a non-empty character string"
+msgid "'%s' must be a non-empty string"
 msgstr "'file' skal være en streng der ikke er tom"
 
 msgid "'compress' must be logical or character"
@@ -1005,6 +1032,9 @@ msgstr ""
 
 msgid "'arg' must be NULL or a character vector"
 msgstr "'arg' skal være NULL eller en tegnvektor"
+
+msgid "'arg' must be of length 1"
+msgstr "'arg' skal have længden 1"
 
 msgid "'arg' must be of length >= 1"
 msgstr "'arg' skal have længden >= 1"
@@ -1418,6 +1448,9 @@ msgstr "angiv enten 'nmax' eller 'n', men ikke begge."
 msgid "'from' must be a finite number"
 msgstr "'from' skal være et »Date«-objekt"
 
+msgid "argument 'length.out' must be of length 1"
+msgstr "argument 'length.out' skal have længden 1"
+
 msgid "first element used of 'length.out' argument"
 msgstr "første element brugt af 'length-out'-argument"
 
@@ -1586,19 +1619,12 @@ msgstr ""
 msgid "additional arguments ignored in warning()"
 msgstr "yderligere argumenter ignoreret i warning()"
 
-msgid "no natural language support or missing translations"
-msgstr ""
-
-msgid "In bare C locale: LANGUAGE reset, but message language may be unchanged"
-msgstr ""
-
-msgid "In bare C locale, not forcing locale; possibly use 'force = TRUE'?"
-msgstr ""
-
 msgid "Sys.setenv(LANGUAGE=\"%s\") may have failed"
 msgstr ""
 
-msgid "attempt to set an attribute on NULL"
+msgid ""
+"Calling 'structure(NULL, *)' is deprecated, as NULL cannot have attributes.\n"
+"  Consider 'structure(list(), *)' instead."
 msgstr ""
 
 msgid "incorrect value for 'x'"
@@ -1666,6 +1692,10 @@ msgstr "niveauantal er forskelligt"
 msgid "handler must be a function"
 msgstr "håndtag skal være en funktion"
 
+#, fuzzy
+msgid "'which' must be of length 1"
+msgstr "'to' skal være af længde 1"
+
 msgid "no such element '%s'"
 msgstr "intet sådant element '%s'"
 
@@ -1702,15 +1732,11 @@ msgid "No traceback available"
 msgstr "Ingen tilbagesporing tilgængelig"
 
 #, fuzzy
-msgid "'recursive' must be a length-1 vector"
-msgstr "'origin' skal være af længde en"
-
-msgid "'recursive' is NA"
-msgstr ""
-
-#, fuzzy
 msgid "invalid non-character version specification 'x' (type: %s)"
 msgstr "ugyldig versionspecifikation %s"
+
+msgid "Calls"
+msgstr ""
 
 msgid "invalid version specification %s"
 msgstr "ugyldig versionspecifikation %s"
@@ -1963,7 +1989,7 @@ msgstr[1] "S3-metoder %s blev deklareret i NAMESPACE men ikke fundet"
 msgid "%s is not TRUE"
 msgid_plural "%s are not all TRUE"
 msgstr[0] "%s er ikke TRUE"
-msgstr[1] "%s er ikke alle TRUE"
+msgstr[1] "%s er overhovedet ikke TRUE"
 
 msgid "Warning message:\n"
 msgid_plural "Warning messages:\n"
@@ -1979,59 +2005,6 @@ msgid_plural ""
 " extra arguments %s will be disregarded"
 msgstr[0] "ekstra argument %s vil blive ignoreret"
 msgstr[1] "ekstra argumentet %s vil blive ignoreret"
-
-#, fuzzy
-#~ msgid "'name' must be a single character string"
-#~ msgstr "argument 'object' skal deparse til en enkel tegnstreng"
-
-#~ msgid "'from' must be specified"
-#~ msgstr "'from' skal angives"
-
-#~ msgid "'from' must be a \"Date\" object"
-#~ msgstr "'from' skal være et »Date«-objekt"
-
-#~ msgid "'from' must be of length 1"
-#~ msgstr "'from' skal være af længde 1"
-
-#~ msgid "'length.out' must be of length 1"
-#~ msgstr "'length.out' skal være af længde 1"
-
-#~ msgid "'by' must be of length 1"
-#~ msgstr "'by' skal være af længde 1"
-
-#~ msgid "'from' must be a \"POSIXt\" object"
-#~ msgstr "'from' skal være et »POSIXt«-objekt"
-
-#~ msgid "'to' must be a \"POSIXt\" object"
-#~ msgstr "'to' skal være et »POSIXt«-objekt"
-
-#~ msgid "'package' must be of length 1"
-#~ msgstr "'package' skal være på længde 1"
-
-#~ msgid "'arg' must be of length 1"
-#~ msgstr "'arg' skal have længden 1"
-
-#~ msgid "argument 'length.out' must be of length 1"
-#~ msgstr "argument 'length.out' skal have længden 1"
-
-#, fuzzy
-#~ msgid "'which' must be of length 1"
-#~ msgstr "'to' skal være af længde 1"
-
-#~ msgid "'normal.kind' must be a character string of length 1"
-#~ msgstr "'normal.kind' skal være en tegnstreng af længde 1"
-
-#, fuzzy
-#~ msgid "'sample.kind' must be a character string of length 1"
-#~ msgstr "'normal.kind' skal være en tegnstreng af længde 1"
-
-#, fuzzy
-#~ msgid "'flag' must be a string, i.e., of length 1"
-#~ msgstr "'arg' skal have længden 1"
-
-#, fuzzy
-#~ msgid ", will be ignored"
-#~ msgstr "'drop'-argument vil blive ignoreret"
 
 #~ msgid "norm '%s' currently always uses exact = FALSE"
 #~ msgstr "norm '%s' bruger i øjeblikket altid præcis = FALSE"

@@ -39,8 +39,8 @@
   with other languages (on most platforms it is possible to mix with C,
   but mixing with C++ rarely works).
 
-  Please consult Section \manual{R-exts}{Creating shared objects}
-  for how to customize it (for example to
+  Please consult section \sQuote{Creating shared objects} in the manual
+  \sQuote{Writing R Extensions} for how to customize it (for example to
   add \code{cpp} flags and to add libraries to the link step) and for
   details of some of its quirks.
 
@@ -78,8 +78,9 @@
 #endif
   \code{\link{dyn.load}}, \code{\link{library.dynam}}.
 
-  \manual{R-exts}{} and
-  Section \manual{R-admin}{Customizing package compilation}.
+  The \sQuote{R Installation and Administration} and
+  \sQuote{Writing R Extensions} manuals, including the section on
+  \sQuote{Customizing package compilation} in the former.
 }
 #ifdef unix
 \examples{\dontrun{

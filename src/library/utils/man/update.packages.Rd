@@ -1,6 +1,6 @@
 % File src/library/utils/man/update.packages.Rd
 % Part of the R package, https://www.R-project.org
-% Copyright 1995-2024 R Core Team
+% Copyright 1995-2019 R Core Team
 % Distributed under GPL 2 or later
 
 \name{update.packages}
@@ -52,8 +52,7 @@ new.packages(lib.loc = NULL, repos = getOption("repos"),
     Incompatible with \code{type = "both"}.
   }
   \item{method}{Download method, see \code{\link{download.file}}.
-    Unused by \code{old.packages} if a non-\code{NULL} \code{available}
-    is supplied.} 
+    Unused if a non-\code{NULL} \code{available} is supplied.} 
   \item{instlib}{character string giving the library directory where to
     install the packages.}
   \item{ask}{logical indicating whether to ask the user to select
@@ -160,7 +159,8 @@ new.packages(lib.loc = NULL, repos = getOption("repos"),
   \code{\link{INSTALL}}, \code{\link{REMOVE}}, \code{\link{remove.packages}},
   \code{\link{library}}, \code{\link{.packages}}, \code{\link{read.dcf}}
 
-  Section \manual{R-admin}{Setting up a package repository}.
+  The \sQuote{R Installation and Administration} manual for how to
+  set up a repository.
 }
 
 \keyword{utilities}

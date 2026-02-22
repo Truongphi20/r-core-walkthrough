@@ -1,21 +1,20 @@
 % File src/library/utils/man/unix/make.packages.html.Rd
 % Part of the R package, https://www.R-project.org
-% Copyright 1995-2025 R Core Team
+% Copyright 1995-2011 R Core Team
 % Distributed under GPL 2 or later
 
 \name{make.packages.html}
 \alias{make.packages.html}
 \title{Update HTML Package List}
 \usage{
-make.packages.html(lib.loc = getOption("html_lib.loc", default = .libPaths()),
-                   temp = FALSE, verbose = TRUE, docdir = R.home("doc"))
+make.packages.html(lib.loc = .libPaths(), temp = FALSE,
+                   verbose = TRUE, docdir = R.home("doc"))
 }
 \description{
   Re-create the HTML list of packages.
 }
 \arguments{
-  \item{lib.loc}{character vector of package libraries to be
-    included.  Default typically set from \code{\link{help.start}(lib.loc = *)}.}
+  \item{lib.loc}{character vector.  List of libraries to be included.}
   \item{temp}{logical: should the package indices be created in a
     temporary location for use by the HTTP server?}
   \item{verbose}{logical.  If true, print out a message.
@@ -55,8 +54,6 @@ make.packages.html(lib.loc = getOption("html_lib.loc", default = .libPaths()),
 \examples{\dontrun{
 make.packages.html()
 # this can be slow for large numbers of installed packages.
-}
-if(interactive()) # typically fast and quiet
-  make.packages.html(lib.loc = .Library, verbose=FALSE)
-}
+}}
+
 \keyword{utilities}

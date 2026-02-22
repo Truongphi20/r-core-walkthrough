@@ -75,7 +75,9 @@ deparse1(expr, collapse = " ", width.cutoff = 500L, ...)
   %% for historical compatibility with S.
 }
 \references{
-  \bibshow{R:Becker+Chambers+Wilks:1988}
+  Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+  \emph{The New S Language}.
+  Wadsworth & Brooks/Cole.
 }
 \seealso{
   \code{\link{.deparseOpts}} for available \code{control} settings;

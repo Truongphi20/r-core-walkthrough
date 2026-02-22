@@ -1,7 +1,7 @@
 #  File src/library/stats/R/factanal.R
 #  Part of the R package, https://www.R-project.org
 #
-#  Copyright (C) 1995-2025 The R Core Team
+#  Copyright (C) 1995-2015 The R Core Team
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -16,6 +16,9 @@
 #  A copy of the GNU General Public License is available at
 #  https://www.R-project.org/Licenses/
 
+## Hmm, MM thinks diag(.) needs checking { diag(vec) when length(vec)==1 !}
+## However, MM does not understand that factor analysis
+##   is a *multi*variate technique!
 factanal <-
     function (x, factors, data = NULL, covmat = NULL, n.obs = NA,
               subset, na.action, start = NULL,
@@ -23,27 +26,21 @@ factanal <-
               rotation = "varimax",
               control = NULL, ...)
 {
-    sortLoadings <- function(Lambda, rotm = NULL)
+    sortLoadings <- function(Lambda)
     {
         cn <- colnames(Lambda)
         Phi <- attr(Lambda, "covariance")
-        io.ssq <- order(- if(is.null(Phi)) colSums(Lambda^2) else diag(Phi %*% crossprod(Lambda)))
-        Lambda <- Lambda[, io.ssq, drop = FALSE]
+        ssq <- apply(Lambda, 2L, function(x) -sum(x^2))
+        Lambda <- Lambda[, order(ssq), drop = FALSE]
+        colnames(Lambda) <- cn
         neg <- colSums(Lambda) < 0
         Lambda[, neg] <- -Lambda[, neg]
-        colnames(Lambda) <- cn
-        has.rot <- !is.null(rotm)
-        has.Ph  <- !is.null(Phi)
-        if(has.rot || has.Ph) # used for both
-            unit <- c(1, -1)[neg+1L] # = ifelse(neg, -1, 1)
-        ## FIXME:  <M>  %*%  diag(unit)  can be made faster (for non-small cases) below
-        if(has.rot)
-            rotm <- rotm[, io.ssq] %*% diag(unit)
-        if (has.Ph) {
+        if(!is.null(Phi)) {
+            unit <- ifelse(neg, -1, 1)
             attr(Lambda, "covariance") <-
-                diag(unit) %*% Phi[io.ssq, io.ssq] %*% diag(unit)
+                unit %*% Phi[order(ssq), order(ssq)] %*% unit
         }
-        list(Lambda = Lambda, rotm = rotm)
+        Lambda
     }
     cl <- match.call()
     na.act <- NULL
@@ -101,15 +98,12 @@ factanal <-
                               "%d factor is too many for %d variables",
                               "%d factors are too many for %d variables"),
                      factors, p), domain = NA)
-    ## FIXME: cov2cor() shows how to do this faster (for large dim)
     sds <- sqrt(diag(cv))
     cv <- cv/(sds %o% sds)
 
     cn <- list(nstart = 1, trace = FALSE, lower = 0.005)
     cn[names(control)] <- control
-    more <- if(...length())
-                Filter(length, # drop NULL components in
-                       list(...)[c("nstart", "trace", "lower", "opt", "rotate")])
+    more <- list(...)[c("nstart", "trace", "lower", "opt", "rotate")]
     if(length(more)) cn[names(more)] <- more
 
     if(is.null(start)) {
@@ -127,8 +121,8 @@ factanal <-
     if(nc < 1) stop("no starting values supplied")
     best <- Inf
     for (i in 1L:nc) {
-        ## factanal.fit.mle(cmat, factors, start=NULL, lower = 0.005, control = NULL, ...)
-        nfit <- factanal.fit.mle(cv, factors, start[, i], max(cn$lower, 0), cn$opt)
+        nfit <- factanal.fit.mle(cv, factors, start[, i],
+                                 max(cn$lower, 0), cn$opt)
         if(cn$trace)
             cat("start", i, "value:", format(nfit$criteria[1L]),
                 "uniqs:", format(as.vector(round(nfit$uniquenesses, 4))), "\n")
@@ -142,25 +136,20 @@ factanal <-
                       "unable to optimize from this starting value",
                       "unable to optimize from these starting values"),
              domain = NA)
-                                        # the following line changed by C. Bernaards, 20 December 2022
-    load <- sortLoadings(fit$loadings)$Lambda
-    if(is.function(rotation) || rotation != "none") {
+    load <- fit$loadings
+    if(rotation != "none") {
         rot <- do.call(rotation, c(list(load), cn$rotate))
         load <- if (is.list(rot)) {
-                    fit$rotmat <-
-                        if(inherits(rot, "GPArotation")) t(solve(rot$Th))
-                        else rot$rotmat
-                    rot$loadings
-                } else rot
-        if(is.list(rot) && !is.null(rot$Phi)) attr(load, "covariance") <- rot$Phi
+          load <- rot$loadings
+          fit$rotmat <-
+              if(inherits(rot, "GPArotation")) t(solve(rot$Th))
+              else rot$rotmat
+          rot$loadings
+        } else rot
     }
-                                        # the following lines added by C. Bernaards, 20 December 2022
-    loadrot <- sortLoadings(load, fit$rotmat)
-    fit$loadings <- loadrot$Lambda
-    if(!is.null(loadrot$rotm)) fit$rotmat <- loadrot$rotm
-                                        # end additions C. Bernaards, 20 December 2022
+    fit$loadings <- sortLoadings(load)
     class(fit$loadings) <- "loadings"
-    fit$na.action <- na.act # book keeping
+    fit$na.action <- na.act # not used currently
     if(have.x && scores != "none") {
         Lambda <- fit$loadings
         zz <- scale(z, TRUE, TRUE)
@@ -228,8 +217,8 @@ factanal.fit.mle <-
         start <- (1 - 0.5*factors/p)/diag(solve(cmat))
     res <- optim(start, FAfn, FAgr, method = "L-BFGS-B",
                  lower = lower, upper = 1,
-                 control = c(list(fnscale = 1,
-                                  parscale = rep(0.01, length(start))), control),
+                 control = c(list(fnscale=1,
+                 parscale = rep(0.01, length(start))), control),
                  q = factors, S = cmat)
     Lambda <- FAout(res$par, cmat, factors)
     dimnames(Lambda) <- list(dimnames(cmat)[[1L]],
@@ -259,13 +248,11 @@ print.loadings <- function(x, digits = 3L, cutoff = 0.1, sort = FALSE, ...)
         Lambda <- Lambda[order(mx, 1L:p), , drop=FALSE]
     }
     cat("\nLoadings:\n")
-    fx <- setNames(format(round(Lambda, digits)), NULL) # char matrix
+    fx <- setNames(format(round(Lambda, digits)), NULL)
     nc <- nchar(fx[1L], type="c")
     fx[abs(Lambda) < cutoff] <- strrep(" ", nc)
     print(fx, quote = FALSE, ...)
-    Phi <- attr(Lambda, "covariance")
-    vx <- if(is.null(Phi)) colSums(Lambda^2) else diag(Phi %*% crossprod(Lambda))
-    names(vx) <- colnames(Lambda)
+    vx <- colSums(x^2)
     varex <- rbind("SS loadings" = vx)
     if(is.null(attr(x, "covariance"))) {
         varex <- rbind(varex, "Proportion Var" = vx/p)
@@ -282,19 +269,19 @@ print.factanal <- function(x, digits = 3, ...)
     cat("\nCall:\n", deparse(x$call), "\n\n", sep = "")
     cat("Uniquenesses:\n")
     print(round(x$uniquenesses, digits), ...)
-    print(x$loadings, digits = digits, ...) #-> print.loadings()
+    print(x$loadings, digits = digits, ...)
                                         # the following lines added by J. Fox, 26 June 2005
-    if(!is.null(x$rotmat)) {
-        tmat <- solve(x$rotmat)
-        R <- tcrossprod(tmat) # t . t'
-        factors <- x$factors
-        rownames(R) <- colnames(R) <- paste0("Factor", 1:factors)
+    if (!is.null(x$rotmat)){
+      tmat <- solve(x$rotmat)
+      R <- tmat %*% t(tmat)
+      factors <- x$factors
+      rownames(R) <- colnames(R) <- paste0("Factor", 1:factors)
 
                                         # the following line changed by Ulrich Keller, 9 Sept 2008
-        if (!isTRUE(all.equal(c(R), c(diag(factors))))) {
-            cat("\nFactor Correlations:\n")
-            print(R, digits=digits, ...)
-        }
+      if (!isTRUE(all.equal(c(R), c(diag(factors))))) {
+        cat("\nFactor Correlations:\n")
+        print(R, digits=digits, ...)
+      }
     }
                                         # end additions J. Fox, 23 June 2005
     if(!is.null(x$STATISTIC)) {

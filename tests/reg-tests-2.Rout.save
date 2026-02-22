@@ -1,6 +1,6 @@
 
-R Under development (unstable) (2026-01-16 r89305) -- "Unsuffered Consequences"
-Copyright (C) 2026 The R Foundation for Statistical Computing
+R Under development (unstable) (2024-03-11 r86096) -- "Unsuffered Consequences"
+Copyright (C) 2024 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -934,7 +934,7 @@ $B$subset
  Mean   :14.74   Mean   :6.084   112    :  3   Mean   : 45.60  
  3rd Qu.:20.00   3rd Qu.:6.600   135    :  3   3rd Qu.: 47.55  
  Max.   :23.00   Max.   :7.700   (Other):147   Max.   :370.00  
-                                 NAs    : 16                   
+                                 NA's   : 16                   
      accel        
  Min.   :0.00300  
  1st Qu.:0.04425  
@@ -951,7 +951,7 @@ $B$subset
  Mean   :14.742   Mean   :6.0841   112    :  3   Mean   : 45.603  
  3rd Qu.:20.000   3rd Qu.:6.6000   135    :  3   3rd Qu.: 47.550  
  Max.   :23.000   Max.   :7.7000   (Other):147   Max.   :370.000  
-                                   NAs    : 16                    
+                                   NA's   : 16                    
      accel        
  Min.   :0.00300  
  1st Qu.:0.04425  
@@ -968,7 +968,7 @@ $B$subset
  Mean   :14.742   Mean   :6.0841   Mean   : 56.928   Mean   : 45.603  
  3rd Qu.:20.000   3rd Qu.:6.6000   3rd Qu.: 86.750   3rd Qu.: 47.550  
  Max.   :23.000   Max.   :7.7000   Max.   :117.000   Max.   :370.000  
-                                   NAs    :16                         
+                                   NA's   :16                         
      accel        
  Min.   :0.00300  
  1st Qu.:0.04425  
@@ -1465,10 +1465,6 @@ Y    4   10   16   22
 > try(log("a"))
 Error in log("a") : non-numeric argument to mathematical function
 > 
-> op <- options(warn = -1)
-> # *ignore* warnings (for now) to keep the output deterministic wrt to
-> # warning about closing an unused connections by the gc
-> 
 > ## capture all the output to a file.
 > zz <- file("all.Rout", open="wt")
 > sink(zz)
@@ -1480,7 +1476,6 @@ Error in log("a") : non-numeric argument to mathematical function
 > (foo <- showConnections())
      description class mode text isopen can read can write
 > stopifnot(nrow(foo) == 0)
-> options(op) # re-enable warnings
 > try(log("a"))
 Error in log("a") : non-numeric argument to mathematical function
 > unlink("all.Rout")
@@ -1802,7 +1797,7 @@ Summary of (a total of 27) warning messages:
  1x : glm.fit: algorithm stopped at boundary value
 > 
 > 
-> ## extending char arrays
+> ## extending char arrrays
 > x <- y <- LETTERS[1:2]
 > x[5] <- "C"
 > length(y) <- 5
@@ -3865,28 +3860,6 @@ Residuals 42  29204   695.3
   100000000 | 00000000000
 
 > ##  had integer overflows in 1.8.1, and silly shifts of decimal point
-> 
-> ## PR#8934 stem() with correct width
-> stem(c(8.48, 9.58, 9.96))
-
-  The decimal point is at the |
-
-   8 | 
-   8 | 5
-   9 | 
-   9 | 6
-  10 | 0
-
-> ## wrongly indented  '10 |'  since even before R 1.0.0
-> 
-> ## stem(<length 1>) now produces output
-> stem(123)
-
-  The decimal point is 2 digit(s) to the right of the |
-
-  1 | 2
-
-> ## length(x) == 1  was explicitly skipped in R <= 4.4.z
 > 
 > 
 > ## PR#6633 warnings with vector op matrix, and more
@@ -6393,7 +6366,7 @@ function(given = NULL) {
     if (is.null(given)) callObj$default <- TRUE
     callObj
 }
-<bytecode: 0x5ab0d0f733e8>
+<bytecode: 0x562f0421fcc8>
 > print(foo, useSource = FALSE)
 function (given = NULL) 
 {
@@ -6404,7 +6377,7 @@ function (given = NULL)
         callObj$default <- TRUE
     callObj
 }
-<bytecode: 0x5ab0d0f733e8>
+<bytecode: 0x562f0421fcc8>
 > attr(foo, "srcref") <- NULL
 > foo
 function (given = NULL) 
@@ -6416,7 +6389,7 @@ function (given = NULL)
         callObj$default <- TRUE
     callObj
 }
-<bytecode: 0x5ab0d0f733e8>
+<bytecode: 0x562f0421fcc8>
 > (f <- structure(function(){}, note = "just a note",
 +                 yada = function() "not the same"))
 function(){}
@@ -6618,7 +6591,7 @@ Error in `[[<-.data.frame`(`*tmp*`, "NewCol", value = integer(0)) :
      [,1]            [,2]           
 [1,] <missing value> "A string"     
 [2,] 3               <missing value>
-> ## used uninitialized variable in C, noticeably Windows, for R <= 2.9.0
+> ## used uninitialized variable in C, noticably Windows, for R <= 2.9.0
 > 
 > 
 > ## non-standard variable names in update etc
@@ -6674,7 +6647,7 @@ NULL
 > switch("a", a=, b=, c=, invisible(4))
 > .Last.value
 [1] 4
-> ## visibility changed in 2.11.0
+> ## visiblilty changed in 2.11.0
 > 
 > 
 > ## rounding error in aggregate.ts
@@ -7000,10 +6973,10 @@ Asserted error: no method found for function 'show' and signature bar
 > ## corner cases for array
 > # allowed, gave non-array in 2.15.x
 > try(array(1, integer()))
-Error in array(1, integer()) : 'dim' cannot be of length 0
+Error in array(1, integer()) : 'dims' cannot be of length 0
 > # if no dims, an error to supply dimnames
 > try(array(1, integer(), list(1, 2)))
-Error in array(1, integer(), list(1, 2)) : 'dim' cannot be of length 0
+Error in array(1, integer(), list(1, 2)) : 'dims' cannot be of length 0
 > ##
 > 
 > 
@@ -7898,7 +7871,7 @@ list(one = 1, two = )
 > summary(x.Date)
         Min.      1st Qu.       Median         Mean      3rd Qu.         Max. 
 "1881-09-24" "1902-12-04" "1920-09-10" "1923-04-12" "1941-01-17" "1969-12-28" 
-         NAs 
+        NA's 
          "3" 
 > DF.Dates <- data.frame(c1 = x.Date)
 > summary(DF.Dates) ## NA's missing from output :
@@ -7909,7 +7882,7 @@ list(one = 1, two = )
  Mean   :1923-04-12  
  3rd Qu.:1941-01-17  
  Max.   :1969-12-28  
- NAs    :3           
+ NA's   :3           
 > DF.Dates$x1 <- 1:7
 > summary(DF.Dates) ## NA's still missing
        c1                   x1     
@@ -7919,7 +7892,7 @@ list(one = 1, two = )
  Mean   :1923-04-12   Mean   :4.0  
  3rd Qu.:1941-01-17   3rd Qu.:5.5  
  Max.   :1969-12-28   Max.   :7.0  
- NAs    :3                         
+ NA's   :3                         
 > DF.Dates$x2 <- c(1:6, NA)
 > ## now, NA's show fine:
 > summary(DF.Dates)
@@ -7930,7 +7903,7 @@ list(one = 1, two = )
  Mean   :1923-04-12   Mean   :4.0   Mean   :3.50  
  3rd Qu.:1941-01-17   3rd Qu.:5.5   3rd Qu.:4.75  
  Max.   :1969-12-28   Max.   :7.0   Max.   :6.00  
- NAs    :3                          NAs    :1     
+ NA's   :3                          NA's   :1     
 > ## 2 of 4  summary(.) above did not show NA's  in R <= 3.2.3
 > 
 > 
@@ -7951,7 +7924,7 @@ list(one = 1, two = )
 > ## summary(<logical>) working via table():
 > logi <- c(NA, logical(3), NA, !logical(2), NA)
 > summary(logi)
-   Mode   FALSE    TRUE     NAs 
+   Mode   FALSE    TRUE    NA's 
 logical       3       2       3 
 > summary(logi[!is.na(logi)])
    Mode   FALSE    TRUE 
@@ -7962,7 +7935,7 @@ logical       1
 > ## was always showing counts for NA's even when 0 in  2.8.0 <= R <= 3.3.1
 > ii <- as.integer(logi)
 > summary(ii)
-   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.     NAs 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
     0.0     0.0     0.0     0.4     1.0     1.0       3 
 > summary(ii[!is.na(ii)])
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
@@ -8142,7 +8115,7 @@ mean of x
 [1,]        0  0 NaN      NaN
 > 
 > 
-> ## deparse() wraps cflow bodies when deeply buried through a LHS (PR#18232)
+> ## deparse() wraps cflow bodies when deeply burried through a LHS (PR#18232)
 > ##
 > ## These didn't print the same before fix, the bquote() expression
 > ## missed parentheses
@@ -8188,7 +8161,7 @@ A + ~B + C ~ D
 > ## 'simple' binary op
 > quote(a$"b")
 a$b
-> ## When cflow body is buried deeply through the right, don't rewrap
+> ## When cflow body is burried deeply through the right, don't rewrap
 > ## unnecessarily. There should be only one set of parentheses.
 > ## Cases where R-devel 81211 still gave unneeded parens:
 > quote(`^`(1 + if(L) 2, 3))
@@ -8369,7 +8342,7 @@ Error in f() : argument is missing, with no default
 >     withAutoprint({ show.srcref() })
  language show.srcref()
  - attr(*, "srcref")= 'srcref' int [1:8] 1 21 1 33 21 33 3 3
-  ..- attr(*, "srcfile")=Classes 'srcfilealias', 'srcfile' <environment: 0x5ab0ce13c1d8> 
+  ..- attr(*, "srcfile")=Classes 'srcfilealias', 'srcfile' <environment: 0x562f01758010> 
 > ## no   attr(*, "src..")   in R <= 4.3.1
 > ##
 > withAutoprint({
@@ -8378,9 +8351,4 @@ Error in f() : argument is missing, with no default
 >     1 + 2
 [1] 3
 > ## temporarily wrongly showed " withAutoprint({ "
-> 
-> 
-> # ----- Last line -------------
-> cat('Time elapsed: ', proc.time(),'\n')
-Time elapsed:  1.162 0.101 1.266 0 0.002 
 > 

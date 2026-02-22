@@ -4,6 +4,7 @@
 % Distributed under GPL 2 or later
 
 \name{NLSstClosestX}
+\encoding{UTF-8}
 \title{Inverse Interpolation}
 \alias{NLSstClosestX}
 \alias{NLSstClosestX.sortedXyData}

@@ -105,7 +105,9 @@ write.ftable(x, file = "", quote = TRUE, append = FALSE,
   \code{\link{ftable}} for more information on flat contingency tables.
 }
 \references{
-  \bibshow{R:Agresti:1990}
+  Agresti, A. (1990)
+  \emph{Categorical data analysis}.
+  New York: Wiley.
 }
 \examples{
 ## Agresti (1990), page 157, Table 5.8.

@@ -1,14 +1,14 @@
 % File src/library/stats/man/predict.Rd
 % Part of the R package, https://www.R-project.org
-% Copyright 1995-2024 R Core Team
+% Copyright 1995-2020 R Core Team
 % Distributed under GPL 2 or later
 
 \name{predict}
-\alias{predict}
 \title{Model Predictions}
 \usage{
-predict(object, ...)
+predict (object, \dots)
 }
+\alias{predict}
 \arguments{
   \item{object}{a model object for which prediction is desired.}
   \item{\dots}{additional arguments affecting the predictions produced.}
@@ -32,7 +32,7 @@ predict(object, ...)
   \code{n.ahead} specifying how many time steps ahead to predict.
 
   Many methods have a logical argument \code{se.fit} saying if standard
-  errors are to be returned.
+  errors are to returned.
 }
  \value{
   The form of the value returned by \code{predict} depends on the
@@ -59,7 +59,9 @@ predict(object, ...)
   \code{\link{predict.StructTS}}.
 }
 \references{
-  \bibshow{R:Chambers+Hastie:1992}
+  Chambers, J. M. and Hastie, T. J. (1992)
+  \emph{Statistical Models in S}.
+  Wadsworth & Brooks/Cole.
 }
 \examples{
 \dontshow{old <- Sys.getlocale("LC_COLLATE")

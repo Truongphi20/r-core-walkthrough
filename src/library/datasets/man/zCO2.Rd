@@ -1,6 +1,6 @@
 % File src/library/datasets/man/zCO2.Rd
 % Part of the R package, https://www.R-project.org
-% Copyright 1995-2011 R Core Team
+% Copyright 1995-20011 R Core Team
 % Distributed under GPL 2 or later
 
 \name{CO2}
@@ -18,26 +18,26 @@
   \code{c("nfnGroupedData", "nfGroupedData", "groupedData", "data.frame")}
   containing the following columns:
   \describe{
-    \item{\code{Plant}}{
+    \item{Plant}{
       an ordered factor with levels
       \code{Qn1} < \code{Qn2} < \code{Qn3} < \dots < \code{Mc1}
       giving a unique identifier for each plant.
     }
-    \item{\code{Type}}{
+    \item{Type}{
       a factor with levels
       \code{Quebec}
       \code{Mississippi}
       giving the origin of the plant
     }
-    \item{\code{Treatment}}{
+    \item{Treatment}{
       a factor with levels
       \code{nonchilled}
       \code{chilled}
     }
-    \item{\code{conc}}{
+    \item{conc}{
       a numeric vector of ambient carbon dioxide concentrations (\abbr{mL}/L).
     }
-    \item{\code{uptake}}{
+    \item{uptake}{
       a numeric vector of carbon dioxide uptake rates
       (\eqn{\mu\mbox{mol}/m^2}{umol/m^2} sec).
     }
@@ -49,16 +49,18 @@
   \eqn{CO_2}{CO2} concentration.  Half the plants of each type were
   chilled overnight before the experiment was conducted.
 
-  This dataset was originally part of package \CRANpkg{nlme}, and that has
+  This dataset was originally part of package \code{nlme}, and that has
   methods (including for \code{[}, \code{as.data.frame}, \code{plot} and
   \code{print}) for its grouped-data classes.
 }
 \source{
-  \bibcitet{R:Potvin+Lechowicz+Tardif:1990,
-    R:Pinheiro+Bates:2000}
-}
-\references{
-  \bibshow{*}
+  Potvin, C., Lechowicz, M. J. and Tardif, S. (1990)
+  \dQuote{The statistical analysis of ecophysiological response curves
+  obtained from experiments involving repeated measures}, \emph{Ecology},
+  \bold{71}, 1389--1400.
+
+  Pinheiro, J. C. and Bates, D. M. (2000)
+  \emph{Mixed-effects Models in S and S-PLUS}, Springer.
 }
 \examples{
 require(stats); require(graphics)

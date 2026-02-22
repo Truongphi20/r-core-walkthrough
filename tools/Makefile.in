@@ -18,7 +18,6 @@ DISTFILES = README \
 	config.rpath \
 	config.sub \
 	copy-if-change \
-	fetch-recommended \
 	getsp.java \
 	help2man.pl \
 	install-sh \

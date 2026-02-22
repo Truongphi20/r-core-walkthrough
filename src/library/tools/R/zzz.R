@@ -56,8 +56,4 @@ rm(C_parseLatex)
 	    Rd2txt_options(itemBullet = "\u2022 ")
     } else if (!is.na(iconv("\u2022", "UTF-8", "")))
 	Rd2txt_options(itemBullet = "\u2022 ")
-    Rd_expr_bibshow_bibstyle(Sys.getenv("R_HELP_BIBSTYLE", "R"))
-    op.tools <- list(help.htmltoc = TRUE)
-    toset <- !(names(op.tools) %in% names(.Options))
-    if(any(toset)) options(op.tools[toset])
 }

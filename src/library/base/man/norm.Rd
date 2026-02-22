@@ -59,7 +59,9 @@ norm(x, type = c("O", "I", "F", "M", "2"))
   LAPACK is from \url{https://netlib.org/lapack/}.
 }
 \references{
-  \bibshow{R:Anderson+Bai+Bischof:1999}
+  Anderson, E., \emph{et al} (1994).
+  \emph{LAPACK User's Guide},
+  2nd edition, SIAM, Philadelphia.
 }
 \seealso{
   \code{\link{rcond}} for the (reciprocal) condition number.

@@ -1,7 +1,7 @@
 /*
  *  R : A Computer Language for Statistical Data Analysis
  *  Copyright (C) 2001-3 Paul Murrell
- *                2003-2025 The R Core Team
+ *                2003-2023 The R Core Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -38,10 +38,10 @@ void getDeviceSize(pGEDevDesc dd, double *devWidthCM, double *devHeightCM)
     *devHeightCM = fabs(top - bottom) * dd->dev->ipr[1] * 2.54;
 }
 
-static bool deviceChanged(double devWidthCM, double devHeightCM, 
+static Rboolean deviceChanged(double devWidthCM, double devHeightCM, 
 			      SEXP currentvp)
 {
-    bool result = false;
+    Rboolean result = FALSE;
     SEXP pvpDevWidthCM, pvpDevHeightCM;
     PROTECT(pvpDevWidthCM = VECTOR_ELT(currentvp, PVP_DEVWIDTHCM));
     PROTECT(pvpDevHeightCM = VECTOR_ELT(currentvp, PVP_DEVHEIGHTCM));
@@ -140,12 +140,12 @@ SEXP doSetViewport(SEXP vp,
 		   /* 
 		    * Are we setting the top-level viewport?
 		    */
-		   bool topLevelVP,
+		   Rboolean topLevelVP,
 		   /* 
 		    * Are we pushing a new viewport?
 		    * (or just revisiting an already-pushed viewport?)
 		    */
-		   bool pushing,
+		   Rboolean pushing,
 		   pGEDevDesc dd)
 {
     int i, j;
@@ -411,8 +411,8 @@ SEXP L_setviewport(SEXP invp, SEXP hasParent)
      */
     PROTECT(fcall = lang2(install("pushedvp"),
 			  vp));
-    PROTECT(pushedvp = Rf_eval_with_gd(fcall, R_gridEvalEnv, NULL)); 
-    pushedvp = doSetViewport(pushedvp, !LOGICAL(hasParent)[0], true, dd);
+    PROTECT(pushedvp = eval(fcall, R_gridEvalEnv)); 
+    pushedvp = doSetViewport(pushedvp, !LOGICAL(hasParent)[0], TRUE, dd);
     /* Set the value of the current viewport for the current device
      * Need to do this in here so that redrawing via R BASE display
      * list works 
@@ -435,7 +435,7 @@ SEXP L_setviewport(SEXP invp, SEXP hasParent)
              * (until grid.newpage()) 
              * NOTE that resolveGPar() stores the resolved fill in 'vpgp'
              */
-            resolveGPar(vpgp, true);
+            resolveGPar(vpgp, TRUE);
             /* Record the resolved fill for subsequent up/down/pop */
             SET_VECTOR_ELT(VECTOR_ELT(pushedvp, PVP_GPAR),
                            GP_FILL,
@@ -498,24 +498,24 @@ SEXP L_setviewport(SEXP invp, SEXP hasParent)
  * Some helper functions to call R code because I have no idea
  * how to do this in C code
  */
-static bool noChildren(SEXP children) 
+static Rboolean noChildren(SEXP children) 
 {
     SEXP result, fcall;
     PROTECT(fcall = lang2(install("no.children"),
 			  children));
-    PROTECT(result = Rf_eval_with_gd(fcall, R_gridEvalEnv, NULL)); 
+    PROTECT(result = eval(fcall, R_gridEvalEnv)); 
     UNPROTECT(2);
-    return asBool(result);
+    return LOGICAL(result)[0];
 }
 
-static bool childExists(SEXP name, SEXP children) 
+static Rboolean childExists(SEXP name, SEXP children) 
 {
     SEXP result, fcall;
     PROTECT(fcall = lang3(install("child.exists"),
 			  name, children));
-    PROTECT(result = Rf_eval_with_gd(fcall, R_gridEvalEnv, NULL)); 
+    PROTECT(result = eval(fcall, R_gridEvalEnv)); 
     UNPROTECT(2);
-    return asBool(result);
+    return LOGICAL(result)[0];
 }
 
 static SEXP childList(SEXP children) 
@@ -523,7 +523,7 @@ static SEXP childList(SEXP children)
     SEXP result, fcall;
     PROTECT(fcall = lang2(install("child.list"),
 			  children));
-    PROTECT(result = Rf_eval_with_gd(fcall, R_gridEvalEnv, NULL)); 
+    PROTECT(result = eval(fcall, R_gridEvalEnv)); 
     UNPROTECT(2);
     return result;    
 }
@@ -533,14 +533,14 @@ find.in.children <- function(name, children) {
   cpvps <- ls(env=children)
   ncpvp <- length(cpvps)
   count <- 0
-  found <- false
+  found <- FALSE
   while (count < ncpvp && !found) {
     result <- find.viewport(name, get(cpvps[count+1], env=children))
     found <- result$found
     count <- count + 1
   }
   if (!found)
-    result <- list(found=false, pvp=NULL)
+    result <- list(found=FALSE, pvp=NULL)
   return(result)
 }
 */
@@ -550,7 +550,7 @@ static SEXP findInChildren(SEXP name, SEXP strict, SEXP children, int depth)
     SEXP childnames = childList(children);
     int n = LENGTH(childnames);
     int count = 0;
-    bool found = false;
+    Rboolean found = FALSE;
     SEXP result = R_NilValue;
     PROTECT(childnames);
     PROTECT(result);
@@ -579,12 +579,12 @@ static SEXP findInChildren(SEXP name, SEXP strict, SEXP children, int depth)
 			   
 /*
 find.viewport <- function(name, pvp) {
-  found <- false
+  found <- FALSE
   if (length(ls(env=pvp$children)) == 0)
-    return(list(found=false, pvp=NULL))
+    return(list(found=FALSE, pvp=NULL))
   else 
     if (exists(name, env=pvp$children, inherits=FALSE)) 
-      return(list(found=true,
+      return(list(found=TRUE,
                   pvp=get(name, env=pvp$children, inherits=FALSE)))
     else 
       find.in.children(name, pvp$children)
@@ -646,7 +646,7 @@ SEXP L_downviewport(SEXP name, SEXP strict)
     int depth = 1;
     PROTECT(found = findViewport(name, strict, gvp, depth));
     if (INTEGER(VECTOR_ELT(found, 0))[0]) {
-	vp = doSetViewport(VECTOR_ELT(found, 1), false, false, dd);
+	vp = doSetViewport(VECTOR_ELT(found, 1), FALSE, FALSE, dd);
 	/* Set the value of the current viewport for the current device
 	 * Need to do this in here so that redrawing via R BASE display
 	 * list works 
@@ -707,14 +707,14 @@ SEXP L_downviewport(SEXP name, SEXP strict)
  * Similar to L_downviewport
  */
 
-static bool pathMatch(SEXP path, SEXP pathsofar, SEXP strict) 
+static Rboolean pathMatch(SEXP path, SEXP pathsofar, SEXP strict) 
 {
     SEXP result, fcall;
     PROTECT(fcall = lang4(install("pathMatch"),
 			  path, pathsofar, strict));
-    PROTECT(result = Rf_eval_with_gd(fcall, R_gridEvalEnv, NULL)); 
+    PROTECT(result = eval(fcall, R_gridEvalEnv)); 
     UNPROTECT(2);
-    return asBool(result);    
+    return LOGICAL(result)[0];    
 }
 
 static SEXP growPath(SEXP pathsofar, SEXP name) 
@@ -725,7 +725,7 @@ static SEXP growPath(SEXP pathsofar, SEXP name)
     else {
 	PROTECT(fcall = lang3(install("growPath"),
 			      pathsofar, name));
-        PROTECT(result = Rf_eval_with_gd(fcall, R_gridEvalEnv, NULL)); 
+	PROTECT(result = eval(fcall, R_gridEvalEnv)); 
 	UNPROTECT(2);
     }
     return result;    
@@ -740,7 +740,7 @@ static SEXP findvppathInChildren(SEXP path, SEXP name,
     SEXP childnames = childList(children);
     int n = LENGTH(childnames);
     int count = 0;
-    bool found = false;
+    Rboolean found = FALSE;
     SEXP result = R_NilValue;
     PROTECT(childnames);
     PROTECT(result);
@@ -824,7 +824,7 @@ SEXP L_downvppath(SEXP path, SEXP name, SEXP strict)
     int depth = 1;
     PROTECT(found = findvppath(path, name, strict, R_NilValue, gvp, depth));
     if (INTEGER(VECTOR_ELT(found, 0))[0]) {
-	vp = doSetViewport(VECTOR_ELT(found, 1), false, false, dd);
+	vp = doSetViewport(VECTOR_ELT(found, 1), FALSE, FALSE, dd);
 	/* Set the value of the current viewport for the current device
 	 * Need to do this in here so that redrawing via R BASE display
 	 * list works 
@@ -941,7 +941,7 @@ SEXP L_unsetviewport(SEXP n)
 	SET_TAG(t, install("envir")); 
 	t = CDR(t);
 	SET_TAG(t, install("inherits")); 
-	Rf_eval_with_gd(fcall, R_gridEvalEnv, dd); 
+	eval(fcall, R_gridEvalEnv); 
 	UNPROTECT(2); /* false, fcall */
     }
     /* Get the current device size 
@@ -1256,11 +1256,12 @@ SEXP L_newpage(void)
     /* 
      * Has the device been drawn on yet?
      */
-    bool deviceDirty = GEdeviceDirty(dd);
+    Rboolean deviceDirty = GEdeviceDirty(dd);
     /*
      * Has the device been drawn on BY GRID yet?
      */
-    bool deviceGridDirty = asBool(gridStateElement(dd, GSS_GRIDDEVICE));
+    Rboolean deviceGridDirty = LOGICAL(gridStateElement(dd, 
+							GSS_GRIDDEVICE))[0];
     /*
      * Initialise grid on device
      * If no drawing on device yet, does a new page
@@ -1393,7 +1394,7 @@ SEXP L_convert(SEXP x, SEXP whatfrom,
     LTransform transform;
     SEXP currentvp, currentgp;
     int TOunit, FROMaxis, TOaxis;
-    bool relConvert;
+    Rboolean relConvert;
     /* 
      * Get the current device 
      */
@@ -1453,7 +1454,7 @@ SEXP L_convert(SEXP x, SEXP whatfrom,
                     transformXYtoNPC(unitValue(x, i), unitUnit(x, i),
                                      vpc.xscalemin, vpc.xscalemax);
             } else {
-                relConvert = false;
+                relConvert = FALSE;
                 REAL(answer)[i] = 
                     transformXtoINCHES(x, i, vpc, &gc,
                                        vpWidthCM, vpHeightCM, 
@@ -1466,7 +1467,7 @@ SEXP L_convert(SEXP x, SEXP whatfrom,
                     transformXYtoNPC(unitValue(x, i), unitUnit(x, i),
                                      vpc.yscalemin, vpc.yscalemax);
             } else {
-                relConvert = false;
+                relConvert = FALSE;
                 REAL(answer)[i] = 
                     transformYtoINCHES(x, i, vpc, &gc,
                                        vpWidthCM, vpHeightCM, 
@@ -1479,7 +1480,7 @@ SEXP L_convert(SEXP x, SEXP whatfrom,
                     transformWHtoNPC(unitValue(x, i), unitUnit(x, i),
                                      vpc.xscalemin, vpc.xscalemax);
             } else {
-                relConvert = false;
+                relConvert = FALSE;
                 REAL(answer)[i] = 
                     transformWidthtoINCHES(x, i, vpc, &gc,
                                            vpWidthCM, vpHeightCM, 
@@ -1492,7 +1493,7 @@ SEXP L_convert(SEXP x, SEXP whatfrom,
                     transformWHtoNPC(unitValue(x, i), unitUnit(x, i),
                                      vpc.yscalemin, vpc.yscalemax);
             } else {
-                relConvert = false;
+                relConvert = FALSE;
                 REAL(answer)[i] = 
                     transformHeighttoINCHES(x, i, vpc, &gc,
                                             vpWidthCM, vpHeightCM, 
@@ -1983,7 +1984,7 @@ static void hullEdge(double *x, double *y, int n,
      */
     PROTECT(chullFn = findFun(install("chull"), R_gridEvalEnv));
     PROTECT(R_fcall = lang3(chullFn, xin, yin));
-    PROTECT(hull = Rf_eval_with_gd(R_fcall, R_gridEvalEnv, NULL));
+    PROTECT(hull = eval(R_fcall, R_gridEvalEnv));
     nh = LENGTH(hull);
     hx = (double *) R_alloc(nh, sizeof(double));
     hy = (double *) R_alloc(nh, sizeof(double));
@@ -2076,7 +2077,7 @@ static void arrows(double *x, double *y, int n,
 		    * (we may be drawing a line segment that has been
 		    *  broken by NAs)
 		    */
-		   bool start, bool end,
+		   Rboolean start, Rboolean end,
 		   LViewportContext vpc,
 		   double vpWidthCM, double vpHeightCM,
 		   const pGEcontext gc, pGEDevDesc dd) 
@@ -2090,17 +2091,17 @@ static void arrows(double *x, double *y, int n,
     SEXP ends = VECTOR_ELT(arrow, GRID_ARROWENDS);
     int ne = LENGTH(ends);
     double vertx[3], verty[3];
-    bool first, last;
+    Rboolean first, last;
     if (n < 2)
 	error(_("require at least two points to draw arrow"));
-    first = true;
-    last = true;
+    first = TRUE;
+    last = TRUE;
     switch (INTEGER(ends)[i % ne]) {
     case 2: 
-	first = false;
+	first = FALSE;
 	break;
     case 1:
-	last = false;
+	last = FALSE;
 	break;
     }
     if (first && start) {
@@ -2236,7 +2237,7 @@ SEXP L_lineTo(SEXP x, SEXP y, SEXP arrow)
 	    ay[0] = yy0;
 	    ay[1] = yy1;
 	    arrows(ax, ay, 2,
-		   arrow, 0, true, true, 
+		   arrow, 0, TRUE, TRUE, 
 		   vpc, vpWidthCM, vpHeightCM, &gc, dd);
 	}
 	GEMode(0, dd);
@@ -2341,7 +2342,7 @@ SEXP L_lines(SEXP x, SEXP y, SEXP index, SEXP arrow)
 		     * Can draw an arrow at the end point.
 		     */
  		    arrows(xx+start, yy+start, nx-start, 
-			   arrow, j, start == 0, true,
+			   arrow, j, start == 0, TRUE,
 			   vpc, vpWidthCM, vpHeightCM, &gc, dd);
 		}
 	    } 
@@ -2359,7 +2360,7 @@ SEXP L_lines(SEXP x, SEXP y, SEXP index, SEXP arrow)
  * are unit objects 
  */
 SEXP gridXspline(SEXP x, SEXP y, SEXP s, SEXP o, SEXP a, SEXP rep, SEXP index,
-		 double theta, bool draw, bool trace) 
+		 double theta, Rboolean draw, Rboolean trace) 
 {
     int i, j, nx, np, nloc;
     double *xx, *yy, *ss;
@@ -2467,8 +2468,7 @@ SEXP gridXspline(SEXP x, SEXP y, SEXP s, SEXP o, SEXP a, SEXP rep, SEXP index,
 	    }
 	}
 	PROTECT(points = GEXspline(nx, xx, yy, ss,
-				   (bool)LOGICAL(o)[0],
-				   (bool)LOGICAL(rep)[0],
+				   LOGICAL(o)[0], LOGICAL(rep)[0],
 				   draw, &gc, dd));
         {
             /*
@@ -2526,7 +2526,7 @@ SEXP gridXspline(SEXP x, SEXP y, SEXP s, SEXP o, SEXP a, SEXP rep, SEXP index,
                  * Can draw an arrow at the either end.
                  */
                 arrows(&(px[start]), &(py[start]), np,
-                       a, i, true, true,
+                       a, i, TRUE, TRUE,
                        vpc, vpWidthCM, vpHeightCM, &gc, dd);
             }
             if (!draw && !trace && !isNull(points)) {
@@ -2596,7 +2596,7 @@ SEXP gridXspline(SEXP x, SEXP y, SEXP s, SEXP o, SEXP a, SEXP rep, SEXP index,
 
 SEXP L_xspline(SEXP x, SEXP y, SEXP s, SEXP o, SEXP a, SEXP rep, SEXP index) 
 {
-    gridXspline(x, y, s, o, a, rep, index, 0, true, false);
+    gridXspline(x, y, s, o, a, rep, index, 0, TRUE, FALSE);
     return R_NilValue;
 }
 
@@ -2604,14 +2604,14 @@ SEXP L_xsplineBounds(SEXP x, SEXP y, SEXP s, SEXP o, SEXP a, SEXP rep,
 		     SEXP index, SEXP theta) 
 {
     return gridXspline(x, y, s, o, a, rep, index, REAL(theta)[0], 
-                       false, false);
+                       FALSE, FALSE);
 }
 
 SEXP L_xsplinePoints(SEXP x, SEXP y, SEXP s, SEXP o, SEXP a, SEXP rep, 
 		     SEXP index, SEXP theta) 
 {
     return gridXspline(x, y, s, o, a, rep, index, REAL(theta)[0], 
-                       false, true);
+                       FALSE, TRUE);
 }
 
 SEXP L_segments(SEXP x0, SEXP y0, SEXP x1, SEXP y1, SEXP arrow) 
@@ -2683,7 +2683,7 @@ SEXP L_segments(SEXP x0, SEXP y0, SEXP x1, SEXP y1, SEXP arrow)
 		ay[0] = yy0;
 		ay[1] = yy1;
 		arrows(ax, ay, 2,
-		       arrow, i, true, true,
+		       arrow, i, TRUE, TRUE,
 		       vpc, vpWidthCM, vpHeightCM, &gc, dd);
 	    }
 	}
@@ -2743,7 +2743,7 @@ SEXP L_arrows(SEXP x1, SEXP x2, SEXP xnm1, SEXP xn,
     int ne;
     double vpWidthCM, vpHeightCM;
     double rotationAngle;
-    bool first, last;
+    Rboolean first, last;
     int gpIsScalar[15] = {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
     LViewportContext vpc;
     R_GE_gcontext gc, gcCache;
@@ -2772,7 +2772,7 @@ SEXP L_arrows(SEXP x1, SEXP x2, SEXP xnm1, SEXP xn,
     maxn = getArrowN(x1, x2, xnm1, xn,
 		     y1, y2, ynm1, yn);
     ne = LENGTH(ends);
-    resolveGPar(currentgp, false);
+    resolveGPar(currentgp, FALSE);
     initGContext(currentgp, &gc, dd, gpIsScalar, &gcCache);
     /* Convert the x and y values to INCHES locations */
     /* FIXME:  Need to check for NaN's and NA's
@@ -2782,14 +2782,14 @@ SEXP L_arrows(SEXP x1, SEXP x2, SEXP xnm1, SEXP xn,
 	double xx1, xx2, xxnm1, xxn, yy1, yy2, yynm1, yyn;
 	double vertx[3];
 	double verty[3];
-	first = true;
-	last = true;
+	first = TRUE;
+	last = TRUE;
 	switch (INTEGER(ends)[i % ne]) {
 	case 2: 
-	    first = false;
+	    first = FALSE;
 	    break;
 	case 1:
-	    last = false;
+	    last = FALSE;
 	    break;
 	}
 	updateGContext(currentgp, i, &gc, dd, gpIsScalar, &gcCache);
@@ -2946,7 +2946,7 @@ SEXP L_polygon(SEXP x, SEXP y, SEXP index)
 }
 
 static SEXP gridCircle(SEXP x, SEXP y, SEXP r, 
-		       double theta, bool draw)
+		       double theta, Rboolean draw)
 {
     int i, nx, ny, nr, ncirc;
     double xx, yy, rr1, rr2, rr = 0.0 /* -Wall */;
@@ -3100,20 +3100,20 @@ static SEXP gridCircle(SEXP x, SEXP y, SEXP r,
 
 SEXP L_circle(SEXP x, SEXP y, SEXP r)
 {
-    gridCircle(x, y, r, 0, true);
+    gridCircle(x, y, r, 0, TRUE);
     return R_NilValue;
 }
 
 SEXP L_circleBounds(SEXP x, SEXP y, SEXP r, SEXP theta)
 {
-    return gridCircle(x, y, r, REAL(theta)[0], false);
+    return gridCircle(x, y, r, REAL(theta)[0], FALSE);
 }
 
 /* We are assuming here that the R code has checked that 
  * x, y, w, and h are all unit objects and that vp is a viewport
  */
 static SEXP gridRect(SEXP x, SEXP y, SEXP w, SEXP h, 
-		     SEXP hjust, SEXP vjust, double theta, bool draw) 
+		     SEXP hjust, SEXP vjust, double theta, Rboolean draw) 
 {
     double xx, yy, ww, hh;
     double vpWidthCM, vpHeightCM;
@@ -3351,14 +3351,14 @@ static SEXP gridRect(SEXP x, SEXP y, SEXP w, SEXP h,
 
 SEXP L_rect(SEXP x, SEXP y, SEXP w, SEXP h, SEXP hjust, SEXP vjust) 
 {
-    gridRect(x, y, w, h, hjust, vjust, 0, true);
+    gridRect(x, y, w, h, hjust, vjust, 0, TRUE);
     return R_NilValue;    
 }
 
 SEXP L_rectBounds(SEXP x, SEXP y, SEXP w, SEXP h, SEXP hjust, SEXP vjust,
 		  SEXP theta) 
 {
-    return gridRect(x, y, w, h, hjust, vjust, REAL(theta)[0], false);
+    return gridRect(x, y, w, h, hjust, vjust, REAL(theta)[0], FALSE);
 }
 
 SEXP L_path(SEXP x, SEXP y, SEXP index, SEXP rule)
@@ -3438,7 +3438,7 @@ SEXP L_path(SEXP x, SEXP y, SEXP index, SEXP rule)
             }
     	}
     	updateGContext(currentgp, h, &gc, dd, gpIsScalar, &gcCache);
-    	GEPath(xx, yy, npoly, nper, asBool(rule), &gc, dd);
+    	GEPath(xx, yy, npoly, nper, INTEGER(rule)[0], &gc, dd);
     	vmaxset(vmax);
     }
     GEMode(0, dd);
@@ -3535,7 +3535,7 @@ SEXP L_raster(SEXP raster, SEXP x, SEXP y, SEXP w, SEXP h,
                 R_FINITE(ww) && R_FINITE(hh))
                 GERaster(image, INTEGER(dim)[1], INTEGER(dim)[0],
                          xx, yy, ww, hh, rotationAngle, 
-                         (bool) LOGICAL(interpolate)[i % LENGTH(interpolate)], 
+                         LOGICAL(interpolate)[i % LENGTH(interpolate)], 
                          &gc, dd);
         } else {
             /* We have to do a little bit of work to figure out where the 
@@ -3567,7 +3567,7 @@ SEXP L_raster(SEXP raster, SEXP x, SEXP y, SEXP w, SEXP h,
                  */
                 GERaster(image, INTEGER(dim)[1], INTEGER(dim)[0],
                          xbl, ybl, ww, hh, rotationAngle, 
-                         (bool) LOGICAL(interpolate)[i % LENGTH(interpolate)], 
+                         LOGICAL(interpolate)[i % LENGTH(interpolate)], 
                          &gc, dd);
             }
             UNPROTECT(2);
@@ -3627,7 +3627,7 @@ SEXP L_cap(void)
  * Combined to avoid code replication
  */
 static SEXP gridText(SEXP label, SEXP x, SEXP y, SEXP hjust, SEXP vjust, 
-		     SEXP rot, SEXP checkOverlap, double theta, bool draw)
+		     SEXP rot, SEXP checkOverlap, double theta, Rboolean draw)
 {
     int i, nx, ny;
     double *xx, *yy;
@@ -3863,7 +3863,7 @@ static SEXP gridText(SEXP label, SEXP x, SEXP y, SEXP hjust, SEXP vjust,
 SEXP L_text(SEXP label, SEXP x, SEXP y, SEXP hjust, SEXP vjust, 
 	    SEXP rot, SEXP checkOverlap)
 {
-    gridText(label, x, y, hjust, vjust, rot, checkOverlap, 0, true);
+    gridText(label, x, y, hjust, vjust, rot, checkOverlap, 0, TRUE);
     return R_NilValue;    
 }
 
@@ -3882,7 +3882,7 @@ SEXP L_textBounds(SEXP label, SEXP x, SEXP y,
     SEXP checkOverlap = allocVector(LGLSXP, 1);
     LOGICAL(checkOverlap)[0] = FALSE;
     return gridText(label, x, y, hjust, vjust, rot, checkOverlap, 
-		    REAL(theta)[0], false);
+		    REAL(theta)[0], FALSE);
 }
 
 static SEXP symbolCoords(double *x, double *y, int n, pGEDevDesc dd)
@@ -3905,7 +3905,7 @@ static SEXP symbolCoords(double *x, double *y, int n, pGEDevDesc dd)
  * NOTE that MINIMUM value is 1, even if no coordinates are returned
  * (coordinates are NULL) */
 
-static int symbolNumCoords(int pch, bool closed) {
+static int symbolNumCoords(int pch, Rboolean closed) {
     int result = 1;
     /* Only need to worry about SOME pch=<int> */
     switch(pch) {
@@ -4002,7 +4002,7 @@ static int symbolNumCoords(int pch, bool closed) {
  * Return R_NilValue if no coordinates. 
  */
 SEXP gridSymbol(double x, double y, int pch, double size, 
-                bool draw, bool closed, int numCoords,
+                Rboolean draw, Rboolean closed, int numCoords,
                 const pGEcontext gc, pGEDevDesc dd)
 {
     double r, xc, yc;
@@ -4928,7 +4928,7 @@ SEXP gridSymbol(double x, double y, int pch, double size,
 }
 
 static SEXP gridPoints(SEXP x, SEXP y, SEXP pch, SEXP size, 
-                       bool draw, bool closed) 
+                       Rboolean draw, Rboolean closed) 
 {
     int i, nx, npch, nss, ncoords, coordIndex;
     /*    double *xx, *yy;*/
@@ -4944,7 +4944,7 @@ static SEXP gridPoints(SEXP x, SEXP y, SEXP pch, SEXP size,
     R_GE_gcontext gc, gcCache;
     LTransform transform;
     SEXP currentvp, currentgp;
-    SEXP savedFill = R_NilValue;
+    SEXP savedFill;
     SEXP result = R_NilValue;
     SEXP resultNames = R_NilValue;
     /* Get the current device 
@@ -5091,12 +5091,12 @@ static SEXP gridPoints(SEXP x, SEXP y, SEXP pch, SEXP size,
                  */
                 if (draw)
                     gridSymbol(xx[i], yy[i], ipch, symbolSize, 
-                               true, closed, 0, &gc, dd);
+                               TRUE, closed, 0, &gc, dd);
                 else {
                     int j, nc = symbolNumCoords(ipch, closed);
                     SEXP coords;
                     PROTECT(coords = gridSymbol(xx[i], yy[i], ipch, symbolSize,
-                                                false, closed, nc, &gc, dd));
+                                                FALSE, closed, nc, &gc, dd));
                     for (j=0; j<nc; j++) {
                         INTEGER(resultNames)[coordIndex] = i + 1;
                         SET_VECTOR_ELT(result, coordIndex++, 
@@ -5119,13 +5119,12 @@ static SEXP gridPoints(SEXP x, SEXP y, SEXP pch, SEXP size,
 
 SEXP L_points(SEXP x, SEXP y, SEXP pch, SEXP size)
 {
-    return gridPoints(x, y, pch, size, true, false);
+    return gridPoints(x, y, pch, size, TRUE, NA_LOGICAL);
 }
 
 SEXP L_pointsPoints(SEXP x, SEXP y, SEXP pch, SEXP size, SEXP closed)
 {
-    /* 'closed' type checked in R code */
-    return gridPoints(x, y, pch, size, false, asBool(closed));
+    return gridPoints(x, y, pch, size, FALSE, LOGICAL(closed)[0]);
 }
 
 SEXP L_clip(SEXP x, SEXP y, SEXP w, SEXP h, SEXP hjust, SEXP vjust) 
@@ -5217,7 +5216,7 @@ SEXP L_pretty2(SEXP scale, SEXP n_) {
      */
     double *usr = NULL;
     double axp[3];
-    bool swap = min > max;
+    Rboolean swap = min > max;
     /* 
      * Feature: 
      * like R, something like  xscale = c(100,0)  just works 

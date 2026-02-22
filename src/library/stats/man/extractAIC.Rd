@@ -88,7 +88,9 @@ extractAIC(fit, scale, k = 2, \dots)
 %-- Source in ../R/add.R
 \author{B. D. Ripley}
 \references{
-  \bibshow{R:Venables+Ripley:2002}
+  Venables, W. N. and Ripley, B. D. (2002)
+  \emph{Modern Applied Statistics with S.}
+  New York: Springer (4th ed).
 }
 \seealso{
   \code{\link{AIC}}, \code{\link{deviance}}, \code{\link{add1}},

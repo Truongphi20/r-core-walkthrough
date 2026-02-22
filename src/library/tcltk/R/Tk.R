@@ -1,7 +1,7 @@
 #  File src/library/tcltk/R/Tk.R
 #  Part of the R package, https://www.R-project.org
 #
-#  Copyright (C) 1995-2025 The R Core Team
+#  Copyright (C) 1995-2019 The R Core Team
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -15,8 +15,6 @@
 #
 #  A copy of the GNU General Public License is available at
 #  https://www.R-project.org/Licenses/
-
-.tcl_v8.6 <- function() package_version(tclVersion()) >= "8.6" # internal
 
 ### ------ Basics ------
 
@@ -476,23 +474,20 @@ tkgrid.propagate       <- function(...) tcl("grid", "propagate", ...)
 tkgrid.rowconfigure    <- function(...) tcl("grid", "rowconfigure", ...)
 tkgrid.remove          <- function(...) tcl("grid", "remove", ...)
 tkgrid.size            <- function(...) tcl("grid", "size", ...)
-tkgrid.slaves          <- function(...) { if(.tcl_v8.6()) .Deprecated("tkgrid.child"); tcl("grid", "slaves", ...)}
-tkgrid.child          <- function(...) tcl("grid", "child", ...)
+tkgrid.slaves          <- function(...) tcl("grid", "slaves", ...)
 
 tkpack           <- function(...) tcl("pack", ...)
 tkpack.configure <- function(...) tcl("pack", "configure", ...)
 tkpack.forget    <- function(...) tcl("pack", "forget", ...)
 tkpack.info      <- function(...) tcl("pack", "info", ...)
 tkpack.propagate <- function(...) tcl("pack", "propagate", ...)
-tkpack.slaves    <- function(...) { if(.tcl_v8.6()) .Deprecated("tkpack.child"); tcl("pack", "slaves", ...)}
-tkpack.child     <- function(...) tcl("pack", "child", ...)
+tkpack.slaves    <- function(...) tcl("pack", "slaves", ...)
 
 tkplace           <- function(...) tcl("place", ...)
 tkplace.configure <- function(...) tcl("place", "configure", ...)
 tkplace.forget    <- function(...) tcl("place", "forget", ...)
 tkplace.info      <- function(...) tcl("place", "info", ...)
-tkplace.slaves    <- function(...) { if(.tcl_v8.6()) .Deprecated("tkplace.child"); tcl("place", "slaves", ...)}
-tkplace.child    <- function(...) tcl("place", "child", ...)
+tkplace.slaves    <- function(...) tcl("place", "slaves", ...)
 
 
 

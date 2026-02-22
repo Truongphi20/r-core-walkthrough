@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: R 2.3.0\n"
 "Report-Msgid-Bugs-To: bugs.r-project.org\n"
-"POT-Creation-Date: 2025-03-31 11:51\n"
+"POT-Creation-Date: 2024-04-15 12:10\n"
 "PO-Revision-Date: 2024-03-19 03:05+0000\n"
 "Last-Translator: Michael Chirico <michaelchirico4@gmail.com>\n"
 "Language-Team: RjpWiki Message Translation Team <mokada@md.tsukuba.ac.jp>\n"
@@ -315,14 +315,6 @@ msgstr "'seasonal' は成分 'order' を備えたリストでなければなり�
 
 msgid "'seasonal$order' must be a non-negative numeric vector of length 3"
 msgstr "'seasonal$order' は長さ 3 の非負数値ベクトルでなければなりません"
-
-#, fuzzy
-msgid "if not a list, 'seasonal' must be a non-negative numeric vector of length 3"
-msgstr "'seasonal$order' は長さ 3 の非負数値ベクトルでなければなりません"
-
-#, fuzzy
-msgid "'seasonal' is neither a list with component 'order' nor a numeric vector of length 3"
-msgstr "'seasonal' は成分 'order' を備えたリストでなければなりません"
 
 msgid "lengths of 'x' and 'xreg' do not match"
 msgstr "'x' と 'xreg' の長さが一致しません"
@@ -1597,8 +1589,7 @@ msgstr "無効なモデル式です"
 msgid "no terms component nor attribute"
 msgstr "terms 要素も terms 属性もありません"
 
-#, fuzzy
-msgid "'termlabels' must be a character vector"
+msgid "'termlabels' must be a character vector of length at least one"
 msgstr "'termlabels' は少なくとも長さ 1 の文字ベクトルでなければなりません"
 
 #, fuzzy
@@ -1902,10 +1893,6 @@ msgstr "'ppr' は数値変数にしか適用できません"
 msgid "mismatched 'x' and 'y'"
 msgstr "'x' 及び 'y' が合致しません"
 
-#, fuzzy
-msgid "mismatched 'x' and 'weights'"
-msgstr "'x' 及び 'y' が合致しません"
-
 msgid "wrong number of columns in 'x'"
 msgstr "'x' の列数が間違っています"
 
@@ -1971,10 +1958,6 @@ msgstr ""
 
 msgid "'formula' missing"
 msgstr "モデル式 ('formula') がありません"
-
-#, fuzzy
-msgid "'type' must be an integer in 1..9"
-msgstr "'y' は 'x' より 1 だけ長くなくてはいけません"
 
 msgid "'type' must be 1 or 3 for ordered factors"
 msgstr ""
@@ -2147,14 +2130,6 @@ msgstr ""
 
 msgid "'spar' must be of length 1"
 msgstr "'spar' の長さは 1 でなければなりません"
-
-#, fuzzy
-msgid "df.offset must be numeric and >= 0"
-msgstr "'offset' は数値でなければなりません"
-
-#, fuzzy
-msgid "penalty must be numeric and > 0"
-msgstr "'y' は数値でなければなりません"
 
 #, fuzzy
 msgid "not using invalid df; must have 1 < df <= n := #{unique x} ="

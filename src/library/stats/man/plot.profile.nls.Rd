@@ -40,8 +40,9 @@
   the horizontal/vertical lines dropping to the axes.
 }
 \references{
-  \bibinfo{R:Bates+Watts:1988}{footer}{Chapter 6.}
-  \bibshow{R:Bates+Watts:1988}
+  Bates, D.M. and Watts, D.G. (1988),
+  \emph{Nonlinear Regression Analysis and Its Applications},
+  Wiley (chapter 6)
 }
 \author{Douglas M. Bates and Saikat DebRoy}
 \seealso{
@@ -68,4 +69,3 @@ par(opar)
 \keyword{nonlinear}
 \keyword{regression}
 \keyword{models}
-\keyword{hplot}

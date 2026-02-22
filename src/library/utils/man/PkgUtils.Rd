@@ -1,6 +1,6 @@
 % File src/library/utils/man/PkgUtils.Rd
 % Part of the R package, https://www.R-project.org
-% Copyright 1995-2025 R Core Team
+% Copyright 1995-2023 R Core Team
 % Distributed under GPL 2 or later
 
 \name{PkgUtils}
@@ -17,8 +17,9 @@
 }
 \arguments{
   \item{pkgdirs}{a list of names of directories with sources of \R
-    add-on packages.  For \code{check} these can also be the filepaths of
-    (possibly compressed) \command{tar} archives.}
+    add-on packages.  For \code{check} these can also be the filenames of
+    compressed \command{tar} archives with extension \file{.tar.gz},
+    \file{.tgz}, \file{.tar.bz2} or \file{.tar.xz}.}
   \item{options}{further options to control the processing, or for
     obtaining information about usage and version of the utility.}
 }
@@ -29,17 +30,18 @@
 
   \command{R CMD build} builds \R source tarballs.  The name(s) of the
   packages are taken from the \file{DESCRIPTION} files and not from the
-  directory names.  This works entirely on a copy of the supplied source
+  directory names. This works entirely on a copy of the supplied source
   directories.
 
   Use \command{R CMD \var{foo} --help} to obtain usage information on
   utility \code{\var{foo}}, notably the possible \command{options}.
 
   The defaults for some of the options to \command{R CMD build} can be
-  set by environment variables, e.g., \env{_R_BUILD_RESAVE_DATA_} and
-  \env{_R_BUILD_COMPACT_VIGNETTES_}: see \manual{R-exts}{Building package tarballs}.
+  set by environment variables \env{_R_BUILD_RESAVE_DATA_} and
+  \env{_R_BUILD_COMPACT_VIGNETTES_}: see \sQuote{Writing R Extensions}.
   Many of the checks in \command{R CMD check} can be turned off or on by
-  environment variables: see Chapter \manual{R-ints}{Tools}.
+  environment variables: see Chapter \sQuote{Tools} of the
+  \sQuote{R Internals} manual.
 
   By default \command{R CMD build} uses the \code{"internal"} option to
   \code{\link{tar}} to prepare the tarball.  An external \command{tar}
@@ -57,7 +59,7 @@
   tarballs containing invalid or unsupported sections, and can be faster
   on very large tarballs.  Setting \env{R_INSTALL_TAR} to \samp{tar.exe}
   has been needed to overcome permissions issues on some Windows
-  systems.  For further details see the help for \code{\link{INSTALL}}.)
+  systems.)
 }
 \note{
   Only on Windows:
@@ -66,6 +68,8 @@
   that if set forward slashes are used.
 }
 \seealso{
-  Section \manual{R-exts}{Checking and building packages}.
+  The sections on \sQuote{Checking and building packages} and
+  \sQuote{Processing documentation files} in \sQuote{Writing R Extensions}:
+  \code{\link{RShowDoc}("R-exts")}.
 }
 \keyword{utilities}

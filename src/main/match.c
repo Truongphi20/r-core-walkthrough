@@ -1,7 +1,7 @@
 /*
  *  R : A Computer Language for Statistical Data Analysis
  *  Copyright (C) 1995, 1996  Robert Gentleman and Ross Ihaka
- *  Copyright (C) 1998-2025   The R Core Team.
+ *  Copyright (C) 1998-2020   The R Core Team.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -46,7 +46,6 @@
 
 
 /* used in subscript.c and subassign.c */
-// In Rinternals.h
 Rboolean NonNullStringMatch(SEXP s, SEXP t)
 {
     /* "" or NA string matches nothing */
@@ -184,7 +183,7 @@ attribute_hidden SEXP matchArgExact(SEXP tag, SEXP * list)
 
 attribute_hidden SEXP matchArgs_NR(SEXP formals, SEXP supplied, SEXP call)
 {
-    bool seendots;
+    Rboolean seendots;
     int i, arg_i = 0;
     SEXP f, a, b, dots, actuals;
 
@@ -275,13 +274,10 @@ attribute_hidden SEXP matchArgs_NR(SEXP formals, SEXP supplied, SEXP call)
 				_("formal argument \"%s\" matched by multiple actual arguments"),
 				CHAR(PRINTNAME(TAG(f))));
 			if (R_warn_partial_match_args) {
-			    SEXP cond =
-				R_makePartialMatchWarningCondition(call,
-								   TAG(b),
-								   TAG(f));
-			    PROTECT(cond);
-			    R_signalWarningCondition(cond);
-			    UNPROTECT(1);
+			    warningcall(call,
+					_("partial argument match of '%s' to '%s'"),
+					CHAR(PRINTNAME(TAG(b))),
+					CHAR(PRINTNAME(TAG(f))) );
 			}
 			SETCAR(a, CAR(b));
 			if (CAR(b) != R_MissingArg) SET_MISSING(a, 0);
@@ -425,7 +421,7 @@ static R_INLINE
 void patchArgument(SEXP suppliedSlot, SEXP name, fstype_t *farg, SEXP cloenv) {
     SEXP value = CAR(suppliedSlot);
     if (value == R_MissingArg) {
-        value = R_findVarInFrame(cloenv, name);
+        value = findVarInFrame3(cloenv, name, TRUE);
         if (value == R_MissingArg) {
             if (farg) *farg = FS_MATCHED_MISSING;
             return;
@@ -440,7 +436,7 @@ void patchArgument(SEXP suppliedSlot, SEXP name, fstype_t *farg, SEXP cloenv) {
 attribute_hidden SEXP
 patchArgsByActuals(SEXP formals, SEXP supplied, SEXP cloenv)
 {
-    int i, farg_i;
+    int i, seendots, farg_i;
     SEXP f, a, b, prsupplied;
 
     int nfarg = length(formals);
@@ -480,13 +476,13 @@ patchArgsByActuals(SEXP formals, SEXP supplied, SEXP cloenv)
     /* An exact match is required after first ... */
     /* The location of the first ... is saved in "dots" */
 
-    Rboolean seendots = FALSE;
+    seendots = 0;
     f = formals;
     farg_i = 0;
     while (f != R_NilValue) {
 	if (farg[farg_i] == FS_UNMATCHED) {
 	    if (TAG(f) == R_DotsSymbol && !seendots) {
-		seendots = TRUE;
+		seendots = 1;
 	    } else {
 		for (b = prsupplied; b != R_NilValue; b = CDR(b)) {
 		    if (!ARGUSED(b) && TAG(b) != R_NilValue &&

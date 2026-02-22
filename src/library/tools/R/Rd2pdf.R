@@ -1,7 +1,7 @@
 #  File src/library/tools/R/Rd2pdf.R
 #  Part of the R package, https://www.R-project.org
 #
-#  Copyright (C) 1995-2025 The R Core Team
+#  Copyright (C) 1995-2023 The R Core Team
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -148,8 +148,8 @@
                            list(identity, texify),
                            c(3L, 3L))
             ## Fancy escaping should not be needed for arXiv ids.
-            text <- mygsub("<(arXiv|arxiv):([[:alnum:]/.-]+)([[:space:]]*\\[[^]]+\\])?>",
-                           "<}\\\\Rhref{https://doi.org/10.48550/arXiv.\\2}{doi:10.48550/arXiv.\\2}\\\\AsIs{>",
+            text <- mygsub("<(arXiv:|arxiv:)([[:alnum:]/.-]+)([[:space:]]*\\[[^]]+\\])?>",
+                           "<}\\\\Rhref{https://arxiv.org/abs/\\2}{\\1\\2}\\\\AsIs{\\3>",
                            text)
         }
         text <- paste0("\\AsIs{", text, "}")
@@ -232,7 +232,6 @@
         outfile <- paste0(basename(pkgdir), "-pkg.tex")
 
     hasFigures <- FALSE
-    graphicspath <- NULL
 
     ## First check for a latex dir (from R CMD INSTALL --latex).
     ## Second guess is this is a >= 2.10.0 package with stored .rds files.
@@ -263,10 +262,15 @@
 				  outputEncoding = outputEncoding,
 				  defines = NULL, # already processed
 				  writeEncoding = FALSE)
-                hasFigures <- hasFigures || attr(res, "hasFigures")
+                if (attr(res, "hasFigures")) {
+                    lines <- readLines(outfilename)
+                    graphicspath <- file.path(pkgdir, "help", "figures")
+                    writeLines(c(.file_path_to_LaTeX_graphicspath(graphicspath),
+                                 lines),
+                               outfilename)
+                    hasFigures <- TRUE
+                }
             }
-            if (hasFigures)
-                graphicspath <- file.path(pkgdir, "help", "figures")
             if (!silent) message(domain = NA)
         } else {
             ## As from R 2.15.3, give priority to a man dir.
@@ -284,12 +288,11 @@
                          domain = NA)
                 macros <- loadPkgRdMacros(pkgdir)
                 macros <- initialRdMacros(pkglist, macros)
-            } else {
+           } else {
                 ## (Be nice and find Rd files & system macros also when 'pkgdir' is
                 ## not a package root directory.)
-                mandir <- pkgdir
-                files <- c(Sys.glob(file.path(mandir, "*.Rd")),
-                           Sys.glob(file.path(mandir, "*.rd")))
+                files <- c(Sys.glob(file.path(pkgdir, "*.Rd")),
+                           Sys.glob(file.path(pkgdir, "*.rd")))
                 if (!length(files))
                     stop("this package does not have either a ", sQuote("latex"),
                          " or a (source) ", sQuote("man"), " directory",
@@ -338,15 +341,17 @@
                                 outputEncoding = outputEncoding,
                                 writeEncoding = FALSE,
                                 macros = macros)
-                hasFigures <- hasFigures || attr(res, "hasFigures")
+                if (attr(res, "hasFigures")) {
+                    lines <- readLines(outfilename)
+                    graphicspath <- file.path(dirname(paths[i]), "figures")
+                    writeLines(c(.file_path_to_LaTeX_graphicspath(graphicspath),
+                                 lines),
+                               outfilename)
+                    hasFigures <- TRUE
+                }
             }
-            if (hasFigures)
-                graphicspath <- file.path(mandir, "figures")
             if (!silent) message(domain = NA)
         }
-    } else {
-        graphicspath <- file.path(pkgdir, "help", "figures")
-        hasFigures <- dir.exists(graphicspath)
     }
 
     ## There are some restrictions, but the former "[[:alnum:]]+\\.tex$" was
@@ -364,17 +369,11 @@
     if (asChapter)
         cat("\n\\chapter{The \\texttt{", basename(pkgdir), "} package}\n",
             sep = "", file = outcon)
-
-    if (hasFigures && !is.null(graphicspath))
-        cat(.file_path_to_LaTeX_graphicspath(graphicspath), "\n",
-            sep = "", file = outcon)
-
-    ## Extract (LaTeX-escaped, ASCII) \name for sorting.
-    topics <- rep("", length(files))
-    names(topics) <- files
+    topics <- rep.int("", length(files)); names(topics) <- files
     for (f in files) {
-        lines <- readLines(f, encoding = "bytes") # possibly latin1, still
-        hd <- lines[startsWith(lines, "\\HeaderA")]
+        lines <- readLines(f)  # This reads as "unknown", no re-encoding done
+        hd <- grep("^\\\\HeaderA", lines, value = TRUE,
+                   perl = TRUE, useBytes = TRUE)
         if (!length(hd)) {
             warning("file ", sQuote(f), " lacks a header: skipping",
                     domain = NA)
@@ -391,9 +390,8 @@
     ## <FIXME>
     ## these 'topics' come from Rd \name, not \alias entries, but we should
     ## (and WRE says) put the page aliased to the pkgname-package *topic* first
-    ## which for >1500 CRAN packages is in a differently named file (90% pkg.Rd)
     ## </FIXME>
-    summ <- which(endsWith(topics, "-package"))
+    summ <- grep("-package$", topics, perl = TRUE)
     topics <- if (length(summ)) c(topics[summ], re(topics[-summ])) else re(topics)
     for (f in names(topics)) writeLines(readLines(f), outcon)
 
@@ -413,27 +411,27 @@
     Usage <- function() {
         cat("Usage: R CMD Rdconv [options] FILE",
             "",
-            "Convert an R documentation (Rd) FILE to other formats such as plain text,",
+            "Convert R documentation in FILE to other formats such as plain text,",
             "HTML or LaTeX.",
             "",
             "Options:",
-            "  -h, --help              print short help message and exit",
-            "  -v, --version           print version info and exit",
-            "  -t, --type=TYPE         convert to format TYPE",
-            "      --encoding=enc      use 'enc' as the output encoding",
-            "      --package=pkg       use 'pkg' as the package name",
-            "  -o, --output=OUT        use 'OUT' as the output file",
-            "      --os=NAME           assume OS 'NAME' (unix or windows)",
-            "      --OS=NAME           the same as '--os'",
-            "      --RdMacros=pkglist  packages from which to get Rd macros",
+            "  -h, --help		print short help message and exit",
+            "  -v, --version		print version info and exit",
+            "  -t, --type=TYPE	convert to format TYPE",
+            "  --encoding=enc        use 'enc' as the output encoding",
+            "  --package=pkg         use 'pkg' as the package name",
+            "  -o, --output=OUT	use 'OUT' as the output file",
+            "      --os=NAME		assume OS 'NAME' (unix or windows)",
+            "      --OS=NAME		the same as '--os'",
+            "  --RdMacros=pkglist",
+            "             		packages from which to get Rd macros",
             "",
             "Possible format specifications are 'txt' (plain text), 'html', 'latex',",
             "and 'example' (extract R code in the examples).",
             "",
             "The default is to send output to stdout, which is also given by '-o -'.",
-            ## Long-documented but never worked post-Perl (script args end at ""):
-            ## "Using '-o \"\"' will choose an output filename by removing a '.Rd'",
-            ## "extension from FILE and adding a suitable extension.",
+            "Using '-o \"\"' will choose an output filename by removing a '.Rd'",
+            "extension from FILE and adding a suitable extension.",
             "",
             "Report bugs at <https://bugs.R-project.org>.", sep = "\n")
     }
@@ -495,13 +493,12 @@
     }
     if (length(files) != 1L)
         stop("exactly one Rd file must be specified", call. = FALSE)
-    ## if (is.character(out) && !nzchar(out)) {
-    ##     ## choose 'out' from filename
-    ##     bf <- sub("\\.[Rr]d$", "", files)
-    ##     exts <- c(txt=".txt", html=".html", latex=".tex", example=".R")
-    ##     out <- paste0(bf, exts[type])
-    ## } else
-    if (is.null(out) || out == "-") out <- ""
+    if (is.character(out) && !nzchar(out)) {
+        ## choose 'out' from filename
+        bf <- sub("\\.[Rr]d$", "", file)
+        exts <- c(txt=".txt", html=".html", latex=".tex", exmaple=".R")
+        out <- paste0(bf,  exts[type])
+    } else if (is.null(out)) out <- ""
     if (!nzchar(os)) os <- .Platform$OS.type
     macros <- initialRdMacros(pkglist = pkglist)
     switch(type,
@@ -553,7 +550,6 @@ function(pkgdir, outfile, title, silent = FALSE,
     if (!nzchar(enc)) enc <- "unknown"
 
     desc <- NULL
-    preconverted <- FALSE
     if (file.exists(f <- file.path(pkgdir, "DESCRIPTION"))) {
         desc <- read.dcf(f)[1,]
         if (enc == "unknown") {
@@ -562,10 +558,6 @@ function(pkgdir, outfile, title, silent = FALSE,
             	enc <- pkg_enc
             }
         }
-        ## 'outputEncoding' is irrelevant when pkgdir contains a package
-        ## installed with --latex: tex files were written using pkg_enc
-        ## and specify their \inputencoding, so we need inputenc.
-        preconverted <- dir.exists(file.path(pkgdir, "latex"))
     }
 
     ## Rd2.tex part 1: header
@@ -580,7 +572,7 @@ function(pkgdir, outfile, title, silent = FALSE,
     latex_outputEncoding <- latex_canonical_encoding(outputEncoding)
     asUTF8 <- latex_outputEncoding == "utf8"
     setEncoding <-
-        if (!preconverted && asUTF8 && inputenc == "inputenc") {
+        if (asUTF8 && inputenc == "inputenc") {
             paste0("\\makeatletter\\@ifl@t@r\\fmtversion{2018/04/01}{}{",
                    "\\usepackage[utf8]{inputenc}}",
                    "\\makeatother")
@@ -918,12 +910,9 @@ function(pkgdir, outfile, title, silent = FALSE,
     if (!quiet)  cat("Creating", out_ext, "output from LaTeX ...\n")
     setwd(build_dir)
 
-    ## R CMD _appends_ R's texmf tree to environmental TEXINPUTS, which could
-    ## list another R version, so ensure Rd2pdf finds _this_ R's Rd.sty
-    texinputs <- file.path(R.home("share"), "texmf", "tex", "latex")
-    res <- try(texi2pdf('Rd2.tex', quiet = quiet, index = index, texinputs = texinputs))
+    res <- try(texi2pdf('Rd2.tex', quiet = quiet, index = index))
     if(inherits(res, "try-error")) {
-        res <- try(texi2pdf('Rd2.tex', quiet = quiet, index = index, texinputs = texinputs))
+        res <- try(texi2pdf('Rd2.tex', quiet = quiet, index = index))
         if(inherits(res, "try-error")) {
             message("Error in running tools::texi2pdf()")
             do_cleanup()

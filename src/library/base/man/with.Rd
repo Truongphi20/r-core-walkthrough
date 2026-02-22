@@ -78,7 +78,8 @@ within(data, expr, \dots)
   \code{\link{transform}}.
 }
 \references{
-  \bibshow{R:Lumley:2003}
+  Thomas Lumley (2003)  \emph{Standard nonstandard evaluation rules}.
+  \url{https://developer.r-project.org/nonstandard-eval.pdf}
 }
 \examples{
 with(mtcars, mpg[cyl == 8  &  disp > 350])

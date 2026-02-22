@@ -1,7 +1,7 @@
 #  File src/library/methods/R/RMethodUtils.R
 #  Part of the R package, https://www.R-project.org
 #
-#  Copyright (C) 1995-2025 The R Core Team
+#  Copyright (C) 1995-2021 The R Core Team
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -254,6 +254,29 @@ defaultDumpName <-
 }
 
 
+mergeMethods <-
+    ## merge the methods in the second MethodsList object into the first,
+    ## and return the merged result.
+    function(m1, m2, genericLabel = character())
+{
+    .MlistDeprecated("mergeMethods()")
+    if(length(genericLabel) && is(m2, "MethodsList"))
+        m2 <- .GenericInPrimitiveMethods(m2, genericLabel)
+    if(is.null(m1) || is(m1, "EmptyMethodsList"))
+        return(m2)
+    tmp <- listFromMlist(m2)
+    sigs <- tmp[[1]]
+    methods <- tmp[[2]]
+    for(i in seq_along(sigs)) {
+        sigi <- sigs[[i]]
+        if(.noMlists() && !identical(unique(sigi), "ANY"))
+          next
+        args <- names(sigi)
+        m1 <- insertMethod(m1, as.character(sigi), args, methods[[i]], FALSE)
+    }
+    m1
+}
+
 doPrimitiveMethod <-
   ## do a primitive call to builtin function 'name' the definition and call
   ## provided, and carried out in the environment 'ev'.
@@ -491,31 +514,6 @@ getGeneric <-
     value
 }
 
-##' Is `name` from package `pkg` *exported* from the package namespace ?
-.isExported <- function(name, pkg)
-    pkg == ".GlobalEnv" || isBaseNamespace(ns <- asNamespace(pkg)) ||
-        name %in% names(.getNamespaceInfo(ns, "exports"))
-
-##' is `name` "visually exported", i.e., exported from pkg in search()
-.isExportedVis <- function(name, pkg)
-    (pkg == ".GlobalEnv" || paste0("package:", pkg) %in% search()[-1L]) &&
-     (isBaseNamespace(ns <- asNamespace(pkg)) ||
-      name %in% names(.getNamespaceInfo(ns, "exports")))
-
-##' "Minimal" valid name when `name` is from `pkg` (which can be ".GlobalEnv")
-##' @param name string
-##' @param pkg  string
-##' @param qName logical(-alike)
-##' @return string
-.minimalName <- function(name, pkg, qName = FALSE, chkXport = TRUE) {
-    nm <- if(qName) deparse1(as.name(name), backtick = TRUE) else name
-    if(chkXport && .isExported(name, pkg)) {
-        if(pkg == ".GlobalEnv" || paste0("package:", pkg) %in% search()[-1L])
-            nm
-        else paste(pkg, nm, sep="::")
-    } else   paste(pkg, nm, sep=":::")
-}
-
 ## cache and retrieve generic functions.  If the same generic name
 ## appears for multiple packages, a named list of the generics is cached.
 .genericTable <- new.env(TRUE, baseenv())
@@ -577,7 +575,7 @@ getGeneric <-
         i <- match(newpkg, names(prev))
         if(!is.na(i))
             prev[[i]] <- NULL
-        else           # we might warn about uncaching more than once
+        else           # we might warn about unchaching more than once
             return()
         if(length(prev) == 0L)
             return(remove(list = name, envir = table))
@@ -733,7 +731,7 @@ assignMethodsMetaData <-
 {
     where <- as.environment(where)
     if(is(value, "MethodsList")) {
-	.MlistDefunct()
+	.MlistDeprecated()
         mname <- methodsPackageMetaName("M",fdef@generic, fdef@package)
         if(exists(mname, envir = where, inherits = FALSE) &&
            bindingIsLocked(mname, where))
@@ -765,9 +763,9 @@ getGenerics <- function(where, searchForm = FALSE)
         ## all the packages cached ==? all packages with methods
         ## globally visible.  Assertion based on cacheMetaData + setMethod
         fdefs <- as.list(.genericTable, all.names=TRUE, sorted=TRUE)
-        fnames <- mapply(function(nm, obj) if(is.list(obj)) names(obj) else nm,
-                         names(fdefs), fdefs, SIMPLIFY=FALSE)
-### FIXME: at least *optionally*  we want to filter (aka "drop") *non*-exported S4 generics
+        fnames <- mapply(function(nm, obj) {
+            if (is.list(obj)) names(obj) else nm
+        }, names(fdefs), fdefs, SIMPLIFY=FALSE)
         packages <- lapply(fdefs, .packageForGeneric)
         new("ObjectsWithPackage", unlist(fnames), package=unlist(packages))
     }
@@ -882,7 +880,7 @@ cacheMetaData <-
                 if(exists(f, envir = env, inherits = FALSE)) {
                     def <- get(f, envir = env)
                     fdef <- .genericOrImplicit(f, fpkg, env)
-                    if(is.function(def) && !is.primitive(def)) {
+                    if(is.function(def)) {
                         ## exclude a non-function of the same name as a primitive with methods (!)
                         if(identical(environment(def), environment(fdef)))
                             next        # the methods are identical
@@ -996,7 +994,7 @@ MethodAddCoerce <- function(method, argName, thisClass, methodClass)
             body(method, envir = environment(method)) <- newBody
         }
         else if(is(method, "MethodsList")) {
-	    .MlistDefunct()
+	    .MlistDeprecated()
             methods <- method@allMethods
             for(i in seq_along(methods))
                 methods[[i]] <- Recall(methods[[i]], addExpr)
@@ -1014,7 +1012,7 @@ missingArg <- function(symbol, envir = parent.frame(), eval = FALSE)
 
 balanceMethodsList <- function(mlist, args, check = TRUE)
 {
-    .MlistDefunct("balanceMethodsList()")
+    .MlistDeprecated("balanceMethodsList()")
     moreArgs <- args[-1L]
     if(length(moreArgs) == 0L)
         return(mlist)
@@ -1245,7 +1243,7 @@ metaNameUndo <- function(strings, prefix, searchForm = FALSE)
                            list(FF = f,BODY = body(mi)))
         }
 	else if(is(mi, "MethodsList")) {
-	    .MlistDefunct()
+	    .MlistDeprecated()
             mi <- Recall(mi, f)
 	} else
             stop(sprintf("internal error: Bad methods list object in fixing methods for primitive function %s",
@@ -1430,7 +1428,7 @@ metaNameUndo <- function(strings, prefix, searchForm = FALSE)
 
 .identC <- function(c1 = NULL, c2 = NULL)
 {
-    ## are the two objects identical class or generic function string names?
+    ## are the two objects identical class or genric function string names?
     .Call(C_R_identC, c1, c2)
 }
 
@@ -1451,7 +1449,7 @@ matchDefaults <- function(method, generic)
         garg <- gargs[[arg]]
         if(missing(marg) && !missing(garg)) {
             changes <- TRUE
-            margs[arg] <- gargs[arg] # NOT  [[]], which would fail for NULL element
+            margs[arg] <- gargs[arg] # NOT  [[]], which woud fail for NULL element
         }
     }
     if(changes)
@@ -1712,7 +1710,7 @@ utils::globalVariables(c(".MTable", ".AllMTable", ".dotsCall"))
 
 if(FALSE) {
 ## Defined but not currently used:
-## utility to test well-defined classes in signature,
+## utilitity to test well-defined classes in signature,
 ## for setMethod(), setAs() [etc.?], the result to be
 ## assigned in package where=
 ## Returns a list of signature, messages and level of error
@@ -1908,9 +1906,7 @@ getLoadActions <- function(where = topenv(parent.frame())) {
         return(list())
     actions <- get(actionListName, envir = where)
     if(length(actions)) {
-        allExists <- vapply(actions,
-                            function(what) exists(.actionMetaName(what), envir = where, inherits = FALSE),
-                            NA)
+        allExists <- sapply(actions, function(what) exists(.actionMetaName(what), envir = where, inherits = FALSE))
         if(!all(allExists)) {
             warning(gettextf("some actions are missing: %s",
                              paste(actions[!allExists], collapse =", ")),

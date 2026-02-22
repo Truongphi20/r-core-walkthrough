@@ -1,6 +1,6 @@
 /*
  *  R : A Computer Language for Statistical Data Analysis
- *  Copyright (C) 1999-2025  The R Core Team
+ *  Copyright (C) 1999-2023  The R Core Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -59,15 +59,9 @@ static EditorData neweditordata (int file)
 {
     EditorData p;
     p = (EditorData) malloc(sizeof(struct structEditorData));
-    if (!p)
-	return NULL;
     p->file = file;
     p->filename = NULL;
     p->title = (char *) malloc((EDITORMAXTITLE + 1)*sizeof(char));
-    if (!p->title) {
-	free(p);
-	return NULL;
-    }
     p->title[EDITORMAXTITLE] = p->title[0] = '\0';
     return p;
 }
@@ -156,17 +150,9 @@ static void editor_load_file(editor c, const char *name, int enc)
 
     if(enc == CE_UTF8) {
 	wchar_t *wname = utf8_to_wchar(name);
-	if (!wname) {
-	    R_ShowMessage(G_("Not enough memory"));
-	    return;
-	}
 	f = R_wfopen(wname, L"r");
 	free(wname);
 	sname = utf8_to_native(name);
-	if (!sname) {
-	    R_ShowMessage(G_("Not enough memory"));
-	    return;
-	}
     } else {
 	f = R_fopen(name, "r");
 	sname = name;
@@ -184,29 +170,13 @@ static void editor_load_file(editor c, const char *name, int enc)
 	free(p->filename);
     if (enc == CE_UTF8) {
 	p->filename = (char *) malloc(strlen(name) + 1);
-	if (!p->filename) {
-	    free((char *)sname);
-	    R_ShowMessage(G_("Not enough memory"));
-	    return;
-	}
 	strcpy(p->filename, name);
-    } else {
+    } else
 	p->filename = native_to_utf8(name);
-	if (!p->filename) {
-	    R_ShowMessage(G_("Not enough memory"));
-	    return;
-	}
-    }
 
     bufsize = 0;
     while (num > 0) {
 	buffer = realloc(buffer, bufsize + 3000 + 1);
-	if (!buffer) {
-	    if (enc == CE_UTF8)
-		free((char *)sname);
-	    R_ShowMessage(G_("Not enough memory"));
-	    return;
-	}
 	num = fread(buffer + bufsize, 1, 3000 - 1, f);
 	if (num >= 0) {
 	    bufsize += num;
@@ -267,7 +237,7 @@ static void editorsaveas(editor c)
     wchar_t *wname;
 
     setuserfilterW(L"R files (*.R)\0*.R\0S files (*.q, *.ssc, *.S)\0*.q;*.ssc;*.S\0All files (*.*)\0*.*\0\0");
-    wname = askfilesaveW(G_("Save script as"), p->file ? p->filename : "");
+    wname = askfilesaveW(G_("Save script as"), "");
     if (wname) {
 	char *name = wchar_to_utf8(wname);
 	char *q = strchr(name, '.');
@@ -278,9 +248,6 @@ static void editorsaveas(editor c)
 		strcat(tmp, ".R");
 		free(name);
 		name = tmp;
-	    } else {
-		R_ShowMessage(G_("Not enough memory"));
-		return;
 	    }
 	}
 	editor_save_file(c, name, CE_UTF8);
@@ -288,11 +255,8 @@ static void editorsaveas(editor c)
 	p->filename = name; /* keeps name */
 	gsetmodified(t, 0);
 	char *sname = utf8_to_native(name);
-	if (sname) {
-	    editor_set_title(c, sname);
-	    free(sname);
-	} else
-	    R_ShowMessage(G_("Not enough memory"));
+	editor_set_title(c, sname);
+	free(sname);
     }
     show(c);
 }
@@ -363,11 +327,6 @@ static void editorprint(control m)
 	    ++i; ++j;
 	}
 	linebuf = realloc(linebuf, (j+1)*sizeof(char));
-	if (!linebuf) {
-	    del(lpr);
-	    R_ShowMessage(G_("Not enough memory"));
-	    return;
-	}
 	strncpy(linebuf, &contents[istartline], j);
 	linebuf[j] = '\0';
 	gdrawstr(lpr, f, Black, pt(left, linep), linebuf);
@@ -580,10 +539,6 @@ static void editorrunline(textbox t)
     /* Extra space for null and word length in getcurrentline */
     size_t alength = length * MB_CUR_MAX + 1 + sizeof(WORD);
     char *line = malloc(alength);
-    if (!line) {
-	R_ShowMessage(G_("Not enough memory"));
-	return;
-    }
     memset(line, 0, alength);
     getcurrentline(t, line, length);
     consolecmd(RConsole, line);
@@ -762,8 +717,6 @@ static editor neweditor(void)
     EditorData p = neweditordata(0);
     DWORD rand;
 
-    if (!p)
-	return NULL;
     w = (pagercol + 1)*fontwidth(editorfn);
     h = (pagerrow + 1)*fontheight(editorfn) + 1;
 #ifdef USE_MDI
@@ -889,8 +842,6 @@ static editor neweditor(void)
 
     /* Packages menu should go here */
     p->pmenu = (PkgMenuItems) malloc(sizeof(struct structPkgMenuItems));
-    if (!p->pmenu)
-	return NULL;
     RguiPackageMenu(p->pmenu);
 
 #ifdef USE_MDI
@@ -901,8 +852,6 @@ static editor neweditor(void)
     MCHECK(newmenuitem(G_("Editor"), 0, menueditorhelp));
     MCHECK(newmenuitem("-", 0, NULL));
     p->hmenu = (HelpMenuItems) malloc(sizeof(struct structHelpMenuItems));
-    if (!p->hmenu)
-	return NULL;
     RguiCommonHelp(m, p->hmenu);
 
     settextfont(t, editorfn);

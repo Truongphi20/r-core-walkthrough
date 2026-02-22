@@ -23,8 +23,7 @@ The title to display and use in the HTML headers.  Should have had any
 HTML escaping already done.
 }
   \item{logo}{
-Logical indicating whether to display the \R{} logo after the title, or
-a character string giving the path of the logo to be displayed.
+Whether to display the \R{} logo after the title.
 }
   \item{up}{
 Which page (if any) to link to on the \dQuote{up} button.

@@ -16,7 +16,7 @@
 
   \code{withAutoprint(exprs)} is a wrapper for \code{source(exprs =
   exprs, ..)} with different defaults.  Its main purpose is to evaluate
-  and auto-print expressions as if in a top-level context, e.g, as in the
+  and auto-print expressions as if in a toplevel context, e.g, as in the
   \R console.
 }
 \usage{
@@ -106,8 +106,7 @@ withAutoprint(exprs, evaluated = FALSE, local = parent.frame(),
   executed at the top level, auto-printing is not done.  So you will
   need to include explicit \code{print} calls for things you want to be
   printed (and remember that this includes plotting by \CRANpkg{lattice},
-  see \manual{R-FAQ}{Why do lattice/trellis graphics not work?}).
-  Since the complete file is parsed before any of it is
+  FAQ Q7.22).  Since the complete file is parsed before any of it is
   run, syntax errors result in none of the code being run.  If an error
   occurs in running a syntactically correct script, anything assigned
   into the workspace by code that has been run will be kept (just as
@@ -166,7 +165,9 @@ withAutoprint(exprs, evaluated = FALSE, local = parent.frame(),
   parsed input in Latin-1 and UTF-8 locales: see \code{\link{parse}}.
 }
 \references{
-  \bibshow{R:Becker+Chambers+Wilks:1988}
+  Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+  \emph{The New S Language}.
+  Wadsworth & Brooks/Cole.
 }
 \seealso{
   \code{\link{demo}} which uses \code{source};
@@ -176,7 +177,7 @@ withAutoprint(exprs, evaluated = FALSE, local = parent.frame(),
   \code{\link{sys.source}} which is a streamlined version to source a
   file into an environment.
 
-  Section \manual{R-lang}{Directives} for a discussion of source
+  \sQuote{The R Language Definition} for a discussion of source
   directives.
 }
 \examples{

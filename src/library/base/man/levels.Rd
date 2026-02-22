@@ -42,7 +42,9 @@ levels(x) <- value
   The replacement function is \link{primitive}.
 }
 \references{
-  \bibshow{R:Becker+Chambers+Wilks:1988}
+  Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+  \emph{The New S Language}.
+  Wadsworth & Brooks/Cole.
 }
 \seealso{
   \code{\link{nlevels}}, \code{\link{relevel}}, \code{\link{reorder}}.

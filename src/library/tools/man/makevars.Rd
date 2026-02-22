@@ -30,7 +30,8 @@ makevars_site()
   \option{-f} to custom Make invocations.
 }
 \seealso{
-  \manual{R-admin}{Customizing package compilation}.
+  Section \sQuote{Customizing package compilation} in the
+  \sQuote{R Installation and Administration} manual.
 }
 %% \donttest as output is user/site-dependent
 \examples{\donttest{

@@ -1,7 +1,7 @@
 #  File src/library/base/R/connections.R
 #  Part of the R package, https://www.R-project.org
 #
-#  Copyright (C) 1995-2024 The R Core Team
+#  Copyright (C) 1995-2021 The R Core Team
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -122,10 +122,6 @@ xzfile <- function(description, open = "", encoding = getOption("encoding"),
                    compression = 6)
     .Internal(xzfile(description, open, encoding, compression))
 
-zstdfile <- function(description, open = "", encoding = getOption("encoding"),
-                   compression = 9)
-    .Internal(zstdfile(description, open, encoding, compression))
-
 socketConnection <- function(host = "localhost", port, server = FALSE,
                              blocking = FALSE, open = "a+",
                              encoding = getOption("encoding"),
@@ -159,7 +155,7 @@ textConnection <- function(object, open = "r", local = FALSE,
     env <- if (local) parent.frame() else .GlobalEnv
     type <- match(match.arg(encoding), c("", "bytes", "UTF-8"))
     if(!(is.character(name) && length(name) == 1))
-        stop(gettextf("'%s' must be a character string", "name"), domain = NA)
+        stop("'name' must be a single character string")
     .Internal(textConnection(name, object, open, env, type))
 }
 
@@ -245,7 +241,7 @@ closeAllConnections <- function()
 {
     ## first re-divert any diversion of stderr.
     i <- sink.number(type = "message")
-    if(i != 2L) sink(stderr(), type = "message")
+    if(i > 0L) sink(stderr(), type = "message")
     ## now unwind the sink diversion stack.
     n <- sink.number()
     if(n > 0L) for(i in seq_len(n)) sink()
@@ -327,22 +323,22 @@ socketSelect <- function(socklist, write = FALSE, timeout = NULL) {
 }
 
 memCompress <-
-    function(from, type = c("gzip", "bzip2", "xz", "zstd", "none"))
+    function(from, type = c("gzip", "bzip2", "xz", "none"))
 {
     if(is.character(from))
         from <- charToRaw(paste(from, collapse = "\n"))
     else if(!is.raw(from)) stop("'from' must be raw or character")
-    type <- match(match.arg(type), c("none", "gzip", "bzip2", "xz", "zstd"))
+    type <- match(match.arg(type), c("none", "gzip", "bzip2", "xz"))
     .Internal(memCompress(from, type))
 }
 
 memDecompress <-
     function(from,
-             type = c("unknown", "gzip", "bzip2", "xz", "zstd", "none"),
+             type = c("unknown", "gzip", "bzip2", "xz", "none"),
              asChar = FALSE)
 {
     type <- match(match.arg(type),
-                  c("none", "gzip", "bzip2", "xz", "unknown", "zstd"))
+                  c("none", "gzip", "bzip2", "xz", "unknown"))
     ans <- .Internal(memDecompress(from, type))
     if(asChar) rawToChar(ans) else ans
 }

@@ -70,7 +70,11 @@ bartlett.test(x, \dots)
   based two-sample tests for difference in scale.
 }
 \references{
-  \bibshow{R:Bartlett:1937b}
+  Bartlett, M. S. (1937).
+  Properties of sufficiency and statistical tests.
+  \emph{Proceedings of the Royal Society of London Series A}
+  \bold{160}, 268--282.
+  \doi{10.1098/rspa.1937.0109}.
 }
 
 % FIXME: could use something more interesting here

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: R-3.5.0\n"
 "Report-Msgid-Bugs-To: bugs.r-project.org\n"
-"POT-Creation-Date: 2025-03-31 11:51\n"
+"POT-Creation-Date: 2024-04-15 12:10\n"
 "PO-Revision-Date: 2018-04-09 12:11-0600\n"
 "Last-Translator: Chel Hee Lee <gnustats@gmail.com>\n"
 "Language-Team: \n"
@@ -276,18 +276,6 @@ msgstr ""
 msgid "Authors@R field gives persons with invalid ORCID identifiers:"
 msgstr "Authors@R 항목에서 메인테이너의 역할을 담당하는 저자의 수가 한명이상임을 확인하게 되었습니다:"
 
-#, fuzzy
-msgid "Authors@R field gives persons with duplicated ORCID identifiers:"
-msgstr "Authors@R 항목에서 메인테이너의 역할을 담당하는 저자의 수가 한명이상임을 확인하게 되었습니다:"
-
-#, fuzzy
-msgid "Authors@R field gives persons with invalid ROR identifiers:"
-msgstr "Authors@R 항목에서 메인테이너의 역할을 담당하는 저자의 수가 한명이상임을 확인하게 되었습니다:"
-
-#, fuzzy
-msgid "Authors@R field gives persons with duplicated ROR identifiers:"
-msgstr "Authors@R 항목에서 메인테이너의 역할을 담당하는 저자의 수가 한명이상임을 확인하게 되었습니다:"
-
 msgid "Encoding '%s' is not portable"
 msgstr "인코딩 '%s'은 포터블(portable)하지 않습니다."
 
@@ -342,11 +330,11 @@ msgid "invalid 'OS.type' \"%s\".  Should not happen"
 msgstr ""
 
 #, fuzzy
-msgid "Missing link(s) in Rd file '%s':"
+msgid "Missing link or links in Rd file '%s':"
 msgstr "다큐멘테이션 객체 '%s'내에서 빠져있는 링크(들)은 다음과 같습니다:"
 
 #, fuzzy
-msgid "Non-topic package-anchored link(s) in Rd file '%s':"
+msgid "Non-file package-anchored link(s) in Rd file '%s':"
 msgstr "다큐멘테이션 객체 '%s'내에서 빠져있는 링크(들)은 다음과 같습니다:"
 
 msgid "See section 'Cross-references' in the 'Writing R Extensions' manual."
@@ -704,6 +692,9 @@ msgstr "비니에트 엔진 패키지가 지정되지 않았습니다"
 msgid "Unsupported engine name"
 msgstr "지원되지 않는 엔진명입니다"
 
+msgid "None of packages %s have registered vignette engines"
+msgstr "패키지들 %s 모두 등록된 비니에트 엔진들은 가지고 있지 않습니다"
+
 msgid "Vignette engine %s is not registered"
 msgstr "비니에트 엔진 %s이 등록되지 않았습니다"
 
@@ -789,12 +780,6 @@ msgstr "에러: 현재 버전의 R은 %s인데 필요한 것은 R %s %s입니다
 
 msgid "loading failed"
 msgstr "로딩에 실패했습니다"
-
-msgid "'cc' is not on the path"
-msgstr ""
-
-msgid "'objdump' is not on the path"
-msgstr ""
 
 msgid "Got %s in evaluating %s; wanted %s"
 msgstr "%2$s를 평가시 %3$s을 기대했으나 %1$s를 얻었습니다"
@@ -1146,13 +1131,6 @@ msgstr "패키지가 R 코드를 포함하지 않습니다"
 msgid "package seems to be using lazy loading already"
 msgstr "패키지는 이미 레이지 로딩을 이용하고 있는 것 같습니다"
 
-msgid "'files' and 'bytes' are mutually exclusive"
-msgstr ""
-
-#, fuzzy
-msgid "'bytes' must be a raw vector"
-msgstr "'text'는 반드시 문자형 벡터이어야 합니다."
-
 msgid ""
 "Cannot process chunk/lines:\n"
 "%s"
@@ -1227,13 +1205,6 @@ msgstr "인자 '%s'는 반드시 문자열 또는 연결이어야 합니다"
 
 msgid "unimplemented encoding"
 msgstr "구현되지 않은 인코딩입니다"
-
-#, fuzzy
-msgid "x must be a single string"
-msgstr "'x'는 반드시 한개의 문자열이어야 합니다"
-
-msgid "invalid hex string"
-msgstr ""
 
 msgid "this requires 'objdump.exe' to be on the PATH"
 msgstr ""
@@ -1381,8 +1352,7 @@ msgstr ""
 msgid "update_PACKAGES complete."
 msgstr ""
 
-#, fuzzy
-msgid "'%s' must be a character string"
+msgid "'x' must be a single character string"
 msgstr "'x'는 반드시 한개의 문자열이어야 합니다"
 
 msgid "test '%s' is not available"
@@ -1435,9 +1405,6 @@ msgstr "ASCII가 아닌 데이터에 대한 인코딩을 알 수 없으므로 AS
 
 msgid "cannot source package code:"
 msgstr "패키지 코드를 읽어들일 수 없습니다:"
-
-msgid "inferiorCallError"
-msgstr ""
 
 msgid "inferior call failed"
 msgstr ""
@@ -1494,8 +1461,7 @@ msgid "Found a .Internal call in the following function:"
 msgid_plural "Found .Internal calls in the following functions:"
 msgstr[0] "다음의 함수로부터 .Internal 호출을 찾았습니다:"
 
-#, fuzzy
-msgid "Found a .Internal call in methods for the following S4 generic:"
+msgid "Found a.Internal call in methods for the following S4 generic:"
 msgid_plural "Found .Internal calls in methods for the following S4 generics:"
 msgstr[0] "다음의 S4 제네릭에 대하여 메소드로부터 .Internal 호출을 찾았습니다:"
 
@@ -1542,11 +1508,6 @@ msgstr[0] ""
 msgid "SUMMARY: processing the following file failed:"
 msgid_plural "SUMMARY: processing the following files failed:"
 msgstr[0] ""
-
-#, fuzzy
-msgid "Package %s does not have a registered vignette engine"
-msgid_plural "None of packages %s have registered vignette engines"
-msgstr[0] "패키지들 %s 모두 등록된 비니에트 엔진들은 가지고 있지 않습니다"
 
 msgid "unable to re-encode %s line %s"
 msgid_plural "unable to re-encode %s lines %s"

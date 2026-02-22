@@ -1,6 +1,6 @@
 % File src/library/stats/man/loglin.Rd
 % Part of the R package, https://www.R-project.org
-% Copyright 1995-2025 R Core Team
+% Copyright 1995-2018 R Core Team
 % Distributed under GPL 2 or later
 
 \name{loglin}
@@ -29,8 +29,7 @@ loglin(table, margin, start = rep(1, length(table)), fit = FALSE,
     1 (sometimes represented as \sQuote{[12][13]}).
 
     The names of factors (i.e., \code{names(dimnames(table))}) may be
-    used rather than numeric indices.  Or \code{NULL} or \code{list()}
-    to specify fitting no margins.
+    used rather than numeric indices.
   }
   \item{start}{a starting estimate for the fitted table.  This optional
     argument is important for incomplete tables with structural zeros
@@ -39,13 +38,13 @@ loglin(table, margin, start = rep(1, length(table)), fit = FALSE,
     the others can be taken as one.}
   \item{fit}{a logical indicating whether the fitted values should be
     returned.}
-  \item{eps}{bound for allowed deviation (largest absolute value of the
-    difference) between observed and fitted margins.}
+  \item{eps}{maximum deviation allowed between observed and fitted
+    margins.}
   \item{iter}{maximum number of iterations.}
   \item{param}{a logical indicating whether the parameter values should
     be returned.}
   \item{print}{a logical.  If \code{TRUE}, the number of iterations and
-    the final deviation (if there were any iterations) are printed.}
+    the final deviation are printed.}
 }
 \value{
   A list with the following components.
@@ -55,7 +54,7 @@ loglin(table, margin, start = rep(1, length(table)), fit = FALSE,
     adjustment for structural zeros.}
   \item{margin}{list of the margins that were fit.  Basically the same
     as the input \code{margin}, but with numbers replaced by names
-    where possible.  Will be \code{NULL} if the input is.}
+    where possible.}
   \item{fit}{An array like \code{table} containing the fitted values.
     Only returned if \code{fit} is \code{TRUE}.}
   \item{param}{A list containing the estimated parameters of the
@@ -65,7 +64,7 @@ loglin(table, margin, start = rep(1, length(table)), fit = FALSE,
 }
 \details{
   The Iterative Proportional Fitting algorithm as presented in
-  \bibcitet{R:Haberman:1972} is used for fitting the model.  At most \code{iter}
+  \bibcite{Haberman (1972)} is used for fitting the model.  At most \code{iter}
   iterations are performed, convergence is taken to occur when the
   maximum deviation between observed and fitted margins is less than
   \code{eps}.  All internal computations are done in double precision;
@@ -88,9 +87,18 @@ loglin(table, margin, start = rep(1, length(table)), fit = FALSE,
 }
 
 \references{
-  \bibshow{*,
-    R:Agresti:1990,
-    R:Becker+Chambers+Wilks:1988}
+  Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988).
+  \emph{The New S Language}.
+  Wadsworth & Brooks/Cole.
+
+  Haberman, S. J. (1972).
+  Algorithm AS 51: Log-linear fit for contingency tables.
+  \emph{Applied Statistics}, \bold{21}, 218--225.
+  \doi{10.2307/2346506}.
+
+  Agresti, A. (1990).
+  \emph{Categorical data analysis}.
+  New York: Wiley.
 }
 \author{Kurt Hornik}
 \seealso{

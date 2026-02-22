@@ -31,7 +31,9 @@ ls.diag(ls.out)
   \item{cov.unscaled}{Unscaled covariance matrix of the coefficients}
 }
 \references{
-  \bibshow{R:Belsley+Kuh+Welsch:1980}
+  Belsley, D. A., Kuh, E. and Welsch, R. E. (1980)
+  \emph{Regression Diagnostics.}
+  New York: Wiley.
 }
 \seealso{
   \code{\link{hat}} for the hat matrix diagonals,

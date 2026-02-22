@@ -1,7 +1,7 @@
 #  File src/library/tools/R/admin.R
 #  Part of the R package, https://www.R-project.org
 #
-#  Copyright (C) 1995-2025 The R Core Team
+#  Copyright (C) 1995-2023 The R Core Team
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -88,6 +88,16 @@ function(dir, outDir, builtStamp=character())
     db <- c(db,
             .expand_package_description_db_R_fields(db),
             Built = Built)
+
+    ## <FIXME>
+    ## This should no longer be necessary?
+    ## <COMMENT>
+    ## ## This cannot be done in a MBCS: write.dcf fails
+    ## ctype <- Sys.getlocale("LC_CTYPE")
+    ## Sys.setlocale("LC_CTYPE", "C")
+    ## on.exit(Sys.setlocale("LC_CTYPE", ctype))
+    ## </COMMENT>
+    ## </FIXME>
 
     .write_description(db, file.path(outDir, "DESCRIPTION"))
 
@@ -700,7 +710,10 @@ function(dir, outDir, keep.source = TRUE)
              domain = NA)
 
     ## We have to be careful to avoid repeated rebuilding.
-    vignettePDFs <- file.path(outVignetteDir, paste0(vigns$names, ".pdf"))
+    vignettePDFs <-
+        file.path(outVignetteDir,
+                  sub("$", ".pdf",
+                      basename(file_path_sans_ext(vigns$docs))))
     upToDate <- file_test("-nt", vignettePDFs, vigns$docs)
 
     ## The primary use of this function is to build and install PDF
@@ -743,18 +756,21 @@ function(dir, outDir, keep.source = TRUE)
         })
         ## In case of an error, do not clean up: should we point to
         ## buildDir for possible inspection of results/problems?
-        ## We need to ensure that the src vignettes dir is in (TEX|BIB)INPUTS
-        ## and this R's texmf is found (system TEXINPUTS could list another R).
+        ## We need to ensure that vignetteDir is in TEXINPUTS and BIBINPUTS.
         if (vignette_is_tex(output)) {
+	    ## <FIXME>
+	    ## What if this fails?
+            ## Now gives a more informative error texi2pdf fails
+            ## or if it does not produce a <name>.pdf.
             tryCatch({
-                texi2pdf(file = output, quiet = TRUE,
-                         texinputs = c(vigns$dir, paste0(R.home("share"), "/texmf//")))
+                texi2pdf(file = output, quiet = TRUE, texinputs = vigns$dir)
                 output <- find_vignette_product(name, by = "texi2pdf", engine = engine)
             }, error = function(e) {
                 stop(gettextf("compiling TeX file %s failed with message:\n%s",
                  sQuote(output), conditionMessage(e)),
                  domain = NA, call. = FALSE)
             })
+	    ## </FIXME>
 	}
 
         if(!file.copy(output, outVignetteDir, overwrite = TRUE))
@@ -764,7 +780,6 @@ function(dir, outDir, keep.source = TRUE)
                  domain = NA)
     }
 
-    if (any(!upToDate))
     compactPDF(outVignetteDir, gs_quality = "ebook")
 
     ## Need to change out of this dir before we delete it,
@@ -813,90 +828,41 @@ function(dir, packages)
     invisible()
 }
 
-### * .install_R_bibliographies_as_RDS
-
-.install_R_bibliographies_as_RDS <- 
-function(dir) {
-    bibfiles <- Sys.glob(file.path(dir, "*.R"))
-    bibentries <- do.call(c, lapply(bibfiles, .read_bibentries))
-    keys <- .bibentry_get_key(bibentries)
-    if(any(ind <- !nzchar(keys))) {
-        msg <- paste(c("Found the following bibentries with no key:",
-                       strwrap(format(bibentries[ind]),
-                               indent = 2L, exdent = 4L)),
-                     collapse = "\n")
-        stop(msg, call. = FALSE)
-    }
-    if(any(ind <- duplicated(keys))) {
-        msg <- paste(c("Found the following duplicated keys:", 
-                       .strwrap22(sQuote(keys[ind]))),
-                     collapse = "\n")
-        stop(msg, call. = FALSE)
-    }
-    saveRDS(bibentries, file.path(dir, "R.rds"))
-}
-
-### * .install_R_dictionaries_as_RDS
-
-.install_R_dictionaries_as_RDS <-
-function(dir) {
-    txtfiles <- Sys.glob(file.path(dir, "*.txt"))
-    for (file in txtfiles) {
-        rdsfile <- paste0(file_path_sans_ext(file), ".rds")
-        saveRDS(readLines(file, encoding = "UTF-8"), rdsfile)
-    }
-}
-
 ### * .install_package_Rd_objects
 
-## called from src/library/Makefile and .install_packages
+## called from src/library/Makefile
 .install_package_Rd_objects <-
 function(dir, outDir, encoding = "unknown")
 {
-    packageName <- basename(outDir)
     dir <- file_path_as_absolute(dir)
     mandir <- file.path(dir, "man")
     manfiles <- if(!dir.exists(mandir)) character()
-                else list_files_with_type(mandir, "docs")
+    else list_files_with_type(mandir, "docs")
     manOutDir <- file.path(outDir, "help")
     dir.create(manOutDir, FALSE)
-    db_file <- file.path(manOutDir, paste0(packageName, ".rdx"))
+    db_file <- file.path(manOutDir,
+                         paste0(basename(outDir), ".rdx"))
     built_file <- file.path(dir, "build", "partial.rdb")
-    macro_files <- list.files(file.path(dir, "man", "macros"),
-                              pattern = "\\.Rd$", full.names = TRUE)
+    macro_files <- list.files(file.path(dir, "man", "macros"), pattern = "\\.Rd$", full.names = TRUE)
     if (length(macro_files)) {
     	macroDir <- file.path(manOutDir, "macros")
     	dir.create(macroDir, FALSE)
     	file.copy(macro_files, macroDir, overwrite = TRUE)
     }
-    pathsFile <- file.path(manOutDir, "paths.rds")
     ## Avoid (costly) rebuilding if not needed.
-    ## 'make Rdobjects' now takes 13s compared to 0.5s if remaking skips
-    ## the below.  This tests if the Rd DB from a previous 'make' can be
-    ## fully kept or needs updating, but ignores that a dynamic help
-    ## page may need reprocessing even without modifying the source Rd
-    ## file. With the advent of \bibshow, many help pages have become
-    ## dynamic and always rebuilding these is tedious ... 
-    ## So for now only do a full rebuild when the system macros were
-    ## touched. 
-    system_file <- file.path(R.home("share"), "Rd", "macros", "system.Rd")
-    if (!file.exists(db_file) || # first build, including from .install_packages
-        file_test("-nt", system_file, db_file)) {
-        db_file <- NULL # do not reuse the old Rd DB
-        upToDate <- FALSE
-    } else {
-        upToDate <- file.exists(pathsFile) &&
-            identical(sort(manfiles), sort(readRDS(pathsFile))) &&
-            all(file_test("-nt", db_file, manfiles))
-    }
-    if(!upToDate) {
+    ## Actually, it seems no more costly than these tests, which it also does
+    pathsFile <- file.path(manOutDir, "paths.rds")
+    if(!file_test("-f", db_file) || !file.exists(pathsFile) ||
+       !identical(sort(manfiles), sort(readRDS(pathsFile))) ||
+       !all(file_test("-nt", db_file, manfiles))) {
         db <- .build_Rd_db(dir, manfiles, db_file = db_file,
                            encoding = encoding, built_file = built_file)
         nm <- as.character(names(db)) # Might be NULL
-        at <- list(first = nchar(file.path(mandir)) + 2L)
-        saveRDS(`attributes<-`(nm, at), pathsFile)
+        saveRDS(structure(nm,
+                          first = nchar(file.path(mandir)) + 2L),
+                pathsFile)
         names(db) <- sub("\\.[Rr]d$", "", basename(nm))
-        makeLazyLoadDB(db, file.path(manOutDir, packageName))
+        makeLazyLoadDB(db, file.path(manOutDir, basename(outDir)))
     }
     invisible()
 }

@@ -131,7 +131,9 @@ aggregate(x, \dots)
   \code{\link{apply}}, \code{\link{lapply}}, \code{\link{tapply}}.
 }
 \references{
-  \bibshow{R:Becker+Chambers+Wilks:1988}
+  Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+  \emph{The New S Language}.
+  Wadsworth & Brooks/Cole.
 }
 \examples{
 ## Compute the averages for the variables in 'state.x77', grouped

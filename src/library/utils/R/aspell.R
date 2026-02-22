@@ -110,16 +110,6 @@ function(files, filter, control = list(), encoding = "unknown",
             aspell_write_personal_dictionary_file(words, personal,
                                                   program = program)
             ## </FIXME>
-
-            ## For aspell (only!) on Windows, we need the special Unix path form 
-            ## such as /c/path/to/dictionary
-            ## known from, e.g., msys2 to specify the personal dictionary:
-            if(grepl("aspell", program)){
-                personal <- normalizePath(personal, winslash="/")
-                if(grepl("^.:", personal)) 
-                    personal <- gsub("^(.):(.*)$", "/\\1\\2", personal)
-            }
-
             control <- c(control, "-p", shQuote(personal))
         }
     }
@@ -219,8 +209,8 @@ function(files, filter, control = list(), encoding = "unknown",
 
 	if(any(ind <- startsWith(lines, "&"))) {
 	    info <- strsplit(lines[ind], ": ", fixed = TRUE)
-	    one <- strsplit(vapply(info, `[`, "", 1L), " ",  fixed = TRUE)
-	    two <- strsplit(vapply(info, `[`, "", 2L), ", ", fixed = TRUE)
+	    one <- strsplit(sapply(info, `[`, 1L), " ",  fixed = TRUE)
+	    two <- strsplit(sapply(info, `[`, 2L), ", ", fixed = TRUE)
 	    db1 <- list2DF(list(Original = vapply(one, `[`, "", 2L),
                                 File = rep_len(fname, length(one)),
                                 Line = pos[ind],
@@ -478,17 +468,6 @@ aspell_control_R_manuals <-
            "--add-texinfo-ignore=deqn",
            "--add-texinfo-ignore=eqn",
            "--add-texinfo-ignore=pkg",
-           "--add-texinfo-ignore=apifun",
-           "--add-texinfo-ignore=apihdr",
-           "--add-texinfo-ignore=apivar",
-           "--add-texinfo-ignore=comment",
-           "--add-texinfo-ignore=defcodeindex",
-           "--add-texinfo-ignore=eapifun",
-           "--add-texinfo-ignore=eapihdr",
-           "--add-texinfo-ignore=embfun",
-           "--add-texinfo-ignore=embhdr",
-           "--add-texinfo-ignore=embvar",
-           "--add-texinfo-ignore=forfun",
            character()
            ),
          hunspell =
@@ -498,7 +477,7 @@ aspell_R_manuals <-
 function(which = NULL, dir = NULL, program = NULL,
          dictionaries = c(aspell_dictionaries_R, "R_manuals"))
 {
-    if(is.null(dir)) dir <- tools:::.R_top_srcdir()
+    if(is.null(dir)) dir <- tools:::.R_top_srcdir_from_Rd()
     ## Allow specifying 'R-exts' and alikes, or full paths.
     files <- if(is.null(which)) {
         Sys.glob(file.path(dir, "doc", "manual", "*.texi"))
@@ -536,7 +515,7 @@ function(which = NULL, dir = NULL,
 {
     files <- character()
 
-    if(is.null(dir)) dir <- tools:::.R_top_srcdir()
+    if(is.null(dir)) dir <- tools:::.R_top_srcdir_from_Rd()
 
     if(is.null(which)) {
         which <- tools:::.get_standard_package_names()$base
@@ -668,11 +647,10 @@ aspell_control_R_vignettes <-
          c("-t", "-d en_US,en_GB"))
 
 aspell_R_vignettes <-
-function(program = NULL, dir = NULL,
+function(program = NULL,
          dictionaries = c(aspell_dictionaries_R, "R_vignettes"))
 {
-    if(is.null(dir)) dir <- tools:::.R_top_srcdir()    
-    files <- Sys.glob(file.path(dir,
+    files <- Sys.glob(file.path(tools:::.R_top_srcdir_from_Rd(),
                                 "src", "library", "*", "vignettes",
                                 "*.Rnw"))
 
@@ -944,7 +922,7 @@ function(which = NULL, dir = NULL,
                     "[ \t][[:alnum:]_.]*\\(\\)[ \t[:punct:]]"),
          program = NULL, dictionaries = aspell_dictionaries_R)
 {
-    if(is.null(dir)) dir <- tools:::.R_top_srcdir()
+    if(is.null(dir)) dir <- tools:::.R_top_srcdir_from_Rd()
     if(is.null(which))
         which <- tools:::.get_standard_package_names()$base
 
@@ -1083,7 +1061,7 @@ function(which = NULL, dir = NULL,
                     "[ \t][[:alnum:]_.]*\\(\\)[ \t[:punct:]]"),
          program = NULL, dictionaries = aspell_dictionaries_R)
 {
-    if(is.null(dir)) dir <- tools:::.R_top_srcdir()
+    if(is.null(dir)) dir <- tools:::.R_top_srcdir_from_Rd()
     if(is.null(which))
         which <- tools:::.get_standard_package_names()$base
     if(!is.na(pos <- match("base", which)))
@@ -1263,7 +1241,8 @@ function(ifile, encoding = "unknown", ...)
     aspell_filter_LaTeX_worker(readLines(ifile, encoding = encoding),
                                ...)
 aspell_filter_LaTeX_worker <-
-function(x, cmds = NULL, envs = NULL, parser = tools::parseLatex, ...)
+function(x, vrbs = c("verbatim", "verbatim*", "Sinput", "Soutput"),
+         cmds = NULL, envs = NULL)
 {
     ranges <- list()
     chrran <- function(e) getSrcref(e)[c(1L, 5L, 3L, 6L)]
@@ -1285,7 +1264,7 @@ function(x, cmds = NULL, envs = NULL, parser = tools::parseLatex, ...)
                        
     recurse <- function(e) {
         tag <- ltxtag(e)
-        if((tag == "VERB") || (tag == "DEFINITION") ||
+        if((tag == "VERB") ||
            ((tag == "ENVIRONMENT") && e[[1L]] %in% envs))
             ranges <<- c(ranges, list(chrran(e)))
         else if(is.list(e)) {
@@ -1316,7 +1295,7 @@ function(x, cmds = NULL, envs = NULL, parser = tools::parseLatex, ...)
         }
     }
 
-    recurse(parser(x, ...))
+    recurse(tools::parseLatex(x, verbatim = vrbs))
     blank_out_character_ranges(x, ranges)
 }
 
@@ -1422,11 +1401,7 @@ function(x, out, language = "en", program = NULL)
         header <- NULL
     }
 
-    ## we need Unix line endings even on Windows 
-    ## (at least for aspell, and works for hunspell, too):
-    outfile <- file(out, open = "wb")
-    on.exit(close(outfile))
-    writeLines(c(header, x), outfile, useBytes = TRUE)
+    writeLines(c(header, x), out, useBytes = TRUE)
 }
 
 ## For reading package defaults:
@@ -1561,14 +1536,16 @@ function(dictionary, add = character())
     ## dictionary.
     if(!grepl(.Platform$file.sep, dictionary, fixed = TRUE)) {
         dictionary <-
-            file.path(tools:::.R_top_srcdir(),
+            file.path(tools:::.R_top_srcdir_from_Rd(),
                       "share", "dictionaries", dictionary)
     }
     txt <- paste0(dictionary, ".txt")
+    rds <- paste0(dictionary, ".rds")
     new <- unique(c(if(file.exists(txt))
                         readLines(txt, encoding = "UTF-8"),
                     enc2utf8(add)))
     new <- new[order(tolower(new), new)]
     new <- new[nzchar(new)]
     writeLines(new, txt, useBytes = TRUE)
+    saveRDS(new, rds)
 }

@@ -40,7 +40,7 @@ static const char * idleHandler = "onIdle";
 
 static void checkHandler(const char * name, SEXP eventEnv)
 {
-    SEXP handler = R_findVar(install(name), eventEnv);
+    SEXP handler = findVar(install(name), eventEnv);
     if (TYPEOF(handler) == CLOSXP)
 	warning(_("'%s' events not supported in this device"), name);
 }
@@ -106,11 +106,11 @@ do_getGraphicsEventEnv(SEXP call, SEXP op, SEXP args, SEXP env)
     return gdd->dev->eventEnv;
 }
 
-/* helper function to check if there is at least one open graphics device listening for events. Returns true if so, false if no listening devices are found */
+/* helper function to check if there is at least one open graphics device listening for events. Returns TRUE if so, FALSE if no listening devices are found */
 
-static bool haveListeningDev(void)
+static Rboolean haveListeningDev(void)
 {
-    bool ret = false;
+    Rboolean ret = FALSE;
     pDevDesc dd;
     pGEDevDesc gd;
     if(!NoDevices())
@@ -119,7 +119,7 @@ static bool haveListeningDev(void)
 	{
 	    if ((gd = GEgetDevice(i)) && (dd = gd->dev)
 		 && dd->gettingEvent){
-		ret = true;
+		ret = TRUE;
 		break;
 	    }
 	}
@@ -153,7 +153,7 @@ do_getGraphicsEvent(SEXP call, SEXP op, SEXP args, SEXP env)
 		    error(_("recursive use of 'getGraphicsEvent' not supported"));
 		if (dd->eventEnv != R_NilValue) {
 		    if (dd->eventHelper) dd->eventHelper(dd, 1);
-		    dd->gettingEvent = true;
+		    dd->gettingEvent = TRUE;
 		    defineVar(install("result"), R_NilValue, dd->eventEnv);
 		    count++;
 		}
@@ -182,7 +182,7 @@ do_getGraphicsEvent(SEXP call, SEXP op, SEXP args, SEXP env)
 		if ((gd = GEgetDevice(devNum)) && (dd = gd->dev)) {
 		    if (dd->eventEnv != R_NilValue) {
 			if (dd->eventHelper) dd->eventHelper(dd, 2);
-			result = R_findVar(install("result"), dd->eventEnv);
+			result = findVar(install("result"), dd->eventEnv);
 			if (result != R_NilValue && result != R_UnboundValue) {
 			    break;
 			}
@@ -198,7 +198,7 @@ do_getGraphicsEvent(SEXP call, SEXP op, SEXP args, SEXP env)
 	    if ((gd = GEgetDevice(devNum)) && (dd = gd->dev)) {
 		if (dd->eventEnv != R_NilValue) {
 		    if (dd->eventHelper) dd->eventHelper(dd, 0);
-		    dd->gettingEvent = false;
+		    dd->gettingEvent = FALSE;
 		}
 	    }
 	    devNum = nextDevice(devNum);
@@ -215,9 +215,9 @@ void doMouseEvent(pDevDesc dd, R_MouseEvent event,
     int i;
     SEXP handler, bvec, sx, sy, temp, result;
 
-    dd->gettingEvent = false; /* avoid recursive calls */
+    dd->gettingEvent = FALSE; /* avoid recursive calls */
 
-    PROTECT(handler = R_findVar(install(mouseHandlers[event]), dd->eventEnv));
+    PROTECT(handler = findVar(install(mouseHandlers[event]), dd->eventEnv));
     if (TYPEOF(handler) == PROMSXP) {
 	handler = eval(handler, dd->eventEnv);
 	UNPROTECT(1); /* handler */
@@ -246,7 +246,7 @@ void doMouseEvent(pDevDesc dd, R_MouseEvent event,
 	R_FlushConsole();
     }
     UNPROTECT(1); /* handler */
-    dd->gettingEvent = true;
+    dd->gettingEvent = TRUE;
     return;
 }
 
@@ -261,9 +261,9 @@ void doKeybd(pDevDesc dd, R_KeyName rkey,
 {
     SEXP handler, skey, temp, result;
 
-    dd->gettingEvent = false; /* avoid recursive calls */
+    dd->gettingEvent = FALSE; /* avoid recursive calls */
 
-    PROTECT(handler = R_findVar(install(keybdHandler), dd->eventEnv));
+    PROTECT(handler = findVar(install(keybdHandler), dd->eventEnv));
     if (TYPEOF(handler) == PROMSXP) {
 	handler = eval(handler, dd->eventEnv);
 	UNPROTECT(1); /* handler */
@@ -281,7 +281,7 @@ void doKeybd(pDevDesc dd, R_KeyName rkey,
 	R_FlushConsole();
     }
     UNPROTECT(1); /* handler */
-    dd->gettingEvent = true;
+    dd->gettingEvent = TRUE;
     return;
 }
 
@@ -295,9 +295,9 @@ void doIdle(pDevDesc dd)
 {
     SEXP handler, temp, result;
 
-    dd->gettingEvent = false; /* avoid recursive calls */
+    dd->gettingEvent = FALSE; /* avoid recursive calls */
 
-    PROTECT(handler = R_findVar(install(idleHandler), dd->eventEnv));
+    PROTECT(handler = findVar(install(idleHandler), dd->eventEnv));
     if (TYPEOF(handler) == PROMSXP) {
 	handler = eval(handler, dd->eventEnv);
 	UNPROTECT(1); /* handler */
@@ -314,12 +314,12 @@ void doIdle(pDevDesc dd)
 	R_FlushConsole();
     }
     UNPROTECT(1); /* handler */
-    dd->gettingEvent = true;
+    dd->gettingEvent = TRUE;
     return;
 }
 
 Rboolean doesIdle(pDevDesc dd) {
-    SEXP handler = R_findVar(install(idleHandler), dd->eventEnv);
+    SEXP handler = findVar(install(idleHandler), dd->eventEnv);
     return (handler != R_UnboundValue) &&
         (handler != R_NilValue);
 }

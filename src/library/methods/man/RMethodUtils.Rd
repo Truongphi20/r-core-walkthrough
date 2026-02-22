@@ -1,10 +1,22 @@
 % File src/library/methods/man/RMethodUtils.Rd
 % Part of the R package, https://www.R-project.org
-% Copyright 1995-2024 R Core Team
+% Copyright 1995-2015 R Core Team
 % Distributed under GPL 2 or later
 
 \name{RMethodUtils}
 \title{Method Utilities}
+%% FIXME:  undocumented utilities (Sep. 23/02)
+\alias{asMethodDefinition}
+\alias{standardGeneric-class}
+\alias{standardGenericWithTrace-class}
+\alias{nonstandardGeneric-class}
+\alias{nonstandardGenericFunction-class}
+\alias{nonstandardGroupGenericFunction-class}
+\alias{OptionalFunction-class}
+\alias{PossibleMethod-class}
+\alias{optionalMethod-class}
+\alias{derivedDefaultMethod-class}
+\alias{internalDispatchMethod-class}
 %%
 \alias{substituteFunctionArgs}
 \alias{makeGeneric}
@@ -26,12 +38,11 @@
 \alias{cacheGenericsMetaData}
 \alias{setPrimitiveMethods}
 \alias{missingArg}
-\alias{balanceMethodsList}% defunct
+\alias{balanceMethodsList}
 \alias{sigToEnv}
 \alias{rematchDefinition}
 \alias{isRematched}
 \alias{unRematchDefinition}
-\alias{asMethodDefinition}
 \alias{addNextMethod,MethodDefinition-method}
 \alias{addNextMethod,MethodWithNext-method}
 \alias{addNextMethod}
@@ -44,9 +55,6 @@
   Utility functions to support the definition and use of formal
   methods.  Most of these functions will not normally be called directly
   by the user.
-
-  Partly, they work with S4 classes which are also normally not for the
-  user, see their help page \code{\linkS4class{optionalMethod}}.
 }
 \usage{
 getGeneric(f, mustFind=FALSE, where, package)
@@ -99,10 +107,10 @@ addNextMethod(method, f, mlist, optional, envir)
 
 insertClassMethods(methods, Class, value, fieldNames, returnAll)
 
-balanceMethodsList(mlist, args, check = TRUE) # <- defunct since R 4.5.0
+balanceMethodsList(mlist, args, check = TRUE) # <- deprecated since R 3.2.0
 
 substituteFunctionArgs(def, newArgs, args = formalArgs(def),
-                       silent = FALSE, functionName = "a function")
+                       silent = FALSE, functionName = "a function") 
 
 .valueClassTest(object, classes, fname)
 }
@@ -228,8 +236,8 @@ substituteFunctionArgs(def, newArgs, args = formalArgs(def),
     }
 
     \item{\code{balanceMethodsList}:}{
-      Used to be called from \code{setMethod()} and is \emph{defunct} since
-      \R version 4.5.0 (\sQuote{deprecated} \R 3.2.0).
+      Used to be called from \code{setMethod()} and is \emph{deprecated}
+      since \R version 3.2.0.
     %%   Called from \code{\link{setMethod}} to ensure that all nodes in
     %%   the list have the same depth (i.e., the same number of levels of
     %%   arguments).  Balance is needed to ensure that all necessary

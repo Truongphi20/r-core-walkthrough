@@ -75,7 +75,9 @@ quit(save = "default", status = 0, runLast = TRUE)
 #endif
 }
 \references{
-  \bibshow{R:Becker+Chambers+Wilks:1988}
+  Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+  \emph{The New S Language}.
+  Wadsworth & Brooks/Cole.
 }
 \section{Warning}{
   The value of \code{.Last} is for the end user to control: as

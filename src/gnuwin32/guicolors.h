@@ -2,7 +2,6 @@
  *  R : A Computer Language for Statistical Data Analysis
  *  file consolestructs.h
  *  Copyright (C) 2008      The R Foundation
- *  Copyright (C) 2024      The R Core Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -28,7 +27,6 @@ typedef enum {
   pagerbg, pagerfg, pagerhighlight,
   dataeditbg, dataeditfg, dataedituser,
   editorbg, editorfg,
-  dataeditnbg,
   numGuiColors
 } GuiColorIndex;
 

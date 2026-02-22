@@ -4,6 +4,7 @@
 % Distributed under GPL 2 or later
 
 \name{SSasympOff}
+\encoding{UTF-8}
 \title{Self-Starting \code{nls} Asymptotic Model with an Offset}
 \usage{
 SSasympOff(input, Asym, lrc, c0)

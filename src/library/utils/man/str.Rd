@@ -1,3 +1,4 @@
+
 % File src/library/utils/man/str.Rd
 % Part of the R package, https://www.R-project.org
 % Copyright 1995-2023 R Core Team
@@ -152,7 +153,7 @@ need.dev <-
   if(need.dev) graphics.off()
 }
 ch <- letters[1:12]; is.na(ch) <- 3:5
-str(ch) # character NAs
+str(ch) # character NA's
 
 str(list(a = "A", L = as.list(1:100)), list.len = 9)
 ##                                     ------------

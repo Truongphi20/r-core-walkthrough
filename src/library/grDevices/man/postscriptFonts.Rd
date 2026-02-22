@@ -82,7 +82,8 @@ pdfFonts(\dots)
   Once a font family is in use it cannot be changed.  \sQuote{In use}
   means that it has been specified \emph{via} a \code{family} or
   \code{fonts} argument to an invocation of the same graphics device
-  already in the \R session.
+  already in the \R session.  (For these purposes \code{xfig} counts the
+  same as \code{postscript} but only uses some of the predefined mappings.)
 }
 \section{East Asian fonts}{
   There are some default mappings for East Asian locales:\cr

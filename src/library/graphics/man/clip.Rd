@@ -7,7 +7,7 @@
 \alias{clip}
 \title{Set Clipping Region}
 \description{
-  Set clipping region in user coordinates.
+  Set clipping region in user coordinates
 }
 \usage{
 clip(x1, x2, y1, y2)
@@ -33,9 +33,6 @@ clip(x1, x2, y1, y2)
   \code{\link{title}} and \code{\link{plot.dendrogram}} can manipulate
   the \code{xpd} setting.
 }
-\value{
-  Invisible \code{NULL}.
-}
 \seealso{
   \code{\link{par}}
 }
@@ -50,4 +47,3 @@ hist(x, col = 'blue', add = TRUE)
 do.call("clip", as.list(usr))  # reset to plot region
 }
 \keyword{dplot}
-\keyword{iplot}

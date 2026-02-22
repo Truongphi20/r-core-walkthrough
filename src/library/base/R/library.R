@@ -1,7 +1,7 @@
 #  File src/library/base/R/library.R
 #  Part of the R package, https://www.R-project.org
 #
-#  Copyright (C) 1995-2025 The R Core Team
+#  Copyright (C) 1995-2024 The R Core Team
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -281,7 +281,7 @@ function(package, help, pos = 2, lib.loc = NULL, character.only = FALSE,
 	if(!character.only)
 	    package <- as.character(substitute(package))
         if(length(package) != 1L)
-            stop(gettextf("'%s' must be of length 1", "package"), domain=NA)
+            stop("'package' must be of length 1")
         if(is.na(package) || (package == ""))
             stop("invalid package name")
 
@@ -376,6 +376,7 @@ function(package, help, pos = 2, lib.loc = NULL, character.only = FALSE,
                     }
                 }
 		tt <- tryCatch({
+                    attr(package, "LibPath") <- which.lib.loc
                     ns <- loadNamespace(package, lib.loc)
                     env <- attachNamespace(ns, pos = pos, deps,
                                            exclude, include.only)
@@ -391,6 +392,7 @@ function(package, help, pos = 2, lib.loc = NULL, character.only = FALSE,
 		if(logical.return && is.null(tt))
 		    return(FALSE)
 
+                attr(package, "LibPath") <- NULL
                 {
                     on.exit(detach(pos = pos))
                     ## If there are S4 generics then the package should
@@ -399,7 +401,7 @@ function(package, help, pos = 2, lib.loc = NULL, character.only = FALSE,
                         !.isMethodsDispatchOn() || checkNoGenerics(env, package)
                     if (isFALSE(conf.ctrl$generics.ok) ||
                         (stopOnConflict && ! isTRUE(conf.ctrl$generics.ok)))
-                        nogenerics <- TRUE ## no silent masking for generics
+                        nogenerics <- TRUE ## no silent masking for genrics
                     if(stopOnConflict ||
                        (warn.conflicts && # never will with a namespace
                         !exists(".conflicts.OK", envir = env,

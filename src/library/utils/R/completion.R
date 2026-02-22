@@ -122,7 +122,7 @@ findFuzzyMatches <- function(pattern, values) {
 
 findMatches <- function(pattern, values, fuzzy, backtick)
 {
-    if (missing(fuzzy))    fuzzy    <- isTRUE(.CompletionEnv$settings[["fuzzy"]])
+    if (missing(fuzzy)) fuzzy <- isTRUE(.CompletionEnv$settings[["fuzzy"]])
     if (missing(backtick)) backtick <- isTRUE(.CompletionEnv$settings[["backtick"]])
     comps <- 
         if (fuzzy)
@@ -610,8 +610,6 @@ loadedPackageCompletions <- function(text, add = rc.getOption("package.suffix"))
     if (.CompletionEnv$settings[["ns"]])
     {
         s <- loadedNamespaces()
-        ## if rc.settings(ipck=TRUE), also do all installed packages
-        if (.CompletionEnv$settings[["ipck"]]) s <- unique(c(s, rownames(installed.packages())))
         comps <- findExactMatches(sprintf("^%s", makeRegexpSafe(text)), s)
         if (length(comps) && !is.null(add))
             sprintf("%s%s", comps, add)
@@ -644,7 +642,7 @@ normalCompletions <-
                         dot_internals = TRUE)
         if (.CompletionEnv$settings[["func"]] && check.mode && !is.null(add.fun))
         {
-            which.function <- vapply(comps, exists, NA, mode = "function")
+            which.function <- sapply(comps, function(s) exists(s, mode = "function"))
             if (any(which.function))
                 comps[which.function] <-
                     sprintf("%s%s", comps[which.function], add.fun)
@@ -1046,7 +1044,7 @@ fileCompletions <- function(token)
             ## re-use that here.  The problem is that for other
             ## backends a token may already have been determined, and
             ## that's what we will need to use.  We can still fake it
-            ## by using the correct token but subtracting the extra
+            ## by using the correct token but substracting the extra
             ## part when providing completions, but that will need
             ## some work.
 
@@ -1378,7 +1376,7 @@ fileCompletions <- function(token)
         "internet.info", "locatorBell", "mailer", "menu.graphics",
         "na.action", "pkgType", "repos", "show.coef.Pvalues",
         "show.signif.stars", "str", "str.dendrogram.last",
-        "ts.eps", "ts.S.compat", "unzip", "windowsTimeouts",
+        "ts.eps", "ts.S.compat", "unzip", "windowsTimeout",
         ## + options unset by default (or OS-specific)
         "mc.cores", "dvipscmd", "warn.FPU",
         "askYesNo", "BioC_mirror", "ccaddress", "checkPackageLicense",
@@ -1387,7 +1385,7 @@ fileCompletions <- function(token)
         "help.htmlmath", "help.htmltoc", "help.ports", "help_type", "install.lock",
         "install.packages.check.source",
         "install.packages.compile.from.source",
-        "interrupt", "Ncpus", "netrc", "save.defaults", "save.image.defaults",
+        "interrupt", "Ncpus", "save.defaults", "save.image.defaults",
         "setWidthOnResize", "show.error.locations", "show.nls.convergence",
         "SweaveHooks", "SweaveSyntax", "topLevelEnvironment",
         "traceback.max.lines", "url.method", "warning.expression"

@@ -92,7 +92,7 @@ unlink("myLib", recursive = TRUE)
 dir.create("myLib")
 install.packages("myTst", lib = "myLib", repos=NULL, type = "source")
 print(installed.packages(lib.loc= "myLib", priority= "NA"))## (PR#13332)
-stopifnot(require("myTst", lib.loc = "myLib"))
+stopifnot(require("myTst",lib = "myLib"))
 sm <- findMethods(show, where= as.environment("package:myTst"))
 stopifnot(sm@names == "foo")
 unlink("myTst_*")
@@ -130,7 +130,7 @@ if(interactive() && Sys.getenv("USER") == "maechler")
 ## SRCDIR not available on windows, so pkgSrcPath won't be populated
 ## if this happens non-interactively, cleanup and quit gracefully
 if(!file_test("-d", pkgSrcPath) && !interactive()) {
-    unlink(c("myTst", "myLib", "myTst2"), recursive=TRUE)
+    unlink("myTst", recursive=TRUE)
     showProc.time()
     q("no")
 }
@@ -323,8 +323,7 @@ system.time(status <-
                          out = tf,
                          ## avoid delays/timeouts with a broken network route:
                          env = c("R_REPOSITORIES=NULL"), # (no cyclic dep check)
-                         timeout = 50))# seen 2--7 sec; Solaris needed > 30
-if (!identical(status, 124L)) # avoid "random" failures on slow systems
+                         timeout = 50))# see 5--7 sec; Solaris needed > 30
 stopifnot(exprs = {
     status == 1 # an ERROR now
     is.character(exLines <-
@@ -401,14 +400,10 @@ if(okA) {
   if(interactive()) { ## << "FIXME!"  This (sink(.) ..) fails, when run via 'make'.
     ## install.packages() should give "the correct" error but we cannot catch it
     ## One level lower is not much better, needing sink() as capture.output() fails
-    tryInst <- function(tfile) {
-        ftf <- file(tfile, open = "wt")
-        sink(ftf); sink(ftf, type = "message")# "message" should be sufficient
-        on.exit({ sink(type="message"); sink(); close(ftf) })
-        eval(instEXPR)
-    }
-    tf <- tempfile("inst_pkg")
-    instR <- tryInst(tf)
+    ftf <- file(tf <- tempfile("inst_pkg"), open = "wt")
+    sink(ftf); sink(ftf, type = "message")# "message" should be sufficient
+    eval(instEXPR)
+    sink(type="message"); sink()## ; close(ftf); rm(ftf)# end sink()
     writeLines(paste(" ", msgs <- readLines(tf)))
     message(err <- grep("^ERROR:", msgs, value=TRUE))
     stopifnot(exprs = {
@@ -423,20 +418,6 @@ if(okA) {
 } else message("pkgA/DESCRIPTION  not available")
 showProc.time()
 
-if (requireNamespace("PkgC", lib.loc = "myLib")) {
-    (r <- methods(PkgC:::foobar))# "should" return non-empty even when neither S3 generic nor method was exported
-    meths <- paste("foobar", c("Date", "default"), sep = ".")
-    try(PkgC:::foobar(pi))    # -> foobar.default is *not* 'found'
-    if(FALSE) # not working when run via `make`
-        PkgC:::foobar(Sys.Date()) # -> foobar.Date   *is* found b/c  S3method(.)
-    stopifnot(exprs = {
-        inherits(r, "MethodsFunction")
-        r == meths # may change if add an extra star
-        nrow(mi <- attr(r, "info")) == 2
-        identical(meths, rownames(mi))
-    })
-    ## failed up to R 4.4.x
-}
 
 ## R CMD check should *not* warn about \Sexpr{} built sections in Rd (PR#17479):
 writeLines(msg <- capture.output(
@@ -479,8 +460,7 @@ stopifnot(exprs = {
 any(grepl("See Also:", helptxt, fixed = TRUE)) == (.Platform$OS.type == "windows")
 
 ## post-build macros can contain conditional defines
-tools::Rd2txt(installedRdDB[["nestedDefinesOK.Rd"]],
-              options = list(underline_titles = FALSE))
+tools::Rd2txt(installedRdDB[["nestedDefinesOK.Rd"]])
 deparsedLines <- as.character(installedRdDB[["nestedDefinesOK.Rd"]])
 stopifnot(("unix" %in% deparsedLines) == (.Platform$OS.type == "unix"),
           ("windows" %in% deparsedLines) == (.Platform$OS.type == "windows"))

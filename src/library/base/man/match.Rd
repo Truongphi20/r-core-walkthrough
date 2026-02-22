@@ -1,26 +1,24 @@
 % File src/library/base/man/match.Rd
 % Part of the R package, https://www.R-project.org
-% Copyright 1995-2025 R Core Team
+% Copyright 1995-2017 R Core Team
 % Distributed under GPL 2 or later
 
 \name{match}
-\title{Value Matching}
 \alias{match}
 \alias{\%in\%}
-\alias{\%notin\%}
+\title{Value Matching}
 \description{
   \code{match} returns a vector of the positions of (first) matches of
   its first argument in its second.
 
-  \code{\%in\%} and \code{\%notin\%} are more intuitive interfaces as binary operators,
-  returning a logical vector indicating if there is a match or not
+  \code{\%in\%} is a more intuitive interface as a binary operator,
+  which returns a logical vector indicating if there is a match or not
   for its left operand.
 }
 \usage{
 match(x, table, nomatch = NA_integer_, incomparables = NULL)
 
-x  \%in\%   table
-x \%notin\% table
+x \%in\% table
 }
 \arguments{
   \item{x}{vector or \code{NULL}: the values to be matched.
@@ -37,45 +35,28 @@ x \%notin\% table
 \value{
   A vector of the same length as \code{x}.
 
- \describe{
-    \item{\code{match}:}{An integer vector giving the position in \code{table} of
+  \code{match}: An integer vector giving the position in \code{table} of
   the first match if there is a match, otherwise \code{nomatch}.
 
   If \code{x[i]} is found to equal \code{table[j]} then the value
   returned in the \code{i}-th position of the return value is \code{j},
   for the smallest possible \code{j}.  If no match is found, the value
   is \code{nomatch}.
-  }
-  \item{\code{\%in\%}:}{A logical vector, indicating if a match was located for
-    each element of \code{x}: thus the values are \code{TRUE} or
-    \code{FALSE} and never \code{NA}.}
 
-  \item{\code{\%notin\%}:}{A logical vector, simply the negation of the
-    corresponding \code{\%in\%} call.}
-  }
+  \code{\%in\%}: A logical vector, indicating if a match was located for
+  each element of \code{x}: thus the values are \code{TRUE} or
+  \code{FALSE} and never \code{NA}.
 }
 \details{
-  \code{\%in\%} is currently defined as
-\preformatted{
-  `\%in\%` <- function(x, table) match(x, table, nomatch = 0L) > 0L
-}
-  \code{\%notin\%} could succinctly be defined as \code{\link{Negate}(`\%in\%`)},
-  but for symmetry and efficiency is
-\preformatted{
-  `\%notin\%` <- function(x, table) match(x, table, nomatch = 0L) == 0L
-}
+  \code{\%in\%} is currently defined as \cr
+  \code{"\%in\%" <- function(x, table) match(x, table, nomatch = 0) > 0}
+
   Factors, raw vectors and lists are converted to character vectors,
   internally classed objects are transformed via \code{\link{mtfrm}}, and
   then \code{x} and \code{table} are coerced to a common type (the later
   of the two types in \R's ordering, logical < integer < numeric <
   complex < character) before matching.  If \code{incomparables} has
   positive length it is coerced to the common type.
-
-  One exception to the above happens when \I{\code{match()}ing}
-  \code{\link{Date}} objects and \code{\link{character}}s.  There, the
-  character argument is coerced to \code{"Date"} (via
-  \code{\link{as.Date.character}()}) before the above \code{mtfrm()} is
-  applied.
 
   Matching for lists is potentially very slow and best avoided except in
   simple cases.
@@ -85,19 +66,20 @@ x \%notin\% table
   For real and complex values, \code{NaN} values are regarded
   as matching any other \code{NaN} value, but not matching \code{NA},
   where for complex \code{x}, real and imaginary parts must match both
-  (unless containing at least one \code{NA}), see the examples.
+  (unless containing at least one \code{NA}).
 
   Character strings will be compared as byte sequences if any input is
   marked as \code{"bytes"}, and otherwise are regarded as equal if they are
   in different encodings but would agree when translated to UTF-8 (see
   \code{\link{Encoding}}).
 
-  That \code{\%in\%} and \code{\%notin\%} never return \code{NA} makes them
-  particularly
+  That \code{\%in\%} never returns \code{NA} makes it particularly
   useful in \code{if} conditions.
 }
 \references{
-  \bibshow{R:Becker+Chambers+Wilks:1988}
+  Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+  \emph{The New S Language}.
+  Wadsworth & Brooks/Cole.
 }
 \seealso{
   \code{\link{pmatch}} and \code{\link{charmatch}} for (\emph{partial})
@@ -121,30 +103,27 @@ x \%notin\% table
 intersect # the R function in base is slightly more careful
 intersect(1:10, 7:20)
 
-1:10 \%in\% c(1,3,5,9) %
+1:10 \%in\% c(1,3,5,9)
 sstr <- c("c","ab","B","bba","c",NA,"@","bla","a","Ba","\%")
-sstr[sstr \%in\% c(letters, LETTERS)] %
+sstr[sstr \%in\% c(letters, LETTERS)]
 
-"\%w/o\%" <- function(x, y) x[x \%notin\% y] #--  x without y
-(1:10) \%w/o\% c(3,7,12) %
+"\%w/o\%" <- function(x, y) x[!x \%in\% y] #--  x without y
+(1:10) \%w/o\% c(3,7,12)
 ## Note that setdiff() is very similar and typically makes more sense:
         c(1:6,7:2) \%w/o\% c(3,7,12)  # -> keeps duplicates
 setdiff(c(1:6,7:2),      c(3,7,12)) # -> unique values
-%
-## Illuminating example about NA matching in complex values
+
+## Illuminating example about NA matching
 r <- c(1, NA, NaN)
-zN <- c(complex(real = NA , imaginary =  r ),
-        complex(real =  r , imaginary = NA ),
-        complex(real =  r , imaginary = NaN),
-        complex(real = NaN, imaginary =  r ))
+zN <- c(complex(real = NA , imaginary =  r ), complex(real =  r , imaginary = NA ),
+        complex(real =  r , imaginary = NaN), complex(real = NaN, imaginary =  r ))
 zM <- cbind(Re=Re(zN), Im=Im(zN), match = match(zN, zN))
 rownames(zM) <- format(zN)
-zM ##--> many "NA" matches (= 1) and four non-NAs (3 different ones: 7,9,10)
+zM ##--> many "NA's" (= 1) and the four non-NA's (3 different ones, at 7,9,10)
 
 length(zN) # 12
-unique(zN) # the "NA" and the 3 different NaN values
+unique(zN) # the "NA" and the 3 different non-NA NaN's
 stopifnot(identical(unique(zN), zN[c(1, 7,9,10)]))
-stopifnot(is.na(zN)) # all are regarded as missing
 
 ## very strict equality would have 4 duplicates (of 12):
 symnum(outer(zN, zN, Vectorize(identical,c("x","y")),

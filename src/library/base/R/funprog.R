@@ -105,9 +105,7 @@ Filter <-
 function(f, x)
 {
     f <- match.fun(f)
-    z <- unlist(lapply(x, f)) # could be NULL
-    if(is.null(z)) return(x[integer()])
-    ind <- as.logical(z)
+    ind <- as.logical(unlist(lapply(x, f)))
     x[which(ind)]
 }
 
@@ -130,7 +128,7 @@ Position <-
 function(f, x, right = FALSE, nomatch = NA_integer_)
 {
     f <- match.fun(f)
-
+    
     ind <- if(right) rev(seq_along(x)) else seq_along(x)
 
     for(i in ind)

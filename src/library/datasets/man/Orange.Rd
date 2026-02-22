@@ -17,14 +17,14 @@
   \code{c("nfnGroupedData", "nfGroupedData", "groupedData", "data.frame")}
   containing the following columns:
   \describe{
-    \item{\code{Tree}}{
+    \item{Tree}{
       an ordered factor indicating the tree on which the measurement is
       made.  The ordering is according to increasing maximum diameter.
     }
-    \item{\code{age}}{
+    \item{age}{
       a numeric vector giving the age of the tree (days since 1968/12/31)
     }
-    \item{\code{circumference}}{
+    \item{circumference}{
       a numeric vector of trunk circumferences (mm).  This is probably
       \dQuote{circumference at breast height}, a standard measurement in
       forestry.
@@ -32,14 +32,16 @@
   }
 }
 \details{
-  This dataset was originally part of package \CRANpkg{nlme}, and that has
+  This dataset was originally part of package \code{nlme}, and that has
   methods (including for \code{[}, \code{as.data.frame}, \code{plot} and
   \code{print}) for its grouped-data classes.
 }
 \source{
-  \bibinfo{R:Draper+Smith:1998}{note}{Exercise 24.N}
-  \bibshow{R:Draper+Smith:1998,
-    R:Pinheiro+Bates:2000}
+  Draper, N. R. and Smith, H. (1998), \emph{Applied Regression Analysis
+    (3rd ed)}, Wiley (exercise 24.N).
+
+  Pinheiro, J. C. and Bates, D. M. (2000) \emph{Mixed-effects Models
+    in S and S-PLUS}, Springer.
 }
 \examples{
 require(stats); require(graphics)

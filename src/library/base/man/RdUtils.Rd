@@ -55,6 +55,7 @@
   \code{\var{foo}}.
 }
 \seealso{
-  \manual{R-exts}{Processing documentation files}.
+  The section \sQuote{Processing documentation files} in the
+  \sQuote{Writing R Extensions} manual: \code{\link{RShowDoc}("R-exts")}.
 }
 \keyword{utilities}

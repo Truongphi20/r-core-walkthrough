@@ -205,8 +205,9 @@
 %% R_ENVIRON, R_ENVIRON_USER are used in src/main/Renviron.c
 %% R_PROFILE is used in src/main/startup.c
 \seealso{
-  For the definition of the \sQuote{home} directory on Windows see
-  \manual{rw-FAQ}{What are HOME and working directories?}.
+  For the definition of the \sQuote{home} directory on Windows see the
+  \file{rw-FAQ} Q2.14.  It can be found from a running \R by
+  \code{Sys.getenv("R_USER")}.
 
   \code{\link{.Last}} for final actions at the close of an \R session.
   \code{\link{commandArgs}} for accessing the command line arguments.
@@ -220,9 +221,9 @@
   \code{\link{X11}} and \code{\link{quartz}}.
 #endif
 
-  \manual{R-intro}{Invoking R from the command line}
-  for more command-line options: those affecting memory management are
-  covered in \code{?\link{Memory}}.
+  \emph{An Introduction to R} for more command-line options: those
+  affecting memory management are covered in the help file for
+  \link{Memory}.
 
   \code{\link{readRenviron}} to read \file{.Renviron} files.
 

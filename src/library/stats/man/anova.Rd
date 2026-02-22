@@ -38,7 +38,8 @@ anova(object, \dots)
   missing values and \R's default of \code{na.action = na.omit} is used.
 }
 \references{
-  \bibshow{R:Chambers+Hastie:1992}
+  Chambers, J. M. and Hastie, T. J. (1992)
+  \emph{Statistical Models in S}, Wadsworth & Brooks/Cole.
 }
 \seealso{
   \code{\link{coefficients}}, \code{\link{effects}},

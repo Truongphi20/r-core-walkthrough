@@ -1400,8 +1400,8 @@ progressbar newprogressbar(rect r, int pbmin, int pbmax, int incr, int smooth)
     set_new_winproc(obj); /* set custom winproc */
     settextfont(obj, SystemFont);
     obj->kind = ListboxObject;
-    sendmessage(hwnd, PBM_SETRANGE32, (WPARAM) pbmin, (LPARAM) pbmax);
-    sendmessage(hwnd, PBM_SETSTEP, (WPARAM) incr, 0);
+    SendMessage(hwnd, PBM_SETRANGE32, (WPARAM) pbmin, (LPARAM) pbmax);
+    SendMessage(hwnd, PBM_SETSTEP, (WPARAM) incr, 0);
 
     return obj;
 }
@@ -1409,18 +1409,18 @@ progressbar newprogressbar(rect r, int pbmin, int pbmax, int incr, int smooth)
 void setprogressbar(progressbar obj, int n)
 {
     if (! obj) return;
-    sendmessage(obj->handle, PBM_SETPOS, (WPARAM) n, 0);
+    SendMessage(obj->handle, PBM_SETPOS, (WPARAM) n, 0);
 }
 
 void stepprogressbar(progressbar obj, int n)
 {
     if (! obj) return;
-    sendmessage(obj->handle, PBM_STEPIT, 0, 0);
+    SendMessage(obj->handle, PBM_STEPIT, 0, 0);
 }
 
 void setprogressbarrange(progressbar obj, int pbmin, int pbmax)
 {
     if (! obj) return;
-    sendmessage(obj->handle, PBM_SETRANGE32, (WPARAM) pbmin,
+    SendMessage(obj->handle, PBM_SETRANGE32, (WPARAM) pbmin,
 		(LPARAM) pbmax);
 }

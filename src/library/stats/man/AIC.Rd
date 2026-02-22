@@ -4,6 +4,7 @@
 % Distributed under GPL 2 or later
 
 \name{AIC}
+\encoding{UTF-8}
 \alias{AIC}
 \alias{BIC}
 \title{Akaike's An Information Criterion}
@@ -77,7 +78,9 @@ BIC(object, \dots)
   parameters in the model (\code{df}) and the AIC or BIC.
 }
 \references{
-  \bibshow{R:Sakamoto+Ishiguro+Kitagawa:1986}
+  Sakamoto, Y., Ishiguro, M., and Kitagawa G. (1986).
+  \emph{Akaike Information Criterion Statistics}.
+  D. Reidel Publishing Company.
 }
 \author{
   Originally by \enc{José}{Jose} Pinheiro and Douglas Bates,

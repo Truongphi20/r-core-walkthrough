@@ -5,6 +5,7 @@
 
 \name{hcl}
 \alias{hcl}
+\encoding{UTF-8}
 \title{\abbr{HCL} Color Specification}
 \description{
   Create a vector of colors from vectors specifying hue,
@@ -62,7 +63,11 @@ packages which provide more general color space facilities.
   (opaque).  
 }
 \references{
-  \bibshow{R:Ihaka:2003}
+Ihaka, R. (2003).
+Colour for Presentation Graphics, Proceedings of the 3rd International
+Workshop on Distributed Statistical Computing (DSC 2003), March 20-22,
+2003, Technische Universität Wien, Vienna, Austria.
+\url{https://www.R-project.org/conferences/DSC-2003/}.
 }
 \author{Ross Ihaka}
 \note{

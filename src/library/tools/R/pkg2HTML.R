@@ -48,7 +48,6 @@
     db <- 
         if (!missing(package) && isTRUE(isPkgTarball(package)))
         {
-            src.type <- "tarball"
             ## If URL, download first
             if (isURL(package)) {
                 destdir <- tempfile("dir")
@@ -72,7 +71,7 @@
             Rd_db(dir = pkgdir, stages = stages)
         }
         else {
-            src.type <- if (is.null(dir)) "installed" else "source"
+            ## FIXME: needs cleanup
             pkgdir <- if (is.null(dir)) find.package(package, lib.loc) else dir
             if (is.null(dir)) Rd_db(package, , lib.loc, stages = stages)
             else Rd_db(, dir, lib.loc, stages = stages)
@@ -82,7 +81,7 @@
     ## obtained directly from the db, which is useful for non-installed packages.
     Links0 <- .build_links_index(Rd_contents(db), basename(pkgdir))
     Links <- c(Links0, findHTMLlinks(pkgdir, level = 1))
-    Links2 <- xLinks
+    Links2 <- if (length(xLinks)) xLinks else findHTMLlinks(level = 2) 
     
     rd2lines <- function(Rd, ...) {
         ## Rd2HTML() returns output location, which is not useful
@@ -94,11 +93,9 @@
                                     Links = Links, Links2 = Links2,
                                     ...)
                    )
-        list(outlines = outlines, info = attr(h, "info"),
-             concordance = attr(h, "concordance"))
+        list(outlines = outlines, info = attr(h, "info"))
     }
     structure(lapply(db, rd2lines, standalone = FALSE, ...),
-              pkgdir = pkgdir, src.type = src.type,
               descfile = file.path(pkgdir, "DESCRIPTION"))
 
 }
@@ -112,23 +109,19 @@ pkg2HTML <- function(package, dir = NULL, lib.loc = NULL,
                      texmath = getOption("help.htmlmath"),
                      prism = TRUE,
                      out = NULL,
-                     toc_entry = c("name", "title"),
+                     toc_entry = c("title", "name"),
                      ...,
                      Rhtml = FALSE,
                      mathjax_config = file.path(R.home("doc"), "html", "mathjax-config.js"),
-                     include_description = TRUE,
-		     concordance = FALSE)
+                     include_description = TRUE)
 {
     toc_entry <- match.arg(toc_entry)
     hcontent <- .convert_package_rdfiles(package = package, dir = dir, lib.loc = lib.loc,
                                          outputEncoding = outputEncoding,
                                          Rhtml = Rhtml, hooks = hooks,
-                                         texmath = "katex", prism = prism, concordance = concordance, ...)
+                                         texmath = "katex", prism = prism, ...)
     descfile <- attr(hcontent, "descfile")
-    src.type <- attr(hcontent, "src.type")
-    pkgdir <- attr(hcontent, "pkgdir")
-    descmeta <- .read_description(descfile)
-    pkgname <- descmeta["Package"]
+    pkgname <- read.dcf(descfile, fields = "Package")[1, 1]
     if (is.null(out)) {
         out <- if (is.null(hooks$pkg_href)) ""
                else hooks$pkg_href(pkgname)
@@ -156,44 +149,19 @@ pkg2HTML <- function(package, dir = NULL, lib.loc = NULL,
                         name2id(rdnames),
                         switch(toc_entry, title = rdtitles, name = rdnames))
 
-    language <- descmeta["Language"]
-    if(is.na(language))
-        language <- "en"
-    else if(grepl(",", language))
-        language <- NA_character_
-    ## If DESCRIPTION specifices several languages, we currently cannot
-    ## tell which one will be used for the package Rd files.  We could
-    ## guess to use the first language given, for now simply take the
-    ## language as unknown.
-    
     ## Now to make a file with header + DESCRIPTION + TOC + content + footer
 
     hfcomps <- # should we be able to specify static URLs here?
-        HTMLcomponents(title = sprintf('Package {%s}', pkgname),
-                       headerTitle = paste0("Help for package ", pkgname),
-                       logo = FALSE,
+        HTMLcomponents(title = paste0("Help for package ", pkgname), logo = FALSE,
                        up = NULL, top = NULL,
                        css = stylesheet,
                        outputEncoding = outputEncoding,
                        dynamic = FALSE, prism = prism,
-                       doTexMath = TRUE,
-                       texmath = if (use_mathjax) "mathjax" else texmath,
-                       MATHJAX_CONFIG_STATIC = mathjax_config,
-                       language = language)
+                       doTexMath = TRUE, texmath = texmath,
+                       MATHJAX_CONFIG_STATIC = mathjax_config)
 
-    linecount <- 0L
-    writeHTML <- function(..., sep = "\n", append = TRUE) {
+    writeHTML <- function(..., sep = "\n", append = TRUE)
         cat(..., file = out, sep = sep, append = append)
-	if (concordance) {
-	    if (!append)
-		linecount <<- 0L
-	    if (sep == "\n")
-		linecount <<- linecount + sum(lengths(list(...)))
-	    # Also add any embedded newlines...
-	    linecount <<- linecount + sum(sapply(list(...),
-			function(s) sum(unlist(gregexpr("\n", s, fixed = TRUE)) > 0)))
-	}
-    }
 
     ## cat(hfcomps$header, fill = TRUE) # debug
     writeHTML(hfcomps$header, sep = "", append = FALSE)
@@ -201,9 +169,7 @@ pkg2HTML <- function(package, dir = NULL, lib.loc = NULL,
     ##                   pkgname))
     writeHTML('<nav class="package" aria-label="Topic Navigation">',
               '<div class="dropdown-menu">',
-              sprintf('<img class="toplogo" src="%s" alt="[logo]">',
-                      if (src.type == "installed") staticLogoPath(pkgname, relative = FALSE)
-                      else staticLogoPath(pkgdir, relative = FALSE, dir = TRUE)),
+              sprintf('<h1>Package {%s}</h1>', pkgname),
               '<h2>Contents</h2>',
               '<ul class="menu">',
               toclines,
@@ -214,25 +180,7 @@ pkg2HTML <- function(package, dir = NULL, lib.loc = NULL,
               '<main>')
 
     if (include_description) writeHTML(.DESCRIPTION_to_HTML(descfile))
-    lapply(names(hcontent), function(rdfile) {
-        h <- hcontent[[rdfile]]
-    	if (concordance) {
-    	    conc <- h$concordance
-    	    if (inherits(conc, "Rconcordance")) {
-    	        conc$offset <- conc$offset + linecount + 1L
-                ## replace single-file concordance info
-    	        h$outlines[length(h$outlines)] <-
-    	            paste("<!--", as.character(conc), "-->")
-    	    }
-    	}
-        if (startsWith(rdfile, "unix/"))
-            rdfile <- sub("unix/", "", rdfile, fixed = TRUE)
-        else if (startsWith(rdfile, "windows/"))
-            rdfile <- sub("windows/", "", rdfile, fixed = TRUE)
-    	file_id <- string2id(gsub("[.][Rr]d$", "", rdfile))
-    	writeHTML(sprintf("<hr><span id='rdfile+%s'></span>", file_id),
-                  h$outlines)
-    })
+    lapply(hcontent, function(h) writeHTML("<hr>", h$outlines))
     writeHTML('</main>')
     writeHTML(hfcomps$footer, sep = "")
     invisible(out)

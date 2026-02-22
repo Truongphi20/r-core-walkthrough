@@ -29,7 +29,9 @@ box(which = "plot", lty = "solid", \dots)
   and is not \code{NA}, it is used.  The final default is \code{par("col")}.
 }
 \references{
-  \bibshow{R:Becker+Chambers+Wilks:1988}
+  Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+  \emph{The New S Language}.
+  Wadsworth & Brooks/Cole.
 }
 \seealso{
 \code{\link{rect}} for drawing of arbitrary rectangles.

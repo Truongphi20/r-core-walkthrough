@@ -1,6 +1,6 @@
 % File src/library/graphics/man/hist.Rd
 % Part of the R package, https://www.R-project.org
-% Copyright 1995-2025 R Core Team
+% Copyright 1995-2022 R Core Team
 % Distributed under GPL 2 or later
 
 \name{hist}
@@ -70,7 +70,8 @@ hist(x, \dots)
   \item{xlim, ylim}{the range of x and y values with sensible defaults.
     Note that \code{xlim} is \emph{not} used to define the histogram (breaks),
     but only for plotting (when \code{plot = TRUE}).}
-  \item{axes}{logical.  If \code{TRUE} (default), axes are drawn when the plot is.}
+  \item{axes}{logical.  If \code{TRUE} (default), axes are draw if the
+    plot is drawn.}
   \item{plot}{logical.  If \code{TRUE} (default), a histogram is
     plotted, otherwise a list of breaks and counts is returned.  In the
     latter case, a warning is used if (typically graphical) arguments
@@ -147,8 +148,12 @@ hist(x, \dots)
 }
 
 \references{
-  \bibshow{R:Becker+Chambers+Wilks:1988,
-    R:Venables+Ripley:2002}
+  Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+  \emph{The New S Language}.
+  Wadsworth & Brooks/Cole.
+
+  Venables, W. N. and Ripley. B. D. (2002)
+  \emph{Modern Applied Statistics with S}.  Springer.
 }
 
 \seealso{

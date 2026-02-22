@@ -46,7 +46,7 @@
 *> \author Univ. of Colorado Denver
 *> \author NAG Ltd.
 *
-*> \ingroup lsame
+*> \ingroup aux_blas
 *
 *  =====================================================================
       LOGICAL FUNCTION LSAME(CA,CB)

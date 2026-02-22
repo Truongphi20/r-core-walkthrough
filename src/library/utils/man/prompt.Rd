@@ -1,6 +1,6 @@
 % File src/library/utils/man/prompt.Rd
 % Part of the R package, https://www.R-project.org
-% Copyright 1995-2025 R Core Team
+% Copyright 1995-2014 R Core Team
 % Distributed under GPL 2 or later
 
 \name{prompt}
@@ -88,7 +88,8 @@ promptImport(object, filename = NULL, name = NULL,
 }
 \seealso{
   \code{\link{promptData}}, \code{\link{help}} and the chapter on
-  \manual{R-exts}{Writing R documentation files}.
+  \sQuote{Writing R documentation files} in the \sQuote{Writing R Extensions}
+  manual: \code{\link{RShowDoc}("R-exts")}.
 
   For creation of many help pages (for a package),
   see \code{\link{package.skeleton}}.
@@ -97,7 +98,9 @@ promptImport(object, filename = NULL, name = NULL,
 }
 \author{Douglas Bates for \code{prompt.data.frame}}
 \references{
-  \bibshow{R:Becker+Chambers+Wilks:1988}
+  Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+  \emph{The New S Language}.
+  Wadsworth & Brooks/Cole.
 }
 \examples{
 require(graphics)

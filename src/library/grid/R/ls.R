@@ -1,7 +1,7 @@
 #  File src/library/grid/R/ls.R
 #  Part of the R package, https://www.R-project.org
 #
-#  Copyright (C) 1995-2025 The R Core Team
+#  Copyright (C) 1995-2016 The R Core Team
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -693,7 +693,7 @@ nestedListing <- function(x, gindent="  ", vpindent=gindent) {
     makePrefix <- function(indent, depth) {
         indents <- rep(indent, length(depth))
         indents <- mapply(rep, indents, depth)
-        vapply(indents, paste, "", collapse = "")
+        sapply(indents, paste, collapse="")
     }
 
     if (!inherits(x, "flatGridListing"))
@@ -722,7 +722,7 @@ pathListing <- function(x, gvpSep=" | ", gAlign=TRUE) {
     vpListings <- seq_along(x$name) %in% grep("^vp", x$type)
     paths <- x$vpPath
     # Only if viewport listings
-    if (any(vpListings)) {
+    if (sum(vpListings) > 0) {
         paths[vpListings] <- appendToPrefix(paths[vpListings],
                                             x$name[vpListings])
         # If viewports are shown, then allow extra space before grobs
@@ -732,13 +732,14 @@ pathListing <- function(x, gvpSep=" | ", gAlign=TRUE) {
 	maxLen <- max(nchar(paths))
 
     # Only if grob listings
-    if (length(isn_vp <- which(!vpListings))) {
+    if (sum(!vpListings) > 0) {
         if (gAlign) {
-            paths[isn_vp] <- padPrefix(paths[isn_vp], maxLen)
+            paths[!vpListings] <- padPrefix(paths[!vpListings], maxLen)
         }
-        paths[isn_vp] <- paste0(paths[isn_vp], gvpSep,
-                                appendToPrefix(x$gPath[isn_vp],
-                                               x$ name[isn_vp]))
+        paths[!vpListings] <- paste0(paths[!vpListings],
+				     gvpSep,
+				     appendToPrefix(x$gPath[!vpListings],
+						    x$name[!vpListings]))
     }
     cat(paths, sep = "\n")
 }
@@ -755,7 +756,7 @@ grobPathListing <- function(x, ...) {
 
 # Tidy up the vpPath from grid.ls() to remove ROOT if it is there
 clean <- function(paths) {
-    vapply(lapply(paths,
+    sapply(lapply(paths,
                   function(x) {
                       pieces <- explode(x)
                       if (length(pieces) && pieces[1] == "ROOT")
@@ -766,8 +767,7 @@ clean <- function(paths) {
                if (length(x))
                    as.character(vpPath(x))
                else ""
-           },
-           "")
+           })
 }
 
 # Given a gPath, return complete grob paths that match from the display list
@@ -804,7 +804,7 @@ grid.grep <- function(path, x = NULL, grobs = TRUE, viewports = FALSE,
                              dl$type == "gTreeListing"
                      } else {
                          keep <- dl$type == "grobListing" |
-                             dl$type == "gTreeListing"
+                             dl$type == "gTreeListing"                         
                      }
                      x[keep]
                  })

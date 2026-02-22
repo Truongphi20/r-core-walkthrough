@@ -1,6 +1,6 @@
 % File src/library/datasets/man/co2.Rd
 % Part of the R package, https://www.R-project.org
-% Copyright 1995-2025 R Core Team
+% Copyright 1995-2007 R Core Team
 % Distributed under GPL 2 or later
 
 \name{co2}
@@ -34,7 +34,9 @@
   exactly with the data provided by \R.
 }
 \references{
-  \bibshow{R:Cleveland:1993}
+  Cleveland, W. S. (1993)
+  \emph{Visualizing Data}.
+  New Jersey: Summit Press.
 }
 \examples{
 require(graphics)

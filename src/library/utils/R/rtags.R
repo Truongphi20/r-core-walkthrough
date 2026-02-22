@@ -74,8 +74,7 @@ write.etags <-
     lines <-
         switch(shorten.lines,
                none = lines,
-               simple = vapply(strsplit(lines, "function", fixed = TRUE), 
-                               `[`, "", 1),
+               simple = sapply(strsplit(lines, "function", fixed = TRUE), `[`, 1),
                token = mapply(shorten.to.string, lines, tokens))
     tag.lines <-
         paste(sprintf("%s\x7f%s\x01%d,%d",

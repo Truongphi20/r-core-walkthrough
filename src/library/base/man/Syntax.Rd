@@ -51,7 +51,9 @@
   and \code{& && | ||} have equal precedence.
 }
 \references{
-  \bibshow{R:Becker+Chambers+Wilks:1988}
+  Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+  \emph{The New S Language}.
+  Wadsworth & Brooks/Cole.
 }
 \seealso{
   \code{\link{Arithmetic}}, \code{\link{Comparison}}, \code{\link{Control}},
@@ -59,7 +61,7 @@
   \code{\link{NumericConstants}}, \code{\link{Paren}},
   \code{\link{Quotes}}, \code{\link{Reserved}}.
 
-  Section \manual{R-lang}{Expressions}.
+  The \sQuote{R Language Definition} manual.
 }
 \examples{
 ## Logical AND ("&&") has higher precedence than OR ("||"):

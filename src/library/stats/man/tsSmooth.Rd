@@ -27,7 +27,8 @@ tsSmooth(object, \dots)
 }
 
 \references{
-  \bibshow{R:Durbin+Koopman:2001}
+  Durbin, J. and Koopman, S. J. (2001) \emph{Time Series Analysis by
+    State Space Methods.}  Oxford University Press.
 }
 
 \author{ B. D. Ripley }

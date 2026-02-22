@@ -48,7 +48,9 @@ setGroupGeneric(name, def= , group=list(), valueClass=character(),
   \code{name}.
 }
 \references{
-  \bibshow{R:Chambers:2016}
+ Chambers, John M. (2016)
+ \emph{Extending R}
+  Chapman & Hall
 }
 \examples{
 \dontrun{

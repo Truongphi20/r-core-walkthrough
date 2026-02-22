@@ -51,7 +51,9 @@
 }
 \seealso{
   \code{\link{LINK}}, \code{\link{SHLIB}}, \code{\link{dyn.load}}
-
-  \manual{R-admin}{Customizing package compilation}
+  
+  The section on \dQuote{Customizing package compilation} in
+  the \sQuote{R Administration and Installation} manual:
+  \code{\link{RShowDoc}("R-admin")}.
 }
 \keyword{utilities}

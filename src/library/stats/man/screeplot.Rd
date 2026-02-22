@@ -26,8 +26,11 @@ screeplot(x, \dots)
   \code{"princomp"} and \code{"prcomp"}.
 }
 \references{
-  \bibshow{R:Mardia+Kent+Bibby:1979,
-    R:Venables+Ripley:2002}
+  Mardia, K. V., J. T. Kent and J. M. Bibby (1979).
+  \emph{Multivariate Analysis}, London: Academic Press.
+
+  Venables, W. N. and B. D. Ripley (2002).
+  \emph{Modern Applied Statistics with S}, Springer-Verlag.
 }
 \seealso{
   \code{\link{princomp}} and \code{\link{prcomp}}.
@@ -45,4 +48,3 @@ screeplot(fit)
 screeplot(fit, npcs = 24, type = "lines")
 }
 \keyword{multivariate}
-\keyword{hplot}

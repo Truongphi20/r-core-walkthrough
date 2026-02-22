@@ -33,8 +33,10 @@
 #include <limits.h>
 
 /**----------- DEBUGGING -------------
-    (cd `R-devel-pbeta-dbg RHOME`/src/nmath ;
- 	make -B CFLAGS='-DDEBUG_bratio' toms708.o ; cd ../..; make R )
+ *
+ *	make CFLAGS='-DDEBUG_bratio  ...'
+ *MM (w/ Debug, w/o Optimization):
+ (cd `R-devel-pbeta-dbg RHOME`/src/nmath ; gcc -I. -I../../src/include -I../../../R/src/include  -DHAVE_CONFIG_H -fopenmp  -g -pedantic -Wall -DDEBUG_bratio -DDEBUG_q -Wcast-align -Wconversion -fno-common -Wno-sign-conversion -Wstrict-prototypes -Wclobbered -Werror=implicit-function-declaration  -c ../../../R/src/nmath/toms708.c -o toms708.o; cd ../..; make R)
 */
 #ifdef DEBUG_bratio
 # define R_ifDEBUG_printf(...) REprintf(__VA_ARGS__)
@@ -79,11 +81,10 @@ static double gsumln(double, double);
  */
 
 /* Changes by R Core Team :
- * add log_p  and work towards gaining precision in that case;
- * work for very large (but finite) {a,b}
+ * add log_p  and work towards gaining precision in that case
  */
 
-attribute_hidden void
+void attribute_hidden
 bratio(double a, double b, double x, double y, double *w, double *w1,
        int *ierr, int log_p)
 {
@@ -743,64 +744,53 @@ static double bfrac(double a, double b, double x, double y, double lambda,
 {
 /* -----------------------------------------------------------------------
        Continued fraction expansion for I_x(a,b) when a, b > 1.
-       It is assumed that  lambda = (a + b)*y - b.  (x+y = 1)
+       It is assumed that  lambda = (a + b)*y - b.
    -----------------------------------------------------------------------*/
 
+    double c, e, n, p, r, s, t, w, c0, c1, r0, an, bn, yp1, anp1, bnp1,
+	beta, alpha, brc;
+
     if(!R_FINITE(lambda)) return ML_NAN;// TODO: can return 0 or 1 (?)
-    R_ifDEBUG_printf(" bfrac(a=%g, b=%g, x=%g, y=%g, lambda=%g, eps=%g, log_p=%d):\n",
+    R_ifDEBUG_printf(" bfrac(a=%g, b=%g, x=%g, y=%g, lambda=%g, eps=%g, log_p=%d):",
 		     a,b,x,y, lambda, eps, log_p);
-    double brc = brcomp(a, b, x, y, log_p);
-    if(ISNAN(brc)) { // till 2025-05, from   L <- 1e308; pnbinom(L, L, mu = 5) -- does this still happen?
-	R_ifDEBUG_printf(" --> brcomp(a,b,x,y) = NaN; ");
+    brc = brcomp(a, b, x, y, log_p);
+    if(ISNAN(brc)) { // e.g. from   L <- 1e308; pnbinom(L, L, mu = 5)
+	R_ifDEBUG_printf(" --> brcomp(a,b,x,y) = NaN\n");
 	ML_WARN_return_NAN; // TODO: could we know better?
     }
     if (!log_p && brc == 0.) {
-	R_ifDEBUG_printf(" --> brcomp(a,b,x,y) underflowed to 0; ");
+	R_ifDEBUG_printf(" --> brcomp(a,b,x,y) underflowed to 0.\n");
 	return 0.;
     }
 #ifdef DEBUG_bratio
     else
-	REprintf("brcomp(a,b, x,y) = %g; ", brc);
+	REprintf("\n");
 #endif
 
-    double
-	c = lambda + 1.,
-	c0 = b / a,
-	c1 = 1. / a + 1.,
-	yp1 = y + 1.,
-	n = 0.,
-	p = 1.,
-	s = a + 1.,
-	an = 0.,
-	bn = 1.,
-	anp1 = 1.,
-	bnp1 = c / c1,
-	r = c1 / c,
-	r0; // := prev r;
+    c = lambda + 1.;
+    c0 = b / a;
+    c1 = 1. / a + 1.;
+    yp1 = y + 1.;
+
+    n = 0.;
+    p = 1.;
+    s = a + 1.;
+    an = 0.;
+    bn = 1.;
+    anp1 = 1.;
+    bnp1 = c / c1;
+    r = c1 / c;
 
 /*        CONTINUED FRACTION CALCULATION */
-#define bfrac_MAXIT 1000 // was 10000, but have never seen 1000 close to needed
+
     do {
 	n += 1.;
-	double w = n * x * (b - n); /* overflows when b is almost DBL_MAX ! */
-	bool rescale = !R_FINITE(w);
-	/* rescale w  <==> rescaled (alpha, beta) with same factor;
-	   alpha (proportional) w  is automatically scaled, and beta needs explicit scaling */
-	if(rescale) w = n * x * ldexp(b - n, -20);
-	double t = n / a,
-	    e = a / s,
-	    alpha = p * (p + c0) * e * e * (w * x), beta;
-#ifdef DEBUG_bfrac_it
-	if(n == 1.) REprintf("\n");
-	R_ifDEBUG_printf(" n=%4.0f, w=%12g, e=%12g, alpha=%g; ", n, w, e, alpha);
-	if(rescale) REprintf("_rescaled_, ");
-#endif
+	t = n / a;
+	w = n * (b - n) * x;
+	e = a / s;
+	alpha = p * (p + c0) * e * e * (w * x);
 	e = (t + 1.) / (c1 + t + t);
-	beta = w / s + ((rescale) ? ldexp(n + e * (c + n * yp1), -20)
-			          :       n + e * (c + n * yp1));
-#ifdef DEBUG_bfrac_it
-	R_ifDEBUG_printf("new e=%12g, beta=%12g\n", e, beta);
-#endif
+	beta = n + w / s + e * (c + n * yp1);
 	p = t + 1.;
 	s += 2.;
 
@@ -811,10 +801,9 @@ static double bfrac(double a, double b, double x, double y, double lambda,
 
 	r0 = r;
 	r = anp1 / bnp1;
-#ifdef DEBUG_bfrac_it
-	R_ifDEBUG_printf(
-	"         ==> a_{n,n+1}= (%12g,%12g), b_{n,n+1} = (%12g,%12g) => r0,r = (%.14g,%.14g)\n",
-			 an,anp1, bn,bnp1, r0, r);
+#ifdef _not_normally_DEBUG_bfrac
+	R_ifDEBUG_printf(" n=%5.0f, a_{n,n+1}= (%12g,%12g),  b_{n,n+1} = (%12g,%12g) => r0,r = (%14g,%14g)\n",
+			 n, an,anp1, bn,bnp1, r0, r);
 #endif
 	if (fabs(r - r0) <= eps * r)
 	    break;
@@ -825,84 +814,94 @@ static double bfrac(double a, double b, double x, double y, double lambda,
 	bn /= bnp1;
 	anp1 = r;
 	bnp1 = 1.;
-    } while (n < bfrac_MAXIT);// arbitrary; had '1' --> infinite loop for  lambda = Inf
+    } while (n < 10000);// arbitrary; had '1' --> infinite loop for  lambda = Inf
     R_ifDEBUG_printf("  in bfrac(): n=%.0f terms cont.frac.; brc=%g, r=%g\n",
 		     n, brc, r);
-    if(n >= bfrac_MAXIT && fabs(r - r0) > eps * r)
-	MATHLIB_WARNING6(
-	    " bfrac(a=%g, b=%g, x=%g, y=%g, lambda=%g) did *not* converge (in %d steps)\n",
-	    a,b,x,y, lambda, bfrac_MAXIT);
+    if(n >= 10000 && fabs(r - r0) > eps * r)
+	MATHLIB_WARNING5(
+	    " bfrac(a=%g, b=%g, x=%g, y=%g, lambda=%g) did *not* converge (in 10000 steps)\n",
+	    a,b,x,y, lambda);
     return (log_p ? brc + log(r) : brc * r);
 } /* bfrac */
-#undef bfrac_MAXIT
 
-// only called once from bfrac()
 static double brcomp(double a, double b, double x, double y, int log_p)
 {
 /* -----------------------------------------------------------------------
  *		 Evaluation of x^a * y^b / Beta(a,b)
  * ----------------------------------------------------------------------- */
 
+    static double const__ = .398942280401433; /* == 1/sqrt(2*pi); */
+    /* R has  M_1_SQRT_2PI , and M_LN_SQRT_2PI = ln(sqrt(2*pi)) = 0.918938.. */
+    int i, n;
+    double c, e, u, v, z, a0, b0, apb;
+
     if (x == 0. || y == 0.) {
 	return R_D__0;
     }
-    double a0 = min(a, b);
+    a0 = min(a, b);
     if (a0 < 8.) {
 	double lnx, lny;
 	if (x <= .375) {
 	    lnx = log(x);
 	    lny = alnrel(-x);
 	}
-	else if (y > .375) {
-	    lnx = log(x);
-	    lny = log(y);
-	} else {
-	    lnx = alnrel(-y);
-	    lny = log(y);
+	else {
+	    if (y > .375) {
+		lnx = log(x);
+		lny = log(y);
+	    } else {
+		lnx = alnrel(-y);
+		lny = log(y);
+	    }
 	}
 
-	double z = a * lnx + b * lny;
+	z = a * lnx + b * lny;
 	if (a0 >= 1.) {
 	    z -= betaln(a, b);
 	    return R_D_exp(z);
 	}
-	// else :
-	/* ----------------------------------------------------------------------- */
-	/*		PROCEDURE FOR a < 1 OR b < 1 */
-	/* ----------------------------------------------------------------------- */
-	double b0 = max(a, b);
+
+/* ----------------------------------------------------------------------- */
+/*		PROCEDURE FOR a < 1 OR b < 1 */
+/* ----------------------------------------------------------------------- */
+
+	b0 = max(a, b);
 	if (b0 >= 8.) { /* L80: */
-	    double u = gamln1(a0) + algdiv(a0, b0);
+	    u = gamln1(a0) + algdiv(a0, b0);
+
 	    return (log_p ? log(a0) + (z - u)  : a0 * exp(z - u));
 	}
 	/* else : */
+
 	if (b0 <= 1.) { /*		algorithm for max(a,b) = b0 <= 1 */
+
 	    double e_z = R_D_exp(z);
+
 	    if (!log_p && e_z == 0.) /* exp() underflow */
 		return 0.;
 
-	    double apb = a + b;
+	    apb = a + b;
 	    if (apb > 1.) {
-		z = (gam1(apb - 1.) + 1.) / apb;
+		u = a + b - 1.;
+		z = (gam1(u) + 1.) / apb;
 	    } else {
 		z = gam1(apb) + 1.;
 	    }
-	    double c = (gam1(a) + 1.) * (gam1(b) + 1.) / z;
-	    R_ifDEBUG_printf(" brcomp(), max(a,b) <= 1: (e_z, z, c) = (%g, %g, %g)\n",
-			     e_z, z, c);
+
+	    c = (gam1(a) + 1.) * (gam1(b) + 1.) / z;
 	    /* FIXME? log(a0*c)= log(a0)+ log(c) and that is improvable */
 	    return (log_p
 		    ? e_z + log(a0 * c) - log1p(a0/b0)
-		    : e_z *    (a0 * c) / (a0/b0 + 1.));
+		    : e_z * (a0 * c) / (a0 / b0 + 1.));
 	}
 
 	/* else : 		  ALGORITHM FOR 1 < b0 < 8 */
 
-	double u = gamln1(a0);
-	int n = (int)(b0 - 1.);
+	u = gamln1(a0);
+	n = (int)(b0 - 1.);
 	if (n >= 1) {
-	    double c = 1.;
-	    for (int i = 1; i <= n; ++i) {
+	    c = 1.;
+	    for (i = 1; i <= n; ++i) {
 		b0 += -1.;
 		c *= b0 / (a0 + b0);
 	    }
@@ -910,7 +909,8 @@ static double brcomp(double a, double b, double x, double y, int log_p)
 	}
 	z -= u;
 	b0 += -1.;
-	double apb = a0 + b0, t;
+	apb = a0 + b0;
+	double t;
 	if (apb > 1.) {
 	    u = a0 + b0 - 1.;
 	    t = (gam1(u) + 1.) / apb;
@@ -918,35 +918,28 @@ static double brcomp(double a, double b, double x, double y, int log_p)
 	    t = gam1(apb) + 1.;
 	}
 
-	R_ifDEBUG_printf(" brcomp(), 1 < b0 < 8: (z, t) = (%g, %g)\n", z, t);
 	return (log_p
 		? log(a0) + z + log1p(gam1(b0))  - log(t)
 		: a0 * exp(z) * (gam1(b0) + 1.) / t);
 
     } else {
 /* ----------------------------------------------------------------------- */
-/*		PROCEDURE FOR a >= 8 AND b >= 8 */
+/*		PROCEDURE FOR A >= 8 AND B >= 8 */
 /* ----------------------------------------------------------------------- */
-	static double const__ = .398942280401433; /* == 1/sqrt(2*pi); */
-	/* R has  M_1_SQRT_2PI , and M_LN_SQRT_2PI = ln(sqrt(2*pi)) = 0.918938.. */
-	double h, x0, y0, apb = a+b,
-	    lambda = R_FINITE(apb) // be safe
-	      ? ((a <= b) ? a - apb * x
- 	                  : apb * y - b)
-	      : a*y - b*x;
+	double h, x0, y0, lambda;
 	if (a <= b) {
 	    h = a / b;
-	    x0 = h  / (h + 1.);
+	    x0 = h / (h + 1.);
 	    y0 = 1. / (h + 1.);
-	    R_ifDEBUG_printf(" brcomp(8 <= a <= b): ");
+	    lambda = a - (a + b) * x;
 	} else {
 	    h = b / a;
 	    x0 = 1. / (h + 1.);
-	    y0 = h  / (h + 1.);
-	    R_ifDEBUG_printf(" brcomp(8 <= b < a): ");
+	    y0 = h / (h + 1.);
+	    lambda = (a + b) * y - b;
 	}
 
-	double e = -lambda / a,  u, v, z;
+	e = -lambda / a;
 	if (fabs(e) > .6)
 	    u = e - log(x / x0);
 	else
@@ -959,24 +952,28 @@ static double brcomp(double a, double b, double x, double y, int log_p)
 	    v = e - log(y / y0);
 
 	z = log_p ? -(a * u + b * v) : exp(-(a * u + b * v));
-	R_ifDEBUG_printf(" brcomp(): (lambda => u, v => z) = (%g =>  %g, %g  => %g)\n",
-			 lambda,  u, v,  z);
+
 	return(log_p
 	       ? -M_LN_SQRT_2PI + .5*log(b * x0) + z - bcorr(a,b)
 	       : const__ * sqrt(b * x0) * z * exp(-bcorr(a, b)));
     }
 } /* brcomp */
 
-/* A version of brcomp() above,
- *  called only once from  bup(),  as   r = brcmp1(mu, a, b, x, y, FALSE) / a;
- *                        ----- */
+// called only once from  bup(),  as   r = brcmp1(mu, a, b, x, y, FALSE) / a;
+//                        -----
 static double brcmp1(int mu, double a, double b, double x, double y, int give_log)
 {
 /* -----------------------------------------------------------------------
- *          Evaluation of    exp(mu) * x^a * y^b / Beta(a,b)
- * --------------------------^^^^^^^^^------------------------------------ */
+ *          Evaluation of    exp(mu) * x^a * y^b / beta(a,b)
+ * ----------------------------------------------------------------------- */
 
-    double a0 = min(a,b);
+    static double const__ = .398942280401433; /* == 1/sqrt(2*pi); */
+    /* R has  M_1_SQRT_2PI */
+
+    /* Local variables */
+    double c, t, u, v, z, a0, b0, apb;
+
+    a0 = min(a,b);
     if (a0 < 8.) {
 	double lnx, lny;
 	if (x <= .375) {
@@ -992,20 +989,20 @@ static double brcmp1(int mu, double a, double b, double x, double y, int give_lo
 	}
 
 	// L20:
-	double z = a * lnx + b * lny;
+	z = a * lnx + b * lny;
 	if (a0 >= 1.) {
 	    z -= betaln(a, b);
 	    return esum(mu, z, give_log);
 	}
 	// else :
 	/* ----------------------------------------------------------------------- */
-	/*              PROCEDURE FOR a < 1 OR b < 1 */
+	/*              PROCEDURE FOR A < 1 OR B < 1 */
 	/* ----------------------------------------------------------------------- */
 	// L30:
-	double b0 = max(a,b);
+	b0 = max(a,b);
 	if (b0 >= 8.) {
 	/* L80:                  ALGORITHM FOR b0 >= 8 */
-	    double u = gamln1(a0) + algdiv(a0, b0);
+	    u = gamln1(a0) + algdiv(a0, b0);
 	    R_ifDEBUG_printf(" brcmp1(mu,a,b,*): a0 < 1, b0 >= 8;  z=%.15g\n", z);
 	    return give_log
 		? log(a0) + esum(mu, z - u, TRUE)
@@ -1017,14 +1014,16 @@ static double brcmp1(int mu, double a, double b, double x, double y, int give_lo
 	    if (ans == (give_log ? ML_NEGINF : 0.))
 		return ans;
 
-	    double apb = a + b, z;
-	    if (apb > 1.) { // L40:
-		z = (gam1(apb - 1.) + 1.) / apb;
+	    apb = a + b;
+	    if (apb > 1.) {
+		// L40:
+		u = a + b - 1.;
+		z = (gam1(u) + 1.) / apb;
 	    } else {
 		z = gam1(apb) + 1.;
 	    }
 	    // L50:
-	    double c = give_log
+	    c = give_log
 		? log1p(gam1(a)) + log1p(gam1(b)) - log(z)
 		: (gam1(a) + 1.) * (gam1(b) + 1.) / z;
 	    R_ifDEBUG_printf(" brcmp1(mu,a,b,*): a0 < 1, b0 <= 1;  c=%.15g\n", c);
@@ -1034,10 +1033,10 @@ static double brcmp1(int mu, double a, double b, double x, double y, int give_lo
 	}
 	// else:               algorithm for	a0 < 1 < b0 < 8
 	// L60:
-	double u = gamln1(a0);
-	int n = (int)(b0 - 1.); // have n <= 6
+	u = gamln1(a0);
+	int n = (int)(b0 - 1.);
 	if (n >= 1) {
-	    double c = 1.;
+	    c = 1.;
 	    for (int i = 1; i <= n; ++i) {
 		b0 += -1.;
 		c *= b0 / (a0 + b0);
@@ -1048,7 +1047,7 @@ static double brcmp1(int mu, double a, double b, double x, double y, int give_lo
 	// L70:
 	z -= u;
 	b0 += -1.;
-	double apb = a0 + b0, t;
+	apb = a0 + b0;
 	if (apb > 1.) {
 	    // L71:
 	    t = (gam1(apb - 1.) + 1.) / apb;
@@ -1066,30 +1065,26 @@ static double brcmp1(int mu, double a, double b, double x, double y, int give_lo
 /* ----------------------------------------------------------------------- */
 /*              PROCEDURE FOR A >= 8 AND B >= 8 */
 /* ----------------------------------------------------------------------- */
-	static double const__ = .398942280401433; /* == 1/sqrt(2*pi); */
-	/* R has  M_1_SQRT_2PI , and M_LN_SQRT_2PI = ln(sqrt(2*pi)) = 0.918938.. */
 	// L100:
-	double h, x0, y0, apb = a+b,
-	    lambda = R_FINITE(apb) // be safe
-	      ? ((a <= b) ? a - apb * x
- 	                  : apb * y - b)
-	      : a*y - b*x;
+	double h, x0, y0, lambda;
 	if (a > b) {
 	    // L101:
 	    h = b / a;
 	    x0 = 1. / (h + 1.);// => lx0 := log(x0) = 0 - log1p(h)
-	    y0 = h  / (h + 1.);
+	    y0 = h / (h + 1.);
+	    lambda = (a + b) * y - b;
 	} else {
 	    h = a / b;
-	    x0 = h  / (h + 1.);  // => lx0 := log(x0) = - log1p(1/h)
+	    x0 = h / (h + 1.);  // => lx0 := log(x0) = - log1p(1/h)
 	    y0 = 1. / (h + 1.);
+	    lambda = a - (a + b) * x;
 	}
 	double lx0 = -log1p(b/a); // in both cases
 
 	R_ifDEBUG_printf(" brcmp1(mu,a,b,*): a,b >= 8;	x0=%.15g, lx0=log(x0)=%.15g\n",
 			 x0, lx0);
 	// L110:
-	double e = -lambda / a,  u, v, z;
+	double e = -lambda / a;
 	if (fabs(e) > 0.6) {
 	    // L111:
 	    u = e - log(x / x0);
@@ -1214,10 +1209,10 @@ static void bgrat(double a, double b, double x, double y, double *w,
 	if (fabs(dj) <= eps * (sum + l)) {
 	    *ierr = 0;
 	    break;
-	} else if(n == n_terms_bgrat) { // e.g. from pbeta(..., 0.001, 1e200)
+	} else if(n == n_terms_bgrat) { // never? ; please notify R-core if seen:
 	    *ierr = 4;
 	    MATHLIB_WARNING5(
-	"bgrat(a=%g, b=%g, x=%.12g) *no* convergence: NOTIFY R-core!\n dj=%g, rel.err=%g\n",
+	"bgrat(a=%g, b=%g, x=%g) *no* convergence: NOTIFY R-core!\n dj=%g, rel.err=%g\n",
 		a,b,x, dj, fabs(dj) /(sum + l));
 	}
     } // for(n .. n_terms..)
@@ -1338,9 +1333,9 @@ static double basym(double a, double b, double lambda, double eps, int log_p)
 {
 /* ----------------------------------------------------------------------- */
 /*     ASYMPTOTIC EXPANSION FOR I_x(A,B) FOR LARGE A AND B. */
-/*    lambda := a y - b x  = (a + b)y - b  =  a - (a+b)x    {using x + y == 1},
- *                             and eps is the tolerance used.
- *     It is assumed that   lambda >= 0 , i.e., x <= a/(a+b), and both  a, b  >= 15   */
+/*     LAMBDA = (A + B)*Y - B  AND EPS IS THE TOLERANCE USED. */
+/*     IT IS ASSUMED THAT LAMBDA IS NONNEGATIVE AND THAT */
+/*     A AND B ARE GREATER THAN OR EQUAL TO 15. */
 /* ----------------------------------------------------------------------- */
 
 
@@ -1747,11 +1742,13 @@ static double gam1(double a)
 /*     COMPUTATION OF 1/GAMMA(A+1) - 1  FOR -0.5 <= A <= 1.5 */
 /*     ------------------------------------------------------------------ */
 
-    double d = a - 0.5;
-    // t := if(a > 1/2)  a-1  else  a  ==>  in [-0.5, 0.5]  <==>  |t| <= 0.5
-    double t = (d > 0.) ? d - 0.5 : a;
+    double d, t, w, bot, top;
 
-    double w, bot, top;
+    t = a;
+    d = a - 0.5;
+    // t := if(a > 1/2)  a-1  else  a
+    if (d > 0.)
+	t = d - 0.5;
     if (t < 0.) { /* L30: */
 	static double
 	    r[9] = { -.422784335098468,-.771330383816272,
@@ -2180,7 +2177,7 @@ static double bcorr(double a0, double b0)
     s5 = x + x2 * s3 + 1.;
     s7 = x + x2 * s5 + 1.;
     s9 = x + x2 * s7 + 1.;
-    s11= x + x2 * s9 + 1.;
+    s11 = x + x2 * s9 + 1.;
 
 /*                SET W = DEL(B) - DEL(A + B) */
 

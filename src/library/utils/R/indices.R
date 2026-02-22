@@ -1,7 +1,7 @@
 #  File src/library/utils/R/indices.R
 #  Part of the R package, https://www.R-project.org
 #
-#  Copyright (C) 1995-2025 The R Core Team
+#  Copyright (C) 1995-2023 The R Core Team
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -65,9 +65,7 @@ packageDescription <-
                  domain = NA)
         desc <- as.list(desc)
     } else if(file.exists(file <- file.path(pkgpath,"DESCRIPTION"))) {
-        # keep in step with how package.rds file is created
-        dcf <- read.dcf(file=file,
-                        keep.white = tools:::.keep_white_description_fields)
+        dcf <- read.dcf(file=file)
         if(NROW(dcf) < 1L)
             stop(gettextf("DESCRIPTION file of package '%s' is corrupt", pkg),
                  domain = NA)
@@ -75,12 +73,6 @@ packageDescription <-
     } else file <- ""
 
     if(nzchar(file)) {
-        ## Could have found a pkgpath matching pkg ignoring case
-        ## (PR#18751):
-        if(is.null(pkgname <- desc[["Package"]]) || (pkgname != pkg)) {
-            warning(gettextf("no package '%s' was found", pkg), domain = NA)
-            return(NA)
-        }
         ## read the Encoding field if any
         enc <- desc[["Encoding"]]
         if(!is.null(enc) && !is.na(encoding)) {

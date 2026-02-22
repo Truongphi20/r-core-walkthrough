@@ -86,7 +86,9 @@ detach(name, pos = 2L, unload = FALSE, character.only = FALSE,
   changes since it was attached).
 }
 \references{
-  \bibshow{R:Becker+Chambers+Wilks:1988}
+  Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+  \emph{The New S Language}.
+  Wadsworth & Brooks/Cole.
 }
 \seealso{
   \code{\link{attach}}, \code{\link{library}}, \code{\link{search}},

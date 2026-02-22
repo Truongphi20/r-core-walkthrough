@@ -97,9 +97,11 @@ close.screen(n, all.screens = FALSE)
   \code{dev.*}
 }
 \references{
-  \bibshow{R:Chambers+Hastie:1992}
+  Chambers, J. M. and Hastie, T. J. (1992)
+  \emph{Statistical Models in S}.
+  Wadsworth & Brooks/Cole.
 
-  \bibshow{R:Murrell:2005}
+  Murrell, P. (2005) \emph{R Graphics}. Chapman & Hall/CRC Press.
 }
 
 \examples{

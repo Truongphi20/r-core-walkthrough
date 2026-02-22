@@ -78,7 +78,10 @@ open.srcfile <- function(con, line, ...) {
             warning(gettextf("Timestamp of %s has changed",
                              sQuote(srcfile$filename)),
                     call. = FALSE, domain = NA)
-	srcfile$conn <- conn <- file(srcfile$filename, open="rt", encoding="")
+	if (is.null(srcfile$encoding)) encoding <- getOption("encoding")
+	else encoding <- srcfile$encoding
+	# Specifying encoding below means that reads will convert to the native encoding
+	srcfile$conn <- conn <- file(srcfile$filename, open="rt", encoding=encoding)
 	srcfile$line <- 1L
 	oldline <- 1L
     } else if (!isOpen(conn)) {
@@ -192,18 +195,9 @@ getSrcLines <- function(srcfile, first, last) {
     if (!.isOpen(srcfile)) on.exit(close(srcfile))
     conn <- open(srcfile, first)
     lines <- readLines(conn, n = last - first + 1L, warn = FALSE)
-    if (is.null(srcfile$encoding)) encoding <- getOption("encoding")
-    else encoding <- srcfile$encoding
-    # Re-encode from file encoding to parse encoding
-    Enc <- srcfile$Enc %||% ""
-    if (encoding == "native.enc") encoding <- ""
-    if (Enc == "unknown") Enc <- ""
-    if (Enc == encoding) {
-        Encoding(lines) <- Enc
-    } else {
-        # give Enc=UTF-8 a chance to work on a non-UTF-8 system
-        lines <- iconv(lines, encoding, Enc, sub = "byte")
-    }
+    # Re-encode from native encoding to specified one
+    if (!is.null(Enc <- srcfile$Enc) && !(Enc %in% c("unknown", "native.enc")))
+    	lines <- iconv(lines, "", Enc)
     srcfile$line <- first + length(lines)
     return(lines)
 }

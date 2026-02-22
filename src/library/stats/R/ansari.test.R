@@ -115,10 +115,8 @@ function(x, y, alternative = c("two.sided", "less", "greater"),
                 ## Compute statistics directly: computing the steps is
                 ## not faster.
                 absigma <-
-                    vapply(sigma + c(diff(sigma)/2,
-                                     sigma[length(sigma)]*1.01),
-                           ab,
-                           0)
+                    sapply(sigma + c(diff(sigma)/2,
+                                     sigma[length(sigma)]*1.01), ab)
                 switch(alternative, two.sided = cci(alpha),
                        greater = c(cci(alpha*2)[1L], Inf),
                        less    = c(0, cci(alpha*2)[2L]))
@@ -222,7 +220,7 @@ function(x, y, alternative = c("two.sided", "less", "greater"),
         if(exact && TIES) {
             warning("cannot compute exact p-value with ties")
             if(conf.int)
-                warning("cannot compute exact confidence interval with ties")
+                warning("cannot compute exact confidence intervals with ties")
         }
     }
 

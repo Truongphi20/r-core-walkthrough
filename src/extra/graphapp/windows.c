@@ -660,7 +660,7 @@ void show_window(object obj)
     if (obj->menubar) {
 	if (hwndClient) {
 	    menu mdi = (obj->menubar)->menubar;
-	    sendmessage(hwndClient, WM_MDISETMENU,
+	    SendMessage(hwndClient, WM_MDISETMENU,
 			(WPARAM)obj->menubar->handle,
 			(LPARAM)(mdi?(mdi->handle):0));
 	    DrawMenuBar(hwndFrame);
@@ -672,7 +672,7 @@ void show_window(object obj)
     if (obj->toolbar) {
 	if (MDIToolbar) hide(MDIToolbar);
 	MDIToolbar = obj->toolbar;
-	sendmessage(hwndFrame,WM_PAINT,(WPARAM) 0,(LPARAM) 0);
+	SendMessage(hwndFrame,WM_PAINT,(WPARAM) 0,(LPARAM) 0);
     }
 #endif
     SetFocus(hwnd);

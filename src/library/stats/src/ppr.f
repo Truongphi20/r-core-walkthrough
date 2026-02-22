@@ -309,33 +309,32 @@ C REPEAT
 1000  continue
       iter=iter+1
       asrold=asr
-      do j=1,n
+      do 11 j=1,n
          s=0d0
-         do i=1,q
+         do 21 i=1,q
             s=s+ww(i)*b(i)*y(i,j)
-         end do
+ 21      continue
          sc(j,13)=s
-      end do
+ 11   continue
       call oneone(max0(jfl,iter-1),p,n,w,sw,sc(1,13),x,a,f,t,
      &                 asr,sc,g,dp,edf)
       do 31 i=1,q
         s=0d0
-        do j=1,n
+        do 41 j=1,n
            s=s+w(j)*y(i,j)*f(j)
-        end do
+ 41     continue
         b(i)=s/sw
  31   continue
       asr=0d0
       do 51 i=1,q
          s=0d0
-         do j=1,n
+         do 61 j=1,n
             s=s+w(j)*(y(i,j)-b(i)*f(j))**2
-         end do
+ 61      continue
          asr=asr+ww(i)*s/sw
  51   continue
       if((q .ne. 1) .and. (iter .le. maxit) .and. (asr .gt. 0d0)
      &      .and. (asrold-asr)/asrold .ge. conv) goto 1000
-c has converged:
       return
       end
 
@@ -359,20 +358,20 @@ c Common Vars
       sml=1d0/big
       if(ist .le. 0) then
         if(p .le. 1) a(1)=1d0
-        do j=1,n
-           sc(j,2)=1d0
-        end do
+        do 10 j=1,n
+          sc(j,2)=1d0
+ 10     continue
         call pprdir(p,n,w,sw,y,x,sc(1,2),a,dp)
       endif
       s=0d0
-      do i=1,p
-         g(i,1)=0d0
-         s=s+a(i)**2
-      end do
+      do 20 i=1,p
+        g(i,1)=0d0
+        s=s+a(i)**2
+ 20   continue
       s=1d0/sqrt(s)
-      do i=1,p
+      do 30 i=1,p
         a(i)=a(i)*s
-      end do
+ 30   continue
       iter=0
       asr=big
       cut=1d0
@@ -383,64 +382,62 @@ C REPEAT -----------------------------
 C REPEAT [inner loop] -----
  60   continue
       s=0d0
-      do i=1,p
+      do 70 i=1,p
         g(i,2)=a(i)+g(i,1)
         s=s+g(i,2)**2
-      end do
+ 70   continue
       s=1.d0/sqrt(s)
-      do i=1,p
+      do 80 i=1,p
         g(i,2)=g(i,2)*s
-      end do
-      do j=1,n
+ 80   continue
+      do 90 j=1,n
         sc(j,1)=j+0.1d0
         s=0.d0
-        do i=1,p
+        do 91 i=1,p
           s=s+g(i,2)*x(i,j)
-        end do
+ 91     continue
         sc(j,11)=s
-      end do
+ 90   continue
       call sort(sc(1,11),sc,1,n)
-      do j=1,n
+      do 110 j=1,n
         k=int(sc(j,1))
         sc(j,2)=y(k)
         sc(j,3)=max(w(k),sml)
-      end do
-c          supsmu(n,  x,         y,      w, iper,span,alpha,
-      call supsmu(n,sc(1,11),sc(1,2),sc(1,3), 1, span,alpha,
+ 110  continue
+      call supsmu(n,sc(1,11),sc(1,2),sc(1,3),1,span,alpha,
      &     sc(1,12),sc(1,4), edf)
-c             smo  , sc ,    edf)
       s=0d0
-      do j=1,n
+      do 120 j=1,n
         s=s+sc(j,3)*(sc(j,2)-sc(j,12))**2
-      end do
+ 120  continue
       s=s/sw
       if(s .lt. asr) goto 140
       cut=cut*0.5d0
       if(cut.lt.cutmin) goto 199
-      do i=1,p
+      do 150 i=1,p
         g(i,1)=g(i,1)*cut
-      end do
+ 150  continue
       go to 60
 C     --------
  140  continue
       asr=s
       cut=1d0
-      do i=1,p
+      do 160 i=1,p
         a(i)=g(i,2)
-      end do
-      do j=1,n
+ 160  continue
+      do 170 j=1,n
         k=int(sc(j,1))
         t(k)=sc(j,11)
         f(k)=sc(j,12)
-      end do
+ 170  continue
       if(asr.le.0d0.or.(asrold-asr)/asrold.lt.conv) goto 199
       if(iter.gt.mitone.or.p.le.1) goto 199
       call pprder(n,sc(1,11),sc(1,12),sc(1,3),fdel,sc(1,4),sc(1,5))
-      do j=1,n
+      do 180 j=1,n
         k=int(sc(j,1))
         sc(j,5)=y(j)-f(j)
         sc(k,6)=sc(j,4)
-      end do
+ 180  continue
       call pprdir(p,n,w,sw,sc(1,5),x,sc(1,6),g,dp)
 
       goto 100
@@ -449,19 +446,19 @@ c--------------
 c--------------
       s=0d0
       v=s
-      do j=1,n
+      do 210 j=1,n
         s=s+w(j)*f(j)
-      end do
+ 210  continue
       s=s/sw
-      do j=1,n
+      do 220 j=1,n
         f(j)=f(j)-s
         v=v+w(j)*f(j)**2
-      end do
+ 220  continue
       if(v .gt. 0d0) then
-         v=1d0/sqrt(v/sw)
-         do j=1,n
-            f(j)=f(j)*v
-         end do
+        v=1d0/sqrt(v/sw)
+        do 230 j=1,n
+          f(j)=f(j)*v
+ 230   continue
       endif
       return
       end
@@ -481,9 +478,9 @@ c--------------
 
       do 10 i=1,p
          s=0d0
-         do j=1,n
+         do 15 j=1,n
             s=s+w(j)*d(j)*x(i,j)
-         end do
+ 15      continue
          e(i)=s/sw
  10   continue
       k=0
@@ -491,23 +488,23 @@ c--------------
       m2=m1+p
       do 20 j=1,p
          s=0d0
-         do l=1,n
+         do 22 l=1,n
             s=s+w(l)*r(l)*(d(l)*x(j,l)-e(j))
-         end do
+ 22      continue
          g(m1+j)=s/sw
-         do i=1,j
+         do 25 i=1,j
             s=0d0
-            do l=1,n
+            do 27 l=1,n
                s=s+w(l)*(d(l)*x(i,l)-e(i))*(d(l)*x(j,l)-e(j))
-            end do
+ 27         continue
             k=k+1
             g(k)=s/sw
-         end do
+ 25      continue
  20   continue
       call ppconj(p,g,g(m1+1),g(m2+1),cjeps,mitcj,g(m2+p+1))
-      do i=1,p
+      do 30 i=1,p
          e(i)=g(m2+i)
-      end do
+ 30   continue
       return
       end
 
@@ -549,51 +546,50 @@ C REPEAT
         sc(i,1)=s-c(i)
         h=h+sc(i,1)**2
 11331 continue
-      if(h.le.0d0) return ! ----
-      do iter=1,p
-        do i=1,p
+      if(h.le.0d0) goto 11322
+      do 11361 iter=1,p
+        do 11371 i=1,p
           sc(i,2)=beta*sc(i,2)-sc(i,1)
-        end do
+11371   continue
         t=0d0
         do 11381 i=1,p
           s=g(i*(i-1)/2+i)*sc(i,2)
           im1=i-1
           j=1
-c        WHILE j <= i-1
-11393     if(j.le.im1) then
-             s=s+g(i*(i-1)/2+j)*sc(j,2)
-             j=j+1
-             goto 11393
-          end if
-c 11392   continue
+          goto 11393
+11391     j=j+1
+11393     if(j.gt.im1) goto 11392
+          s=s+g(i*(i-1)/2+j)*sc(j,2)
+          goto 11391
+11392     continue
           j=i+1
-c        WHILE j <= p
-11403     if(j.le.p) then
-             s=s+g(j*(j-1)/2+i)*sc(j,2)
-             j=j+1
-             goto 11403
-          end if
-c 11402     continue
+          goto 11403
+11401     j=j+1
+11403     if(j.gt.p) goto 11402
+          s=s+g(j*(j-1)/2+i)*sc(j,2)
+          goto 11401
+11402     continue
           sc(i,3)=s
           t=t+s*sc(i,2)
 11381   continue
         alpha=h/t
         s=0d0
-        do i=1,p
+        do 11411 i=1,p
           x(i)=x(i)+alpha*sc(i,2)
           sc(i,1)=sc(i,1)+alpha*sc(i,3)
           s=s+sc(i,1)**2
-        end do
+11411   continue
         if(s.le.0d0) goto 11362
         beta=s/h
         h=s
-      end do ! iter
+11361 continue
 11362 continue
       s=0d0
-      do i=1,p
+      do 11421 i=1,p
         s=dmax1(s,dabs(x(i)-sc(i,4)))
-      end do
+11421 continue
       if((s .ge. eps) .and. (nit .lt. maxit)) goto 11321
+11322 continue
       return
       end
 
@@ -837,14 +833,12 @@ c Common Vars
       logical                                 trace
       common /spsmooth/ df, gcvpen, ismethod, trace
 
-c     NB: Several of these are modified by calls, but some are currently hard-wired *constant*
-c         {even though they need not, e.g., {maxit, conv, fdel, cjeps, mitcj}
-
       data df, gcvpen, ismethod, trace /4d0, 1d0, 0, .false./
-      data ifl,maxit, conv, mitone, cutmin, fdel
-     &    / 6,  20,   .005,   20,     0.1,  0.02/
-      data span,alpha, big,   cjeps, mitcj, lf
-     &    / 0.0, 0.0, 1.0e20, 0.001,   1,   2 /
+
+      data ifl,maxit, conv, mitone, cutmin, fdel,
+     &     span,alpha, big, cjeps, mitcj, lf
+     &     /6,  20,   .005,   20,     0.1,  0.02,
+     &     0.0,  0.0,1.0e20,0.001,   1,    2/
       end
 
       subroutine setppr(span1, alpha1, optlevel, ism, df1, gcvpen1)
@@ -922,14 +916,14 @@ c
         jb=ja+p*m
         jf=jb+m*q
         jt=jf+n*m
-        do i=1,q
+        do 81 i=1,q
           y(inp,i)=0d0
-        end do
+ 81     continue
         do 91 l=1,mu
           s=0d0
-          do j=1,p
+          do 12201 j=1,p
             s=s+smod(ja+j)*x(inp,j)
-          end do
+12201     continue
           if(s .gt. smod(jt+1)) goto 12221
           place=1
           go to 12230
@@ -942,15 +936,7 @@ c
           low=0
           high=n+1
 C        WHILE
-12261     if(low+1.ge.high) then ! 12262
-             jfl=jf+low
-             jfh=jf+high
-             jtl=jt+low
-             jth=jt+high
-             t=smod(jfl)+(smod(jfh)-smod(jfl))*(s-smod(jtl))  /
-     &            (smod(jth)-smod(jtl))
-             go to 12300
-          end if
+12261     if(low+1.ge.high) goto 12262
           place=(low+high)/2
           t=smod(jt+place)
           if(s.eq.t) goto 12230
@@ -961,21 +947,28 @@ C        WHILE
           endif
           goto 12261
 C        END
+12262     continue
+          jfl=jf+low
+          jfh=jf+high
+          jtl=jt+low
+          jth=jt+high
+          t=smod(jfl)+(smod(jfh)-smod(jfl))*(s-smod(jtl))  /
+     &         (smod(jth)-smod(jtl))
+          go to 12300
 12230     continue
-c----     --------
           t=smod(jf+place)
 12300     continue
-          do i=1,q
+          do 12311 i=1,q
              y(inp,i)=y(inp,i)+smod(jb+i)*t
-          end do
+12311     continue
           ja=ja+p
           jb=jb+q
           jf=jf+n
           jt=jt+n
  91     continue
-        do i=1,q
+        do 12321 i=1,q
            y(inp,i)=ys*y(inp,i)+smod(i+5)
-        end do
+12321   continue
  100  continue
       return
       end
@@ -1061,15 +1054,15 @@ c     Called from R's supsmu(),  ismethod = 0, always (but not when called from 
 c     x(n) <= x(1) :  boundary case:  smo[.] :=  weighted mean( y )
       sy=0d0
       sw=sy
-      do j=1,n
+      do 10 j=1,n
          sy=sy+w(j)*y(j)
          sw=sw+w(j)
-      end do
+ 10   continue
       a=0d0
       if (sw.gt.0d0) a=sy/sw
-      do j=1,n
+      do 20 j=1,n
          smo(j)=a
-      end do
+ 20   continue
       return
 
 C     Normal Case
@@ -1216,13 +1209,12 @@ c will use 'trace':
             h=0d0
             if (fbw.gt.0d0) h=1d0/fbw
             if (var.gt.vsmlsq) h=h+(x(j)-xm)**2/var
+            acvr(j)=0d0
             a=1d0-w(j)*h
             if (a.gt.0d0) then
                acvr(j)=abs(y(j)-smo(j))/a
             else if (j.gt.1) then
                acvr(j)=acvr(j-1)
-            else
-               acvr(j)=0d0
             end if
          end if
  80   continue
@@ -1344,6 +1336,7 @@ c Var
       logical                                 trace
       common /spsmooth/ df, gcvpen, ismethod, trace
 
+c__no-more__ if (n .gt. 2500) call bdrsplerr()
       do i = 1,n
         dx(i) = (x(i)-x(1))/(x(n)-x(1))
         dy(i) = y(i)

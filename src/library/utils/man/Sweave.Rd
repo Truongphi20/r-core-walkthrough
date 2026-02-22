@@ -1,6 +1,6 @@
 % File src/library/utils/man/Sweave.Rd
 % Part of the R package, https://www.R-project.org
-% Copyright 1995-2025 R Core Team
+% Copyright 1995-2022 R Core Team
 % Distributed under GPL 2 or later
 
 \name{Sweave}
@@ -8,6 +8,7 @@
 \alias{Stangle}
 \alias{SweaveSyntaxLatex}
 \alias{SweaveSyntaxNoweb}
+\encoding{UTF-8}
 \title{Automatic Generation of Reports}
 \description{
   \code{Sweave} provides a flexible framework for mixing text and R/S code
@@ -94,7 +95,11 @@ Stangle(file, driver = Rtangle(),
 }
 
 \references{
-  \bibshow{R:Leisch:2002}
+  Friedrich Leisch (2002)
+  Dynamic generation of statistical reports using literate data analysis.
+  In W. \enc{Härdle}{Haerdle} and B. \enc{Rönz}{Roenz}, editors,
+  \emph{Compstat 2002 - Proceedings in Computational Statistics},
+  pages 575--580. Physika Verlag, Heidelberg, Germany, ISBN 3-7908-1517-9.
 }
 
 \seealso{

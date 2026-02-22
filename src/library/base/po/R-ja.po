@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: R 2.4.0\n"
 "Report-Msgid-Bugs-To: bugs.r-project.org\n"
-"POT-Creation-Date: 2025-03-31 11:50\n"
+"POT-Creation-Date: 2024-03-27 16:14\n"
 "PO-Revision-Date: 2024-03-19 03:05+0000\n"
 "Last-Translator: Michael Chirico <michaelchirico4@gmail.com>\n"
 "Language-Team: RjpWiki Message Translation Team <mokada@md.tsukuba.ac.jp>\n"
@@ -35,6 +35,13 @@ msgstr "help(\"Deprecated\") と help(\"%s-deprecated\") を見て下さい"
 msgid "See help(\"Deprecated\")"
 msgstr "help(\"Deprecated\") を見て下さい"
 
+msgid "unsupported value of _R_DEPRECATED_IS_R_,"
+msgstr ""
+
+#, fuzzy
+msgid ", will be ignored"
+msgstr "'drop' 引数は無視されます"
+
 msgid "argument to 'La.svd' must be numeric or complex"
 msgstr "'La.svd' への引数は数値か複素数でなければなりません"
 
@@ -57,19 +64,21 @@ msgstr "第二引数はリストでなければなりません"
 msgid "'iconvlist' is not available on this system"
 msgstr "'iconvlist' はこのシステムでは使用できません"
 
-#, fuzzy
-msgid "'kind' must be a character string (RNG to be used)."
+msgid "'kind' must be a character string of length 1 (RNG to be used)."
 msgstr "'kind' は長さ 1 の文字列 (使用する RNG の名称) でなければなりません"
 
 msgid "'%s' is not a valid abbreviation of an RNG"
 msgstr "'%s' は RNG の有効な省略名ではありません"
 
-#, fuzzy
-msgid "'%s' must be a character string"
-msgstr "引数 'object' は空でない単一の文字列でなければなりません"
+msgid "'normal.kind' must be a character string of length 1"
+msgstr "'normal.kind' は長さ 1 の文字列でなければなりません"
 
 msgid "'%s' is not a valid choice"
 msgstr "'%s' は有効な選択 (choice) ではありません"
+
+#, fuzzy
+msgid "'sample.kind' must be a character string of length 1"
+msgstr "'normal.kind' は長さ 1 の文字列でなければなりません"
 
 msgid "malformed version string"
 msgstr "正しい形式のバージョン文字列ではありません"
@@ -209,6 +218,10 @@ msgstr "文字オブジェクトしか書き込めません"
 #, fuzzy
 msgid "'headers' must have names and must not be NA"
 msgstr "'x' は名前付きの次元名を持たなければなりません"
+
+#, fuzzy
+msgid "'name' must be a single character string"
+msgstr "引数 'object' は空でない単一の文字列でなければなりません"
 
 msgid "'origin' must be one of 'start', 'current' or 'end'"
 msgstr "'origin' は 'start', 'current' または 'end' のいずれかでなければなりません"
@@ -409,20 +422,29 @@ msgstr "単項演算 %s は \"Date\" オブジェクトに対しては定義さ�
 msgid "%s not defined for \"Date\" objects"
 msgstr "%s は \"Date\" オブジェクトに対して定義されていません"
 
-#, fuzzy
-msgid "'%s' must be of length 1"
+msgid "'from' must be specified"
+msgstr "'from' を指定しなければなりません"
+
+msgid "'from' must be a \"Date\" object"
+msgstr "'from' は \"Date\" オブジェクトでなければなりません"
+
+msgid "'from' must be of length 1"
+msgstr "'from' は長さ 1 でなければなりません"
+
+msgid "'to' must be a \"Date\" object"
+msgstr "'to' は \"Date\" オブジェクトでなければなりません"
+
+msgid "'to' must be of length 1"
 msgstr "'to' は長さ 1 でなければなりません"
 
-msgid "without 'by', at least one of 'to' and 'from' must be specified"
-msgstr ""
+msgid "'length.out' must be of length 1"
+msgstr "'length.out' は長さ 1 でなければなりません"
 
-#, fuzzy
-msgid "without 'by', when one of 'to', 'from' is missing, 'length.out' / 'along.with' must be specified"
+msgid "exactly two of 'to', 'by' and 'length.out' / 'along.with' must be specified"
 msgstr "'to', 'by', 'length.out' かまたは 'along.with' の内丁度二つを指定しなければなりません"
 
-#, fuzzy
-msgid "given 'by', exactly two of 'to', 'from' and 'length.out' / 'along.with' must be specified"
-msgstr "'to', 'by', 'length.out' かまたは 'along.with' の内丁度二つを指定しなければなりません"
+msgid "'by' must be of length 1"
+msgstr "'by' は長さ 1 でなければなりません"
 
 msgid "invalid 'by' string"
 msgstr "無効な文字列 'by' です"
@@ -441,6 +463,9 @@ msgstr "'x' は date-time オブジェクトでなければなりません"
 
 msgid "invalid specification of 'breaks'"
 msgstr "'breaks' の無効な指定です"
+
+msgid "'origin' must be of length one"
+msgstr "'origin' は長さ 1 でなければなりません"
 
 msgid "'lag' and 'differences' must be integers >= 1"
 msgstr "'lag' そして 'differences' は 1 以上の整数でなければなりません"
@@ -500,13 +525,11 @@ msgstr "掛け算 * の引数は両方とも \"difftime\" オブジェクトで�
 msgid "second argument of / cannot be a \"difftime\" object"
 msgstr "割り算 / の第二引数は \"difftime\" オブジェクトであることができません"
 
-#, fuzzy
-msgid "exactly three of 'to', 'from', 'by' and 'length.out' / 'along.with' must be specified"
-msgstr "'to', 'by', 'length.out' かまたは 'along.with' の内丁度二つを指定しなければなりません"
+msgid "'from' must be a \"POSIXt\" object"
+msgstr "'from' は \"POSIXt\" オブジェクトでなければなりません"
 
-#, fuzzy
-msgid "'%s' must be a \"%s\" object"
-msgstr "'to' は \"Date\" オブジェクトでなければなりません"
+msgid "'to' must be a \"POSIXt\" object"
+msgstr "'to' は \"POSIXt\" のオブジェクトでなければなりません"
 
 #, fuzzy
 msgid "component subscript must be a character string"
@@ -514,9 +537,6 @@ msgstr "引数 'object' は空でない単一の文字列でなければなり�
 
 msgid "no Olson database found"
 msgstr "Olson データベースが見つかりません"
-
-msgid "No element named \"%s\" found in x, did you mean x[, \"%1$s\"] instead?"
-msgstr ""
 
 msgid "'file' must be a character string or connection"
 msgstr "'file' は文字列かコネクションでなければなりません"
@@ -655,6 +675,9 @@ msgstr "リンクすべきファイルもしくはディレクトリがありま
 msgid "no files to link to"
 msgstr "リンクするためのファイルがありません"
 
+msgid "'package' must be of length 1"
+msgstr "'package' は長さ 1 でなければなりません"
+
 msgid "no file found"
 msgstr "ファイルが見つかりません"
 
@@ -680,6 +703,10 @@ msgstr ""
 
 msgid "class of 'x' was discarded"
 msgstr "クラス 'x' は捨てられました"
+
+#, fuzzy
+msgid "'flag' must be a string, i.e., of length 1"
+msgstr "'arg' は長さ 1 でなければなりません"
 
 #, fuzzy
 msgid "'flag' should contain only characters from [0+- #'I]"
@@ -954,7 +981,7 @@ msgid "nothing specified to be save()d"
 msgstr "save() されるべきものがありません"
 
 #, fuzzy
-msgid "'%s' must be a non-empty character string"
+msgid "'%s' must be a non-empty string"
 msgstr "'file' は空でない文字列でなければなりません"
 
 msgid "'compress' must be logical or character"
@@ -995,6 +1022,9 @@ msgstr ""
 
 msgid "'arg' must be NULL or a character vector"
 msgstr "'arg' は、NULL かひとつの文字ベクトルでなければなりません"
+
+msgid "'arg' must be of length 1"
+msgstr "'arg' は長さ 1 でなければなりません"
 
 msgid "'arg' must be of length >= 1"
 msgstr "'arg' は長さ 1 以上でなければなりません"
@@ -1403,6 +1433,9 @@ msgstr "'nmax' か 'n' を指定して下さい。しかし両方はだめです
 msgid "'from' must be a finite number"
 msgstr "'from' は \"Date\" オブジェクトでなければなりません"
 
+msgid "argument 'length.out' must be of length 1"
+msgstr "引数 'length.out' は長さ 1 でなければなりません"
+
 msgid "first element used of 'length.out' argument"
 msgstr "最初の要素は 引数 'length.out' として使われます"
 
@@ -1571,19 +1604,12 @@ msgstr ""
 msgid "additional arguments ignored in warning()"
 msgstr "warning() 中の追加引数は無視されます"
 
-msgid "no natural language support or missing translations"
-msgstr ""
-
-msgid "In bare C locale: LANGUAGE reset, but message language may be unchanged"
-msgstr ""
-
-msgid "In bare C locale, not forcing locale; possibly use 'force = TRUE'?"
-msgstr ""
-
 msgid "Sys.setenv(LANGUAGE=\"%s\") may have failed"
 msgstr ""
 
-msgid "attempt to set an attribute on NULL"
+msgid ""
+"Calling 'structure(NULL, *)' is deprecated, as NULL cannot have attributes.\n"
+"  Consider 'structure(list(), *)' instead."
 msgstr ""
 
 msgid "incorrect value for 'x'"
@@ -1650,6 +1676,10 @@ msgstr "水準の数が異なります"
 msgid "handler must be a function"
 msgstr "ハンドラーは関数でなければなりません"
 
+#, fuzzy
+msgid "'which' must be of length 1"
+msgstr "'to' は長さ 1 でなければなりません"
+
 msgid "no such element '%s'"
 msgstr "そのような要素 '%s' はありません"
 
@@ -1686,15 +1716,11 @@ msgid "No traceback available"
 msgstr "利用できる traceback がありません"
 
 #, fuzzy
-msgid "'recursive' must be a length-1 vector"
-msgstr "'origin' は長さ 1 でなければなりません"
-
-msgid "'recursive' is NA"
-msgstr ""
-
-#, fuzzy
 msgid "invalid non-character version specification 'x' (type: %s)"
 msgstr "無効なバージョンの指定 %s です"
+
+msgid "Calls"
+msgstr ""
 
 msgid "invalid version specification %s"
 msgstr "無効なバージョンの指定 %s です"
@@ -1931,59 +1957,6 @@ msgid_plural ""
 msgstr[0] ""
 "%s中:\n"
 " 余分な引数 %s は無視されます"
-
-#, fuzzy
-#~ msgid "'name' must be a single character string"
-#~ msgstr "引数 'object' は空でない単一の文字列でなければなりません"
-
-#~ msgid "'from' must be specified"
-#~ msgstr "'from' を指定しなければなりません"
-
-#~ msgid "'from' must be a \"Date\" object"
-#~ msgstr "'from' は \"Date\" オブジェクトでなければなりません"
-
-#~ msgid "'from' must be of length 1"
-#~ msgstr "'from' は長さ 1 でなければなりません"
-
-#~ msgid "'length.out' must be of length 1"
-#~ msgstr "'length.out' は長さ 1 でなければなりません"
-
-#~ msgid "'by' must be of length 1"
-#~ msgstr "'by' は長さ 1 でなければなりません"
-
-#~ msgid "'from' must be a \"POSIXt\" object"
-#~ msgstr "'from' は \"POSIXt\" オブジェクトでなければなりません"
-
-#~ msgid "'to' must be a \"POSIXt\" object"
-#~ msgstr "'to' は \"POSIXt\" のオブジェクトでなければなりません"
-
-#~ msgid "'package' must be of length 1"
-#~ msgstr "'package' は長さ 1 でなければなりません"
-
-#~ msgid "'arg' must be of length 1"
-#~ msgstr "'arg' は長さ 1 でなければなりません"
-
-#~ msgid "argument 'length.out' must be of length 1"
-#~ msgstr "引数 'length.out' は長さ 1 でなければなりません"
-
-#, fuzzy
-#~ msgid "'which' must be of length 1"
-#~ msgstr "'to' は長さ 1 でなければなりません"
-
-#~ msgid "'normal.kind' must be a character string of length 1"
-#~ msgstr "'normal.kind' は長さ 1 の文字列でなければなりません"
-
-#, fuzzy
-#~ msgid "'sample.kind' must be a character string of length 1"
-#~ msgstr "'normal.kind' は長さ 1 の文字列でなければなりません"
-
-#, fuzzy
-#~ msgid "'flag' must be a string, i.e., of length 1"
-#~ msgstr "'arg' は長さ 1 でなければなりません"
-
-#, fuzzy
-#~ msgid ", will be ignored"
-#~ msgstr "'drop' 引数は無視されます"
 
 #~ msgid "norm '%s' currently always uses exact = FALSE"
 #~ msgstr " norm '%s' は現在は常に exact = FALSE を使用します "

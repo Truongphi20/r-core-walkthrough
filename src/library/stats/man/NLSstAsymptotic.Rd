@@ -4,6 +4,7 @@
 % Distributed under GPL 2 or later
 
 \name{NLSstAsymptotic}
+\encoding{UTF-8}
 \alias{NLSstAsymptotic}
 \alias{NLSstAsymptotic.sortedXyData}
 \title{Fit the Asymptotic Regression Model}

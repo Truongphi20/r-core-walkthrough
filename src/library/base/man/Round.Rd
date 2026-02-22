@@ -100,7 +100,8 @@ signif(x, digits = 6)
   or \code{\link{format}()} based rounding).
 }
 \references{
-  \bibshow{R:Becker+Chambers+Wilks:1988}
+  Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+  \emph{The New S Language}.  Wadsworth & Brooks/Cole.
 
   The ISO/\abbr{IEC}/IEEE 60559:2011 standard is available for money from
   \url{https://www.iso.org}.

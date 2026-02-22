@@ -93,7 +93,9 @@ rbind(\dots, deparse.level = 1)
 \section{Data frame methods}{
   The \code{cbind} data frame method is just a wrapper for
   \code{\link{data.frame}(..., check.names = FALSE)}.  This means that
-  it will split matrix columns in data frame arguments.
+  it will split matrix columns in data frame arguments, and convert
+  character columns to factors unless \code{stringsAsFactors = FALSE} is
+  specified.
 
   The \code{rbind} data frame method first drops all zero-column and
   zero-row arguments.  (If that leaves none, it returns the first
@@ -165,7 +167,9 @@ rbind(\dots, deparse.level = 1)
   the coercion of character vectors to factors.)
 }
 \references{
-  \bibshow{R:Becker+Chambers+Wilks:1988}
+  Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+  \emph{The New S Language}.
+  Wadsworth & Brooks/Cole.
 }
 \seealso{
   \code{\link{c}} to combine vectors (and lists) as vectors,

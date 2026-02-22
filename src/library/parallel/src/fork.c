@@ -1,7 +1,7 @@
 /*
  *  R : A Computer Language for Statistical Data Analysis
  *  (C) Copyright 2008-2011 Simon Urbanek
- *      Copyright 2011-2025 R Core Team.
+ *      Copyright 2011-2023 R Core Team.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -46,7 +46,7 @@
 #include <fcntl.h>
 #include <string.h>
 
-//#include <Rinterface.h> /* for R_Interactive, but also in Defn.h */
+#include <Rinterface.h> /* for R_Interactive */
 #include <R_ext/eventloop.h> /* for R_SelectEx */
 
 /* read()/write() on pipes may not support arbitrary lengths, so
@@ -1220,10 +1220,9 @@ NORET SEXP mc_exit(SEXP sRes)
 
 /* NA = query, TRUE/FALSE = set R_Interactive accordingly */
 SEXP mc_interactive(SEXP sWhat) {
-    // maybe use asRboolean?
     int what = asInteger(sWhat);
     if (what != NA_INTEGER)
-	R_Interactive = (Rboolean) what;
+	R_Interactive = what;
     return ScalarLogical(R_Interactive);
 }
 

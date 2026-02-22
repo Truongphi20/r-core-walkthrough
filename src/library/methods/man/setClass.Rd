@@ -302,8 +302,10 @@ This should be a rare occurrence.
 }
 
 \references{
-  \bibshow{R:Chambers:2016}
-  (Chapters 9 and 10.)
+ Chambers, John M. (2016)
+ \emph{Extending R},
+  Chapman & Hall.
+(Chapters 9 and 10.)
 }
 
 \seealso{

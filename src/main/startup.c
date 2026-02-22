@@ -1,7 +1,7 @@
 /*
   R : A Computer Language for Statistical Data Analysis
   Copyright (C) 1995-1996   Robert Gentleman and Ross Ihaka
-  Copyright (C) 1997-2025   The R Core Team
+  Copyright (C) 1997-2023   The R Core Team
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -34,18 +34,12 @@
 #include <unistd.h>
 #endif
 
-#ifdef __APPLE__
-# include <sys/types.h>
-# include <sys/sysctl.h>
-#endif
-
 /* These are used in ../gnuwin32/system.c, ../unix/sys-std.c */
 SA_TYPE SaveAction = SA_SAVEASK;
 SA_TYPE	RestoreAction = SA_RESTORE;
-attribute_hidden bool LoadInitFile = true;  /* Used in R_OpenInitFile */
-
-static bool LoadSiteFile = true;
-// static bool DebugInitFile = false; // unused
+static Rboolean LoadSiteFile = TRUE;
+attribute_hidden Rboolean LoadInitFile = TRUE;  /* Used in R_OpenInitFile */
+static Rboolean DebugInitFile = FALSE;
 
 /*
  *  INITIALIZATION AND TERMINATION ACTIONS
@@ -139,7 +133,7 @@ static char *workspace_name = ".RData";
 attribute_hidden
 Rboolean set_workspace_name(const char *fn)
 {
-    static bool previously_allocated = FALSE;
+    static Rboolean previously_allocated = FALSE;
     size_t needed = strlen(fn) + 1;
     char *new_wsn = (char *)malloc(needed);
 
@@ -147,7 +141,7 @@ Rboolean set_workspace_name(const char *fn)
 	return FALSE;
     if (previously_allocated)
 	free(workspace_name);
-    previously_allocated = true;
+    previously_allocated = TRUE;
     strncpy(new_wsn, fn, needed);
     workspace_name = new_wsn;
     return TRUE;
@@ -244,8 +238,7 @@ void R_SizeFromEnv(Rstart Rp)
 	else
 	    Rp->max_vsize = value;
     }
-#if defined(__APPLE__) && defined(_SC_PHYS_PAGES) && defined(_SC_PAGE_SIZE) \
-    && (SIZEOF_SIZE_T > 4)
+#if defined(__APPLE__) && defined(_SC_PHYS_PAGES) && defined(_SC_PAGE_SIZE)
     /* For now only on macOS place a default limit on the vector heap
        size to avoid having R killed due to memory overcommit.
        Setting the limit at the maximum of 16Gb and available physical
@@ -256,17 +249,6 @@ void R_SizeFromEnv(Rstart Rp)
 	R_size_t sysmem = pages * page_size;
 	R_size_t MinMaxVSize = 17179869184; /* 16 Gb */
 	Rp->max_vsize = sysmem > MinMaxVSize ? sysmem : MinMaxVSize;
-    }
-#elif defined(__APPLE__) && (SIZEOF_SIZE_T > 4)
-    else {
-	R_size_t sysmem = 0;
-	R_size_t len = sizeof(sysmem);
-	if (!sysctlbyname("hw.memsize", &sysmem, &len, NULL, 0)
-	    && len == sizeof(sysmem)) {
-
-	    R_size_t MinMaxVSize = 17179869184; /* 16 Gb */
-	    Rp->max_vsize = sysmem > MinMaxVSize ? sysmem : MinMaxVSize;
-	}
     }
 #endif
     if((p = getenv("R_VSIZE"))) {
@@ -300,7 +282,7 @@ void R_SizeFromEnv(Rstart Rp)
 static void SetSize(R_size_t vsize, R_size_t nsize)
 {
     char msg[1024];
-    bool sml;
+    Rboolean sml;
     /* vsize > 0 to catch long->int overflow */
     if (vsize < 1000 && vsize > 0) {
 	R_ShowMessage("WARNING: vsize ridiculously low, Megabytes assumed\n");
@@ -349,26 +331,17 @@ static void SetMaxSize(R_size_t vsize, R_size_t nsize)
     }
 }
 
-static bool checkBool(int in, const char *name)
-{
-    if(in != 0 && in != 1) {
-	warning("At startup: value %d of Rp->%s taken as true", in, name);
-	in = 1;
-    }
-    return (bool)(in != 0);
-}
-
 void R_SetParams(Rstart Rp)
 {
-    R_Quiet = checkBool(Rp->R_Quiet, "R_Quiet");
-    R_NoEcho = (Rboolean) checkBool(Rp->R_NoEcho, "R_NoEcho");
-    R_Interactive = (Rboolean)  checkBool(Rp->R_Interactive, "R_Interactive");
-    R_Verbose = checkBool(Rp->R_Verbose, "R_Verbose");
-    LoadSiteFile = checkBool(Rp->LoadSiteFile, "R_LoadSitefile");
-    LoadInitFile = checkBool(Rp->LoadInitFile, "R_LoadInitFile");
-//    DebugInitFile = checkBool(Rp->DebugInitFile, "R_DebugInitFile"); // unused
+    R_Quiet = Rp->R_Quiet;
+    R_NoEcho = Rp->R_NoEcho;
+    R_Interactive = Rp->R_Interactive;
+    R_Verbose = Rp->R_Verbose;
     RestoreAction = Rp->RestoreAction;
     SaveAction = Rp->SaveAction;
+    LoadSiteFile = Rp->LoadSiteFile;
+    LoadInitFile = Rp->LoadInitFile;
+    DebugInitFile = Rp->DebugInitFile;
     SetSize(Rp->vsize, Rp->nsize);
     SetMaxSize(Rp->max_vsize, Rp->max_nsize);
     R_SetPPSize(Rp->ppsize);

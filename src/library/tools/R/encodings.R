@@ -46,10 +46,10 @@ function(file = NULL)
     ## Prefer 'Aliases' for historical reasons.
     names(out)[names(out) == "Alias"] <- "Aliases"
     ## Preferred MIME names.
-    MIME <- lapply(mapply(c, out$Name, out$Aliases),
+    MIME <- sapply(mapply(c, out$Name, out$Aliases),
                    function(u) {
                        if(any(ind <- grep("preferred MIME name", u)))
-                           vapply(strsplit(u[ind], " +"), `[[`, "", 1L)
+                           sapply(strsplit(u[ind], " +"), `[[`, 1L)
                        else
                            character()
                    })

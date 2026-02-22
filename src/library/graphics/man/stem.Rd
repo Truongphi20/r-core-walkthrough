@@ -24,11 +24,10 @@ stem(x, scale = 1, width = 80, atom = 1e-08)
 \details{
   Infinite and missing values in \code{x} are discarded.
 }
-\value{
-  Invisible \code{NULL}.
-}
 \references{
-  \bibshow{R:Becker+Chambers+Wilks:1988}
+  Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+  \emph{The New S Language}.
+  Wadsworth & Brooks/Cole.
 }
 \examples{
 stem(islands)

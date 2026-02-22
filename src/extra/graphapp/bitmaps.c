@@ -211,8 +211,7 @@ bitmap imagetobitmap(image img)
 		data[i+2] = getred(colour);
 	    }
 	}
-    else if (height && width)
-	memcpy(data, pixel32, 4*height*width);
+    else memcpy(data, pixel32, 4*height*width);
 
     /* Create the bitmap from the DIB data.
        Could also use CreateDIBsection */

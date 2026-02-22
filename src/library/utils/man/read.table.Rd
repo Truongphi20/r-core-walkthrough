@@ -1,6 +1,6 @@
 % File src/library/utils/man/read.table.Rd
 % Part of the R package, https://www.R-project.org
-% Copyright 1995-2025 R Core Team
+% Copyright 1995-2023 R Core Team
 % Distributed under GPL 2 or later
 
 \name{read.table}
@@ -190,7 +190,7 @@ read.delim2(file, header = TRUE, sep = "\t", quote = "\"",
     encoding used on a file when given as a character string (not on an
     existing connection) so the character data can
     be re-encoded.  See the \sQuote{Encoding} section of the help for
-    \code{\link{file}}, \manual{R-data}{Variations on read.table}, and
+    \code{\link{file}}, the \sQuote{R Data Import/Export} manual and
     \sQuote{Note}.
   }
 
@@ -232,9 +232,6 @@ read.delim2(file, header = TRUE, sep = "\t", quote = "\"",
   row names.  This allows data frames to be read in from the format in
   which they are printed.  If \code{row.names} is specified and does
   not refer to the first column, that column is discarded from such files.
-
-  It is not documented what happens when both \code{row.names} is specified
-  and the header line has one less entry than the number of columns.
 
   The number of data columns is determined by looking at the first five
   lines of input (or the whole input if it has less than five lines), or
@@ -288,8 +285,8 @@ read.delim2(file, header = TRUE, sep = "\t", quote = "\"",
 
 \section{Memory usage}{
   These functions can use a surprising amount of memory when reading
-  large files.  There is extensive discussion in the manual \manual{R-data}{},
-  supplementing the notes here.
+  large files.  There is extensive discussion in the \sQuote{R Data
+  Import/Export} manual, supplementing the notes here.
 
   Less memory will be used if \code{colClasses} is specified as one of
   the six \link{atomic} vector classes.  This can be particularly so when
@@ -323,7 +320,7 @@ read.delim2(file, header = TRUE, sep = "\t", quote = "\"",
 }
 
 \seealso{
-  The manual \manual{R-data}{}.
+  The \sQuote{R Data Import/Export} manual.
 
   \code{\link{scan}}, \code{\link{type.convert}},
   \code{\link{read.fwf}} for reading \emph{f}ixed \emph{w}idth
@@ -340,7 +337,10 @@ read.delim2(file, header = TRUE, sep = "\t", quote = "\"",
 }
 
 \references{
-  \bibshow{R:Chambers:1992:c3}
+  Chambers, J. M. (1992)
+  \emph{Data for models.}
+  Chapter 3 of \emph{Statistical Models in S}
+  eds J. M. Chambers and T. J. Hastie, Wadsworth & Brooks/Cole.
 }
 
 \examples{

@@ -72,7 +72,9 @@ local(expr, envir = new.env())
   the result of evaluating the last element.
 }
 \references{
-  \bibshow{R:Becker+Chambers+Wilks:1988}  (\code{eval} only.)
+  Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+  \emph{The New S Language}.
+  Wadsworth & Brooks/Cole.  (\code{eval} only.)
 }
 \seealso{
   \code{\link{expression}}, \code{\link{quote}}, \code{\link{sys.frame}},

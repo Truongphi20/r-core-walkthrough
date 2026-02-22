@@ -48,7 +48,7 @@ gcinfo(verbose)
   Here the last two lines give the current memory usage rounded up to
   the next 0.1Mb and as a percentage of the current trigger value.
   The first line gives a breakdown of the number of garbage collections
-  at various levels (for an explanation see \manual{R-ints}{}).
+  at various levels (for an explanation see the \sQuote{R Internals} manual).
 }
 
 \value{
@@ -68,7 +68,7 @@ gcinfo(verbose)
   \code{gcinfo} returns the previous value of the flag.
 }
 \seealso{
-  \manual{R-ints}{}.
+  The \sQuote{R Internals} manual.
 
   \code{\link{Memory}} on \R's memory management,
   and \code{\link{gctorture}} if you are an \R developer.

@@ -3,6 +3,7 @@
 % Copyright 1995-2021 R Core Team
 % Distributed under GPL 2 or later
 
+\encoding{UTF-8}
 \name{pairs}
 \alias{pairs}
 \alias{pairs.default}
@@ -121,7 +122,9 @@ pairs(x, \dots)
   \enc{Oehlschlägel-Akiyoshi}{Oehlschlaegel-Akiyoshi} and R-core members.
 }
 \references{
-  \bibshow{R:Becker+Chambers+Wilks:1988}
+  Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+  \emph{The New S Language}.
+  Wadsworth & Brooks/Cole.
 }
 \examples{
 pairs(iris[1:4], main = "Anderson's Iris Data -- 3 species",

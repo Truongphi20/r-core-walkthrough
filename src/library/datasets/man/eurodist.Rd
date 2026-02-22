@@ -26,7 +26,9 @@ UScitiesD
   kind of object available).
 }
 \source{
-  \bibshow{R:Crystal:1990}
+  Crystal, D. Ed. (1990)
+  \emph{The Cambridge Encyclopaedia}.
+  Cambridge: Cambridge University Press,
 
   The US cities distances were provided by Pierre Legendre.
 }

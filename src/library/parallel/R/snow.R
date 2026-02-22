@@ -1,7 +1,7 @@
 #  File src/library/parallel/R/snow.R
 #  Part of the R package, https://www.R-project.org
 #
-#  Copyright (C) 1995-2025 The R Core Team
+#  Copyright (C) 1995-2021 The R Core Team
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -144,27 +144,6 @@ setDefaultClusterOptions <- function(...) {
         assign(names[i], list[[i]], envir = defaultClusterOptions)
 }
 
-clusterStarters <- new.env()
-registerClusterType <- function(type, starter, make.default = FALSE) {
-    if (missing(type))
-        return(c("PSOCK", "FORK", names(clusterStarters)))
-    if (exists(type, clusterStarters))
-        warning(sprintf("replacing registration for cluster type '%s'", type))
-    assign(type, starter, clusterStarters)
-    if (make.default)
-        setDefaultClusterOptions(type = type)
-}
-
-initRegisterClusterTypes <- function() {
-    registerClusterType("SOCK", function(spec, ...)
-        snow::makeSOCKcluster(names = spec, ...))
-    registerClusterType("MPI", function(spec, ...)
-        snow::makeMPIcluster(count = spec, ...))
-    registerClusterType("MIRAI", function(spec, ...)
-        mirai::make_cluster(n = spec, ...))
-    registerClusterType("RPSOCK", function(spec, ...)
-        parallelly::makeClusterPSOCK(workers = spec, ...))
-}
 
 makeCluster <-
     function (spec, type = getClusterOption("type"), ...)
@@ -172,9 +151,10 @@ makeCluster <-
     switch(type,
            PSOCK = makePSOCKcluster(names = spec, ...),
            FORK = makeForkCluster(nnodes = spec, ...),
-           if (exists(type, clusterStarters))
-               get(type, clusterStarters)(spec, ...)
-           else stop(sprintf("unknown cluster type: '%s'", type)))
+           SOCK = snow::makeSOCKcluster(names = spec, ...),
+           MPI = snow::makeMPIcluster(count = spec, ...),
+           ## NWS = snow::makeNWScluster(names = spec, ...),
+           stop("unknown cluster type"))
 }
 
 

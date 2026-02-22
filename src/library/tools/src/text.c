@@ -1,6 +1,6 @@
 /*
  *  R : A Computer Language for Statistical Data Analysis
- *  Copyright (C) 2003-2025   The R Core Team.
+ *  Copyright (C) 2003-2024   The R Core Team.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -30,8 +30,7 @@
 LibExtern Rboolean mbcslocale;
 LibExtern int R_MB_CUR_MAX;
 
-// From Defn.h, rmapped from Mbrtowc in src/main/util.c
-extern size_t Rf_mbrtowc(wchar_t *wc, const char *s, size_t n, mbstate_t *ps);
+size_t Rf_mbrtowc(wchar_t *wc, const char *s, size_t n, mbstate_t *ps);
 
 /* .Call, so manages R_alloc stack */
 SEXP
@@ -59,9 +58,10 @@ delim_match(SEXP x, SEXP delims)
     */
 
     char c;
-    const char *delim_start, *delim_end;
-    int n, i, start, end;
+    const char *s, *delim_start, *delim_end;
+    int n, i, pos, start, end, delim_depth;
     int lstart, lend;
+    Rboolean is_escaped, equal_start_and_end_delims;
     SEXP ans, matchlen;
     mbstate_t mb_st; int used;
 
@@ -71,7 +71,7 @@ delim_match(SEXP x, SEXP delims)
     delim_start = translateChar(STRING_ELT(delims, 0));
     delim_end = translateChar(STRING_ELT(delims, 1));
     lstart = (int) strlen(delim_start); lend = (int) strlen(delim_end);
-    bool equal_start_and_end_delims = strcmp(delim_start, delim_end) == 0;
+    equal_start_and_end_delims = strcmp(delim_start, delim_end) == 0;
 
     n = length(x);
     PROTECT(ans = allocVector(INTSXP, n));
@@ -80,19 +80,17 @@ delim_match(SEXP x, SEXP delims)
     for(i = 0; i < n; i++) {
 	memset(&mb_st, 0, sizeof(mbstate_t));
 	start = end = -1;
-	const char *s = translateChar(STRING_ELT(x, i));
-	int pos = 0, delim_depth = 0;
-	bool is_escaped = false;
+	s = translateChar(STRING_ELT(x, i));
+	pos = is_escaped = delim_depth = 0;
 	while((c = *s) != '\0') {
 	    if(c == '\n') {
-		is_escaped = false;
+		is_escaped = FALSE;
 	    }
 	    else if(c == '\\') {
-		// This appars to be is_escaped = !is_escaped 
-		is_escaped = is_escaped ? false : true;
+		is_escaped = is_escaped ? FALSE : TRUE;
 	    }
 	    else if(is_escaped) {
-		is_escaped = false;
+		is_escaped = FALSE;
 	    }
 	    else if(c == '%') {
 		while((c != '\0') && (c != '\n')) {
@@ -155,15 +153,15 @@ check_nonASCII(SEXP text, SEXP ignore_quotes)
     int i, nbslash = 0; /* number of preceding backslashes */
     const char *p;
     char quote= '\0';
-    bool inquote = false;
+    Rboolean ign, inquote = FALSE;
 
     if(TYPEOF(text) != STRSXP) error("invalid input");
-    int ign = asLogical(ignore_quotes);
+    ign = asLogical(ignore_quotes);
     if(ign == NA_LOGICAL) error("'ignore_quotes' must be TRUE or FALSE");
 
     for (i = 0; i < LENGTH(text); i++) {
 	p = CHAR(STRING_ELT(text, i)); // ASCII or not not affected by charset
-	inquote = false; /* avoid runaway quotes */
+	inquote = FALSE; /* avoid runaway quotes */
 	for(; *p; p++) {
 	    if(!inquote && *p == '#') break;
 	    if(!inquote || !ign) {
@@ -175,16 +173,16 @@ check_nonASCII(SEXP text, SEXP ignore_quotes)
 	    }
 	    if((nbslash % 2 == 0) && (*p == '"' || *p == '\'')) {
 		if(inquote && *p == quote) {
-		    inquote = false;
+		    inquote = FALSE;
 		} else if(!inquote) {
 		    quote = *p;
-		    inquote = true;
+		    inquote = TRUE;
 		}
 	    }
 	    if(*p == '\\') nbslash++; else nbslash = 0;
 	}
     }
-    return ScalarLogical(false);
+    return ScalarLogical(FALSE);
 }
 
 SEXP check_nonASCII2(SEXP text)
@@ -281,32 +279,27 @@ SEXP splitString(SEXP string, SEXP delims)
     int nc = (int) strlen(in), used = 0;
 
     // Used for short strings, so OK to over-allocate wildly
-    SEXP out = PROTECT(allocVector(STRSXP, nc)), ans;
-
-    // UBSAN objects if nc = 0, but we can skip that case.
-    if (nc > 0) {
-	char tmp[nc], *this = tmp;
-	int nthis = 0;
-	const char *p;
-	for(p = in; *p ; p++) {
-	    if(strchr(del, *p)) {
-		// put out current string (if any)
-		if(nthis)
-		    SET_STRING_ELT(out, used++, mkCharLenCE(tmp, nthis, ienc));
-		// put out delimiter
-		SET_STRING_ELT(out, used++, mkCharLen(p, 1));
-		// restart
-		this = tmp; nthis = 0;
-	    } else {
-		*this++ = *p;
-		nthis++;
-	    }
+    SEXP out = PROTECT(allocVector(STRSXP, nc));
+    const char *p;
+    char tmp[nc], *this = tmp;
+    int nthis = 0;
+    for(p = in; *p ; p++) {
+	if(strchr(del, *p)) {
+	    // put out current string (if any)
+	    if(nthis)
+		SET_STRING_ELT(out, used++, mkCharLenCE(tmp, nthis, ienc));
+	    // put out delimiter
+	    SET_STRING_ELT(out, used++, mkCharLen(p, 1));
+	    // restart
+	    this = tmp; nthis = 0;
+	} else {
+	    *this++ = *p;
+	    nthis++;
 	}
-	if(nthis) SET_STRING_ELT(out, used++, mkCharLenCE(tmp, nthis, ienc));
-	
-	ans = lengthgets(out, used);
-    } else
-	ans = out;
+    }
+    if(nthis) SET_STRING_ELT(out, used++, mkCharLenCE(tmp, nthis, ienc));
+
+    SEXP ans = lengthgets(out, used);
     UNPROTECT(1);
     return ans;
 }

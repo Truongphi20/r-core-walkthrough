@@ -17,26 +17,31 @@
   \code{c("nfnGroupedData", "nfGroupedData", "groupedData", "data.frame")}
   containing the following columns:
   \describe{
-    \item{\code{height}}{
+    \item{height}{
       a numeric vector of tree heights (ft).
     }
-    \item{\code{age}}{
+    \item{age}{
       a numeric vector of tree ages (yr).
     }
-    \item{\code{Seed}}{
+    \item{Seed}{
       an ordered factor indicating the seed source for the tree.
       The ordering is according to increasing maximum height.
     }
   }
 }
 \details{
-  This dataset was originally part of package \CRANpkg{nlme}, and that has
+  This dataset was originally part of package \code{nlme}, and that has
   methods (including for \code{[}, \code{as.data.frame}, \code{plot} and
   \code{print}) for its grouped-data classes.
 }
 \source{
-  \bibshow{R:Kung:1986,
-    R:Pinheiro+Bates:2000}
+  Kung, F. H. (1986),
+  Fitting logistic growth curve with predetermined carrying capacity,
+  in \emph{Proceedings of the Statistical Computing Section,
+    American Statistical Association}, 340--343.
+
+  Pinheiro, J. C. and Bates, D. M. (2000)
+  \emph{Mixed-effects Models in S and S-PLUS}, Springer.
 }
 \examples{
 require(stats); require(graphics)

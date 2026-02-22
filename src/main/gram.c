@@ -70,7 +70,7 @@
 
 /*
  *  R : A Computer Language for Statistical Data Analysis
- *  Copyright (C) 1997--2025  The R Core Team
+ *  Copyright (C) 1997--2023  The R Core Team
  *  Copyright (C) 2009--2011  Romain Francois
  *  Copyright (C) 1995--1997  Robert Gentleman and Ross Ihaka
  *
@@ -254,7 +254,7 @@ static SEXP	NewList(void);
 static void	NextArg(SEXP, SEXP, SEXP); /* add named element to list end */
 static SEXP	TagArg(SEXP, SEXP, YYLTYPE *);
 static int 	processLineDirective(int *);
-static bool      checkForPlaceholder(SEXP placeholder, SEXP arg);
+static int      checkForPlaceholder(SEXP placeholder, SEXP arg);
 
 static int HavePlaceholder = FALSE; 
 attribute_hidden SEXP R_PlaceholderToken = NULL;
@@ -367,7 +367,6 @@ NORET static void raiseLexError(const char *, int,
 # include <langinfo.h>
 #endif
 
-// FIXME potentially need R_wchar_t with UTF-8 Windows.
 static int mbcs_get_next(int c, wchar_t *wc)
 {
     int i, res, clen = 1; char s[9];
@@ -1128,16 +1127,16 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,   446,   446,   447,   448,   449,   450,   453,   454,   455,
-     458,   459,   462,   463,   464,   465,   466,   468,   469,   471,
-     472,   473,   474,   475,   477,   478,   479,   480,   481,   482,
-     483,   484,   485,   486,   487,   488,   489,   490,   491,   492,
-     493,   494,   495,   496,   497,   498,   499,   501,   502,   503,
-     504,   505,   506,   507,   508,   509,   510,   511,   512,   513,
-     514,   515,   516,   517,   518,   519,   520,   521,   522,   523,
-     527,   530,   533,   537,   538,   539,   540,   541,   542,   545,
-     546,   549,   550,   551,   552,   553,   554,   555,   556,   559,
-     560,   561,   562,   563,   567
+       0,   445,   445,   446,   447,   448,   449,   452,   453,   454,
+     457,   458,   461,   462,   463,   464,   465,   467,   468,   470,
+     471,   472,   473,   474,   476,   477,   478,   479,   480,   481,
+     482,   483,   484,   485,   486,   487,   488,   489,   490,   491,
+     492,   493,   494,   495,   496,   497,   498,   500,   501,   502,
+     503,   504,   505,   506,   507,   508,   509,   510,   511,   512,
+     513,   514,   515,   516,   517,   518,   519,   520,   521,   522,
+     526,   529,   532,   536,   537,   538,   539,   540,   541,   544,
+     545,   548,   549,   550,   551,   552,   553,   554,   555,   558,
+     559,   560,   561,   562,   566
 };
 #endif
 
@@ -2989,7 +2988,7 @@ static int add_mbcs_byte_to_parse_context(void)
 static void finish_mbcs_in_parse_context(void)
 {
     int i, c, nbytes = 0, first;
-    bool mbcs = false;
+    Rboolean mbcs = FALSE;
 
     /* find the first byte of the context */
     for(i = R_ParseContextLast;
@@ -3027,7 +3026,7 @@ static void finish_mbcs_in_parse_context(void)
 		return;
 	    }
 	} else
-	    mbcs = true;
+	    mbcs = TRUE;
     }
     if (!mbcs)
 	return;
@@ -3109,7 +3108,7 @@ static void attachSrcrefs(SEXP val)
 	setAttrib(val, R_WholeSrcrefSymbol, makeSrcref(&wholeFile, PS_SRCFILE));
     }
     PS_SET_SRCREFS(R_NilValue);
-    ParseState.didAttach = true;
+    ParseState.didAttach = TRUE;
     UNPROTECT(1); /* srval */
 }
 
@@ -3459,7 +3458,7 @@ static SEXP mkChar2(const char *name)
     return mkCharLenCE(name, (int) strlen(name), enc);
 }
 
-static SEXP mkString2(const char *s, size_t len, bool escaped)
+static SEXP mkString2(const char *s, size_t len, Rboolean escaped)
 {
     SEXP t;
     cetype_t enc = CE_NATIVE;
@@ -3480,7 +3479,7 @@ static SEXP xxdefun(SEXP fname, SEXP formals, SEXP body, YYLTYPE *lloc)
     if (GenerateCode) {
     	if (ParseState.keepSrcRefs) {
 	    srcref = makeSrcref(lloc, PS_SRCFILE);
-    	    ParseState.didAttach = true;
+    	    ParseState.didAttach = TRUE;
     	} else
     	    srcref = R_NilValue;
 	PRESERVE_SV(ans = lang4(fname, CDR(formals), body, srcref));
@@ -3533,12 +3532,12 @@ static void checkTooManyPlaceholders(SEXP rhs, SEXP args, YYLTYPE *lloc)
 	                    _("pipe placeholder may only appear once (%s:%d:%d)"));
 }
 
-static bool checkForPlaceholderList(SEXP placeholder, SEXP list)
+static int checkForPlaceholderList(SEXP placeholder, SEXP list)
 {
     for (; list != R_NilValue; list = CDR(list))
 	if (checkForPlaceholder(placeholder, CAR(list)))
-	    return true;
-    return false;
+	    return TRUE;
+    return FALSE;
 }
 
 static SEXP findExtractorChainPHCell(SEXP placeholder, SEXP rhs, SEXP expr,
@@ -3913,9 +3912,9 @@ void R_InitSrcRefState(RCNTXT* cptr)
                  R_NilValue, R_NilValue);
     cptr->cend = &FinalizeSrcRefStateOnError;
     cptr->cenddata = NULL;
-    ParseState.keepSrcRefs = false;
-    ParseState.keepParseData = true;
-    ParseState.didAttach = false;
+    ParseState.keepSrcRefs = FALSE;
+    ParseState.keepParseData = TRUE;
+    ParseState.didAttach = FALSE;
     PS_SET_SRCFILE(R_NilValue);
     PS_SET_ORIGINAL(R_NilValue);
     ParseState.data_count = 0;
@@ -3923,7 +3922,7 @@ void R_InitSrcRefState(RCNTXT* cptr)
     ParseState.xxcolno = 0;
     ParseState.xxbyteno = 0;
     ParseState.xxparseno = 1;
-    busy = true;
+    busy = TRUE;
 }
 
 attribute_hidden
@@ -3963,7 +3962,7 @@ void R_FinalizeSrcRefState(void)
     	UseSrcRefState(prev);
     	free(prev);
     } else
-        busy = false;
+        busy = FALSE;
 }
 
 static void UseSrcRefState(SrcRefState *state)
@@ -3978,7 +3977,7 @@ static void UseSrcRefState(SrcRefState *state)
     ParseState.xxbyteno = state->xxbyteno;
     ParseState.xxparseno = state->xxparseno;
     ParseState.prevState = state->prevState;
-    busy = true;
+    busy = TRUE;
 }
 
 static void PutSrcRefState(SrcRefState *state)
@@ -4024,17 +4023,17 @@ static void ParseContextInit(void)
     initData();
 }
 
-static bool checkForPipeBind(SEXP arg)
+static int checkForPipeBind(SEXP arg)
 {
     if (! HavePipeBind)
-    	return false;
+    	return FALSE;
     else if (arg == R_PipeBindSymbol)
-	return true;
+	return TRUE;
     else if (TYPEOF(arg) == LANGSXP)
 	for (SEXP cur = arg; cur != R_NilValue; cur = CDR(cur))
 	    if (checkForPipeBind(CAR(cur)))
-		return true;
-    return false;
+		return TRUE;
+    return FALSE;
 }
 
 static SEXP R_Parse1(ParseStatus *status)
@@ -4120,16 +4119,16 @@ static int buffer_getc(void)
 attribute_hidden
 SEXP R_Parse1Buffer(IoBuffer *buffer, int gencode, ParseStatus *status)
 {
-    bool keepSource = false; 
+    Rboolean keepSource = FALSE; 
     RCNTXT cntxt;
 
     R_InitSrcRefState(&cntxt);
     if (gencode) {
-    	keepSource = asBool(GetOption1(install("keep.source")));
+    	keepSource = asLogical(GetOption1(install("keep.source")));
     	if (keepSource) {
-    	    ParseState.keepSrcRefs = true;
+    	    ParseState.keepSrcRefs = TRUE;
 	    ParseState.keepParseData =
-		asRbool(GetOption1(install("keep.parse.data")), R_NilValue);
+		asLogical(GetOption1(install("keep.parse.data")));
 	    PS_SET_SRCFILE(NewEnvironment(R_NilValue, R_NilValue, R_EmptyEnv));
 	    PS_SET_ORIGINAL(PS_SRCFILE);
 	    PS_SET_SRCREFS(R_NilValue);
@@ -4189,9 +4188,9 @@ static SEXP R_Parse(int n, ParseStatus *status, SEXP srcfile)
     PS_SET_ORIGINAL(srcfile);
     
     if (isEnvironment(srcfile)) {
-    	ParseState.keepSrcRefs = true;
+    	ParseState.keepSrcRefs = TRUE;
 	ParseState.keepParseData =
-	    asRbool(GetOption1(install("keep.parse.data")), R_NilValue);
+	    asLogical(GetOption1(install("keep.parse.data")));
 	PS_SET_SRCREFS(R_NilValue);
     }
     
@@ -4330,9 +4329,9 @@ SEXP R_ParseBuffer(IoBuffer *buffer, int n, ParseStatus *status, SEXP prompt,
     PS_SET_ORIGINAL(srcfile);
     
     if (isEnvironment(srcfile)) {
-    	ParseState.keepSrcRefs = true;
+    	ParseState.keepSrcRefs = TRUE;
 	ParseState.keepParseData =
-	    asRbool(GetOption1(install("keep.parse.data")), R_NilValue);
+	    asLogical(GetOption1(install("keep.parse.data")));
 	PS_SET_SRCREFS(R_NilValue);
     }
     
@@ -4834,8 +4833,8 @@ static int SkipComment(void)
     int _first_parsed = ParseState.xxparseno ;
     int type = COMMENT ;
 
-    bool maybeLine = (ParseState.xxcolno == 1);
-    bool doSave;
+    Rboolean maybeLine = (ParseState.xxcolno == 1);
+    Rboolean doSave;
 
     DECLARE_YYTEXT_BUFP(yyp);
     
@@ -4845,7 +4844,7 @@ static int SkipComment(void)
     	for (i=1; i<5; i++) {
     	    c = xxgetc();
   	    if (c != (int)(lineDirective[i])) {
-  	    	maybeLine = false;
+  	    	maybeLine = FALSE;
   	    	break;
   	    }
             YYTEXT_PUSH(c, yyp);
@@ -4930,8 +4929,7 @@ static int NumericValue(int c)
 		    YYTEXT_PUSH(c, yyp);
 		if (nd == 0) return ERROR;
 	    }
-// ?NumericComstants says exponent is optional (as does C99)
-//            if (seendot && !seenexp) return ERROR;
+            if (seendot && !seenexp) return ERROR;
 	    if (c == 'L') /* for getParseData */
 	    {
 		// seenexp will be checked later
@@ -5115,8 +5113,7 @@ static SEXP mkStringUTF8(const ucs_t *wcs, int cnt)
 #endif
     R_CheckStack2(nb);
     char s[nb];
-    if (nb)
-	memset(s, 0, nb); /* safety */
+    memset(s, 0, nb); /* safety */
     // This used to differentiate WC_NOT_UNICODE but not needed
     wcstoutf8(s, (const wchar_t *)wcs, sizeof(s));
     PROTECT(t = allocVector(STRSXP, 1));
@@ -5163,7 +5160,7 @@ static int skipBytesByChar(char *c, int min) {
 	    memmove(currtext, "... ", 4);                              \
 	    memmove(currtext + 4, currtext + skip, 1000 - skip + 1);   \
 	    ct -= skip - 4;                                            \
-	    currtext_truncated = true;                                 \
+	    currtext_truncated = TRUE;                                 \
 	}                                                              \
 	*ct++ = ((char) c);                                            \
 } while(0)
@@ -5178,7 +5175,7 @@ static int skipBytesByChar(char *c, int min) {
 } while(0)
 
 /* forSymbol is true when parsing backticked symbols */
-static int StringValue(int c, bool forSymbol)
+static int StringValue(int c, Rboolean forSymbol)
 {
     int quote = c;
     char currtext[1010], *ct = currtext;
@@ -5188,7 +5185,7 @@ static int StringValue(int c, bool forSymbol)
     PROTECT_INDEX sti;
     int wcnt = 0;
     ucs_t wcs[10001];
-    bool oct_or_hex = false, use_wcs = false, currtext_truncated = false;
+    Rboolean oct_or_hex = FALSE, use_wcs = FALSE, currtext_truncated = FALSE;
 
     PROTECT_WITH_INDEX(R_NilValue, &sti);
     CTEXT_PUSH(c);
@@ -5231,7 +5228,7 @@ static int StringValue(int c, bool forSymbol)
 		    raiseLexError("invalidOctal", INT_VALUE, &octal,
                         _("\\%o exceeds maximum allowed octal value \\377 (%s:%d:%d)"));
 		c = octal;
-		oct_or_hex = true;
+		oct_or_hex = TRUE;
 	    }
 	    else if(c == 'x') {
 		int val = 0; int i, ext;
@@ -5259,11 +5256,11 @@ static int StringValue(int c, bool forSymbol)
 		    raiseLexError("nulNotAllowed", NO_VALUE, NULL,
                         _("nul character not allowed (%s:%d:%d)"));
 		c = val;
-		oct_or_hex = true;
+		oct_or_hex = TRUE;
 	    }
 	    else if(c == 'u') {
 		unsigned int val = 0; int i, ext; 
-		bool delim = false;
+		Rboolean delim = FALSE;
 
 		if(forSymbol) 
 		    raiseLexError("unicodeInBackticks", NO_VALUE, NULL, 
@@ -5271,7 +5268,7 @@ static int StringValue(int c, bool forSymbol)
 		c = xxgetc();
 		if (c == R_EOF) break;
 		if (c == '{') {
-		    delim = true;
+		    delim = TRUE;
 		    CTEXT_PUSH(c);
 		} else xxungetc(c);
 		for(i = 0; i < 4; i++) {
@@ -5306,19 +5303,19 @@ static int StringValue(int c, bool forSymbol)
 		    raiseLexError("nulNotAllowed", NO_VALUE, NULL,
                         _("nul character not allowed (%s:%d:%d)"));
 		WTEXT_PUSH(val); /* this assumes wchar_t is Unicode */
-		use_wcs = true;
+		use_wcs = TRUE;
 		continue;
 	    }
 	    else if(c == 'U') {
 		unsigned int val = 0; int i, ext;
-		bool delim = false;
+		Rboolean delim = FALSE;
 		if(forSymbol) 
 		    raiseLexError("unicodeInBackticks", NO_VALUE, NULL, 
 		        _("\\Uxxxxxxxx sequences not supported inside backticks (%s:%d:%d)"));
 		c = xxgetc();
 		if (c == R_EOF) break;
  		if (c == '{') {
-		    delim = true;
+		    delim = TRUE;
 		    CTEXT_PUSH(c);
 		} else xxungetc(c);
 		for(i = 0; i < 8; i++) {
@@ -5368,7 +5365,7 @@ static int StringValue(int c, bool forSymbol)
 		}
 #endif
 		WTEXT_PUSH(val);
-		use_wcs = true;
+		use_wcs = TRUE;
 		continue;
 	    }
 	    else {
@@ -5512,7 +5509,7 @@ static int RawStringValue(int c0, int c)
     PROTECT_INDEX sti;
     int wcnt = 0;
     ucs_t wcs[10001];
-    bool oct_or_hex = false, use_wcs = false, currtext_truncated = false;
+    Rboolean oct_or_hex = FALSE, use_wcs = FALSE, currtext_truncated = FALSE;
 
     CTEXT_PUSH(c0); /* 'r' or 'R' */
     CTEXT_PUSH(c);  /* opening quote */
@@ -5746,7 +5743,7 @@ static int Placeholder(int c)
     DECLARE_YYTEXT_BUFP(yyp);
     YYTEXT_PUSH(c, yyp);
     YYTEXT_PUSH('\0', yyp);
-    HavePlaceholder = true;
+    HavePlaceholder = TRUE;
     PRESERVE_SV(yylval = R_PlaceholderToken);
     return PLACEHOLDER;
 }
@@ -5755,7 +5752,7 @@ static void setParseFilename(SEXP newname) {
     SEXP class;
     
     if (isEnvironment(PS_SRCFILE)) {
-	SEXP oldname = R_findVar(install("filename"), PS_SRCFILE);
+	SEXP oldname = findVar(install("filename"), PS_SRCFILE);
     	if (isString(oldname) && length(oldname) > 0 &&
     	    strcmp(CHAR(STRING_ELT(oldname, 0)),
     	           CHAR(STRING_ELT(newname, 0))) == 0) return;
@@ -5782,7 +5779,7 @@ static int processLineDirective(int *type)
     linenumber = atoi(yytext);
     c = SkipSpace();
     if (c == '"') 
-	tok = StringValue(c, false);
+	tok = StringValue(c, FALSE);
     else
     	xxungetc(c);
     if (tok == STR_CONST) 
@@ -5815,7 +5812,7 @@ static SEXP install_and_save2(char * text, char * savetext)
 
 static int token(void)
 {
-    int c, clen, i;
+    int c;
     wchar_t wc;
 
     if (SavedToken) {
@@ -5865,7 +5862,7 @@ static int token(void)
     /* literal strings */
 
     if (c == '\"' || c == '\'')
-	return StringValue(c, false);
+	return StringValue(c, FALSE);
 
     /* special functions */
 
@@ -5875,7 +5872,7 @@ static int token(void)
     /* functions, constants and variables */
 
     if (c == '`')
-	return StringValue(c, true);
+	return StringValue(c, TRUE);
  symbol:
 
     if (c == '.') return SymbolValue(c);
@@ -5944,7 +5941,7 @@ static int token(void)
 	}
 	else if (nextchar('>')) {
 	    yylval = install_and_save("=>");
-	    HavePipeBind = true;
+	    HavePipeBind = TRUE;
 	    return PIPEBIND;
 	}		 
 	yylval = install_and_save("=");
@@ -6032,26 +6029,10 @@ static int token(void)
 	yytext[1] = '\0';
 	yylval = install(yytext);
 	return c;
-    case '\n':
-    case ',':
-    case ';':
-	yytext[0] = (char) c;
-	yytext[1] = '\0';
-	return c;
     default:
-	clen = 1;
-	if (mbcslocale) {
-	    // FIXME potentially need R_wchar_t with UTF-8 Windows.
-	    clen = mbcs_get_next(c, &wc);
-	    if (clen == -1)
-		return END_OF_INPUT; /* EOF whilst reading MBCS char */
-	}
-	DECLARE_YYTEXT_BUFP(yyp);
-	YYTEXT_PUSH(c, yyp);
-	for(i = 1; i < clen ; i++)
-	    YYTEXT_PUSH(xxgetc(), yyp);
-	YYTEXT_PUSH('\0', yyp);
-	return (clen == 1) ? c : ERROR;
+        yytext[0] = (char) c;
+        yytext[1] = '\0';
+	return c;
     }
 }
 
@@ -6635,10 +6616,10 @@ static void finalizeData(void){
     PROTECT(tokens = allocVector( STRSXP, nloc ) );
     for (int i=0; i<nloc; i++) {
         int token = _TOKEN(i);
-        int xlat = YYTRANSLATE(token);
+        int xlat = yytranslate[token];
         if (xlat == 2) /* "unknown" */
             xlat = token;
-        if (xlat >= 0 && xlat < YYNTOKENS + YYNNTS)
+        if (xlat < YYNTOKENS + YYNNTS)
     	    SET_STRING_ELT(tokens, i, mkChar(yytname[xlat]));
     	else { /* we have a token which doesn't have a name, e.g. an illegal character as in PR#15518 */
     	    char name[2];
@@ -6713,24 +6694,24 @@ static void growID( int target ){
     PS_SET_IDS(lengthgets2(PS_IDS, new_size));
 }
 
-static bool checkForPlaceholder(SEXP placeholder, SEXP arg)
+static int checkForPlaceholder(SEXP placeholder, SEXP arg)
 {
     if (! HavePlaceholder)
-    	return false;
+    	return FALSE;
     else if (arg == placeholder)
-	return true;
+	return TRUE;
     else if (TYPEOF(arg) == LANGSXP)
 	for (SEXP cur = arg; cur != R_NilValue; cur = CDR(cur))
 	    if (checkForPlaceholder(placeholder, CAR(cur)))
-		return true;
-    return false;
+		return TRUE;
+    return FALSE;
 }
 
 static const char* getFilename(void) {
     SEXP srcfile = PS_SRCFILE;
     if (!srcfile || TYPEOF(srcfile) != ENVSXP)
 	return "<input>";
-    srcfile = R_findVar(install("filename"), srcfile);
+    srcfile = findVar(install("filename"), srcfile);
     if (TYPEOF(srcfile) != STRSXP || !strlen(CHAR(STRING_ELT(srcfile, 0))))
 	return "<input>";
     else

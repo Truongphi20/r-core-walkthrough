@@ -1,6 +1,6 @@
 /*
  *  R : A Computer Language for Statistical Data Analysis
- *  Copyright (C) 2004--2025  The R Core Team
+ *  Copyright (C) 2004-2023   The R Core Team
  *  Copyright (C) 1995, 1996  Robert Gentleman and Ross Ihaka
  *  Copyright (C) 1998--2003  Guido Masarotto and Brian Ripley
  *  Copyright (C) 2004        The R Foundation
@@ -347,13 +347,13 @@ static void PrivateCopyDevice(pDevDesc dd, pDevDesc ndd, const char *name)
 static void SaveAsWin(pDevDesc dd, const char *display,
 		      Rboolean restoreConsole)
 {
-    pDevDesc ndd = GEcreateDD();
+    pDevDesc ndd = (pDevDesc) calloc(1, sizeof(DevDesc));
     if (!ndd) {
 	R_ShowMessage(_("Not enough memory to copy graphics window"));
 	return;
     }
     if(!R_CheckDeviceAvailableBool()) {
-	GEfreeDD(ndd);
+	free(ndd);
 	R_ShowMessage(_("No device available to copy graphics window"));
 	return;
     }
@@ -376,15 +376,11 @@ static void init_PS_PDF(void)
 {
     SEXP call, initS, grNS=R_FindNamespace(mkString("grDevices"));
 
-    initS = findVarInFrame(grNS, install("initPSandPDFfonts"));
+    initS = findVarInFrame3(grNS, install("initPSandPDFfonts"), TRUE);
     if(initS == R_UnboundValue)
 	error("missing initPSandPDFfonts() in grDevices namespace: this should not happen");
     PROTECT(call = lang1(initS));
-    if (NoDevices()) {
-        eval(call, R_GlobalEnv);
-    } else {
-        Rf_eval_with_gd(call, R_GlobalEnv, NULL);
-    }
+    eval(call, R_GlobalEnv);
     UNPROTECT(1);
 }
 
@@ -392,7 +388,7 @@ static void init_PS_PDF(void)
 static void SaveAsPostscript(pDevDesc dd, const char *fn)
 {
     SEXP s;
-    pDevDesc ndd = GEcreateDD();
+    pDevDesc ndd = (pDevDesc) calloc(1, sizeof(DevDesc));
     pGEDevDesc gdd = desc2GEDesc(dd);
     gadesc *xd = (gadesc *) dd->deviceSpecific;
     char family[256], encoding[256], paper[256], bg[256], fg[256];
@@ -403,7 +399,7 @@ static void SaveAsPostscript(pDevDesc dd, const char *fn)
 	return;
     }
     if(!R_CheckDeviceAvailableBool()) {
-	GEfreeDD(ndd);
+	free(ndd);
 	R_ShowMessage(_("No device available to copy graphics window"));
 	return;
     }
@@ -462,22 +458,19 @@ static void SaveAsPostscript(pDevDesc dd, const char *fn)
 static void SaveAsPDF(pDevDesc dd, const char *fn)
 {
     SEXP s;
-    pDevDesc ndd = GEcreateDD();
+    pDevDesc ndd = (pDevDesc) calloc(1, sizeof(DevDesc));
     pGEDevDesc gdd = desc2GEDesc(dd);
     gadesc *xd = (gadesc *) dd->deviceSpecific;
     char family[256], encoding[256], bg[256], fg[256];
     const char **afmpaths = NULL;
     Rboolean useCompression = FALSE;
-    Rboolean timestamp = TRUE;
-    Rboolean producer = TRUE;
-    const char *author = "";
 
     if (!ndd) {
 	R_ShowMessage(_("Not enough memory to copy graphics window"));
 	return;
     }
     if(!R_CheckDeviceAvailableBool()) {
-	GEfreeDD(ndd);
+	free(ndd);
 	R_ShowMessage(_("No device available to copy graphics window"));
 	return;
     }
@@ -513,8 +506,7 @@ static void SaveAsPDF(pDevDesc dd, const char *fn)
 					 GE_INCHES, gdd),
 			((gadesc*) dd->deviceSpecific)->basefontsize,
 			1, 0, "R Graphics Output", R_NilValue, 1, 4,
-			"rgb", TRUE, TRUE, xd->fillOddEven, useCompression,
-			timestamp, producer, author))
+			"rgb", TRUE, TRUE, xd->fillOddEven, useCompression))
 	PrivateCopyDevice(dd, ndd, "PDF");
 }
 
@@ -644,14 +636,8 @@ static char* translateFontFamily(const char* family) {
     PROTECT(graphicsNS = R_FindNamespace(ScalarString(mkChar("grDevices"))));
     PROTECT_WITH_INDEX(windowsenv = findVar(install(".WindowsEnv"),
 					    graphicsNS), &xpi);
-    if(TYPEOF(windowsenv) == PROMSXP) {
-        if (NoDevices()) {
-            REPROTECT(windowsenv = eval(windowsenv, graphicsNS), xpi);
-        } else {
-            REPROTECT(windowsenv = Rf_eval_with_gd(windowsenv, graphicsNS,
-                                                   NULL), xpi);
-        }
-    }
+    if(TYPEOF(windowsenv) == PROMSXP)
+	REPROTECT(windowsenv = eval(windowsenv, graphicsNS), xpi);
     PROTECT(fontdb = findVar(install(".Windows.Fonts"), windowsenv));
     PROTECT(fontnames = getAttrib(fontdb, R_NamesSymbol));
     nfonts = LENGTH(fontdb);
@@ -695,8 +681,7 @@ static void SetFont(pGEcontext gc, double rot, gadesc *xd)
     if (size != xd->fontsize || face != xd->fontface ||
 	 rot != xd->fontangle || strcmp(gc->fontfamily, xd->fontfamily)) {
 	if(xd->font) del(xd->font);
-	/* do not call doevent(); here, as it could cause destruction
-	   of the device specific information and a crash below */
+	doevent();
 	/*
 	 * If specify family = "", get family from face via Rdevga
 	 *
@@ -704,7 +689,7 @@ static void SetFont(pGEcontext gc, double rot, gadesc *xd)
 	 * that family (mapped through WindowsFonts()) and face.
 	 *
 	 * If specify face > 4 then get font from face via Rdevga
-	 * (whether specified family or not).
+	 * (whether specifed family or not).
 	 */
 	char * fm = gc->fontfamily;
 	if (!fm[0]) fm = xd->basefontfamily;
@@ -2298,9 +2283,6 @@ static void GA_Close(pDevDesc dd)
  */
     /* I think the concern is rather to run all pending events on the
        device (but also on the console and others) */
-    /* doevent() is called here to run the graphapp destructor for the
-       window object before freeing the device-specific information; the
-       destructor may need the information */
     doevent();
     free(xd);
     dd->deviceSpecific = NULL;
@@ -3338,7 +3320,7 @@ Rboolean GADeviceDriver(pDevDesc dd, const char *display, double width,
 			int quality, double xpinch, double ypinch)
 {
     /* if need to bail out with some sort of "error" then */
-    /* must GEfreeDD(dd) */
+    /* must free(dd) */
 
     int   ps; /* This really is in (big) points */
     gadesc *xd;
@@ -3349,6 +3331,9 @@ Rboolean GADeviceDriver(pDevDesc dd, const char *display, double width,
 	warning("allocation failed in GADeviceDriver");
 	return FALSE;
     }
+
+    /* from here on, if need to bail out with "error", must also */
+    /* free(xd) */
 
     /* Allow user override of ppi */
     xd->xpinch = 0.0;
@@ -3548,7 +3533,7 @@ SEXP savePlot(SEXP args)
     filename = CADR(args);
     if (!isString(filename) || LENGTH(filename) != 1)
 	error(_("invalid filename argument in 'savePlot'"));
-    /* in 2.8.0 this will always be passed as native, but be conservative */
+    /* in 2.8.0 this will always be passed as native, but be conserative */
     fn = translateCharFP(STRING_ELT(filename, 0));
     type = CADDR(args);
     if (!isString(type) || LENGTH(type) != 1)
@@ -3854,13 +3839,13 @@ SEXP devga(SEXP args)
 	    if(p && strncmp(display, "win.metafile", 12)) *p = '\0';
 	}
 	/* Allocate and initialize the device driver data */
-	if (!(dev = GEcreateDD())) return 0;
+	if (!(dev = (pDevDesc) calloc(1, sizeof(DevDesc)))) return 0;
 	if (!GADeviceDriver(dev, display, width, height, ps,
 			    (Rboolean)recording, resize, bg, canvas, gamma,
 			    xpos, ypos, (Rboolean)buffered, psenv,
 			    restoreConsole, title, clickToConfirm,
 			    fillOddEven, family, quality, xpinch, ypinch)) {
-	    GEfreeDD(dev);
+	    free(dev);
 	    error(_("unable to start %s() device"), type);
 	}
 	gdd = GEcreateDevDesc(dev);

@@ -1,7 +1,7 @@
 #  File src/library/utils/R/sessionInfo.R
 #  Part of the R package, https://www.R-project.org
 #
-#  Copyright (C) 1995-2025 The R Core Team
+#  Copyright (C) 1995-2023 The R Core Team
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -72,17 +72,13 @@
                                       "16" = "Big Sur ...",
                                       ""),
                                ver)
-                   else if(ver1[1L] <= "15"  || ver1[1L]  == "26")
+                   else if(ver1[1L] <= "14")
                         sprintf("macOS %s %s",
                                switch(ver1[1L],
                                       "11" = "Big Sur",
                                       "12" = "Monterey",
                                       "13" = "Ventura",
-                                      "14" = "Sonoma",
-                                      "15" = "Sequoia",
-                                      "26" = "Tahoe"
-                                      ## if you add an entry here, change the numeric raange above.
-                                      ),
+                                      "14" = "Sonoma"),
                                ver)
                    else
                        sprintf("macOS %s", ver)
@@ -122,9 +118,8 @@ sessionInfo <- function(package = NULL)
     ## no need to re-encode given what we extract.
     pkgDesc <- lapply(package, packageDescription, encoding = NA)
     if(length(package) == 0) stop("no valid packages were specified")
-    basePkgs <- vapply(pkgDesc,
-                       function(x) !is.null(x$Priority) && x$Priority=="base",
-                       NA)
+    basePkgs <- sapply(pkgDesc,
+                       function(x) !is.null(x$Priority) && x$Priority=="base")
     ## Hmm, see tools:::.get_standard_package_names()$base
     z$basePkgs <- package[basePkgs]
     if(any(!basePkgs)){
@@ -157,9 +152,9 @@ print.sessionInfo <- function(x, locale = TRUE, tzone = locale,
 			      ...)
 {
     mkLabel <- function(L, n) {
-        paste(vapply(L[[n]], `[[`, "", "Package"),
-              vapply(L[[n]], `[[`, "", "Version"),
-              sep = "_")
+        vers <- sapply(L[[n]], function(x) x[["Version"]])
+        pkg <-  sapply(L[[n]], function(x) x[["Package"]])
+        paste(pkg, vers, sep = "_")
     }
 
     cat(x$R.version$version.string, "\n", sep = "")
@@ -167,19 +162,18 @@ print.sessionInfo <- function(x, locale = TRUE, tzone = locale,
     if (!is.null(x$running)) cat("Running under: ",  x$running, "\n", sep = "")
     cat("\n")
     cat("Matrix products: ", x$matprod, "\n", sep = "")
-    blas   <- x$BLAS   %||% ""
-    lapack <- x$LAPACK %||% ""
+    blas <- x$BLAS
+    if (is.null(blas)) blas <- ""
+    lapack <- x$LAPACK
+    if (is.null(lapack)) lapack <- ""
     if (blas == lapack && nzchar(blas))
         cat("BLAS/LAPACK:", blas)
     else {
         if(nzchar(blas))   cat("BLAS:  ",   blas, "\n")
         if(nzchar(lapack)) cat("LAPACK:", lapack)
     }
-    if(nzchar(LAver <- x$LA_version)) {
-        if(nzchar(lapack) && !grepl(LAver, lapack, fixed=TRUE))
-            cat(";  LAPACK version", LAver)
-        else cat("  LAPACK version", LAver)
-    }
+    if(nzchar(lapack) && nzchar(LAver <- x$LA_version) && !grepl(LAver, lapack, fixed=TRUE))
+        cat(";  LAPACK version", LAver)
     cat("\n\n")
     if(RNG) {
         cat("Random number generation:\n"
@@ -267,7 +261,7 @@ toLatex.sessionInfo <-
 			    paste(sort(object$basePkgs), collapse = ", ")),
                       indent = 2, exdent = 4))
 
-    if(length(o.ver <- toLatexPDlist(object$otherPkgs)))
+    if(length(o.ver <- toLatexPDlist(object$otherPkg)))
         z <- c(z,
                strwrap(paste("  \\item Other packages: ", o.ver),
                        indent = 2, exdent = 4))

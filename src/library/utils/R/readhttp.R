@@ -31,9 +31,7 @@ defaultUserAgent <- function()
 {
     Rver <- paste(R.version$major, R.version$minor, sep=".")
     Rdetails <- paste(Rver, R.version$platform, R.version$arch,
-                      if (length(grep("^darwin", R.version$os))) ## use run-time (vs build)
-                        gsub(" ","",tolower(system("uname -sr 2>/dev/null||echo darwin", intern=TRUE)))
-                      else R.version$os)
+                      R.version$os)
     paste0("R (", Rdetails, ")")
 }
 

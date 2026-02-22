@@ -74,7 +74,7 @@ static void split(int n, double *x,
     /* Local variables (=0 : -Wall) */
     double a=0, b=0, down, d1, up, xt, z;
     int i, is;
-    bool vert, neg_dir = false;
+    Rboolean vert, neg_dir=0;
 
     /* Parameter adjustments */
     --x;
@@ -200,25 +200,25 @@ static void in_chull(int *n, double *x, int *m, int *in,
     min = 1;
     mx = 1;
     kx = in[1];
-    maxe = false;
-    mine = false;
+    maxe = FALSE;
+    mine = FALSE;
     /* find two vertices of the convex hull for the initial partition */
     for (i = 2; i <= *m; ++i) {
 	j = in[i];
 	if ((d1 = x[j] - x[kx]) < 0.) {
 	} else if (d1 == 0) {
-	    maxe = true;
+	    maxe = TRUE;
 	} else {
-	    maxe = false;
+	    maxe = FALSE;
 	    mx = i;
 	    kx = j;
 	}
 	if ((d1 = x[j] - x[kn]) < 0.) {
-	    mine = false;
+	    mine = FALSE;
 	    min = i;
 	    kn = j;
 	} else if (d1 == 0) {
-	    mine = true;
+	    mine = TRUE;
 	}
     }
 
@@ -227,7 +227,7 @@ static void in_chull(int *n, double *x, int *m, int *in,
 	goto L_vertical;
     }
 
-    if (maxe || mine) {/* if maxe (or mine) is true, there are several
+    if (maxe || mine) {/* if maxe (or mine) is TRUE, there are several
 			  maxima (or minima) with equal first coordinates */
 
 	if (maxe) {/* have several points with the (same) largest x[] */
@@ -319,7 +319,7 @@ static void in_chull(int *n, double *x, int *m, int *in,
 	      &ia[1], &mb, &mxa,
 	      &ib[nib], &mbb, &mxb);
 	ia[ma] = mbb;
-    } while(true);
+    } while(TRUE);
 
 /*	 now traverse the RIGHT HALF of the tree */
  L12:
@@ -373,7 +373,7 @@ static void in_chull(int *n, double *x, int *m, int *in,
 	      -2,
 	      &ia[nia], &mbb, &mxa,
 	      &ib[nib], &mb, &mxb);
-    } while(true);
+    } while(TRUE);
 
 /* -------------------------------------------------------------- */
 
@@ -433,6 +433,7 @@ SEXP chull(SEXP x)
     for (int i = 0; i < n; i++) in[i] = i+1;
     int *ih = (int*)R_alloc(4*n, sizeof(int));
     x = PROTECT(coerceVector(x, REALSXP));
+    if(TYPEOF(x) != REALSXP) error("'x' is not numeric");
     in_chull(&n, REAL(x), &n, in, ih+n, ih+2*n, ih, &nh, ih+3*n);
     SEXP ans = allocVector(INTSXP, nh);
     int *ians = INTEGER(ans);

@@ -28,9 +28,10 @@
     X[6] \tab advance  \tab numeric  \tab Advancement}
 }
 \source{
-  \bibinfo{R:Chatterjee+Price:1991}{note}{Section 3.7, pages 68ff}
-  \bibshow{R:Chatterjee+Price:1977,
-    R:Chatterjee+Price:1991}
+  Chatterjee, S. and Price, B. (1977)
+  \emph{Regression Analysis by Example}.
+  New York: Wiley.
+  (Section 3.7, p.68ff of 2nd ed.(1991).)
 }
 \examples{
 require(stats); require(graphics)

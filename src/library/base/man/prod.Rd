@@ -1,6 +1,6 @@
 % File src/library/base/man/prod.Rd
 % Part of the R package, https://www.R-project.org
-% Copyright 1995-2025 R Core Team
+% Copyright 1995-2007 R Core Team
 % Distributed under GPL 2 or later
 
 \name{prod}
@@ -15,8 +15,7 @@ prod(\dots, na.rm = FALSE)
 \alias{prod}
 \arguments{
   \item{\dots}{numeric or complex or logical vectors.}
-  \item{na.rm}{logical (\code{TRUE} or \code{FALSE}).  Should missing
-    values be removed?} 
+  \item{na.rm}{logical.  Should missing values be removed?}
 }
 \details{
   If \code{na.rm} is \code{FALSE} an \code{NA}
@@ -43,7 +42,9 @@ prod(\dots, na.rm = FALSE)
   \code{x, \dots, na.rm}.
 }
 \references{
-  \bibshow{R:Becker+Chambers+Wilks:1988}
+  Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+  \emph{The New S Language}.
+  Wadsworth & Brooks/Cole.
 }
 \seealso{
   \code{\link{sum}},

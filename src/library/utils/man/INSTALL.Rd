@@ -1,6 +1,6 @@
 % File src/library/utils/man/INSTALL.Rd
 % Part of the R package, https://www.R-project.org
-% Copyright 1995-2025 R Core Team
+% Copyright 1995-2019 R Core Team
 % Distributed under GPL 2 or later
 
 \name{INSTALL}
@@ -82,8 +82,9 @@
   is useful in particular if libraries or header files needed for the
   package are in non-system directories.  In this case, one can use the
   configure variables \code{LIBS} and \code{CPPFLAGS} to specify these
-  locations (and set these via \option{--configure-vars}), see Section 
-  \manual{R-admin}{Configuration variables} for more information.
+  locations (and set these via \option{--configure-vars}), see section
+  \sQuote{Configuration variables} in
+  \sQuote{R Installation and Administration} for more information.
   (If these are used more than
   once on the command line they are concatenated.)  The configure
   mechanism can be bypassed using the option \option{--no-configure}.
@@ -143,11 +144,6 @@
   running \R.  This is usually the case, but if \file{/tmp} has been
   mounted as \code{noexec}, environment variable \env{TMPDIR} may need
   to be set to a directory from which execution is allowed.
-
-  For most recent builds of \R the internal \code{untar} will handle
-  tarballs compressed by \command{zstd}: most (but not all) external
-  \command{tar} commands will handle \command{ztd} compression and
-  others such as \command{lz4}.
 #endif
 }
 
@@ -166,11 +162,12 @@
   sub-architecture used by \command{R CMD INSTALL}, use
   \option{--no-multiarch}.  To install just the compiled code for
   another sub-architecture, use \option{--libs-only}.
-  To install for all available sub-architectures,
-  %% If the configure script is known to work for both Windows architectures,
-  %% use flag \option{--force-biarch} (and packages can specify this
-  %% \emph{via} a \samp{Biarch: yes} field in their \code{DESCRIPTION} files).
-  a single tarball can be installed with
+
+  There are two ways to install for all available sub-architectures.  If
+  the configure script is known to work for both Windows architectures,
+  use flag \option{--force-biarch} (and packages can specify this
+  \emph{via} a \samp{Biarch: yes} field in their \code{DESCRIPTION} files).
+  Second, a single tarball can be installed with
 \preformatted{R CMD INSTALL --merge-multiarch mypkg_version.tar.gz}
 }
 
@@ -198,9 +195,10 @@
   \code{\link{update.packages}} for automatic update of packages using
   the Internet or a local repository.
 
-  The Chapter \manual{R-admin}{Add-on packages}
-  and the Chapter \manual{R-exts}{Creating R packages}.
-
+  The chapter on \sQuote{Add-on packages} in
+  \sQuote{R Installation and Administration}
+  and the chapter on \sQuote{Creating R packages} in
+  \sQuote{Writing R Extensions}
 #ifdef windows
   (on the Help menu in \code{RGui}),
 #endif

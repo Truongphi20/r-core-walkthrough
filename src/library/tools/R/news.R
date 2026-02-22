@@ -1,7 +1,7 @@
 #  File src/library/tools/R/news.R
 #  Part of the R package, https://www.R-project.org
 #
-#  Copyright (C) 1995-2025 The R Core Team
+#  Copyright (C) 1995-2024 The R Core Team
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -49,15 +49,15 @@ function(package, lib.loc = NULL, format = NULL, reader = NULL)
     dir <- system.file(package = package, lib.loc = lib.loc)
     ## Or maybe use find.package()?
 
-    ## <NOTE>
+    ## <FIXME>
     ## We had planned to eventually add support for DESCRIPTION
     ##   News/File
     ##   News/Format
     ##   News/Reader
     ##   News/Reader@R
-    ## entries.  But now that there are NEWS.Rd and NEWS.md, there
-    ## seems little point in providing format/reader support ...
-    ## </NOTE>
+    ## entries.  But now that we're moving to NEWS.Rd, there seems
+    ## little point in providing format/reader support ...
+    ## </FIXME>
 
     ## Look for new-style inst/NEWS.Rd installed as NEWS.Rd
     ## If not found, look for NEWS.md.
@@ -204,10 +204,10 @@ function(file)
             ire <- sprintf("^[[:space:]]*([%s])[[:space:]]+", sep)
             ind <- grepl(ire, lines)
             list(entries =
-                 vapply(split(lines, cumsum(ind)),
+                 sapply(split(lines, cumsum(ind)),
                         function(s)
-                            sub(ire, "", .collapse(sub("^\t?", "", s))),
-                        ""),
+                        sub(ire, "", .collapse(sub("^\t?", "", s)))
+                        ),
                  header = header,
                  chunk = chunk,
                  date = date)
@@ -376,9 +376,7 @@ function(f, pdf_file)
     on.exit(setwd(od))
     ## avoid broken texi2pdf scripts: this is simple LaTeX
     ## and emulation suffices
-    texi2pdf("NEWS.tex", quiet = TRUE, texi2dvi = "emulation",
-             ## ensure _this_ R's Rd.sty is found first:
-             texinputs = file.path(R.home("share"), "texmf", "tex", "latex"))
+    texi2pdf("NEWS.tex", quiet = TRUE, texi2dvi = "emulation")
     setwd(od); on.exit()
     invisible(file.copy(file.path(dirname(f3), "NEWS.pdf"),
                         pdf_file, overwrite = TRUE))
@@ -419,7 +417,7 @@ function(file, out = stdout(), codify = FALSE)
         }
     }
 
-    ## No longer support taking NEWS files without corresponding
+    ## No longer support taking NEWS files without correponding
     ## DESCRIPTION file as being from R itself (PR #16556).
 
     meta <- .read_description(dfile)
@@ -577,10 +575,7 @@ function(file)
 function(x)
 {
     get_section_names <- function(x)
-        vapply(x,
-               function(e)
-                   paste(.Rd_get_text(e[[1L]]), collapse = " "),
-               "")
+        sapply(x, function(e) .Rd_get_text(e[[1L]]))
 
     get_item_texts <- function(x) {
         ## Currently, chunks should consist of a single \itemize list

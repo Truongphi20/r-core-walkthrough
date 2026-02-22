@@ -134,9 +134,17 @@ boxplot(x, \dots)
   \item{names}{a vector of names for the groups.}
 }
 \references{
-  \bibshow{R:Becker+Chambers+Wilks:1988,
-    R:Chambers+Cleveland+Kleiner:1983,
-    R:Murrell:2005}
+  Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988).
+  \emph{The New S Language}.
+  Wadsworth & Brooks/Cole.
+
+  Chambers, J. M., Cleveland, W. S., Kleiner, B. and Tukey, P. A. (1983).
+  \emph{Graphical Methods for Data Analysis}.
+  Wadsworth & Brooks/Cole.
+
+  Murrell, P. (2005).
+  \emph{R Graphics}.
+  Chapman & Hall/CRC Press.
 
   See also \code{\link{boxplot.stats}}.
 }

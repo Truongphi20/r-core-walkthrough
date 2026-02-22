@@ -16,14 +16,10 @@
 }
 \usage{
 available.packages(contriburl = contrib.url(repos, type), method,
-                   fields = getOption("available_packages_fields"),
-                   type = getOption("pkgType"), filters = NULL,
-                   repos = getOption("repos"),
+                   fields = NULL, type = getOption("pkgType"),
+                   filters = NULL, repos = getOption("repos"),
                    ignore_repo_cache = FALSE, max_repo_cache_age,
-                   cache_user_dir =
-                       str2logical(Sys.getenv("R_PACKAGES_CACHE_USER_DIR",
-                                              FALSE)),
-                   quiet = TRUE, verbose = FALSE, \dots)
+                   quiet = TRUE, \dots)
 }
 \arguments{
   \item{contriburl}{
@@ -58,14 +54,8 @@ available.packages(contriburl = contrib.url(repos, type), method,
   \item{max_repo_cache_age}{any cached values older than this in seconds
     will be ignored. See \sQuote{Details}.
   }
-  \item{cache_user_dir}{\code{\link{logical}} indicating if caching should
-    happen in \pkg{tools}' \code{\link[tools]{R_user_dir}("base", "cache")}
-    instead of \code{\link{tempdir}()}.}
   \item{quiet}{logical, passed to \code{\link{download.file}()}; change
     only if you know what you are doing.}
-  \item{verbose}{logical indicating if a \dQuote{progress report} line
-    should be printed about the number of packages found in each repository.}
-  % before filtering (TODO: *during* filt.)
   \item{\dots}{
     allow additional arguments to be passed from callers (which might be
     arguments to future versions of this function).  Currently these are
@@ -164,7 +154,8 @@ available.packages(contriburl = contrib.url(repos, type), method,
   \code{\link{install.packages}}, \code{\link{download.packages}},
   \code{\link{contrib.url}}.
 
-  Section \manual{R-admin}{Setting up a package repository}.
+  The \sQuote{R Installation and Administration} manual for how to
+  set up a repository.
 }
 \examples{\donttest{
 ## Count package licenses

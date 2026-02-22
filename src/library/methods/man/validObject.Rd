@@ -112,8 +112,10 @@ Then, for each of the classes that this class
   with the corresponding strings in the error message.
 }
 \references{
-  \bibshow{R:Chambers:2016}
-  (Chapters 9 and 10.)
+Chambers, John M. (2016)
+ \emph{Extending R},
+  Chapman & Hall.
+(Chapters 9 and 10.)
 }
 \seealso{\code{\link{setClass}};
   class \code{\linkS4class{classRepresentation}}.

@@ -36,7 +36,9 @@ t(x)
   \eqn{A^H} or \eqn{A^*}, is computed as \code{\link{Conj}(t(A))}.
 }
 \references{
-  \bibshow{R:Becker+Chambers+Wilks:1988}
+  Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+  \emph{The New S Language}.
+  Wadsworth & Brooks/Cole.
 }
 \seealso{
   \code{\link{aperm}} for permuting the dimensions of arrays.

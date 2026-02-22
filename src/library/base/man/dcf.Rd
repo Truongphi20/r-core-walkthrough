@@ -106,7 +106,8 @@ write.dcf(x, file = "", append = FALSE, useBytes = FALSE,
   \url{https://www.debian.org/doc/debian-policy/ch-controlfields.html}.
 
   Note that \R does not require encoding in UTF-8, which is a recent
-  Debian requirement.
+  Debian requirement.  Nor does it use the Debian-specific sub-format
+  which allows comment lines starting with \samp{#}.
 }
 
 \note{

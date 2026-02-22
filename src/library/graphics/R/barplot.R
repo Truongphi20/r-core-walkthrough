@@ -1,7 +1,7 @@
 #  File src/library/graphics/R/barplot.R
 #  Part of the R package, https://www.R-project.org
 #
-#  Copyright (C) 1995-2025 The R Core Team
+#  Copyright (C) 1995-2022 The R Core Team
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -29,10 +29,8 @@ function(height, width = 1, space = NULL, names.arg = NULL,
 	 cex.axis = par("cex.axis"), cex.names = par("cex.axis"),
          inside = TRUE, plot = TRUE, axis.lty = 0, offset = 0, add = FALSE,
 	 ann = !add && par("ann"),
-         args.legend = NULL,
-         orderH = c("none", "incr", "decr"),
-         ...)
-{
+         args.legend = NULL, ...)
+ {
     if (!missing(inside)) .NotYetUsed("inside", error = FALSE)# -> help(.)
 
     if (is.null(space))
@@ -47,7 +45,7 @@ function(height, width = 1, space = NULL, names.arg = NULL,
 	|| (is.array(height) && (length(dim(height)) == 1)))
 	## Treat vectors and 1-d arrays the same.
     if (vectorInput) {
-	height <- cbind(height) # 1-column matrix
+	height <- cbind(height)
 	beside <- TRUE
 	## The above may look strange, but in particular makes color
 	## specs work as most likely expected by the users.
@@ -111,21 +109,8 @@ function(height, width = 1, space = NULL, names.arg = NULL,
     } else rectbase <- 0
 
     ## if stacked bar, set up base/cumsum levels, adjusting for log scale
-    if (!beside) {
-        orderH <- match.arg(orderH)
-        if(orderH != "none") {
-            decr <- (orderH == "decr")
-            orderHgt <- apply(height, 2L, order, decreasing = decr)
-        }
-	iC <- 1L:NC
-        height <-
-            rbind(rectbase,
-                  apply(switch(orderH,
-                               "decr" =,
-                               "incr" = vapply(iC, function(j) height[orderHgt[,j], j], numeric(NR)),
-                               "none" = height),
-                        2L, cumsum))
-    }
+    if (!beside)
+	height <- rbind(rectbase, apply(height, 2L, cumsum))
 
     rAdj <- offset + (if (log.dat) 0.9 * height else -0.01 * height)
 
@@ -168,13 +153,11 @@ function(height, width = 1, space = NULL, names.arg = NULL,
 	else {
 	    ## noInside <- NC > 1 && !inside # outside border, but not inside
 	    ## bordr <- if(noInside) 0 else border
-            hNR <- height[1L:NR, , drop=FALSE]
-	    for (i in iC) {
-		xyrect(hNR[, i] + offset[i], w.l[i],
+	    for (i in 1L:NC) {
+		xyrect(height[1L:NR, i] + offset[i], w.l[i],
 		       height[ -1,  i] + offset[i], w.r[i],
 		       horizontal = horiz, angle = angle, density = density,
-		       col = if(orderH != "none") col[orderHgt[,i]] else col,
-		       border = border)# = bordr
+		       col = col, border = border)# = bordr
 		## if(noInside)
 		##  xyrect(min(height[, i]), w.l[i], max(height[, i]), w.r[i],
 		##	   horizontal = horiz, border= border)
@@ -192,9 +175,9 @@ function(height, width = 1, space = NULL, names.arg = NULL,
 	}
 	if(!is.null(legend.text)) {
 	    legend.col <- rep_len(col, length(legend.text))
-	    if((horiz && beside) || (!horiz && !beside)) {
+	    if((horiz & beside) || (!horiz & !beside)){
 		legend.text <- rev(legend.text)
-		legend.col  <- rev(legend.col)
+		legend.col <- rev(legend.col)
 		density <- rev(density)
 		angle <- rev(angle)
 	    }

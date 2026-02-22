@@ -103,10 +103,14 @@ drop1(object, scope, \dots)
 }
 \author{
   The design was inspired by the S functions of the same names described
-  in \bibcitet{R:Chambers:1992:c4}.
+  in Chambers (1992).
 }
 \references{
-  \bibshow{R:Chambers:1992:c4}}
+  Chambers, J. M. (1992)
+  \emph{Linear models.}
+  Chapter 4 of \emph{Statistical Models in S}
+  eds J. M. Chambers and T. J. Hastie, Wadsworth & Brooks/Cole.
+}
 \note{
   These are not fully equivalent to the functions in S.  There is no
   \code{keep} argument, and the methods used are not quite so

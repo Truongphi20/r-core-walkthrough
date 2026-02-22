@@ -1,6 +1,6 @@
 % File src/library/base/man/isSymmetric.Rd
 % Part of the R package, https://www.R-project.org
-% Copyright 1995-2025 R Core Team
+% Copyright 1995-2018 R Core Team
 % Distributed under GPL 2 or later
 
 \name{isSymmetric}
@@ -11,14 +11,12 @@
   Generic function to test if \code{object} is symmetric or not.
   Currently only a matrix method is implemented, where a
   \code{\link{complex}} matrix \code{Z} must be \dQuote{Hermitian} for
-  \code{isSymmetric(Z)} to be true, and
-  (since \R >= 4.5.0),
-  \code{isSymmetric(Z, trans = "T")} checks for \dQuote{simple} symmetry.
+  \code{isSymmetric(Z)} to be true.
 }
 \usage{
 isSymmetric(object, \dots)
 \method{isSymmetric}{matrix}(object, tol = 100 * .Machine$double.eps,
-            tol1 = 8 * tol, trans = "C", \dots)
+            tol1 = 8 * tol, \dots)
 }
 \arguments{
   \item{object}{any \R object; a \code{\link{matrix}} for the matrix method.}
@@ -28,11 +26,6 @@ isSymmetric(object, \dots)
     \sQuote{pre-tests} the first and last few rows for fast detection of
     \sQuote{obviously} asymmetric cases with this tolerance.  Setting it
     to length zero will skip the pre-tests.}
-  \item{trans}{a single \code{\link{character}}, only relevant for a
-    \code{\link{complex}} matrix \code{Z}: if it is \code{"C"} (as by
-    default), \code{Conj(t(Z))} must be the same as \code{Z} whereas
-    otherwise (typically it is \code{"T"}) \code{t(Z)} must equal
-    \code{Z}.  The argument name is inherited from LAPACK.}
   \item{\dots}{further arguments passed to methods; the matrix method
     passes these to \code{\link{all.equal}}.  If the row and column
     names of \code{object} are allowed to differ for the symmetry check
@@ -62,9 +55,8 @@ isSymmetric(D3) # TRUE
 isSymmetric(D3, tol = 0) # FALSE for zero-tolerance
 
 ## Complex Matrices - Hermitian or not
-z <- sqrt(matrix(-1:2 + 0i, 2)); Z <- t(Conj(z)) \%*\% z
-ZtZ <- t(z) \%*\% z
-Z ; ZtZ
+Z <- sqrt(matrix(-1:2 + 0i, 2)); Z <- t(Conj(Z)) \%*\% Z
+Z
 isSymmetric(Z)      # TRUE
 isSymmetric(Z + 1)  # TRUE
 isSymmetric(Z + 1i) # FALSE -- a Hermitian matrix has a *real* diagonal

@@ -108,7 +108,9 @@ library.dynam.unload(chname, libpath,
   \code{\link{SHLIB}} for how to create suitable DLLs.
 }
 \references{
-  \bibshow{R:Becker+Chambers+Wilks:1988}
+  Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+  \emph{The New S Language}.
+  Wadsworth & Brooks/Cole.
 }
 \examples{
 ## Which DLLs were dynamically loaded by packages?

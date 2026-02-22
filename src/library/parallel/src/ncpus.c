@@ -52,7 +52,7 @@ static DWORD CountSetBits(ULONG_PTR bitMask)
 }
 
 // Detect CPUs using GetLogicaProcessInformationEx, if available.
-static bool ncpus_ex(int *ians)
+static Rboolean ncpus_ex(int *ians)
 {
     LPFN_GLPI_EX glpi;
     BOOL done = FALSE;
@@ -69,7 +69,7 @@ static bool ncpus_ex(int *ians)
 	GetProcAddress(GetModuleHandle(TEXT("kernel32")),
 		       "GetLogicalProcessorInformationEx");
     if (NULL == glpi)
-	return false;
+	return FALSE;
 
     /* count the number of logical processors using RelationGroup, counting
        bits in affinity masks would not work on 32-bit systems */

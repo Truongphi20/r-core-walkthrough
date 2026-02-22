@@ -97,8 +97,8 @@ ar.ols(x, aic = TRUE, order.max = NULL, na.action = na.fail,
   \code{\link{ar}}
 }
 \references{
-  \bibinfo{R:Luetkepohl:1991}{note}{Pages 368--370}
-  \bibshow{R:Luetkepohl:1991}
+  Luetkepohl, H. (1991): \emph{Introduction to Multiple Time Series
+    Analysis.} Springer Verlag, NY, pp.\sspace{}368--370.
 }
 \examples{
 ar(lh, method = "burg")

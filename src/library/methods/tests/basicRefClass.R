@@ -464,7 +464,7 @@ TestClass <- setRefClass ("TestClass",
      fields = list (text = "character"),
      methods = list(
        print = function ()  {cat(text)},
-       initialize = function(text = "", ...) callSuper(text = paste0(text, ":"),...)
+       initialize = function(text = "", ...) callSuper(text = paste(text, ":", sep=""),...)
   ))
 tt <- TestClass("hello world")
 stopifnot(identical(tt$text, "hello world:"))
@@ -498,7 +498,7 @@ yy <- mEditor(data = xMat+1)
 yy$change(xx)
 stopifnot(identical(yy$data, xx$data), identical(yy$edits, xx$edits))
 
-## but don't allow assignment
+## but don't allow assigment
 if(methods:::.hasCodeTools())
         stopifnot(is(tryCatch(yy$.self$data <- xMat, error = function(e)e), "error"))
 

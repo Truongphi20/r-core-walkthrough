@@ -1,6 +1,6 @@
 /*
  *  R : A Computer Language for Statistical Data Analysis
- *  Copyright (C) 1998--2025  The R Core Team.
+ *  Copyright (C) 1998--2024  The R Core Team.
  *  Copyright (C) 1995, 1996  Robert Gentleman and Ross Ihaka
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -116,7 +116,7 @@ static void gc_error(const char *msg)
 }
 
 /* These are used in profiling to separate out time in GC */
-attribute_hidden int R_gc_running(void) { return R_in_gc; }
+int R_gc_running(void) { return R_in_gc; }
 
 #ifdef TESTING_WRITE_BARRIER
 # define PROTECTCHECK
@@ -159,7 +159,7 @@ static R_INLINE SEXP CHK(SEXP x)
     /* **** NULL check because of R_CurrentExpr */
     if (x != NULL && TYPEOF(x) == FREESXP)
 	error("unprotected object (%p) encountered (was %s)",
-	      (void *)x, sexptype2char(OLDTYPE(x)));
+	      x, sexptype2char(OLDTYPE(x)));
     return x;
 }
 #else
@@ -415,7 +415,7 @@ static R_size_t R_MaxVSize = R_SIZE_T_MAX;
 static R_size_t R_MaxNSize = R_SIZE_T_MAX;
 static int vsfac = 1; /* current units for vsize: changes at initialization */
 
-attribute_hidden R_size_t R_GetMaxVSize(void)
+R_size_t attribute_hidden R_GetMaxVSize(void)
 {
     if (R_MaxVSize == R_SIZE_T_MAX) return R_SIZE_T_MAX;
     return R_MaxVSize * vsfac;
@@ -440,7 +440,7 @@ attribute_hidden Rboolean R_SetMaxVSize(R_size_t size)
     return FALSE;
 }
 
-attribute_hidden R_size_t R_GetMaxNSize(void)
+R_size_t attribute_hidden R_GetMaxNSize(void)
 {
     return R_MaxNSize;
 }
@@ -1514,7 +1514,7 @@ void R_RunWeakRefFinalizer(SEXP w)
 	SET_READY_TO_FINALIZE(w); /* insures removal from list on next gc */
     PROTECT(key);
     PROTECT(fun);
-    Rboolean oldintrsusp = R_interrupts_suspended;
+    int oldintrsusp = R_interrupts_suspended;
     R_interrupts_suspended = TRUE;
     if (isCFinalizer(fun)) {
 	/* Must be a C finalizer. */
@@ -1662,7 +1662,7 @@ attribute_hidden SEXP do_regFinaliz(SEXP call, SEXP op, SEXP args, SEXP rho)
     if(onexit == NA_LOGICAL)
 	error(_("third argument must be 'TRUE' or 'FALSE'"));
 
-    R_RegisterFinalizerEx(CAR(args), CADR(args), (Rboolean) onexit);
+    R_RegisterFinalizerEx(CAR(args), CADR(args), onexit);
     return R_NilValue;
 }
 
@@ -2013,8 +2013,7 @@ static int RunGenCollect(R_size_t size_needed)
 
 
 /* public interface for controlling GC torture settings */
-/* maybe, but in no header, and now hidden */
-attribute_hidden
+/* maybe, but in no header */
 void R_gc_torture(int gap, int wait, Rboolean inhibit)
 {
     if (gap != NA_INTEGER && gap >= 0)
@@ -2040,7 +2039,7 @@ attribute_hidden SEXP do_gctorture(SEXP call, SEXP op, SEXP args, SEXP rho)
     checkArity(op, args);
 
     if (isLogical(CAR(args))) {
-	Rboolean on = asRbool(CAR(args), call);
+	Rboolean on = asLogical(CAR(args));
 	if (on == NA_LOGICAL) gap = NA_INTEGER;
 	else if (on) gap = 1;
 	else gap = 0;
@@ -2061,7 +2060,7 @@ attribute_hidden SEXP do_gctorture2(SEXP call, SEXP op, SEXP args, SEXP rho)
     checkArity(op, args);
     gap = asInteger(CAR(args));
     wait = asInteger(CADR(args));
-    inhibit = asRbool(CADDR(args), call);
+    inhibit = asLogical(CADDR(args));
     R_gc_torture(gap, wait, inhibit);
 
     return ScalarInteger(old);
@@ -2327,18 +2326,18 @@ char *R_alloc(size_t nelem, int eltsize)
 #ifdef LONG_VECTOR_SUPPORT
 	/* 64-bit platform: previous version used REALSXPs */
 	if(dsize > R_XLEN_T_MAX)  /* currently 4096 TB */
-	    error(_("cannot allocate memory block of size %0.f %s"),
-		  dsize/R_pow_di(1024.0, 4), "Tb");
+	    error(_("cannot allocate memory block of size %0.f Tb"),
+		  dsize/R_pow_di(1024.0, 4));
 	s = allocVector(RAWSXP, size + 1);
 #else
 	if(dsize > R_LEN_T_MAX) /* must be in the Gb range */
-	    error(_("cannot allocate memory block of size %0.1f %s"),
-		  dsize/R_pow_di(1024.0, 3), "Gb");
+	    error(_("cannot allocate memory block of size %0.1f Gb"),
+		  dsize/R_pow_di(1024.0, 3));
 	s = allocVector(RAWSXP, size + 1);
 #endif
 	ATTRIB(s) = R_VStack;
 	R_VStack = s;
-	return (char *) STDVEC_DATAPTR(s);
+	return (char *) DATAPTR(s);
     }
     /* One programmer has relied on this, but it is undocumented! */
     else return NULL;
@@ -2357,10 +2356,6 @@ long double *R_allocLD(size_t nelem)
     size_t ld_align = alignof(long double);
 #elif __GNUC__
     // This is C99, but do not rely on it.
-    // Apple clang warns this is gnu extension.
-    #ifdef __clang__
-    # pragma clang diagnostic ignored "-Wgnu-offsetof-extensions"
-    #endif
     size_t ld_align = offsetof(struct { char __a; long double __b; }, __b);
 #else
     size_t ld_align = 0x0F; // value of x86_64, known others are 4 or 8
@@ -2392,11 +2387,10 @@ char *S_realloc(char *p, long new, long old, int size)
     size_t nold;
     char *q;
     /* shrinking is a no-op */
-    if(new <= old) return p; // so new > 0 below
+    if(new <= old) return p; // so nnew > 0 below
     q = R_alloc((size_t)new, size);
     nold = (size_t)old * size;
-    if (nold)
-	memcpy(q, p, nold);
+    memcpy(q, p, nold);
     memset(q + nold, 0, (size_t)new*size - nold);
     return q;
 }
@@ -2440,9 +2434,6 @@ void *R_realloc_gc(void *p, size_t n)
 
 SEXP allocSExp(SEXPTYPE t)
 {
-    if (t == NILSXP)
-	/* R_NilValue should be the only NILSXP object */
-	return R_NilValue;
     SEXP s;
     if (FORCE_GC || NO_FREE_NODES()) {
 	R_gc_internal(0);
@@ -2640,7 +2631,6 @@ attribute_hidden SEXP mkPROMISE(SEXP expr, SEXP rho)
     return s;
 }
 
-attribute_hidden /* would need to be in an installed header if not hidden */
 SEXP R_mkEVPROMISE(SEXP expr, SEXP val)
 {
     SEXP prom = mkPROMISE(expr, R_NilValue);
@@ -2739,7 +2729,7 @@ SEXP allocVector3(SEXPTYPE type, R_xlen_t length, R_allocator_t *allocator)
     }
 
     if (length > R_XLEN_T_MAX)
-	error(_("cannot allocate vector of length %lld"), (long long)length);
+	error(_("vector is too large")); /**** put length into message */
     else if (length < 0 )
 	error(_("negative length vectors are not allowed"));
     /* number of vector cells to allocate */
@@ -2917,16 +2907,16 @@ SEXP allocVector3(SEXPTYPE type, R_xlen_t length, R_allocator_t *allocator)
 		R_VSize = old_R_VSize;
 		if(dsize > 1024.0*1024.0)
 		    errorcall(R_NilValue,
-			      _("cannot allocate vector of size %0.1f %s"),
-			      dsize/1024.0/1024.0, "Gb");
+			      _("cannot allocate vector of size %0.1f Gb"),
+			      dsize/1024.0/1024.0);
 		if(dsize > 1024.0)
 		    errorcall(R_NilValue,
-			      _("cannot allocate vector of size %0.1f %s"),
-			      dsize/1024.0, "Mb");
+			      _("cannot allocate vector of size %0.1f Mb"),
+			      dsize/1024.0);
 		else
 		    errorcall(R_NilValue,
-			      _("cannot allocate vector of size %0.f %s"),
-			      dsize, "Kb");
+			      _("cannot allocate vector of size %0.f Kb"),
+			      dsize);
 	    }
 	    s->sxpinfo = UnmarkedNodeTemplate.sxpinfo;
 	    INIT_REFCNT(s);
@@ -3052,31 +3042,26 @@ static SEXP allocFormalsList(int nargs, ...)
 }
 
 
-attribute_hidden /* would need to be in an installed header if not hidden */
 SEXP allocFormalsList2(SEXP sym1, SEXP sym2)
 {
     return allocFormalsList(2, sym1, sym2);
 }
 
-attribute_hidden /* would need to be in an installed header if not hidden */
 SEXP allocFormalsList3(SEXP sym1, SEXP sym2, SEXP sym3)
 {
     return allocFormalsList(3, sym1, sym2, sym3);
 }
 
-attribute_hidden /* would need to be in an installed header if not hidden */
 SEXP allocFormalsList4(SEXP sym1, SEXP sym2, SEXP sym3, SEXP sym4)
 {
     return allocFormalsList(4, sym1, sym2, sym3, sym4);
 }
 
-attribute_hidden /* would need to be in an installed header if not hidden */
 SEXP allocFormalsList5(SEXP sym1, SEXP sym2, SEXP sym3, SEXP sym4, SEXP sym5)
 {
     return allocFormalsList(5, sym1, sym2, sym3, sym4, sym5);
 }
 
-attribute_hidden /* would need to be in an installed header if not hidden */
 SEXP allocFormalsList6(SEXP sym1, SEXP sym2, SEXP sym3, SEXP sym4,
 		       SEXP sym5, SEXP sym6)
 {
@@ -3120,7 +3105,7 @@ attribute_hidden SEXP do_gctime(SEXP call, SEXP op, SEXP args, SEXP env)
 	gctime_enabled = TRUE;
     else {
 	check1arg(args, call, "on");
-	gctime_enabled = asRbool(CAR(args), call);
+	gctime_enabled = asLogical(CAR(args));
     }
     ans = allocVector(REALSXP, 5);
     REAL(ans)[0] = gctimes[0];
@@ -3265,13 +3250,13 @@ static void R_gc_internal(R_size_t size_needed)
 	nfrac = (100.0 * ncells) / R_NSize;
 	/* We try to make this consistent with the results returned by gc */
 	ncells = 0.1*ceil(10*ncells * sizeof(SEXPREC)/Mega);
-	REprintf("\n%.1f %s of cons cells used (%d%%)\n",
-		 ncells, "Mbytes", (int) (nfrac + 0.5));
+	REprintf("\n%.1f Mbytes of cons cells used (%d%%)\n",
+		 ncells, (int) (nfrac + 0.5));
 	vcells = R_VSize - VHEAP_FREE();
 	vfrac = (100.0 * vcells) / R_VSize;
 	vcells = 0.1*ceil(10*vcells * vsfac/Mega);
-	REprintf("%.1f %s of vectors used (%d%%)\n",
-		 vcells, "Mbytes", (int) (vfrac + 0.5));
+	REprintf("%.1f Mbytes of vectors used (%d%%)\n",
+		 vcells, (int) (vfrac + 0.5));
     }
 
 #ifdef IMMEDIATE_FINALIZERS
@@ -3468,7 +3453,7 @@ void unprotect_ptr(SEXP s)
 
 /* Debugging function:  is s protected? */
 
-attribute_hidden int Rf_isProtected(SEXP s)
+int Rf_isProtected(SEXP s)
 {
     R_CHECK_THREAD;
     int i = R_PPStackTop;
@@ -3570,20 +3555,6 @@ void R_chk_free(void *ptr)
     /* if(!ptr) warning("attempt to free NULL pointer by Free"); */
     if(ptr) free(ptr); /* ANSI C says free has no effect on NULL, but
 			  better to be safe here */
-}
-
-void *R_chk_memcpy(void *dest, const void *src, size_t n)
-{
-    if (n >= PTRDIFF_MAX)
-	error(_("object is too large (%llu bytes)"), (unsigned long long)n);
-    return n ? memcpy(dest, src, n) : dest;
-}
-
-void *R_chk_memset(void *s, int c, size_t n)
-{
-    if (n >= PTRDIFF_MAX)
-	error(_("object is too large (%llu bytes)"), (unsigned long long)n);
-    return n ? memset(s, c, n) : s;
 }
 
 /* This code keeps a list of objects which are not assigned to variables
@@ -3787,7 +3758,7 @@ void R_ReleaseFromMSet(SEXP x, SEXP mset)
 
 /* Release all objects from the multi-set, but the multi-set can be used for
    preserving more objects. */
-attribute_hidden void R_ReleaseMSet(SEXP mset, int keepSize)
+void R_ReleaseMSet(SEXP mset, int keepSize)
 {
     checkMSet(mset);
     SEXP store = CAR(mset);
@@ -3813,44 +3784,33 @@ SEXP R_MakeExternalPtr(void *p, SEXP tag, SEXP prot)
     return s;
 }
 
-#define CHKEXTPTRSXP(x)							\
-    if (TYPEOF(x) != EXTPTRSXP)						\
-	error(_("%s: argument of type %s is not an external pointer"),	\
-	      __func__, sexptype2char(TYPEOF(x)))
-
 void *R_ExternalPtrAddr(SEXP s)
 {
-    CHKEXTPTRSXP(s);
     return EXTPTR_PTR(CHK(s));
 }
 
 SEXP R_ExternalPtrTag(SEXP s)
 {
-    CHKEXTPTRSXP(s);
     return CHK(EXTPTR_TAG(CHK(s)));
 }
 
 SEXP R_ExternalPtrProtected(SEXP s)
 {
-    CHKEXTPTRSXP(s);
     return CHK(EXTPTR_PROT(CHK(s)));
 }
 
 void R_ClearExternalPtr(SEXP s)
 {
-    CHKEXTPTRSXP(s);
     EXTPTR_PTR(s) = NULL;
 }
 
 void R_SetExternalPtrAddr(SEXP s, void *p)
 {
-    CHKEXTPTRSXP(s);
     EXTPTR_PTR(s) = p;
 }
 
 void R_SetExternalPtrTag(SEXP s, SEXP tag)
 {
-    CHKEXTPTRSXP(s);
     FIX_REFCNT(s, EXTPTR_TAG(s), tag);
     CHECK_OLD_TO_NEW(s, tag);
     EXTPTR_TAG(s) = tag;
@@ -3858,7 +3818,6 @@ void R_SetExternalPtrTag(SEXP s, SEXP tag)
 
 void R_SetExternalPtrProtected(SEXP s, SEXP p)
 {
-    CHKEXTPTRSXP(s);
     FIX_REFCNT(s, EXTPTR_PROT(s), p);
     CHECK_OLD_TO_NEW(s, p);
     EXTPTR_PROT(s) = p;
@@ -3883,7 +3842,6 @@ SEXP R_MakeExternalPtrFn(DL_FUNC p, SEXP tag, SEXP prot)
 
 DL_FUNC R_ExternalPtrAddrFn(SEXP s)
 {
-    CHKEXTPTRSXP(s);
     fn_ptr tmp;
     tmp.p =  EXTPTR_PTR(CHK(s));
     return tmp.fn;
@@ -3898,43 +3856,27 @@ DL_FUNC R_ExternalPtrAddrFn(SEXP s)
 
 /* General Cons Cell Attributes */
 SEXP (ATTRIB)(SEXP x) { return CHK(ATTRIB(CHK(x))); }
-int (ANY_ATTRIB)(SEXP x) { return ANY_ATTRIB(CHK(x)); }
 int (OBJECT)(SEXP x) { return OBJECT(CHK(x)); }
+int (MARK)(SEXP x) { return MARK(CHK(x)); }
 int (TYPEOF)(SEXP x) { return TYPEOF(CHK(x)); }
 int (NAMED)(SEXP x) { return NAMED(CHK(x)); }
-attribute_hidden int (RTRACE)(SEXP x) { return RTRACE(CHK(x)); }
+int (RTRACE)(SEXP x) { return RTRACE(CHK(x)); }
 int (LEVELS)(SEXP x) { return LEVELS(CHK(x)); }
 int (REFCNT)(SEXP x) { return REFCNT(CHK(x)); }
-attribute_hidden int (TRACKREFS)(SEXP x) { return TRACKREFS(CHK(x)); }
+int (TRACKREFS)(SEXP x) { return TRACKREFS(CHK(x)); }
 int (ALTREP)(SEXP x) { return ALTREP(CHK(x)); }
-void (MARK_NOT_MUTABLE)(SEXP x) { MARK_NOT_MUTABLE(CHK(x)); }
-int (MAYBE_SHARED)(SEXP x) { return MAYBE_SHARED(CHK(x)); }
-int (NO_REFERENCES)(SEXP x) { return NO_REFERENCES(CHK(x)); }
-
-// this is NOT a function version of the IS_SCALAR macro!
-int (IS_SCALAR)(SEXP x, int type)
-{
-    return TYPEOF(CHK(x)) == type && XLENGTH(x) == 1;
-}
-
-attribute_hidden int (MARK)(SEXP x) { return MARK(CHK(x)); }
-attribute_hidden
+int (IS_SCALAR)(SEXP x, int type) { return IS_SCALAR(CHK(x), type); }
 void (DECREMENT_REFCNT)(SEXP x) { DECREMENT_REFCNT(CHK(x)); }
-attribute_hidden
 void (INCREMENT_REFCNT)(SEXP x) { INCREMENT_REFCNT(CHK(x)); }
-attribute_hidden
 void (DISABLE_REFCNT)(SEXP x)  { DISABLE_REFCNT(CHK(x)); }
-attribute_hidden
 void (ENABLE_REFCNT)(SEXP x) { ENABLE_REFCNT(CHK(x)); }
-attribute_hidden
+void (MARK_NOT_MUTABLE)(SEXP x) { MARK_NOT_MUTABLE(CHK(x)); }
 int (ASSIGNMENT_PENDING)(SEXP x) { return ASSIGNMENT_PENDING(CHK(x)); }
-attribute_hidden void (SET_ASSIGNMENT_PENDING)(SEXP x, int v)
+void (SET_ASSIGNMENT_PENDING)(SEXP x, int v)
 {
     SET_ASSIGNMENT_PENDING(CHK(x), v);
 }
-attribute_hidden
 int (IS_ASSIGNMENT_CALL)(SEXP x) { return IS_ASSIGNMENT_CALL(CHK(x)); }
-attribute_hidden
 void (MARK_ASSIGNMENT_CALL)(SEXP x) { MARK_ASSIGNMENT_CALL(CHK(x)); }
 
 void (SET_ATTRIB)(SEXP x, SEXP v) {
@@ -3946,13 +3888,13 @@ void (SET_ATTRIB)(SEXP x, SEXP v) {
     ATTRIB(x) = v;
 }
 void (SET_OBJECT)(SEXP x, int v) { SET_OBJECT(CHK(x), v); }
+void (SET_TYPEOF)(SEXP x, int v) { SET_TYPEOF(CHK(x), v); }
 void (SET_NAMED)(SEXP x, int v)
 {
 #ifndef SWITCH_TO_REFCNT
     SET_NAMED(CHK(x), v);
 #endif
 }
-attribute_hidden
 void (SET_RTRACE)(SEXP x, int v) { SET_RTRACE(CHK(x), v); }
 int (SETLEVELS)(SEXP x, int v) { return SETLEVELS(CHK(x), v); }
 void DUPLICATE_ATTRIB(SEXP to, SEXP from) {
@@ -3965,76 +3907,10 @@ void SHALLOW_DUPLICATE_ATTRIB(SEXP to, SEXP from) {
     SET_OBJECT(CHK(to), OBJECT(from));
     IS_S4_OBJECT(from) ?  SET_S4_OBJECT(to) : UNSET_S4_OBJECT(to);
 }
-void CLEAR_ATTRIB(SEXP x)
-{
-    SET_ATTRIB(CHK(x), R_NilValue);
-    SET_OBJECT(x, 0);
-    UNSET_S4_OBJECT(x);
-}
-
-NORET static void bad_SET_TYPEOF(int from, int to)
-{
-    error(_("can't change type from %s to %s"),
-	  sexptype2char(from), sexptype2char(to));
-}
-
-static void check_SET_TYPEOF(SEXP x, int v)
-{
-    if (ALTREP(x))
-	error(_("can't change the type of an ALTREP object from %s to %s"),
-	      sexptype2char(TYPEOF(x)), sexptype2char(v));
-    switch (TYPEOF(x)) {
-    case LISTSXP:
-    case LANGSXP:
-    case DOTSXP:
-	if (BNDCELL_TAG(x))
-	    error(_("can't change the type of a binding cell"));
-	switch (v) {
-	case LISTSXP:
-	case LANGSXP:
-	case DOTSXP:
-	case BCODESXP: return;
-	default: bad_SET_TYPEOF(TYPEOF(x), v);
-	}
-    case INTSXP:
-    case LGLSXP:
-	switch (v) {
-	case INTSXP:
-	case LGLSXP: return;
-	default: bad_SET_TYPEOF(TYPEOF(x), v);
-	}
-    case VECSXP:
-    case EXPRSXP:
-	switch (v) {
-	case VECSXP:
-	case EXPRSXP: return;
-	default: bad_SET_TYPEOF(TYPEOF(x), v);
-	}
-    default: bad_SET_TYPEOF(TYPEOF(x), v);
-    }
-}
-
-void (SET_TYPEOF)(SEXP x, int v)
-{
-    /* Ideally this should not exist as a function outsie of base, but
-       it was shown in WRE and is used in a good number of packages.
-       So try to make it a little safer by only allowing some type
-       changes.
-    */
-    if (TYPEOF(CHK(x)) != v) {
-	check_SET_TYPEOF(x, v);
-	SET_TYPEOF(CHK(x), v);
-    }
-}
-
-attribute_hidden
-void (ALTREP_SET_TYPEOF)(SEXP x, int v) { SET_TYPEOF(CHK(x), v); }
 
 void (ENSURE_NAMEDMAX)(SEXP x) { ENSURE_NAMEDMAX(CHK(x)); }
-attribute_hidden void (ENSURE_NAMED)(SEXP x) { ENSURE_NAMED(CHK(x)); }
-attribute_hidden
+void (ENSURE_NAMED)(SEXP x) { ENSURE_NAMED(CHK(x)); }
 void (SETTER_CLEAR_NAMED)(SEXP x) { SETTER_CLEAR_NAMED(CHK(x)); }
-attribute_hidden
 void (RAISE_NAMED)(SEXP x, int n) { RAISE_NAMED(CHK(x), n); }
 
 /* S4 object testing */
@@ -4043,15 +3919,14 @@ void (SET_S4_OBJECT)(SEXP x){ SET_S4_OBJECT(CHK(x)); }
 void (UNSET_S4_OBJECT)(SEXP x){ UNSET_S4_OBJECT(CHK(x)); }
 
 /* JIT optimization support */
-attribute_hidden int (NOJIT)(SEXP x) { return NOJIT(CHK(x)); }
-attribute_hidden int (MAYBEJIT)(SEXP x) { return MAYBEJIT(CHK(x)); }
-attribute_hidden void (SET_NOJIT)(SEXP x) { SET_NOJIT(CHK(x)); }
-attribute_hidden void (SET_MAYBEJIT)(SEXP x) { SET_MAYBEJIT(CHK(x)); }
-attribute_hidden void (UNSET_MAYBEJIT)(SEXP x) { UNSET_MAYBEJIT(CHK(x)); }
+int (NOJIT)(SEXP x) { return NOJIT(CHK(x)); }
+int (MAYBEJIT)(SEXP x) { return MAYBEJIT(CHK(x)); }
+void (SET_NOJIT)(SEXP x) { SET_NOJIT(CHK(x)); }
+void (SET_MAYBEJIT)(SEXP x) { SET_MAYBEJIT(CHK(x)); }
+void (UNSET_MAYBEJIT)(SEXP x) { UNSET_MAYBEJIT(CHK(x)); }
 
 /* Growable vector support */
 int (IS_GROWABLE)(SEXP x) { return IS_GROWABLE(CHK(x)); }
-int (GROWABLE_BIT_SET)(SEXP x) { return GROWABLE_BIT_SET(CHK(x)); }
 void (SET_GROWABLE_BIT)(SEXP x) { SET_GROWABLE_BIT(CHK(x)); }
 
 static int nvec[32] = {
@@ -4087,15 +3962,13 @@ void (SETLENGTH)(SEXP x, R_xlen_t v)
 void (SET_TRUELENGTH)(SEXP x, R_xlen_t v) { SET_TRUELENGTH(CHK2(x), v); }
 int  (IS_LONG_VEC)(SEXP x) { return IS_LONG_VEC(CHK2(x)); }
 #ifdef TESTING_WRITE_BARRIER
-attribute_hidden
 R_xlen_t (STDVEC_LENGTH)(SEXP x) { return STDVEC_LENGTH(CHK2(x)); }
-attribute_hidden
 R_xlen_t (STDVEC_TRUELENGTH)(SEXP x) { return STDVEC_TRUELENGTH(CHK2(x)); }
-attribute_hidden void (SETALTREP)(SEXP x, int v) { SETALTREP(x, v); }
+void (SETALTREP)(SEXP x, int v) { SETALTREP(x, v); }
 #endif
 
 /* temporary, to ease transition away from remapping */
-R_xlen_t Rf_XLENGTH(SEXP x) { return XLENGTH(CHK2(x)); }
+R_xlen_t Rf_XLENGTH(SEXP x) { return XLENGTH(x); }
 
 const char *(R_CHAR)(SEXP x) {
     if(TYPEOF(x) != CHARSXP) // Han-Tak proposes to prepend  'x && '
@@ -4108,9 +3981,6 @@ SEXP (STRING_ELT)(SEXP x, R_xlen_t i) {
     if(TYPEOF(x) != STRSXP)
 	error("%s() can only be applied to a '%s', not a '%s'",
 	      "STRING_ELT", "character vector", R_typeToChar(x));
-    if (i < 0 || i >= XLENGTH(x))
-	error(_("attempt access index %lld/%lld in STRING_ELT"),
-	      (long long)i, (long long)XLENGTH(x));
     if (ALTREP(x))
 	return CHK(ALTSTRING_ELT(CHK(x), i));
     else {
@@ -4126,9 +3996,6 @@ SEXP (VECTOR_ELT)(SEXP x, R_xlen_t i) {
        TYPEOF(x) != WEAKREFSXP)
 	error("%s() can only be applied to a '%s', not a '%s'",
 	      "VECTOR_ELT", "list", R_typeToChar(x));
-    if (i < 0 || i >= XLENGTH(x))
-	error(_("attempt access index %lld/%lld in VECTOR_ELT"),
-	      (long long)i, (long long)XLENGTH(x));
     if (ALTREP(x)) {
 	SEXP ans = CHK(ALTLIST_ELT(CHK(x), i));
 	/* the element is marked as not mutable since complex
@@ -4148,9 +4015,10 @@ SEXP (VECTOR_ELT)(SEXP x, R_xlen_t i) {
    that even zero-length vectors have non-NULL data pointers, so
    return (void *) 1 instead. Zero-length CHARSXP objects still have a
    trailing zero byte so they are not handled. */
-# define CHKZLN(x) do {						\
-	if (STDVEC_LENGTH(CHK(x)) == 0 && TYPEOF(x) != CHARSXP) \
-	    return (void *) 1;					\
+# define CHKZLN(x) do {					   \
+	CHK(x);						   \
+	if (STDVEC_LENGTH(x) == 0 && TYPEOF(x) != CHARSXP) \
+	    return (void *) 1;				   \
     } while (0)
 #else
 # define CHKZLN(x) do { } while (0)
@@ -4166,9 +4034,6 @@ void *(STDVEC_DATAPTR)(SEXP x)
     CHKZLN(x);
     return STDVEC_DATAPTR(x);
 }
-
-/* nedded for implementing Dataptr ALTREP methods */
-void *DATAPTR_RW(SEXP x) { return DATAPTR(x); }
 
 int *(LOGICAL)(SEXP x) {
     if(TYPEOF(x) != LGLSXP)
@@ -4262,7 +4127,7 @@ SEXP *(STRING_PTR)(SEXP x) {
 const SEXP *(STRING_PTR_RO)(SEXP x) {
     if(TYPEOF(x) != STRSXP)
 	error("%s() can only be applied to a '%s', not a '%s'",
-	      __func__, "character", R_typeToChar(x));
+	      "STRING_PTR_RO", "character", R_typeToChar(x));
     CHKZLN(x);
     return STRING_PTR_RO(x);
 }
@@ -4270,14 +4135,6 @@ const SEXP *(STRING_PTR_RO)(SEXP x) {
 NORET SEXP * (VECTOR_PTR)(SEXP x)
 {
   error(_("not safe to return vector pointer"));
-}
-
-const SEXP *(VECTOR_PTR_RO)(SEXP x) {
-    if(TYPEOF(x) != VECSXP)
-	error("%s() can only be applied to a '%s', not a '%s'",
-	      __func__, "list", R_typeToChar(x));
-    CHKZLN(x);
-    return VECTOR_PTR_RO(x);
 }
 
 void (SET_STRING_ELT)(SEXP x, R_xlen_t i, SEXP v) {
@@ -4476,7 +4333,7 @@ attribute_hidden void R_try_clear_args_refcnt(SEXP args)
 
 /* List Accessors */
 SEXP (TAG)(SEXP e) { return CHK(TAG(CHKCONS(e))); }
-attribute_hidden SEXP (CAR0)(SEXP e) { return CHK(CAR0(CHKCONS(e))); }
+SEXP (CAR0)(SEXP e) { return CHK(CAR0(CHKCONS(e))); }
 SEXP (CDR)(SEXP e) { return CHK(CDR(CHKCONS(e))); }
 SEXP (CAAR)(SEXP e) { return CHK(CAAR(CHKCONS(e))); }
 SEXP (CDAR)(SEXP e) { return CHK(CDAR(CHKCONS(e))); }
@@ -4487,7 +4344,7 @@ SEXP (CADDR)(SEXP e) { return CHK(CADDR(CHKCONS(e))); }
 SEXP (CADDDR)(SEXP e) { return CHK(CADDDR(CHKCONS(e))); }
 SEXP (CAD4R)(SEXP e) { return CHK(CAD4R(CHKCONS(e))); }
 SEXP (CAD5R)(SEXP e) { return CHK(CAD5R(CHKCONS(e))); }
-attribute_hidden int (MISSING)(SEXP x) { return MISSING(CHKCONS(x)); }
+int (MISSING)(SEXP x) { return MISSING(CHKCONS(x)); }
 
 void (SET_TAG)(SEXP x, SEXP v)
 {
@@ -4590,33 +4447,23 @@ SEXP (SETCAD4R)(SEXP x, SEXP y)
     return y;
 }
 
-SEXP (EXTPTR_PROT)(SEXP x) { CHKEXTPTRSXP(x); return EXTPTR_PROT(CHK(x)); }
-SEXP (EXTPTR_TAG)(SEXP x) { CHKEXTPTRSXP(x); return EXTPTR_TAG(CHK(x)); }
-void *(EXTPTR_PTR)(SEXP x) { CHKEXTPTRSXP(x); return EXTPTR_PTR(CHK(x)); }
+SEXP (EXTPTR_PROT)(SEXP x) { return EXTPTR_PROT(CHK(x)); }
+SEXP (EXTPTR_TAG)(SEXP x) { return EXTPTR_TAG(CHK(x)); }
+void *(EXTPTR_PTR)(SEXP x) { return EXTPTR_PTR(CHK(x)); }
 
-attribute_hidden
 void (SET_MISSING)(SEXP x, int v) { SET_MISSING(CHKCONS(x), v); }
 
 /* Closure Accessors */
-/* some internals seem to depend on allowing a LISTSXP */
-#define CHKCLOSXP(x) \
-    if (TYPEOF(x) != CLOSXP && TYPEOF(x) != LISTSXP) \
-	error(_("%s: argument of type %s is not a closure"), \
-	      __func__, sexptype2char(TYPEOF(x)))
-SEXP (FORMALS)(SEXP x) { CHKCLOSXP(x); return CHK(FORMALS(CHK(x))); }
-SEXP (BODY)(SEXP x) { CHKCLOSXP(x); return CHK(BODY(CHK(x))); }
-SEXP (CLOENV)(SEXP x) { CHKCLOSXP(x); return CHK(CLOENV(CHK(x))); }
+SEXP (FORMALS)(SEXP x) { return CHK(FORMALS(CHK(x))); }
+SEXP (BODY)(SEXP x) { return CHK(BODY(CHK(x))); }
+SEXP (CLOENV)(SEXP x) { return CHK(CLOENV(CHK(x))); }
 int (RDEBUG)(SEXP x) { return RDEBUG(CHK(x)); }
-attribute_hidden int (RSTEP)(SEXP x) { return RSTEP(CHK(x)); }
-SEXP R_ClosureFormals(SEXP x) { return (FORMALS)(x); }
-SEXP R_ClosureBody(SEXP x) { return (BODY)(x); }
-SEXP R_ClosureEnv(SEXP x) { return (CLOENV)(x); }
+int (RSTEP)(SEXP x) { return RSTEP(CHK(x)); }
 
 void (SET_FORMALS)(SEXP x, SEXP v) { FIX_REFCNT(x, FORMALS(x), v); CHECK_OLD_TO_NEW(x, v); FORMALS(x) = v; }
 void (SET_BODY)(SEXP x, SEXP v) { FIX_REFCNT(x, BODY(x), v); CHECK_OLD_TO_NEW(x, v); BODY(x) = v; }
 void (SET_CLOENV)(SEXP x, SEXP v) { FIX_REFCNT(x, CLOENV(x), v); CHECK_OLD_TO_NEW(x, v); CLOENV(x) = v; }
 void (SET_RDEBUG)(SEXP x, int v) { SET_RDEBUG(CHK(x), v); }
-attribute_hidden
 void (SET_RSTEP)(SEXP x, int v) { SET_RSTEP(CHK(x), v); }
 
 /* These are only needed with the write barrier on */
@@ -4629,20 +4476,13 @@ void (SET_PRIMOFFSET)(SEXP x, int v) { SET_PRIMOFFSET(CHK(x), v); }
 #endif
 
 /* Symbol Accessors */
-/* looks like R_NilValue is also being passed to tome of these */
-#define CHKSYMSXP(x) \
-    if (x != R_NilValue && TYPEOF(x) != SYMSXP) \
-	error(_("%s: argument of type %s is not a symbol or NULL"), \
-	      __func__, sexptype2char(TYPEOF(x)))
-SEXP (PRINTNAME)(SEXP x) { CHKSYMSXP(x); return CHK(PRINTNAME(CHK(x))); }
-SEXP (SYMVALUE)(SEXP x) { CHKSYMSXP(x); return CHK(SYMVALUE(CHK(x))); }
-SEXP (INTERNAL)(SEXP x) { CHKSYMSXP(x); return CHK(INTERNAL(CHK(x))); }
-int (DDVAL)(SEXP x) { CHKSYMSXP(x); return DDVAL(CHK(x)); }
+SEXP (PRINTNAME)(SEXP x) { return CHK(PRINTNAME(CHK(x))); }
+SEXP (SYMVALUE)(SEXP x) { return CHK(SYMVALUE(CHK(x))); }
+SEXP (INTERNAL)(SEXP x) { return CHK(INTERNAL(CHK(x))); }
+int (DDVAL)(SEXP x) { return DDVAL(CHK(x)); }
 
-attribute_hidden
 void (SET_PRINTNAME)(SEXP x, SEXP v) { FIX_REFCNT(x, PRINTNAME(x), v); CHECK_OLD_TO_NEW(x, v); PRINTNAME(x) = v; }
 
-attribute_hidden
 void (SET_SYMVALUE)(SEXP x, SEXP v)
 {
     if (SYMVALUE(x) == v)
@@ -4652,43 +4492,17 @@ void (SET_SYMVALUE)(SEXP x, SEXP v)
     SYMVALUE(x) = v;
 }
 
-attribute_hidden
-void (SET_INTERNAL)(SEXP x, SEXP v) {
-    FIX_REFCNT(x, INTERNAL(x), v);
-    CHECK_OLD_TO_NEW(x, v);
-    INTERNAL(x) = v;
-}
-attribute_hidden void (SET_DDVAL)(SEXP x, int v) { SET_DDVAL(CHK(x), v); }
+void (SET_INTERNAL)(SEXP x, SEXP v) { FIX_REFCNT(x, INTERNAL(x), v); CHECK_OLD_TO_NEW(x, v); INTERNAL(x) = v; }
+void (SET_DDVAL)(SEXP x, int v) { SET_DDVAL(CHK(x), v); }
 
 /* Environment Accessors */
-/* looks like R_NilValue is still showing up in internals */
-#define CHKENVSXP(x)						\
-    if (TYPEOF(x) != ENVSXP && x != R_NilValue)				\
-	error(_("%s: argument of type %s is not an environment or NULL"), \
-	      __func__, sexptype2char(TYPEOF(x)))
-SEXP (FRAME)(SEXP x) { CHKENVSXP(x); return CHK(FRAME(CHK(x))); }
-SEXP (ENCLOS)(SEXP x) { CHKENVSXP(x); return CHK(ENCLOS(CHK(x))); }
-SEXP (HASHTAB)(SEXP x) { CHKENVSXP(x); return CHK(HASHTAB(CHK(x))); }
-int (ENVFLAGS)(SEXP x) { CHKENVSXP(x); return ENVFLAGS(CHK(x)); }
-SEXP R_ParentEnv(SEXP x) { return (ENCLOS)(x); }
+SEXP (FRAME)(SEXP x) { return CHK(FRAME(CHK(x))); }
+SEXP (ENCLOS)(SEXP x) { return CHK(ENCLOS(CHK(x))); }
+SEXP (HASHTAB)(SEXP x) { return CHK(HASHTAB(CHK(x))); }
+int (ENVFLAGS)(SEXP x) { return ENVFLAGS(CHK(x)); }
 
 void (SET_FRAME)(SEXP x, SEXP v) { FIX_REFCNT(x, FRAME(x), v); CHECK_OLD_TO_NEW(x, v); FRAME(x) = v; }
-
-void (SET_ENCLOS)(SEXP x, SEXP v)
-{
-    if (v == R_NilValue)
-	/* mainly to handle unserializing old files */
-	v = R_EmptyEnv;
-    if (TYPEOF(v) != ENVSXP)
-	error(_("'parent' is not an environment"));
-    for (SEXP e = v; e != R_NilValue; e = ENCLOS(e))
-	if (e == x)
-	    error(_("cycles in parent chains are not allowed"));
-    FIX_REFCNT(x, ENCLOS(x), v);
-    CHECK_OLD_TO_NEW(x, v);
-    ENCLOS(x) = v;
-}
-
+void (SET_ENCLOS)(SEXP x, SEXP v) { FIX_REFCNT(x, ENCLOS(x), v); CHECK_OLD_TO_NEW(x, v); ENCLOS(x) = v; }
 void (SET_HASHTAB)(SEXP x, SEXP v) { FIX_REFCNT(x, HASHTAB(x), v); CHECK_OLD_TO_NEW(x, v); HASHTAB(x) = v; }
 void (SET_ENVFLAGS)(SEXP x, int v) { SET_ENVFLAGS(x, v); }
 
@@ -4769,10 +4583,10 @@ Rboolean Rf_isString(SEXP s) { return isString(CHK(s)); }
 Rboolean Rf_isObject(SEXP s) { return isObject(CHK(s)); }
 
 /* Bindings accessors */
-attribute_hidden Rboolean
-(IS_ACTIVE_BINDING)(SEXP b) {return (Rboolean) IS_ACTIVE_BINDING(CHK(b));}
-attribute_hidden Rboolean
-(BINDING_IS_LOCKED)(SEXP b) {return (Rboolean) BINDING_IS_LOCKED(CHK(b));}
+Rboolean attribute_hidden
+(IS_ACTIVE_BINDING)(SEXP b) {return IS_ACTIVE_BINDING(CHK(b));}
+Rboolean attribute_hidden
+(BINDING_IS_LOCKED)(SEXP b) {return BINDING_IS_LOCKED(CHK(b));}
 attribute_hidden void
 (SET_ACTIVE_BINDING_BIT)(SEXP b) {SET_ACTIVE_BINDING_BIT(CHK(b));}
 attribute_hidden void (LOCK_BINDING)(SEXP b) {LOCK_BINDING(CHK(b));}
@@ -4783,30 +4597,33 @@ void (SET_BASE_SYM_CACHED)(SEXP b) { SET_BASE_SYM_CACHED(CHK(b)); }
 attribute_hidden
 void (UNSET_BASE_SYM_CACHED)(SEXP b) { UNSET_BASE_SYM_CACHED(CHK(b)); }
 attribute_hidden
-Rboolean (BASE_SYM_CACHED)(SEXP b) { return (Rboolean) BASE_SYM_CACHED(CHK(b)); }
+Rboolean (BASE_SYM_CACHED)(SEXP b) { return BASE_SYM_CACHED(CHK(b)); }
 
 attribute_hidden
 void (SET_SPECIAL_SYMBOL)(SEXP b) { SET_SPECIAL_SYMBOL(CHK(b)); }
 attribute_hidden
 void (UNSET_SPECIAL_SYMBOL)(SEXP b) { UNSET_SPECIAL_SYMBOL(CHK(b)); }
-attribute_hidden // this is a bit returned in an int, so really is Rboolean
-Rboolean (IS_SPECIAL_SYMBOL)(SEXP b) { return (Rboolean) IS_SPECIAL_SYMBOL(CHK(b)); }
+attribute_hidden
+Rboolean (IS_SPECIAL_SYMBOL)(SEXP b) { return IS_SPECIAL_SYMBOL(CHK(b)); }
 attribute_hidden
 void (SET_NO_SPECIAL_SYMBOLS)(SEXP b) { SET_NO_SPECIAL_SYMBOLS(CHK(b)); }
 attribute_hidden
 void (UNSET_NO_SPECIAL_SYMBOLS)(SEXP b) { UNSET_NO_SPECIAL_SYMBOLS(CHK(b)); }
-attribute_hidden // // this is a bit returned in an int,
-Rboolean (NO_SPECIAL_SYMBOLS)(SEXP b) { return (Rboolean) NO_SPECIAL_SYMBOLS(CHK(b)); }
+attribute_hidden
+Rboolean (NO_SPECIAL_SYMBOLS)(SEXP b) { return NO_SPECIAL_SYMBOLS(CHK(b)); }
 
 /* R_FunTab accessors, only needed when write barrier is on */
-/* Might want to not hide for experimentation without rebuilding R - LT */
-attribute_hidden int (PRIMVAL)(SEXP x) { return PRIMVAL(CHK(x)); }
-attribute_hidden CCODE (PRIMFUN)(SEXP x) { return PRIMFUN(CHK(x)); }
-attribute_hidden void (SET_PRIMFUN)(SEXP x, CCODE f) { PRIMFUN(CHK(x)) = f; }
+/* Not hidden to allow experimentation without rebuilding R - LT */
+/* attribute_hidden */
+int (PRIMVAL)(SEXP x) { return PRIMVAL(CHK(x)); }
+/* attribute_hidden */
+CCODE (PRIMFUN)(SEXP x) { return PRIMFUN(CHK(x)); }
+/* attribute_hidden */
+void (SET_PRIMFUN)(SEXP x, CCODE f) { PRIMFUN(CHK(x)) = f; }
 
 /* for use when testing the write barrier */
-attribute_hidden int (IS_BYTES)(SEXP x) { return IS_BYTES(CHK(x)); }
-attribute_hidden int (IS_LATIN1)(SEXP x) { return IS_LATIN1(CHK(x)); }
+int  attribute_hidden (IS_BYTES)(SEXP x) { return IS_BYTES(CHK(x)); }
+int  attribute_hidden (IS_LATIN1)(SEXP x) { return IS_LATIN1(CHK(x)); }
 /* Next two are used in package utils */
 int  (IS_ASCII)(SEXP x) { return IS_ASCII(CHK(x)); }
 int  (IS_UTF8)(SEXP x) { return IS_UTF8(CHK(x)); }
@@ -4814,9 +4631,9 @@ attribute_hidden void (SET_BYTES)(SEXP x) { SET_BYTES(CHK(x)); }
 attribute_hidden void (SET_LATIN1)(SEXP x) { SET_LATIN1(CHK(x)); }
 attribute_hidden void (SET_UTF8)(SEXP x) { SET_UTF8(CHK(x)); }
 attribute_hidden void (SET_ASCII)(SEXP x) { SET_ASCII(CHK(x)); }
-/*attribute_hidden*/ int  (ENC_KNOWN)(SEXP x) { return ENC_KNOWN(CHK(x)); }
+int  (ENC_KNOWN)(SEXP x) { return ENC_KNOWN(CHK(x)); }
 attribute_hidden void (SET_CACHED)(SEXP x) { SET_CACHED(CHK(x)); }
-/*attribute_hidden*/ int  (IS_CACHED)(SEXP x) { return IS_CACHED(CHK(x)); }
+int  (IS_CACHED)(SEXP x) { return IS_CACHED(CHK(x)); }
 
 /*******************************************/
 /* Non-sampling memory use profiler
@@ -4953,13 +4770,14 @@ void *R_AllocStringBuffer(size_t blen, R_StringBuffer *buf)
     if(!buf->data) {
 	buf->bufsize = 0;
 	/* don't translate internal error message */
-	error("could not allocate memory (%u %s) in C function 'R_AllocStringBuffer'",
-	      (unsigned int) blen/1024/1024, "Mb");
+	error("could not allocate memory (%u Mb) in C function 'R_AllocStringBuffer'",
+	      (unsigned int) blen/1024/1024);
     }
     return buf->data;
 }
 
-void R_FreeStringBuffer(R_StringBuffer *buf)
+void
+R_FreeStringBuffer(R_StringBuffer *buf)
 {
     if (buf->data != NULL) {
 	free(buf->data);
@@ -4968,7 +4786,8 @@ void R_FreeStringBuffer(R_StringBuffer *buf)
     }
 }
 
-attribute_hidden void R_FreeStringBufferL(R_StringBuffer *buf)
+attribute_hidden void
+R_FreeStringBufferL(R_StringBuffer *buf)
 {
     if (buf->bufsize > buf->defaultSize) {
 	free(buf->data);
@@ -5013,96 +4832,3 @@ NORET R_len_t R_BadLongVector(SEXP x, const char *file, int line)
     error(_("long vectors not supported yet: %s:%d"), file, line);
 }
 #endif
-
-/* Highly experimental resizable vector support */
-
-/* Serializing and unserializing preserves the GROWABLE bit, but
-   XTRUELENGTH is set to zero by unserialize. A vector with the
-   GROWABLE bit set but XTRUELENGTH zero is therefore considered not
-   resizeble. */ 
-bool R_isResizable(SEXP x)
-{
-    return isVector(x) && ! ALTREP(x) && GROWABLE_BIT_SET(x) &&
-	XTRUELENGTH(x) != 0 && XLENGTH(x) <= XTRUELENGTH(x);
-}
-
-R_xlen_t R_maxLength(SEXP x)
-{
-    return GROWABLE_BIT_SET(x) ? XTRUELENGTH(x) : xlength(x);
-}
-
-SEXP R_allocResizableVector(SEXPTYPE type, R_xlen_t maxlen)
-{
-    switch (type) {
-    case LGLSXP:
-    case INTSXP:
-    case REALSXP:
-    case CPLXSXP:
-    case STRSXP:
-    case EXPRSXP:
-    case VECSXP:
-    case RAWSXP:
-	break;
-    default:
-	error(_("cannot make a resizable vector of type '%s'"),
-	      sexptype2char(type));
-    }
-    SEXP val = allocVector(type, maxlen);
-    SET_TRUELENGTH(val, maxlen);
-    SET_GROWABLE_BIT(val);
-    return val;
-}
-
-SEXP R_duplicateAsResizable(SEXP x)
-{
-    if (ALTREP(x))
-	error(_("ALTREP objects cannot be made resizable"));
-    if (! isVector(x))
-	error(_("cannot make non-vector objects resizable"));
-    SEXP val = duplicate(x);
-    SET_TRUELENGTH(val, XLENGTH(val));
-    SET_GROWABLE_BIT(val);
-    return val;
-}
-
-static R_INLINE void clear_elements(SEXP x, R_xlen_t from, R_xlen_t to)
-{
-    switch(TYPEOF(x)) {
-    case STRSXP:
-	for (R_xlen_t i = from; i < to; i++)
-	    SET_STRING_ELT(x, i, R_BlankString);
-	break;
-    case EXPRSXP:
-    case VECSXP:
-	for (R_xlen_t i = from; i < to; i++)
-	    SET_VECTOR_ELT(x, i, R_NilValue);
-	break;
-    }
-}
-
-void R_resizeVector(SEXP x, R_xlen_t newlen)
-{
-    if (newlen < 0)
-	error(_("invalid negative 'newlen'"));
-    if (newlen != xlength(x)) {
-	if (! R_isResizable(x))
-	    error(_("not a resizable vector"));
-	if (newlen > XTRUELENGTH(x))
-	    error(_("'newlen' is too large"));
-	if (ATTRIB(x) != R_NilValue) {
-	    // clear length-dependent attributes
-	    if (getAttrib(x, R_DimSymbol) != R_NilValue)
-		setAttrib(x, R_DimSymbol, R_NilValue);
-	    if (getAttrib(x, R_DimNamesSymbol) != R_NilValue)
-		setAttrib(x, R_DimNamesSymbol, R_NilValue);
-	    if (getAttrib(x, R_NamesSymbol) != R_NilValue)
-		setAttrib(x, R_NamesSymbol, R_NilValue);
-	}
-	R_xlen_t len = XLENGTH(x);
-	if (newlen < len) // clear dropped elements to drop refcounts
-	    clear_elements(x, newlen, len);
-	SET_STDVEC_LENGTH(x, newlen);
-	if (len < newlen) // initialize new elements
-	    clear_elements(x, len, newlen);
-    }
-}

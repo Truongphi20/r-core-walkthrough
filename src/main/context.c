@@ -1,7 +1,7 @@
 /*
  *  R : A Computer Language for Statistical Data Analysis
  *  Copyright (C) 1995, 1996  Robert Gentleman and Ross Ihaka
- *  Copyright (C) 1998-2025   The R Core Team.
+ *  Copyright (C) 1998-2020   The R Core Team.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -177,7 +177,7 @@ static void R_restore_globals(RCNTXT *cptr)
     R_BCFrame = cptr->bcframe;
     R_EvalDepth = cptr->evaldepth;
     vmaxset(cptr->vmax);
-    R_interrupts_suspended = (Rboolean) cptr->intsusp;
+    R_interrupts_suspended = cptr->intsusp;
     R_HandlerStack = cptr->handlerstack;
     R_RestartStack = cptr->restartstack;
     while (R_PendingPromises != cptr->prstack) {
@@ -212,7 +212,7 @@ static RCNTXT *first_jump_target(RCNTXT *cptr, int mask)
 
 /* R_jumpctxt - jump to the named context */
 
-NORET attribute_hidden void R_jumpctxt(RCNTXT * targetcptr, int mask, SEXP val)
+attribute_hidden void NORET R_jumpctxt(RCNTXT * targetcptr, int mask, SEXP val)
 {
     Rboolean savevis = R_Visible;
     RCNTXT *cptr;
@@ -237,9 +237,6 @@ NORET attribute_hidden void R_jumpctxt(RCNTXT * targetcptr, int mask, SEXP val)
 	R_CStackLimit = R_OldCStackLimit;
 	R_OldCStackLimit = 0;
     }
-
-    if (mask == 0)
-	mask = 1; // make sure the return value for SETJMP is not zero
 
     LONGJMP(cptr->cjmpbuf, mask);
 }
@@ -334,7 +331,7 @@ void endcontext(RCNTXT * cptr)
 
 /* findcontext - find the correct context */
 
-NORET attribute_hidden void findcontext(int mask, SEXP env, SEXP val)
+attribute_hidden void NORET findcontext(int mask, SEXP env, SEXP val)
 {
     RCNTXT *cptr;
     cptr = R_GlobalContext;
@@ -356,7 +353,7 @@ NORET attribute_hidden void findcontext(int mask, SEXP env, SEXP val)
     }
 }
 
-NORET attribute_hidden void R_JumpToContext(RCNTXT *target, int mask, SEXP val)
+attribute_hidden void NORET R_JumpToContext(RCNTXT *target, int mask, SEXP val)
 {
     RCNTXT *cptr;
     for (cptr = R_GlobalContext;
@@ -416,7 +413,7 @@ attribute_hidden SEXP R_sysframe(int n, RCNTXT *cptr)
 /* It would be much simpler if sysparent just returned cptr->sysparent */
 /* but then we wouldn't be compatible with S. */
 
-attribute_hidden int R_sysparent(int n, RCNTXT *cptr)
+int attribute_hidden R_sysparent(int n, RCNTXT *cptr)
 {
     int j;
     SEXP s;
@@ -449,7 +446,7 @@ attribute_hidden int R_sysparent(int n, RCNTXT *cptr)
     return n;
 }
 
-attribute_hidden int framedepth(RCNTXT *cptr)
+int attribute_hidden framedepth(RCNTXT *cptr)
 {
     int nframe = 0;
     while (cptr->nextcontext != NULL) {
@@ -531,7 +528,7 @@ attribute_hidden SEXP R_sysfunction(int n, RCNTXT *cptr)
 /* browser contexts are a bit special because they are transient and for  */
 /* any closure context with the debug bit set one will be created; so we  */
 /* need to count those as well                                            */
-attribute_hidden int countContexts(int ctxttype, int browser) {
+int countContexts(int ctxttype, int browser) {
     int n=0;
     RCNTXT *cptr;
 
@@ -821,20 +818,8 @@ Rboolean R_ToplevelExec(void (*fun)(void *), void *data)
 }
 
 /* Return the current environment. */
-/* The _current environment_ is taken to be the top closure call
-   environment on the context stack, or .GlobalEnv if there is none.
-   An alternative would be the environment in which a .Call or similar
-   expression is evaluated. This is currently not recorded; doing so
-   would incur some overhead that does not seem warranted.
- */
 SEXP R_GetCurrentEnv(void) {
-    RCNTXT *cptr = R_GlobalContext;
-    while (cptr->nextcontext != NULL) {
-	if ((cptr->callflag & CTXT_FUNCTION) != 0)
-	    return cptr->cloenv;
-	else cptr = cptr->nextcontext;
-    }
-    return R_GlobalEnv;
+    return R_GlobalContext->sysparent;
 }
 
 
@@ -903,7 +888,7 @@ R_tryEval(SEXP e, SEXP env, int *ErrorOccurred)
 SEXP R_tryEvalSilent(SEXP e, SEXP env, int *ErrorOccurred)
 {
     SEXP val;
-    int oldshow = R_ShowErrorMessages;
+    Rboolean oldshow = R_ShowErrorMessages;
     R_ShowErrorMessages = FALSE;
     val = R_tryEval(e, env, ErrorOccurred);
     R_ShowErrorMessages = oldshow;

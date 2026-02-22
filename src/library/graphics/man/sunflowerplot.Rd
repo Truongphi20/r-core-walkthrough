@@ -100,18 +100,25 @@ sunflowerplot(x, \dots)
   \pkg{grDevices}) if you are only interested in this return value.
 }
 \references{
-  \bibshow{R:Chambers+Cleveland+Kleiner:1983,
-    R:Schilling+Watkins:1994,
-    R:Murrell:2005}
+  Chambers, J. M., Cleveland, W. S., Kleiner, B. and Tukey, P. A. (1983).
+  \emph{Graphical Methods for Data Analysis}.
+  Wadsworth.
+
+  Schilling, M. F. and Watkins, A. E. (1994).
+  A suggestion for sunflower plots.
+  \emph{The American Statistician}, \bold{48}, 303--305.
+  \doi{10.2307/2684839}.
+
+  Murrell, P. (2005).
+  \emph{R Graphics}.
+  Chapman & Hall/CRC Press.
 }
 \author{
   Andreas Ruckstuhl, Werner Stahel, Martin Maechler, Tim Hesterberg,
   1989--1993.  Port to \R by Martin Maechler
   \email{maechler@stat.math.ethz.ch}.
 }
-\seealso{\code{\link{density}}, \code{\link{xyTable}};
-  \code{\link{smoothScatter}()} is often preferable to
-  \code{sunflowerplot()} nowadays.
+\seealso{\code{\link{density}}, \code{\link{xyTable}}
 }
 \examples{
 require(stats) # for rnorm

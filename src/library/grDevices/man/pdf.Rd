@@ -5,6 +5,7 @@
 
 \name{pdf}
 \alias{pdf}
+\encoding{UTF-8}
 
 \title{PDF Graphics Device}
 %% The definitive doc is the source :-)
@@ -16,8 +17,7 @@
 pdf(file = if(onefile) "Rplots.pdf" else "Rplot\%03d.pdf",
     width, height, onefile, family, title, fonts, version,
     paper, encoding, bg, fg, pointsize, pagecentre, colormodel,
-    useDingbats, useKerning, fillOddEven, compress,
-    timestamp, producer, author)
+    useDingbats, useKerning, fillOddEven, compress)
 }
 \arguments{
   \item{file}{a character string giving the file path.
@@ -33,8 +33,7 @@ pdf(file = if(onefile) "Rplots.pdf" else "Rplot\%03d.pdf",
     character string.  See the section \sQuote{Families}.  Defaults to
     \code{"Helvetica"}.}
   \item{title}{title string to embed as the \samp{/Title} field in the
-    document metadata.  Defaults to \code{"R Graphics Output"};
-    use an empty string (\code{""}) to omit the field.}
+    file.  Defaults to \code{"R Graphics Output"}.}
   \item{fonts}{a character vector specifying \R graphics font family
     names for additional fonts which will be included in the PDF file.
     Defaults to \code{NULL}.}
@@ -100,12 +99,6 @@ pdf(file = if(onefile) "Rplots.pdf" else "Rplot\%03d.pdf",
     \code{\link{polygon}} for details.  Defaults to \code{FALSE}.}
   \item{compress}{logical.  Should PDF streams be generated with \I{Flate}
     compression?  Defaults to \code{TRUE}.}
-  \item{timestamp}{logical.  If \code{FALSE}, omit the \samp{/CreationDate}
-    and \samp{/ModDate} metadata fields.  Defaults to \code{TRUE}.}
-  \item{producer}{logical.  If \code{FALSE}, omit the \samp{/Producer}
-    metadata field.  Defaults to \code{TRUE}.}
-  \item{author}{author string to embed as the \samp{/Author} field in the
-    document metadata.  Defaults to \code{""}, omitting the field.}
 }
 \details{
   All arguments except \code{file} default to values given by
@@ -341,7 +334,7 @@ pdf(file = if(onefile) "Rplots.pdf" else "Rplot\%03d.pdf",
 
 \section{Conventions}{
   This section describes the implementation of the conventions for
-  graphics devices set out in \manual{R-ints}{}.
+  graphics devices set out in the \sQuote{R Internals} manual.
 
   \itemize{
     \item The default device size is 7 inches square.
@@ -442,14 +435,11 @@ pdf(file = if(onefile) "Rplots.pdf" else "Rplot\%03d.pdf",
   More details of font families and encodings and especially handling
   text in a non-Latin-1 encoding and embedding fonts can be found in
 
-  %% <FIXME bibcite>
-  %% \bibshow{
-  %% Paul Murrell and Brian Ripley (2006).
-  %% \dQuote{Non-standard fonts in PostScript and PDF graphics.}
-  %% \emph{R News}, \bold{6}(2), 41--47.
-  %% \url{https://www.r-project.org/doc/Rnews/Rnews_2006-2.pdf}.}
-  \bibshow{R:Murrell+Ripley:2006}
-  %% </FIXME>
+  \bibshow{
+  Paul Murrell and Brian Ripley (2006).
+  \dQuote{Non-standard fonts in PostScript and PDF graphics.}
+  \emph{R News}, \bold{6}(2), 41--47.
+  \url{https://www.r-project.org/doc/Rnews/Rnews_2006-2.pdf}.}
 }
 \examples{
 \donttest{

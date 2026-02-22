@@ -27,7 +27,9 @@ IQR(x, na.rm = FALSE, type = 7)
   estimate of the standard deviation, use \code{IQR(x) / 1.349}.
 }
 \references{
-  \bibshow{R:Tukey:1977}
+  Tukey, J. W. (1977).
+  \emph{Exploratory Data Analysis.}
+  Reading: Addison-Wesley.
 }
 \seealso{
  \code{\link{fivenum}}, \code{\link{mad}} which is more robust,

@@ -311,10 +311,10 @@ C  ***  COMPUTE Y  ***
 C
  130  Y1 = IV(Y)
       YI = Y1
-      DO L = 1, P
+      DO 140 L = 1, P
          V(YI) = V(YI) + DD7TPR(NN, DR(1,L), R)
          YI = YI + 1
-      END DO
+ 140     CONTINUE
       IF (N2 .LT. N) GO TO 270
          IV(1) = 2
          IF (N1 .GT. 1) IV(1) = -3
@@ -332,10 +332,10 @@ C
 C  ***  COMPUTE GRADIENT ONLY (FOR USE IN COVARIANCE COMPUTATION)  ***
 C
       GI = G1
-      DO L = 1, P
+      DO 160 L = 1, P
          V(GI) = V(GI) + DD7TPR(NN, R, DR(1,L))
          GI = GI + 1
-      END DO
+ 160     CONTINUE
       GO TO 190
 C
 C  *** COMPUTE INITIAL FUNCTION VALUE WHEN ND .LT. N ***
@@ -481,24 +481,24 @@ C
 C
       NP1 = N + 1
       I0 = N*(N+1)/2
-      DO II = 1, N
+      DO 30 II = 1, N
          I = NP1 - II
          IP1 = I + 1
          I0 = I0 - I
          J0 = I*(I+1)/2
-         DO JJ = 1, I
+         DO 20 JJ = 1, I
               J = IP1 - JJ
               J0 = J0 - J
               T = 0.0D0
-              DO K = 1, J
+              DO 10 K = 1, J
                    IK = I0 + K
                    JK = J0 + K
                    T = T + L(IK)*L(JK)
-              END DO
+ 10                CONTINUE
               IJ = I0 + J
               A(IJ) = T
-           END DO
-      END DO
+ 20           CONTINUE
+ 30      CONTINUE
       RETURN
       END
       SUBROUTINE DRMNHB(B, D, FX, G, H, IV, LH, LIV, LV, N, V, X)
@@ -707,11 +707,11 @@ C
 C  ***  CHECK CONSISTENCY OF B AND INITIALIZE IP ARRAY  ***
 C
       IPI = IV(PERM)
-      DO I = 1, N
+      DO 40 I = 1, N
          IV(IPI) = I
          IPI = IPI + 1
          IF (B(1,I) .GT. B(2,I)) GO TO 420
-      END DO
+ 40      CONTINUE
 C
 C  ***  GET INITIAL FUNCTION VALUE  ***
 C

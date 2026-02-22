@@ -15,7 +15,8 @@
 }
 \usage{lh}
 \source{
-  \bibinfo{R:Diggle:1991}{note}{Table A.1, series 3}
-  \bibshow{R:Diggle:1991}
+  P.J. Diggle (1990)
+  \emph{Time Series: A Biostatistical Introduction.}
+  Oxford, table A.1, series 3
 }
 \keyword{datasets}

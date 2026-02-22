@@ -42,7 +42,9 @@ from:to
   and ordered lexicographically (that is, \code{lb} varies fastest).
 }
 \references{
-  \bibshow{R:Becker+Chambers+Wilks:1988}\cr
+  Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+  \emph{The New S Language}.
+  Wadsworth & Brooks/Cole.\cr
   (for numeric arguments: S does not have \code{:} for factors.)
 }
 \seealso{

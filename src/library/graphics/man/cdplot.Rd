@@ -78,7 +78,8 @@ cdplot(x, \dots)
   \code{\link{spineplot}}, \code{\link{density}}
 }
 \references{
-  \bibshow{R:Hofmann+Theus:2005}
+  Hofmann, H., Theus, M. (2005), \emph{Interactive graphics for visualizing
+  conditional distributions}, Unpublished Manuscript.
 }
 \author{
   \I{Achim Zeileis} \email{Achim.Zeileis@R-project.org}

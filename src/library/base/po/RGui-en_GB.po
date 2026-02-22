@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: R 4.4.0\n"
 "Report-Msgid-Bugs-To: bugs.r-project.org\n"
-"POT-Creation-Date: 2024-10-25 14:50-0700\n"
+"POT-Creation-Date: 2023-11-30 16:47+0100\n"
 "PO-Revision-Date: 2024-03-18 21:18+0000\n"
 "Last-Translator: Michael Chirico <michaelchirico4@gmail.com>\n"
 "Language-Team: none\n"
@@ -18,26 +18,25 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 4.16.4\n"
 
-#: src/gnuwin32/console.c:1204 src/gnuwin32/console.c:1246
-#: src/gnuwin32/console.c:1774
+#: src/gnuwin32/console.c:1200 src/gnuwin32/console.c:1242
 msgid "Not enough memory"
 msgstr "Not enough memory"
 
-#: src/gnuwin32/console.c:1293 src/gnuwin32/console.c:1297
+#: src/gnuwin32/console.c:1289 src/gnuwin32/console.c:1293
 msgid "Insufficient memory: text not copied to the clipboard"
 msgstr "Insufficient memory: text not copied to the clipboard"
 
-#: src/gnuwin32/console.c:1335 src/extra/graphapp/clipboard.c:53
+#: src/gnuwin32/console.c:1331 src/extra/graphapp/clipboard.c:53
 #: src/extra/graphapp/clipboard.c:79
 msgid "Unable to open the clipboard"
 msgstr "Unable to open the clipboard"
 
-#: src/gnuwin32/console.c:2137
+#: src/gnuwin32/console.c:1977
 msgid "Insufficient memory. Please close the console"
 msgstr "Insufficient memory. Please close the console"
 
-#: src/gnuwin32/console.c:2193 src/gnuwin32/console.c:2247
-#: src/gnuwin32/preferences.c:343
+#: src/gnuwin32/console.c:2033 src/gnuwin32/console.c:2087
+#: src/gnuwin32/preferences.c:342
 #, c-format
 msgid ""
 "Font %s-%d-%d  not found.\n"
@@ -46,23 +45,23 @@ msgstr ""
 "Font %s-%d-%d  not found.\n"
 "Using system fixed font"
 
-#: src/gnuwin32/console.c:2352
+#: src/gnuwin32/console.c:2192
 msgid "Save selection to"
 msgstr "Save selection to"
 
-#: src/gnuwin32/console.c:2354
+#: src/gnuwin32/console.c:2194
 msgid "Save console contents to"
 msgstr "Save console contents to"
 
-#: src/gnuwin32/console.c:2461
+#: src/gnuwin32/console.c:2301
 msgid "Scrolling.\n"
 msgstr "Scrolling.\n"
 
-#: src/gnuwin32/console.c:2462
+#: src/gnuwin32/console.c:2302
 msgid "  Keyboard: PgUp, PgDown, Ctrl+Arrows, Ctrl+Home, Ctrl+End,\n"
 msgstr "  Keyboard: PgUp, PgDown, Ctrl+Arrows, Ctrl+Home, Ctrl+End,\n"
 
-#: src/gnuwin32/console.c:2463
+#: src/gnuwin32/console.c:2303
 msgid ""
 "  Mouse: use the scrollbar(s).\n"
 "\n"
@@ -70,91 +69,101 @@ msgstr ""
 "  Mouse: use the scrollbar(s).\n"
 "\n"
 
-#: src/gnuwin32/console.c:2464
+#: src/gnuwin32/console.c:2304
 msgid "Editing.\n"
 msgstr "Editing.\n"
 
-#: src/gnuwin32/console.c:2465
+#: src/gnuwin32/console.c:2305
 msgid "  Moving the cursor: \n"
 msgstr "  Moving the cursor: \n"
 
-#: src/gnuwin32/console.c:2466
+#: src/gnuwin32/console.c:2306
 msgid "     Left arrow or Ctrl+B: move backward one character;\n"
 msgstr "     Left arrow or Ctrl+B: move backward one character;\n"
 
-#: src/gnuwin32/console.c:2467
+#: src/gnuwin32/console.c:2307
 msgid "     Right arrow or Ctrl+F: move forward one character;\n"
 msgstr "     Right arrow or Ctrl+F: move forward one character;\n"
 
-#: src/gnuwin32/console.c:2468
+#: src/gnuwin32/console.c:2308
 msgid "     Home or Ctrl+A: go to beginning of line;\n"
 msgstr "     Home or Ctrl+A: go to beginning of line;\n"
 
-#: src/gnuwin32/console.c:2469
+#: src/gnuwin32/console.c:2309
 msgid "     End or Ctrl+E: go to end of line;\n"
 msgstr "     End or Ctrl+E: go to end of line;\n"
 
-#: src/gnuwin32/console.c:2470
+#: src/gnuwin32/console.c:2310
 msgid "  History: Up and Down Arrows, Ctrl+P, Ctrl+N\n"
 msgstr "  History: Up and Down Arrows, Ctrl+P, Ctrl+N\n"
 
-#: src/gnuwin32/console.c:2471
+#: src/gnuwin32/console.c:2311
 msgid "  Deleting:\n"
 msgstr "  Deleting:\n"
 
-#: src/gnuwin32/console.c:2472
+#: src/gnuwin32/console.c:2312
 msgid "     Del or Ctrl+D: delete current character or selection;\n"
 msgstr "     Del or Ctrl+D: delete current character or selection;\n"
 
-#: src/gnuwin32/console.c:2473
+#: src/gnuwin32/console.c:2313
 msgid "     Backspace: delete preceding character;\n"
 msgstr "     Backspace: delete preceding character;\n"
 
-#: src/gnuwin32/console.c:2474
-msgid "     Ctrl+Del or Ctrl+K: delete text from current character to end of line.\n"
-msgstr "     Ctrl+Del or Ctrl+K: delete text from current character to end of line.\n"
+#: src/gnuwin32/console.c:2314
+msgid ""
+"     Ctrl+Del or Ctrl+K: delete text from current character to end of line.\n"
+msgstr ""
+"     Ctrl+Del or Ctrl+K: delete text from current character to end of line.\n"
 
-#: src/gnuwin32/console.c:2475
+#: src/gnuwin32/console.c:2315
 msgid "     Ctrl+U: delete all text from current line.\n"
 msgstr "     Ctrl+U: delete all text from current line.\n"
 
-#: src/gnuwin32/console.c:2476
+#: src/gnuwin32/console.c:2316
 msgid "  Copy and paste.\n"
 msgstr "  Copy and paste.\n"
 
-#: src/gnuwin32/console.c:2477
-msgid "     Use the mouse (with the left button held down) to mark (select) text.\n"
-msgstr "     Use the mouse (with the left button held down) to mark (select) text.\n"
+#: src/gnuwin32/console.c:2317
+msgid ""
+"     Use the mouse (with the left button held down) to mark (select) text.\n"
+msgstr ""
+"     Use the mouse (with the left button held down) to mark (select) text.\n"
 
-#: src/gnuwin32/console.c:2478
-msgid "     Use Shift+Del (or Ctrl+C) to copy the marked text to the clipboard and\n"
-msgstr "     Use Shift+Del (or Ctrl+C) to copy the marked text to the clipboard and\n"
+#: src/gnuwin32/console.c:2318
+msgid ""
+"     Use Shift+Del (or Ctrl+C) to copy the marked text to the clipboard and\n"
+msgstr ""
+"     Use Shift+Del (or Ctrl+C) to copy the marked text to the clipboard and\n"
 
-#: src/gnuwin32/console.c:2479
-msgid "     Shift+Ins (or Ctrl+V or Ctrl+Y) to paste the content of the clipboard (if any)  \n"
-msgstr "     Shift+Ins (or Ctrl+V or Ctrl+Y) to paste the content of the clipboard (if any)  \n"
+#: src/gnuwin32/console.c:2319
+msgid ""
+"     Shift+Ins (or Ctrl+V or Ctrl+Y) to paste the content of the clipboard "
+"(if any)  \n"
+msgstr ""
+"     Shift+Ins (or Ctrl+V or Ctrl+Y) to paste the content of the clipboard ("
+"if any)  \n"
 
-#: src/gnuwin32/console.c:2480
+#: src/gnuwin32/console.c:2320
 msgid "     to the console, Ctrl+X first copy then paste\n"
 msgstr "     to the console, Ctrl+X first copy then paste\n"
 
-#: src/gnuwin32/console.c:2481
+#: src/gnuwin32/console.c:2321
 msgid "  Misc:\n"
 msgstr "  Misc:\n"
 
-#: src/gnuwin32/console.c:2482
+#: src/gnuwin32/console.c:2322
 msgid "     Ctrl+L: Clear the console.\n"
 msgstr "     Ctrl+L: Clear the console.\n"
 
-#: src/gnuwin32/console.c:2483
+#: src/gnuwin32/console.c:2323
 msgid "     Ctrl+O or INS: Toggle overwrite mode: initially off.\n"
 msgstr "     Ctrl+O or INS: Toggle overwrite mode: initially off.\n"
 
-#: src/gnuwin32/console.c:2484
+#: src/gnuwin32/console.c:2324
 msgid "     Ctrl+T: Interchange current char with one to the left.\n"
 msgstr "     Ctrl+T: Interchange current char with one to the left.\n"
 
-#: src/gnuwin32/console.c:2485
+#: src/gnuwin32/console.c:2325
 msgid ""
 "\n"
 "Note: Console is updated only when some input is required.\n"
@@ -162,7 +171,7 @@ msgstr ""
 "\n"
 "Note: Console is updated only when some input is required.\n"
 
-#: src/gnuwin32/console.c:2486
+#: src/gnuwin32/console.c:2326
 msgid ""
 "  Use Ctrl+W to toggle this feature off/on.\n"
 "\n"
@@ -170,7 +179,7 @@ msgstr ""
 "  Use Ctrl+W to toggle this feature off/on.\n"
 "\n"
 
-#: src/gnuwin32/console.c:2487
+#: src/gnuwin32/console.c:2327
 msgid ""
 "Use ESC to stop the interpreter.\n"
 "\n"
@@ -178,7 +187,7 @@ msgstr ""
 "Use ESC to stop the interpreter.\n"
 "\n"
 
-#: src/gnuwin32/console.c:2488
+#: src/gnuwin32/console.c:2328
 msgid ""
 "TAB starts completion of the current word.\n"
 "\n"
@@ -186,11 +195,11 @@ msgstr ""
 "TAB starts completion of the current word.\n"
 "\n"
 
-#: src/gnuwin32/console.c:2489
+#: src/gnuwin32/console.c:2329
 msgid "Standard Windows hotkeys can be used to switch to the\n"
 msgstr "Standard Windows hotkeys can be used to switch to the\n"
 
-#: src/gnuwin32/console.c:2490
+#: src/gnuwin32/console.c:2330
 msgid "graphics device (Ctrl+Tab or Ctrl+F6 in MDI, Alt+Tab in SDI)"
 msgstr "graphics device (Ctrl+Tab or Ctrl+F6 in MDI, Alt+Tab in SDI)"
 
@@ -255,12 +264,16 @@ msgid "     Press the \"Run line or selection\" icon on the toolbar\n"
 msgstr "     Press the \"Run line or selection\" icon on the toolbar\n"
 
 #: src/gnuwin32/editor.c:682
-msgid "This will copy the selected commands to the console and evaluate them.\n"
-msgstr "This will copy the selected commands to the console and evaluate them.\n"
+msgid ""
+"This will copy the selected commands to the console and evaluate them.\n"
+msgstr ""
+"This will copy the selected commands to the console and evaluate them.\n"
 
 #: src/gnuwin32/editor.c:683
-msgid "If there is no selection, this will just run the current line and advance\n"
-msgstr "If there is no selection, this will just run the current line and advance\n"
+msgid ""
+"If there is no selection, this will just run the current line and advance\n"
+msgstr ""
+"If there is no selection, this will just run the current line and advance\n"
 
 #: src/gnuwin32/editor.c:684
 msgid "the cursor by one line.\n"
@@ -304,7 +317,7 @@ msgid "Save script"
 msgstr "Save script"
 
 #: src/gnuwin32/editor.c:777 src/gnuwin32/pager.c:461
-#: src/library/grDevices/src/devWindows.c:1611
+#: src/library/grDevices/src/devWindows.c:1607
 msgid "Return focus to Console"
 msgstr "Return focus to Console"
 
@@ -313,13 +326,13 @@ msgid "Print script"
 msgstr "Print script"
 
 #: src/gnuwin32/editor.c:782 src/gnuwin32/pager.c:456 src/gnuwin32/rui.c:1192
-#: src/library/grDevices/src/devWindows.c:1605
+#: src/library/grDevices/src/devWindows.c:1601
 msgid "Print"
 msgstr "Print"
 
 #: src/gnuwin32/editor.c:800 src/gnuwin32/pager.c:477 src/gnuwin32/rui.c:1210
-#: src/library/utils/src/windows/dataentry.c:1837
-#: src/library/grDevices/src/devWindows.c:1643
+#: src/library/utils/src/windows/dataentry.c:1835
+#: src/library/grDevices/src/devWindows.c:1639
 msgid "File"
 msgstr "File"
 
@@ -340,8 +353,8 @@ msgid "Save as..."
 msgstr "Save as..."
 
 #: src/gnuwin32/editor.c:810 src/gnuwin32/pager.c:480 src/gnuwin32/rui.c:1226
-#: src/library/grDevices/src/devWindows.c:1664
-#: src/library/grDevices/src/devWindows.c:1706
+#: src/library/grDevices/src/devWindows.c:1660
+#: src/library/grDevices/src/devWindows.c:1702
 msgid "Print..."
 msgstr "Print..."
 
@@ -350,7 +363,7 @@ msgid "Close script"
 msgstr "Close script"
 
 #: src/gnuwin32/editor.c:815 src/gnuwin32/pager.c:487 src/gnuwin32/rui.c:1231
-#: src/library/utils/src/windows/dataentry.c:1843
+#: src/library/utils/src/windows/dataentry.c:1841
 msgid "Edit"
 msgstr "Edit"
 
@@ -375,8 +388,8 @@ msgid "GUI preferences..."
 msgstr "GUI preferences..."
 
 #: src/gnuwin32/editor.c:851 src/gnuwin32/rui.c:1274
-#: src/library/utils/src/windows/dataentry.c:1744
-#: src/library/utils/src/windows/dataentry.c:1854
+#: src/library/utils/src/windows/dataentry.c:1742
+#: src/library/utils/src/windows/dataentry.c:1852
 msgid "Help"
 msgstr "Help"
 
@@ -396,7 +409,7 @@ msgstr "Unable to create editor window"
 msgid "Untitled"
 msgstr "Untitled"
 
-#: src/gnuwin32/extra.c:1130
+#: src/gnuwin32/extra.c:1052
 msgid "Select file"
 msgstr "Select file"
 
@@ -422,14 +435,14 @@ msgid "Paste commands to console"
 msgstr "Paste commands to console"
 
 #: src/gnuwin32/pager.c:320 src/gnuwin32/rui.c:946
-#: src/library/utils/src/windows/dataentry.c:1750
-#: src/library/grDevices/src/devWindows.c:1703
+#: src/library/utils/src/windows/dataentry.c:1748
+#: src/library/grDevices/src/devWindows.c:1699
 msgid "Stay on top"
 msgstr "Stay on top"
 
 #: src/gnuwin32/pager.c:322 src/gnuwin32/pager.c:485
-#: src/library/utils/src/windows/dataentry.c:1752
-#: src/library/utils/src/windows/dataentry.c:1839
+#: src/library/utils/src/windows/dataentry.c:1750
+#: src/library/utils/src/windows/dataentry.c:1837
 msgid "Close"
 msgstr "Close"
 
@@ -445,7 +458,7 @@ msgstr "View"
 msgid "Unable to create pager window"
 msgstr "Unable to create pager window"
 
-#: src/gnuwin32/preferences.c:308
+#: src/gnuwin32/preferences.c:307
 msgid ""
 "The overall console properties cannot be changed\n"
 "on a running console.\n"
@@ -457,7 +470,7 @@ msgstr ""
 "\n"
 "Save the preferences and restart Rgui to apply them.\n"
 
-#: src/gnuwin32/preferences.c:312
+#: src/gnuwin32/preferences.c:311
 msgid ""
 "The language for menus cannot be changed on a\n"
 " running console.\n"
@@ -469,11 +482,11 @@ msgstr ""
 "\n"
 "Save the preferences and restart Rgui to apply to menus.\n"
 
-#: src/gnuwin32/preferences.c:381
+#: src/gnuwin32/preferences.c:380
 msgid "Changes in pager size will not apply to any open pagers"
 msgstr "Changes in pager size will not apply to any open pagers"
 
-#: src/gnuwin32/preferences.c:387
+#: src/gnuwin32/preferences.c:386
 msgid ""
 "Do not change pager type if any pager is open\n"
 "Proceed?"
@@ -481,20 +494,20 @@ msgstr ""
 "Do not change pager type if any pager is open\n"
 "Proceed?"
 
-#: src/gnuwin32/preferences.c:421
+#: src/gnuwin32/preferences.c:420
 msgid "Select directory for file 'Rconsole'"
 msgstr "Select directory for file 'Rconsole'"
 
-#: src/gnuwin32/preferences.c:516
+#: src/gnuwin32/preferences.c:515
 msgid "Select 'Rconsole' file"
 msgstr "Select 'Rconsole' file"
 
-#: src/gnuwin32/preferences.c:704
+#: src/gnuwin32/preferences.c:703
 #, c-format
 msgid "Ignored '%s' at line %d of file %s"
 msgstr "Ignored '%s' at line %d of file %s"
 
-#: src/gnuwin32/preferences.c:805
+#: src/gnuwin32/preferences.c:804
 msgid "Rgui Configuration Editor"
 msgstr "Rgui Configuration Editor"
 
@@ -808,7 +821,7 @@ msgstr "menu not found"
 msgid "menu or item does not exist"
 msgstr "menu or item does not exist"
 
-#: src/gnuwin32/system.c:595
+#: src/gnuwin32/system.c:565
 msgid "Save workspace image?"
 msgstr "Save workspace image?"
 
@@ -884,9 +897,9 @@ msgid "Unable to start the print job"
 msgstr "Unable to start the print job"
 
 #: src/library/utils/src/windows/dataentry.c:251
-#: src/library/utils/src/windows/dataentry.c:1898
-#: src/library/utils/src/windows/dataentry.c:1901
-#: src/library/utils/src/windows/dataentry.c:1932
+#: src/library/utils/src/windows/dataentry.c:1896
+#: src/library/utils/src/windows/dataentry.c:1899
+#: src/library/utils/src/windows/dataentry.c:1930
 msgid "invalid argument"
 msgstr "invalid argument"
 
@@ -899,57 +912,57 @@ msgid "Data Editor"
 msgstr "Data Editor"
 
 #: src/library/utils/src/windows/dataentry.c:359
-#: src/library/utils/src/windows/dataentry.c:1891
+#: src/library/utils/src/windows/dataentry.c:1889
 msgid "dataentry: internal memory problem"
 msgstr "dataentry: internal memory problem"
 
-#: src/library/utils/src/windows/dataentry.c:663
-#: src/library/utils/src/windows/dataentry.c:1265
+#: src/library/utils/src/windows/dataentry.c:662
+#: src/library/utils/src/windows/dataentry.c:1263
 msgid "dataentry: internal memory error"
 msgstr "dataentry: internal memory error"
 
-#: src/library/utils/src/windows/dataentry.c:786
-#: src/library/utils/src/windows/dataentry.c:799
+#: src/library/utils/src/windows/dataentry.c:785
+#: src/library/utils/src/windows/dataentry.c:798
 msgid "internal type error in dataentry"
 msgstr "internal type error in dataentry"
 
-#: src/library/utils/src/windows/dataentry.c:894
+#: src/library/utils/src/windows/dataentry.c:893
 msgid "dataentry: parse error on string"
 msgstr "dataentry: parse error on string"
 
-#: src/library/utils/src/windows/dataentry.c:1039
+#: src/library/utils/src/windows/dataentry.c:1037
 msgid "dataentry: expression too long"
 msgstr "dataentry: expression too long"
 
-#: src/library/utils/src/windows/dataentry.c:1518
+#: src/library/utils/src/windows/dataentry.c:1516
 msgid "column names cannot be blank"
 msgstr "column names cannot be blank"
 
-#: src/library/utils/src/windows/dataentry.c:1564
+#: src/library/utils/src/windows/dataentry.c:1562
 msgid "Variable editor"
 msgstr "Variable editor"
 
-#: src/library/utils/src/windows/dataentry.c:1569
+#: src/library/utils/src/windows/dataentry.c:1567
 msgid "variable name"
 msgstr "variable name"
 
-#: src/library/utils/src/windows/dataentry.c:1571
+#: src/library/utils/src/windows/dataentry.c:1569
 msgid "type"
 msgstr "type"
 
-#: src/library/utils/src/windows/dataentry.c:1686
+#: src/library/utils/src/windows/dataentry.c:1684
 msgid "Cell width(s)"
 msgstr "Cell width(s)"
 
-#: src/library/utils/src/windows/dataentry.c:1692
+#: src/library/utils/src/windows/dataentry.c:1690
 msgid "Cell width"
 msgstr "Cell width"
 
-#: src/library/utils/src/windows/dataentry.c:1695
+#: src/library/utils/src/windows/dataentry.c:1693
 msgid "variable"
 msgstr "variable"
 
-#: src/library/utils/src/windows/dataentry.c:1738
+#: src/library/utils/src/windows/dataentry.c:1736
 msgid ""
 "Navigation.\n"
 "  Keyboard: cursor keys move selection\n"
@@ -991,216 +1004,216 @@ msgstr ""
 "  Right-click menu for copy, paste, autosize currently selected column\n"
 "\n"
 
-#: src/library/utils/src/windows/dataentry.c:1746
+#: src/library/utils/src/windows/dataentry.c:1744
 msgid "Copy selected cell"
 msgstr "Copy selected cell"
 
-#: src/library/utils/src/windows/dataentry.c:1747
+#: src/library/utils/src/windows/dataentry.c:1745
 msgid "Paste to selected cell"
 msgstr "Paste to selected cell"
 
-#: src/library/utils/src/windows/dataentry.c:1748
+#: src/library/utils/src/windows/dataentry.c:1746
 msgid "Autosize column"
 msgstr "Autosize column"
 
-#: src/library/utils/src/windows/dataentry.c:1844
+#: src/library/utils/src/windows/dataentry.c:1842
 msgid "Copy  \tCTRL+C"
 msgstr "Copy  \tCTRL+C"
 
-#: src/library/utils/src/windows/dataentry.c:1846
+#: src/library/utils/src/windows/dataentry.c:1844
 msgid "Paste \tCTRL+V"
 msgstr "Paste \tCTRL+V"
 
-#: src/library/utils/src/windows/dataentry.c:1848
+#: src/library/utils/src/windows/dataentry.c:1846
 msgid "Delete\tDEL"
 msgstr "Delete\tDEL"
 
-#: src/library/utils/src/windows/dataentry.c:1851
+#: src/library/utils/src/windows/dataentry.c:1849
 msgid "Cell widths ..."
 msgstr "Cell widths ..."
 
-#: src/library/utils/src/windows/dataentry.c:1855
+#: src/library/utils/src/windows/dataentry.c:1853
 msgid "Data editor"
 msgstr "Data editor"
 
-#: src/library/grDevices/src/devWindows.c:947
+#: src/library/grDevices/src/devWindows.c:943
 msgid "Portable network graphics file"
 msgstr "Portable network graphics file"
 
-#: src/library/grDevices/src/devWindows.c:950
+#: src/library/grDevices/src/devWindows.c:946
 msgid "Windows bitmap file"
 msgstr "Windows bitmap file"
 
-#: src/library/grDevices/src/devWindows.c:953
+#: src/library/grDevices/src/devWindows.c:949
 msgid "TIFF file"
 msgstr "TIFF file"
 
-#: src/library/grDevices/src/devWindows.c:956
+#: src/library/grDevices/src/devWindows.c:952
 msgid "Jpeg file"
 msgstr "Jpeg file"
 
-#: src/library/grDevices/src/devWindows.c:978
+#: src/library/grDevices/src/devWindows.c:974
 msgid "Postscript file"
 msgstr "Postscript file"
 
-#: src/library/grDevices/src/devWindows.c:990
+#: src/library/grDevices/src/devWindows.c:986
 msgid "PDF file"
 msgstr "PDF file"
 
-#: src/library/grDevices/src/devWindows.c:1002
+#: src/library/grDevices/src/devWindows.c:998
 msgid "Enhanced metafiles"
 msgstr "Enhanced metafiles"
 
-#: src/library/grDevices/src/devWindows.c:1005
-#: src/library/grDevices/src/devWindows.c:3561
+#: src/library/grDevices/src/devWindows.c:1001
+#: src/library/grDevices/src/devWindows.c:3557
 msgid "file path selected is too long: only 512 bytes are allowed"
 msgstr "file path selected is too long: only 512 bytes are allowed"
 
-#: src/library/grDevices/src/devWindows.c:1216
+#: src/library/grDevices/src/devWindows.c:1212
 msgid "No plot to replace!"
 msgstr "No plot to replace!"
 
-#: src/library/grDevices/src/devWindows.c:1266
+#: src/library/grDevices/src/devWindows.c:1262
 msgid "Variable name"
 msgstr "Variable name"
 
-#: src/library/grDevices/src/devWindows.c:1275
+#: src/library/grDevices/src/devWindows.c:1271
 msgid "Variable doesn't contain any plots!"
 msgstr "Variable doesn't contain any plots!"
 
-#: src/library/grDevices/src/devWindows.c:1290
+#: src/library/grDevices/src/devWindows.c:1286
 msgid "Name of variable to save to"
 msgstr "Name of variable to save to"
 
-#: src/library/grDevices/src/devWindows.c:1599
+#: src/library/grDevices/src/devWindows.c:1595
 msgid "Copy to the clipboard as a metafile"
 msgstr "Copy to the clipboard as a metafile"
 
-#: src/library/grDevices/src/devWindows.c:1617
-#: src/library/grDevices/src/devWindows.c:1628
+#: src/library/grDevices/src/devWindows.c:1613
+#: src/library/grDevices/src/devWindows.c:1624
 msgid "Stop locator"
 msgstr "Stop locator"
 
+#: src/library/grDevices/src/devWindows.c:1623
 #: src/library/grDevices/src/devWindows.c:1627
-#: src/library/grDevices/src/devWindows.c:1631
 msgid "Stop"
 msgstr "Stop"
 
-#: src/library/grDevices/src/devWindows.c:1633
+#: src/library/grDevices/src/devWindows.c:1629
 msgid "Continue"
 msgstr "Continue"
 
-#: src/library/grDevices/src/devWindows.c:1637
+#: src/library/grDevices/src/devWindows.c:1633
 msgid "Next"
 msgstr "Next"
 
-#: src/library/grDevices/src/devWindows.c:1638
+#: src/library/grDevices/src/devWindows.c:1634
 msgid "Next plot"
 msgstr "Next plot"
 
-#: src/library/grDevices/src/devWindows.c:1644
+#: src/library/grDevices/src/devWindows.c:1640
 msgid "Save as"
 msgstr "Save as"
 
+#: src/library/grDevices/src/devWindows.c:1649
+#: src/library/grDevices/src/devWindows.c:1651
 #: src/library/grDevices/src/devWindows.c:1653
-#: src/library/grDevices/src/devWindows.c:1655
-#: src/library/grDevices/src/devWindows.c:1657
 #, c-format
 msgid "%s quality..."
 msgstr "%s quality..."
 
-#: src/library/grDevices/src/devWindows.c:1659
+#: src/library/grDevices/src/devWindows.c:1655
 msgid "Copy to the clipboard"
 msgstr "Copy to the clipboard"
 
-#: src/library/grDevices/src/devWindows.c:1660
+#: src/library/grDevices/src/devWindows.c:1656
 msgid "as a Bitmap\tCTRL+C"
 msgstr "as a Bitmap\tCTRL+C"
 
-#: src/library/grDevices/src/devWindows.c:1661
+#: src/library/grDevices/src/devWindows.c:1657
 msgid "as a Metafile\tCTRL+W"
 msgstr "as a Metafile\tCTRL+W"
 
-#: src/library/grDevices/src/devWindows.c:1666
+#: src/library/grDevices/src/devWindows.c:1662
 msgid "close Device"
 msgstr "close Device"
 
-#: src/library/grDevices/src/devWindows.c:1667
+#: src/library/grDevices/src/devWindows.c:1663
 msgid "History"
 msgstr "History"
 
-#: src/library/grDevices/src/devWindows.c:1668
+#: src/library/grDevices/src/devWindows.c:1664
 msgid "Recording"
 msgstr "Recording"
 
-#: src/library/grDevices/src/devWindows.c:1671
+#: src/library/grDevices/src/devWindows.c:1667
 msgid "Add\tINS"
 msgstr "Add\tINS"
 
-#: src/library/grDevices/src/devWindows.c:1672
+#: src/library/grDevices/src/devWindows.c:1668
 msgid "Replace"
 msgstr "Replace"
 
-#: src/library/grDevices/src/devWindows.c:1674
+#: src/library/grDevices/src/devWindows.c:1670
 msgid "Previous\tPgUp"
 msgstr "Previous\tPgUp"
 
-#: src/library/grDevices/src/devWindows.c:1675
+#: src/library/grDevices/src/devWindows.c:1671
 msgid "Next\tPgDown"
 msgstr "Next\tPgDown"
 
-#: src/library/grDevices/src/devWindows.c:1677
+#: src/library/grDevices/src/devWindows.c:1673
 msgid "Save to variable..."
 msgstr "Save to variable..."
 
-#: src/library/grDevices/src/devWindows.c:1678
+#: src/library/grDevices/src/devWindows.c:1674
 msgid "Get from variable..."
 msgstr "Get from variable..."
 
-#: src/library/grDevices/src/devWindows.c:1680
+#: src/library/grDevices/src/devWindows.c:1676
 msgid "Clear history"
 msgstr "Clear history"
 
-#: src/library/grDevices/src/devWindows.c:1681
+#: src/library/grDevices/src/devWindows.c:1677
 msgid "Resize"
 msgstr "Resize"
 
-#: src/library/grDevices/src/devWindows.c:1682
+#: src/library/grDevices/src/devWindows.c:1678
 msgid "R mode"
 msgstr "R mode"
 
-#: src/library/grDevices/src/devWindows.c:1684
+#: src/library/grDevices/src/devWindows.c:1680
 msgid "Fit to window"
 msgstr "Fit to window"
 
-#: src/library/grDevices/src/devWindows.c:1686
+#: src/library/grDevices/src/devWindows.c:1682
 msgid "Fixed size"
 msgstr "Fixed size"
 
-#: src/library/grDevices/src/devWindows.c:1693
+#: src/library/grDevices/src/devWindows.c:1689
 msgid "Copy as metafile"
 msgstr "Copy as metafile"
 
-#: src/library/grDevices/src/devWindows.c:1695
+#: src/library/grDevices/src/devWindows.c:1691
 msgid "Copy as bitmap"
 msgstr "Copy as bitmap"
 
-#: src/library/grDevices/src/devWindows.c:1698
+#: src/library/grDevices/src/devWindows.c:1694
 msgid "Save as metafile..."
 msgstr "Save as metafile..."
 
-#: src/library/grDevices/src/devWindows.c:1700
+#: src/library/grDevices/src/devWindows.c:1696
 msgid "Save as postscript..."
 msgstr "Save as postscript..."
 
-#: src/library/grDevices/src/devWindows.c:3218
+#: src/library/grDevices/src/devWindows.c:3214
 msgid "Locator is active"
 msgstr "Locator is active"
 
-#: src/library/grDevices/src/devWindows.c:3888
+#: src/library/grDevices/src/devWindows.c:3884
 msgid "Waiting to confirm page change..."
 msgstr "Waiting to confirm page change..."
 
-#: src/library/grDevices/src/devWindows.c:3900
+#: src/library/grDevices/src/devWindows.c:3896
 msgid "Click or hit ENTER for next page"
 msgstr "Click or hit ENTER for next page"

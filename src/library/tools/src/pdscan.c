@@ -24,7 +24,7 @@
 
 static SEXP package_dependencies_scan_one(SEXP this) {
     SEXP y;
-    bool save;
+    Rboolean save, skip;
     int size = 256, i, j, nb = 0, ne = 0, u, v, w;
     int *beg, *end;
     const char *s;
@@ -41,43 +41,37 @@ static SEXP package_dependencies_scan_one(SEXP this) {
     e = getCharCE(this);
     s = CHAR(this);
     i = 0;
-    save = false;
-    /* A package dependency spec is a comma-separated list of package
-       names optionally followed by a comment in parentheses specifying
-       a version requirement (see "Package Dependencies" in WRE).
-       The package name can be 'R' or a valid package names matching
-       "[[:alpha:]][[:alnum:].]*[[:alnum:]]".
-       So for valid package dependency specs we can simply iteratively
-       "save" from the first alpha until the next not-alnum-or-period
-       (and ignore if this gave 'R'): this will also skip the field
-       separators and optional comments.
-       One could arrange to skip from the end of package names until the
-       next comma, but that still would assume valid package names.
-    */
+    save = FALSE;
+    skip = FALSE;
     while((c = *s++) != '\0') {
-	if(save) {
-	    if(!isalnum(c) && (c != '.')) {
-		save = false;
-		if((q == 'R') && (beg[ne] == (i - 1)))
-		    nb--;
-		else {
-		    end[ne] = i - 1;
-		    ne++;
-		}
-	    }
+	if(skip) {
+	    if(c == ',')
+		skip = FALSE;
 	} else {
-	    if(isalpha(c)) {
-		save = true;
-		q = c;
-		if(nb >= size) {
-		    if(size > INT_MAX / 2)
-			error(_("too many items"));
-		    size *= 2;
-		    beg = R_Realloc(beg, size, int);
-		    end = R_Realloc(end, size, int);
+	    if(save) {
+		if(!isalnum(c) && (c != '.')) {
+		    save = FALSE;
+		    if((q == 'R') && (beg[ne] == (i - 1)))
+			nb--;
+		    else {
+			end[ne] = i - 1;
+			ne++;
+		    }
 		}
-		beg[nb] = i;
-		nb++;
+	    } else {
+		if(isalpha(c)) {
+		    save = TRUE;
+		    q = c;
+		    if(nb >= size) {
+			if(size > INT_MAX / 2)
+			    error(_("too many items"));
+			size *= 2;
+			beg = R_Realloc(beg, size, int);
+			end = R_Realloc(end, size, int);
+		    }
+		    beg[nb] = i;
+		    nb++;
+		}
 	    }
 	}
 	i++;

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: R 4.2.0\n"
 "Report-Msgid-Bugs-To: bugs.r-project.org\n"
-"POT-Creation-Date: 2025-03-31 11:50\n"
+"POT-Creation-Date: 2024-03-27 16:14\n"
 "PO-Revision-Date: 2024-02-28 00:52+0000\n"
 "Last-Translator: Michael Chirico <michaelchirico4@gmail.com>\n"
 "Language-Team: none\n"
@@ -34,6 +34,12 @@ msgstr "انظر help(\"Deprecated\") وhelp(\"%s-deprecated\") ."
 msgid "See help(\"Deprecated\")"
 msgstr "انظرhelp(\"Deprecated\")"
 
+msgid "unsupported value of _R_DEPRECATED_IS_R_,"
+msgstr ""
+
+msgid ", will be ignored"
+msgstr ""
+
 msgid "argument to 'La.svd' must be numeric or complex"
 msgstr "الوسيط إلى \"La.svd\" يجب أن يكون رقمي أو معقد"
 
@@ -56,18 +62,19 @@ msgstr "الوسيطة الثاني يجب أن يكون قائمة"
 msgid "'iconvlist' is not available on this system"
 msgstr "\"iconvlist\" غير متوفر على هذا النظام"
 
-#, fuzzy
-msgid "'kind' must be a character string (RNG to be used)."
+msgid "'kind' must be a character string of length 1 (RNG to be used)."
 msgstr "يجب أن يكون \"kind\" سلسلة أحرف بطول 1 (RNG ليتم استخدامها)."
 
 msgid "'%s' is not a valid abbreviation of an RNG"
 msgstr "\"‎%s\" ليس اختصارا صالحا ل RNG"
 
-#, fuzzy
-msgid "'%s' must be a character string"
+msgid "'normal.kind' must be a character string of length 1"
 msgstr "يجب أن يكون \"normal.kind\" سلسلة أحرف بطول 1"
 
 msgid "'%s' is not a valid choice"
+msgstr ""
+
+msgid "'sample.kind' must be a character string of length 1"
 msgstr ""
 
 msgid "malformed version string"
@@ -197,6 +204,9 @@ msgid "can only write character objects"
 msgstr ""
 
 msgid "'headers' must have names and must not be NA"
+msgstr ""
+
+msgid "'name' must be a single character string"
 msgstr ""
 
 msgid "'origin' must be one of 'start', 'current' or 'end'"
@@ -389,17 +399,28 @@ msgstr ""
 msgid "%s not defined for \"Date\" objects"
 msgstr ""
 
-#, fuzzy
-msgid "'%s' must be of length 1"
-msgstr "يجب أن يكون \"normal.kind\" سلسلة أحرف بطول 1"
-
-msgid "without 'by', at least one of 'to' and 'from' must be specified"
+msgid "'from' must be specified"
 msgstr ""
 
-msgid "without 'by', when one of 'to', 'from' is missing, 'length.out' / 'along.with' must be specified"
+msgid "'from' must be a \"Date\" object"
 msgstr ""
 
-msgid "given 'by', exactly two of 'to', 'from' and 'length.out' / 'along.with' must be specified"
+msgid "'from' must be of length 1"
+msgstr ""
+
+msgid "'to' must be a \"Date\" object"
+msgstr ""
+
+msgid "'to' must be of length 1"
+msgstr ""
+
+msgid "'length.out' must be of length 1"
+msgstr ""
+
+msgid "exactly two of 'to', 'by' and 'length.out' / 'along.with' must be specified"
+msgstr ""
+
+msgid "'by' must be of length 1"
 msgstr ""
 
 msgid "invalid 'by' string"
@@ -418,6 +439,9 @@ msgid "'x' must be a date-time object"
 msgstr ""
 
 msgid "invalid specification of 'breaks'"
+msgstr ""
+
+msgid "'origin' must be of length one"
 msgstr ""
 
 msgid "'lag' and 'differences' must be integers >= 1"
@@ -477,19 +501,16 @@ msgstr ""
 msgid "second argument of / cannot be a \"difftime\" object"
 msgstr ""
 
-msgid "exactly three of 'to', 'from', 'by' and 'length.out' / 'along.with' must be specified"
+msgid "'from' must be a \"POSIXt\" object"
 msgstr ""
 
-msgid "'%s' must be a \"%s\" object"
+msgid "'to' must be a \"POSIXt\" object"
 msgstr ""
 
 msgid "component subscript must be a character string"
 msgstr ""
 
 msgid "no Olson database found"
-msgstr ""
-
-msgid "No element named \"%s\" found in x, did you mean x[, \"%1$s\"] instead?"
 msgstr ""
 
 msgid "'file' must be a character string or connection"
@@ -620,6 +641,9 @@ msgstr ""
 msgid "no files to link to"
 msgstr ""
 
+msgid "'package' must be of length 1"
+msgstr ""
+
 msgid "no file found"
 msgstr ""
 
@@ -642,6 +666,9 @@ msgid "Found no format() method for class \"%s\""
 msgstr ""
 
 msgid "class of 'x' was discarded"
+msgstr ""
+
+msgid "'flag' must be a string, i.e., of length 1"
 msgstr ""
 
 msgid "'flag' should contain only characters from [0+- #'I]"
@@ -904,9 +931,8 @@ msgstr ""
 msgid "nothing specified to be save()d"
 msgstr ""
 
-#, fuzzy
-msgid "'%s' must be a non-empty character string"
-msgstr "يجب أن يكون \"normal.kind\" سلسلة أحرف بطول 1"
+msgid "'%s' must be a non-empty string"
+msgstr ""
 
 msgid "'compress' must be logical or character"
 msgstr ""
@@ -945,6 +971,9 @@ msgid "may not have argument(s) named"
 msgstr ""
 
 msgid "'arg' must be NULL or a character vector"
+msgstr ""
+
+msgid "'arg' must be of length 1"
 msgstr ""
 
 msgid "'arg' must be of length >= 1"
@@ -1342,6 +1371,9 @@ msgstr ""
 msgid "'from' must be a finite number"
 msgstr ""
 
+msgid "argument 'length.out' must be of length 1"
+msgstr ""
+
 msgid "first element used of 'length.out' argument"
 msgstr ""
 
@@ -1498,19 +1530,12 @@ msgstr ""
 msgid "additional arguments ignored in warning()"
 msgstr ""
 
-msgid "no natural language support or missing translations"
-msgstr ""
-
-msgid "In bare C locale: LANGUAGE reset, but message language may be unchanged"
-msgstr ""
-
-msgid "In bare C locale, not forcing locale; possibly use 'force = TRUE'?"
-msgstr ""
-
 msgid "Sys.setenv(LANGUAGE=\"%s\") may have failed"
 msgstr ""
 
-msgid "attempt to set an attribute on NULL"
+msgid ""
+"Calling 'structure(NULL, *)' is deprecated, as NULL cannot have attributes.\n"
+"  Consider 'structure(list(), *)' instead."
 msgstr ""
 
 msgid "incorrect value for 'x'"
@@ -1576,6 +1601,9 @@ msgstr ""
 msgid "handler must be a function"
 msgstr ""
 
+msgid "'which' must be of length 1"
+msgstr ""
+
 msgid "no such element '%s'"
 msgstr ""
 
@@ -1609,13 +1637,10 @@ msgstr ""
 msgid "No traceback available"
 msgstr ""
 
-msgid "'recursive' must be a length-1 vector"
-msgstr ""
-
-msgid "'recursive' is NA"
-msgstr ""
-
 msgid "invalid non-character version specification 'x' (type: %s)"
+msgstr ""
+
+msgid "Calls"
 msgstr ""
 
 msgid "invalid version specification %s"

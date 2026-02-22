@@ -25,7 +25,7 @@ contr.SAS(n, contrasts = TRUE, sparse = FALSE)
   \item{contrasts}{a logical indicating whether contrasts should be
     computed.}
   \item{sparse}{logical indicating if the result should be sparse
-    (of class \code{\linkS4class[Matrix]{dgCMatrix}}), using
+    (of class \code{\link[Matrix:dgCMatrix-class]{dgCMatrix}}), using
     package \CRANpkg{Matrix}.}
   \item{scores}{the set of values over which orthogonal polynomials are
     to be computed.}
@@ -69,7 +69,10 @@ contr.SAS(n, contrasts = TRUE, sparse = FALSE)
   \code{FALSE}.
 }
 \references{
-  \bibshow{R:Chambers+Hastie:1992:c2}
+  Chambers, J. M. and Hastie, T. J. (1992)
+  \emph{Statistical models.}
+  Chapter 2 of \emph{Statistical Models in S}
+  eds J. M. Chambers and T. J. Hastie, Wadsworth & Brooks/Cole.
 }
 \seealso{
   \code{\link{contrasts}},

@@ -1,7 +1,7 @@
 #  File src/library/utils/R/packages2.R
 #  Part of the R package, https://www.R-project.org
 #
-#  Copyright (C) 1995-2025 The R Core Team
+#  Copyright (C) 1995-2023 The R Core Team
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -16,7 +16,6 @@
 #  A copy of the GNU General Public License is available at
 #  https://www.R-project.org/Licenses/
 
-## FIXME: at some point we may want to allow custom binary installs on Windows as well
 if (.Platform$OS.type == "windows")
     .install.macbinary <- function(...) NULL	# globalVariables isn't available, so use this to suppress the warning
 
@@ -195,7 +194,7 @@ install.packages <-
     get_package_name <- function(pkg) {
         ## Since the pkg argument can be the name of a file rather than
         ## a regular package name, we have to clean that up.
-        gsub("_[.](zip|tar[.](gz|bzip2|bz2|xz|zstd|zst))", "",
+        gsub("_[.](zip|tar[.]gz|tar[.]bzip2|tar[.]xz)", "",
              gsub(.standard_regexps()$valid_package_version, "",
                   basename(pkg)))
     }
@@ -351,10 +350,9 @@ install.packages <-
 
     ## check if we should infer repos = NULL
     if(length(pkgs) == 1L && missing(repos) && missing(contriburl)) {
-        if((type == "source" && any(grepl("[.]tar[.](gz|bz2|xz|zstd|zst)$", pkgs))) ||
+        if((type == "source" && any(grepl("[.]tar[.](gz|bz2|xz)$", pkgs))) ||
            (type %in% "win.binary" && endsWith(pkgs, ".zip")) ||
-           (startsWith(type, "mac.binary") && endsWith(pkgs, ".tgz")) ||
-           (grepl("[.]binary", type) &&  any(grepl("[.]tar[.](gz|bz2|xz|zstd|zst)$", pkgs)))) {
+           (startsWith(type, "mac.binary") && endsWith(pkgs, ".tgz"))) {
             repos <- NULL
             message("inferring 'repos = NULL' from 'pkgs'")
         }
@@ -368,10 +366,8 @@ install.packages <-
                 repos <- NULL
                 type <- type2
                 message("inferring 'repos = NULL' from 'pkgs'")
-            } else if (grepl("[.]tar[.](gz|bz2|xz|zstd|zst)$", pkgs)) {
+            } else if (grepl("[.]tar[.](gz|bz2|xz)$", pkgs)) {
                 repos <- NULL
-                ## can be either source or custom binary, but source falls back to
-                ## R CMD INSTALL which can handle both, so choose "source" to be safe
                 type <- "source"
                 message("inferring 'repos = NULL' from 'pkgs'")
            }
@@ -384,7 +380,7 @@ install.packages <-
 	    ||(startsWith(type2, "mac.binary")
 		   && endsWith(pkgs, ".tgz"))) {
 	    type <- type2
-	} else if (grepl("[.]tar[.](gz|bz2|xz|zstd|zst)$", pkgs)) {
+	} else if (grepl("[.]tar[.](gz|bz2|xz)$", pkgs)) {
 	    type <- "source"
        }
     }
@@ -402,42 +398,21 @@ install.packages <-
         if(nonlocalrepos) {
             df <- function(p, destfile, method, ...)
                 download.file(p, destfile, method, mode = "wb", ...)
-            urls <- unique(pkgs[web])
-
-            if (.download.file.method(method) %in% c("auto", "libcurl")) {
-                # bulk download using libcurl
-                destfiles <- file.path(tmpd, basename(urls))
-                res <- try(df(urls, destfiles, "libcurl", ...))
-                if(!inherits(res, "try-error") && res == 0L) {
-                    if (length(urls) > 1) {
-                        retvals <- attr(res, "retvals")
-                        for(i in seq_along(retvals)) {
-                            this <- pkgs == urls[i]
-                            if (retvals[i] == 0L)
-                                pkgs[this] <- destfiles[i]
-                            else
-                                pkgs[this] <- NA
-                        }
-                    } else
-                        pkgs[web] <- destfiles
-                } else
-                    pkgs[web] <- NA
-            } else {
-                # serial download
-                for (p in urls) {
-                    this <- pkgs == p
-                    destfile <- file.path(tmpd, basename(p))
-                    res <- try(df(p, destfile, method, ...))
-                    if(!inherits(res, "try-error") && res == 0L)
-                        pkgs[this] <- destfile
-                    else {
-                        ## There will be enough notification from the try()
-                        pkgs[this] <- NA
-                    }
+            urls <- pkgs[web]
+            for (p in unique(urls)) {
+                this <- pkgs == p
+                destfile <- file.path(tmpd, basename(p))
+                res <- try(df(p, destfile, method, ...))
+                if(!inherits(res, "try-error") && res == 0L)
+                    pkgs[this] <- destfile
+                else {
+                    ## There will be enough notification from the try()
+                    pkgs[this] <- NA
                 }
-            }
+           }
         }
     }
+
 
     ## Look at type == "both"
     ## NB it is only safe to use binary packages with a macOS
@@ -554,7 +529,7 @@ install.packages <-
         }
 
         if(length(bins)) {
-            if(startsWith(type2, "win.binary"))
+            if(type2 == "win.binary")
                 .install.winbinary(pkgs = bins, lib = lib,
                                    contriburl = contrib.url(repos, type2),
                                    method = method, available = av2,
@@ -580,7 +555,7 @@ install.packages <-
 	flush.console()
         ## end of "both"
     } else if (getOption("install.packages.check.source", "yes") %in% "yes"
-               && (grepl("^[[:lower::]]+[.]binary", type))) {
+               && (type %in% "win.binary" || startsWith(type, "mac.binary"))) {
         if (missing(contriburl) && is.null(available) && !is.null(repos)) {
             contriburl2 <- contrib.url(repos, "source")
 	    # The line above may have changed the repos option, so..
@@ -634,11 +609,10 @@ install.packages <-
     }
 
     if(.Platform$OS.type == "windows") {
-        ## FIXME: we may want allow custom binaries on Windows as well...
-        if(!startsWith(type, "win.binary") && type != "source")
-            stop("cannot install binary packages from other operating systems on Windows")
+        if(startsWith(type, "mac.binary"))
+            stop("cannot install macOS binary packages on Windows")
 
-        if(startsWith(type, "win.binary")) {
+        if(type %in% "win.binary") {
             ## include local .zip files
             .install.winbinary(pkgs = pkgs, lib = lib, contriburl = contriburl,
                                method = method, available = available,
@@ -660,16 +634,18 @@ install.packages <-
         ## -- will mess up UNC names, but they don't work
         pkgs <- gsub("\\", "/", pkgs, fixed=TRUE)
     } else {
-        if(startsWith(type, "win.binary"))
-            stop("cannot install Windows binary packages on this platform")
-
-        if(grepl("^[[:lower:]]+[.]binary", type)) {
+        if(startsWith(type, "mac.binary")) {
+            if(!grepl("darwin", R.version$platform))
+                stop("cannot install macOS binary packages on this platform")
             .install.macbinary(pkgs = pkgs, lib = lib, contriburl = contriburl,
                                method = method, available = available,
                                destdir = destdir,
                                dependencies = dependencies, quiet = quiet, ...)
             return(invisible())
         }
+
+        if(type %in% "win.binary")
+            stop("cannot install Windows binary packages on this platform")
 
         if(!file.exists(file.path(R.home("bin"), "INSTALL")))
             stop("This version of R is not set up to install source packages\nIf it was installed from an RPM, you may need the R-devel RPM")
@@ -780,8 +756,7 @@ install.packages <-
     av2 <- NULL
     if(is.null(available)) {
         filters <- getOption("available_packages_filters")
-        if(!is.null(filters) ||
-           any(!is.na(pmatch(...names(), "filters")))) {
+        if(!is.null(filters)) {
             available <- available.packages(contriburl = contriburl,
                                             method = method, ...)
         } else {

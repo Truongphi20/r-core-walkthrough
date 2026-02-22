@@ -16,7 +16,9 @@
   A monthly time series, in thousands.
 }
 \source{
-  \bibshow{R:Box+Jenkins+Reinsel:1994}
+  Box, G. E. P., Jenkins, G. M. and Reinsel, G. C. (1976)
+  \emph{Time Series Analysis, Forecasting and Control.}
+  Third Edition. Holden-Day. Series G.
 }
  \examples{
 ## The classic 'airline model', by full ML

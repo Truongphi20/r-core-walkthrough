@@ -28,8 +28,7 @@ abline(a = NULL, b = NULL, h = NULL, v = NULL, reg = NULL,
 }
 \details{
   Typical usages are
-\preformatted{
-abline(a, b, ...)
+\preformatted{abline(a, b, ...)
 abline(h =, ...)
 abline(v =, ...)
 abline(coef =, ...)
@@ -64,9 +63,11 @@ abline(reg =, ...)
   the global \code{\link{par}("xpd")} setting used otherwise.
 }
 \references{
-  \bibshow{R:Becker+Chambers+Wilks:1988}
+  Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+  \emph{The New S Language}.
+  Wadsworth & Brooks/Cole.
 
-  \bibshow{R:Murrell:2005}
+  Murrell, P. (2005) \emph{R Graphics}. Chapman & Hall/CRC Press.
 }
 \seealso{
   \code{\link{lines}} and \code{\link{segments}} for connected and

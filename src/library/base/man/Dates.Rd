@@ -60,17 +60,11 @@
   as midnight in UTC.
 
   Printing dates involves conversion to class \code{"\link{POSIXlt}"}
-  which treats dates of more than about 780 billion days (2.1 billion
-  years) from present as \code{NA}.
+  which treats dates of more than about 780 million years from present
+  as \code{NA}.
   
   For the many methods see \code{methods(class = "Date")}.  Several are
   documented separately, see below.
-}
-\section{Warning}{
-  Do not use \code{\link{identical}()} on objects of class \code{"Date"}.
-  Their \code{\link{storage.mode}} may be \code{"double"} or
-  \code{"integer"}, and which is chosen has depended on the version of
-  \R used to create the object.
 }
 \seealso{
   \code{\link{Sys.Date}} for the current date.
@@ -116,7 +110,7 @@ stopifnot(exprs = {
   ## length(.) <- * is compatible to subsetting/indexing:
   identical(ls, Dls[seq_along(ls)])
   identical(l2, Dls[seq_along(l2)])
-  ## has filled with NAs
+  ## has filled with NA's
   is.na(l2[(length(Dls)+1):length(l2)])
 })
 }

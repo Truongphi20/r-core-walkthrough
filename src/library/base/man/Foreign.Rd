@@ -170,11 +170,13 @@
 }
 
 \references{
-  \bibshow{R:Becker+Chambers+Wilks:1988}
+  Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+  \emph{The New S Language}.
+  Wadsworth & Brooks/Cole.
 }
 \seealso{
   \code{\link{dyn.load}}, \code{\link{.Call}}.
 
-  The \manual{R-exts}{} manual.
+  The \sQuote{Writing R Extensions} manual.
 }
 \keyword{programming}

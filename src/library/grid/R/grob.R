@@ -187,10 +187,10 @@ as.gList <- function(x) {
 gList <- function(...) {
     gl <- list(...)
     if (length(gl) == 0L ||
-        all(vapply(gl, okGListelt, NA))) {
+        all(sapply(gl, okGListelt, simplify=TRUE))) {
         # Ensure gList is "flat"
         # Don't want gList containing gList ...
-        if (!all(vapply(gl, is.grob, NA)))
+        if (!all(sapply(gl, is.grob)))
             gl <- do.call("c", lapply(gl, as.gList))
         class(gl) <- c("gList")
         return(gl)
@@ -259,12 +259,12 @@ setChildren <- function(x, children) {
   # Thin out NULL children
   if (!is.null(children)) {
     cl <- class(children)
-    children <- children[!vapply(children, is.null, NA)]
+    children <- children[!sapply(children, is.null)]
     class(children) <- cl
   }
   if (length(children)) {
     x$children <- children
-    childNames <- vapply(children, childName, "")
+    childNames <- sapply(children, childName)
     names(x$children) <- childNames
     x$childrenOrder <- childNames
   } else {
@@ -331,7 +331,7 @@ getName <- function(elt) {
 
 getNames <- function() {
   dl <- grid.Call(C_getDisplayList)[1L:grid.Call(C_getDLindex)]
-  names <- vapply(dl, getName, "")
+  names <- sapply(dl, getName)
   names[nzchar(names)]
 }
 

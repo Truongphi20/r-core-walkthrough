@@ -17,14 +17,14 @@
   \code{c("nfnGroupedData", "nfGroupedData", "groupedData", "data.frame")}
   containing the following columns:
   \describe{
-    \item{\code{weight}}{
+    \item{weight}{
       a numeric vector giving the body weight of the chick (gm).
     }
-    \item{\code{Time}}{
+    \item{Time}{
       a numeric vector giving the number of days since birth when
       the measurement was made.
     }
-    \item{\code{Chick}}{
+    \item{Chick}{
       an ordered factor with levels
       \code{18} < \dots < \code{48}
       giving a unique identifier for the chick.  The ordering of
@@ -32,7 +32,7 @@
       orders them according to their final weight (lightest to
       heaviest) within diet.
     }
-    \item{\code{Diet}}{
+    \item{Diet}{
       a factor with levels 1, \dots, 4 indicating which
       experimental diet the chick received.
     }
@@ -43,16 +43,19 @@
   second day thereafter until day 20.  They were also measured on day
   21.  There were four groups on chicks on different protein diets.
 
-  This dataset was originally part of package \CRANpkg{nlme}, and that has
+  This dataset was originally part of package \code{nlme}, and that has
   methods (including for \code{[}, \code{as.data.frame}, \code{plot} and
   \code{print}) for its grouped-data classes.
 }
 \source{
-  \bibinfo{R:Crowder+Hand:1990}{note}{Example 5.3}
-  \bibinfo{R:Hand+Crowder:1996}{note}{Table A.2}
-  \bibshow{R:Crowder+Hand:1990,
-    R:Hand+Crowder:1996,
-    R:Pinheiro+Bates:2000}
+  Crowder, M. and Hand, D. (1990), \emph{Analysis of Repeated Measures},
+  Chapman and Hall (example 5.3)
+
+  Hand, D. and Crowder, M. (1996), \emph{Practical Longitudinal Data
+    Analysis}, Chapman and Hall (table A.2)
+
+  Pinheiro, J. C. and Bates, D. M. (2000) \emph{Mixed-effects Models in
+    S and S-PLUS}, Springer.
 }
 \seealso{
   \code{\link{SSlogis}} for models fitted to this dataset.

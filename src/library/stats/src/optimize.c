@@ -1,8 +1,8 @@
 /*
  *  R : A Computer Language for Statistical Data Analysis
- *  Copyright (C) 1998--2025  The R Core Team
  *  Copyright (C) 1995, 1996  Robert Gentleman and Ross Ihaka
  *  Copyright (C) 2003-2004  The R Foundation
+ *  Copyright (C) 1998--2023  The R Core Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,14 +24,21 @@
 #endif
 
 #define NO_NLS
-#include <Defn.h>               // for PrintDefaults
+#include <Defn.h>
 #include <float.h>		/* for DBL_MAX */
 #include <R_ext/Applic.h>	/* for optif9, fdhess */
 #include <R_ext/RS.h>	       	/* for Memcpy */
 
 #include "statsR.h"
 #include "stats.h" // R_zeroin2
-#include "statsErr.h"
+
+#undef _
+#ifdef ENABLE_NLS
+#include <libintl.h>
+#define _(String) dgettext ("stats", String)
+#else
+#define _(String) (String)
+#endif
 
 
 /* Formerly in src/appl/fmim.c */
@@ -219,13 +226,8 @@ static double fcn1(double x, void *arg_info)
     case REALSXP:
 	if (length(s) != 1) goto badvalue;
 	if (!R_FINITE(REAL(s)[0])) {
-	    if(REAL(s)[0] == R_NegInf) { // keep sign for root finding !
-		warning(_("-Inf replaced by maximally negative value"));
-		return -DBL_MAX;
-	    } else {
-		warning(_("%s replaced by maximum positive value"), ISNAN(REAL(s)[0]) ? "NA/NaN" : "Inf");
-		return DBL_MAX;
-	    }
+	    warning(_("NA/Inf replaced by maximum positive value"));
+	    return DBL_MAX;
 	}
 	else return REAL(s)[0];
 	break;
@@ -237,31 +239,33 @@ static double fcn1(double x, void *arg_info)
     return 0;/* for -Wall */
 }
 
-/* Called from optimize() as
- * .External2(C_do_fmin,  function(arg) +/- f(arg, ...), lower, upper, tol)
- * fmin(f, xmin, xmax tol) */
+/* fmin(f, xmin, xmax tol) */
 SEXP do_fmin(SEXP call, SEXP op, SEXP args, SEXP rho)
 {
+    double xmin, xmax, tol;
+    SEXP v, res;
+    struct callinfo info;
+
     args = CDR(args);
     PrintDefaults();
 
     /* the function to be minimized */
 
-    SEXP v = CAR(args);
+    v = CAR(args);
     if (!isFunction(v))
 	error(_("attempt to minimize non-function"));
     args = CDR(args);
 
     /* xmin */
 
-    double xmin = asReal(CAR(args));
+    xmin = asReal(CAR(args));
     if (!R_FINITE(xmin))
 	error(_("invalid '%s' value"), "xmin");
     args = CDR(args);
 
     /* xmax */
 
-    double xmax = asReal(CAR(args));
+    xmax = asReal(CAR(args));
     if (!R_FINITE(xmax))
 	error(_("invalid '%s' value"), "xmax");
     if (xmin >= xmax)
@@ -270,14 +274,13 @@ SEXP do_fmin(SEXP call, SEXP op, SEXP args, SEXP rho)
 
     /* tol */
 
-    double tol = asReal(CAR(args));
+    tol = asReal(CAR(args));
     if (!R_FINITE(tol) || tol <= 0.0)
 	error(_("invalid '%s' value"), "tol");
 
-    struct callinfo info;
     info.R_env = rho;
     PROTECT(info.R_fcall = lang2(v, R_NilValue));
-    SEXP res = PROTECT(allocVector(REALSXP, 1));
+    PROTECT(res = allocVector(REALSXP, 1));
     REAL(res)[0] = Brent_fmin(xmin, xmax, fcn1, &info, tol);
     UNPROTECT(2);
     return res;
@@ -313,7 +316,7 @@ static double fcn2(double x, void *arg_info)
 		warning(_("-Inf replaced by maximally negative value"));
 		return -DBL_MAX;
 	    } else {
-		warning(_("%s replaced by maximum positive value"), ISNAN(REAL(s)[0]) ? "NA/NaN" : "Inf");
+		warning(_("NA/Inf replaced by maximum positive value"));
 		return DBL_MAX;
 	    }
 	}
@@ -531,13 +534,8 @@ static void fcn(int n, double *x, double *f, void *arg_state)
     case REALSXP:
 	if (length(s) != 1) goto badvalue;
 	if (!R_FINITE(REAL(s)[0])) {
-	    if(REAL(s)[0] == R_NegInf) { // keep sign for root finding !
-		warning(_("-Inf replaced by maximally negative value"));
-		*f = -DBL_MAX;
-	    } else {
-		warning(_("%s replaced by maximum positive value"), ISNAN(REAL(s)[0]) ? "NA/NaN" : "Inf");
-		*f = DBL_MAX;
-	    }
+	    warning(_("NA/Inf replaced by maximum positive value"));
+	    *f = DBL_MAX;
 	}
 	else *f = REAL(s)[0];
 	break;
@@ -726,7 +724,7 @@ SEXP nlm(SEXP call, SEXP op, SEXP args, SEXP rho)
     PROTECT(state->R_fcall = lang2(v, R_NilValue));
     args = CDR(args);
 
-    /* `p' : initial parameter value */
+    /* `p' : inital parameter value */
 
     n = 0;
     x = fixparam(CAR(args), &n);

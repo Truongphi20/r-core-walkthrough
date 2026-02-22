@@ -87,7 +87,9 @@ optimise(f, interval, \dots, lower = min(interval), upper = max(interval),
   based on the Algol 60 procedure \code{localmin} given in the reference.
 }
 \references{
-  \bibshow{R:Brent:1973}
+  Brent, R. (1973)
+  \emph{Algorithms for Minimization without Derivatives.}
+  Englewood Cliffs N.J.: Prentice-Hall.
 }
 \seealso{
   \code{\link{nlm}}, \code{\link{uniroot}}.

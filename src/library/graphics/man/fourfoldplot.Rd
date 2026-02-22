@@ -1,6 +1,6 @@
 % File src/library/graphics/man/fourfoldplot.Rd
 % Part of the R package, https://www.R-project.org
-% Copyright 1995-2025 R Core Team
+% Copyright 1995-2007 R Core Team
 % Distributed under GPL 2 or later
 
 \name{fourfoldplot}
@@ -73,13 +73,16 @@ fourfoldplot(x, color = c("#99CCFF", "#6699CC"),
   for the individual odds ratios are not adjusted for multiple testing.
 }
 \references{
-  \bibshow{R:Friendly:1994b}
+  Friendly, M. (1994).
+  A fourfold display for 2 by 2 by \eqn{k} tables.
+  Technical Report 217, York University, Psychology Department.
+  \url{http://datavis.ca/papers/4fold/4fold.pdf}
 }
 \seealso{
   \code{\link{mosaicplot}}
 }
 \examples{
-## Use the Berkeley admission data as in Friendly (1994).
+## Use the Berkeley admission data as in Friendly (1995).
 x <- aperm(UCBAdmissions, c(2, 1, 3))
 dimnames(x)[[2]] <- c("Yes", "No")
 names(dimnames(x)) <- c("Sex", "Admit?", "Department")

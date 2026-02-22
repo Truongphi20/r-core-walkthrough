@@ -232,8 +232,3 @@ default.stringsAsFactors <- function()
 .__H__.rbind <- function(..., deparse.level = 1) .Defunct("base::rbind")
 ## </entry>
 
-## <entry>
-## Deprecated in 4.4.0
-## Defunct in 4.5.0
-is.R <- function() .Defunct()
-## </entry>

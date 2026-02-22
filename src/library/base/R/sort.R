@@ -297,8 +297,7 @@ xtfrm.factor <- function(x) as.integer(x) # primitive, so needs a wrapper
 
 xtfrm.AsIs <- function(x)
 {
-    cl <- oldClass(x)
-    oldClass(x) <- cl[cl != "AsIs"]
+    if(length(cl <- class(x)) > 1) oldClass(x) <- cl[-1L]
     NextMethod("xtfrm")
 }
 

@@ -22,7 +22,7 @@ shlib-clean:
 ## FIXME: why not Rscript?
 symbols.rds: $(OBJECTS)
 	@$(ECHO) "tools:::.shlib_objects_symbol_tables()" | \
-	  $(R_HOME)/bin/R --vanilla --no-echo --args $(OBJECTS) --pkglibs $(PKG_LIBS)
+	  $(R_HOME)/bin/R --vanilla --no-echo --args $(OBJECTS)
 
 compilers:
 	@$(ECHO) "CC = $(CC)"

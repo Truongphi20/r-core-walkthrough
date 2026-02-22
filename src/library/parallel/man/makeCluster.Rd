@@ -1,6 +1,6 @@
-% File src/library/parallel/man/makeCluster.Rd
+% File src/library/parallel/man/makePSOCKcluster.Rd
 % Part of the R package, https://www.R-project.org
-% Copyright 2003-2025 R Core Team
+% Copyright 2003-2023 R Core Team
 % Distributed under GPL 2 or later
 
 \name{makeCluster}
@@ -8,9 +8,12 @@
 \alias{makePSOCKcluster}
 \alias{makeForkCluster}
 \alias{stopCluster}
+\alias{closeNode}
+\alias{recvData}
+\alias{recvOneData}
+\alias{sendData}
 \alias{setDefaultCluster}
 \alias{getDefaultCluster}
-\alias{registerClusterType}
 \alias{R_PARALLEL_PORT}
 
 \title{
@@ -29,8 +32,6 @@ stopCluster(cl = NULL)
 
 setDefaultCluster(cl = NULL)
 getDefaultCluster()
-
-registerClusterType(type, starter, make.default = FALSE)
 }
 \arguments{
   \item{spec}{A specification appropriate to the type of cluster.}
@@ -38,29 +39,16 @@ registerClusterType(type, starter, make.default = FALSE)
     the worker copies of \R, or a positive integer (in which case
     that number of copies is run on \samp{localhost}).}
   \item{nnodes}{The number of nodes to be forked.}
-  \item{type}{One of the supported types: see \sQuote{Details}. For
-    \code{registerClusterType}, a name for the newly-registered type of
-    cluster.}
+  \item{type}{One of the supported types: see \sQuote{Details}.}
   \item{\dots}{Options to be passed to the function spawning the workers.
     See \sQuote{Details}.}
   \item{cl}{an object of class \code{"cluster"}.}
-  \item{starter}{A function used for creating a cluster of the appropriate
-    \code{type}.}
-  \item{make.default}{logical. If \code{TRUE}, the newly-registered cluster
-    type will become the default type of cluster created by
-    \code{makeCluster}. If \code{FALSE} (the default), the default cluster
-    type remains unchanged.}
 }
 \details{
-  \code{makeCluster} creates a cluster of one of the registered types.
+  \code{makeCluster} creates a cluster of one of the supported types.
   The default type, \code{"PSOCK"}, calls \code{makePSOCKcluster}.  Type
-  \code{"FORK"} calls \code{makeForkCluster}.  Other pre-registered
-  types are \code{"SOCK"} for \code{makeSOCKcluster} in package
-  \CRANpkg{snow}, \code{"MPI"} for \code{makeMPIcluster} in
-  \CRANpkg{snow}, \code{"MIRAI"} for \code{make_cluster} in package
-  \CRANpkg{mirai}, and \code{"RPSOCK"} for \code{makeClusterPSOCK} in
-  package \CRANpkg{parallelly}. Calling \code{registerClusterType} with
-  no arguments returns a list of currently registered types.
+  \code{"FORK"} calls \code{makeForkCluster}.  Other types are passed to
+  package \CRANpkg{snow}.
 
   \code{makePSOCKcluster} is an enhanced version of
   \code{makeSOCKcluster} in package \CRANpkg{snow}.  It runs
@@ -95,8 +83,7 @@ registerClusterType(type, starter, make.default = FALSE)
     \item{\code{outfile}}{Where to direct the \code{\link{stdout}} and
       \code{\link{stderr}} connection output from the workers.
       \code{""} indicates no redirection (which may only be useful for
-      workers on the local machine; output from workers will not be
-      displayed on the \code{Rgui} console in Windows).
+      workers on the local machine).
       Defaults to \file{/dev/null} (\file{nul:} on Windows).  The other
       possibility is a file path on the worker's host.
       Files will be opened in append mode, as all workers log to the
@@ -141,7 +128,7 @@ registerClusterType(type, starter, make.default = FALSE)
 #endif
 
   It is good practice to shut down the workers by calling
-  \code{stopCluster}: however the workers will terminate
+  \code{\link{stopCluster}}: however the workers will terminate
   themselves once the socket on which they are listening for commands
   becomes unavailable, which it should if the master \R session is
   completed (or its process dies).
@@ -149,11 +136,6 @@ registerClusterType(type, starter, make.default = FALSE)
   Function \code{setDefaultCluster} registers a cluster as the default one
   for the current session.  Using \code{setDefaultCluster(NULL)} removes
   the registered cluster, as does stopping that cluster.
-
-  Function \code{registerClusterType} registers a new type of parallel
-  cluster in the current session, or lists the registered types. When
-  \code{makeCluster} is called with the newly-registered \code{type}, a
-  cluster of that type is created using the \code{starter} function.
 }
 
 \value{
@@ -162,11 +144,6 @@ registerClusterType(type, starter, make.default = FALSE)
 
   For the default cluster setter and getter, the registered default
   cluster or \code{NULL} if there is no such cluster.
-
-  \code{registerClusterType} is invoked for its side effect which is to
-  define a mechanism for creating a parallel socket cluster of a given
-  named \code{type}. If called without arguments, a character vector of
-  registered cluster types.
 }
 
 \note{
@@ -174,7 +151,7 @@ registerClusterType(type, starter, make.default = FALSE)
   \sQuote{Are all the hosts running identical setups?}, but this was
   apparently more restrictive than its author intended and not required
   by the code.
-
+  
   The current interpretation of \code{homogeneous = TRUE} is that
   \command{Rscript} can be launched using the same path on each worker.
   That path is given by the option \code{rscript} and defaults to the
@@ -184,14 +161,14 @@ registerClusterType(type, starter, make.default = FALSE)
 
   For \code{homogeneous = FALSE}, \command{Rscript} on the workers is
   found on their default shell's path.
-
+  
   For the very common usage of running both master and worker on a
   single multi-core host, the default settings are the appropriate ones.
 
   A socket \link{connection} is used to communicate from the master to
   each worker so the maximum number of connections (default 128 but some
   will be in use) may need to be increased when the master process is
-  started.
+  started.  
 }
 
 \author{

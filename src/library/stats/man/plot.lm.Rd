@@ -1,6 +1,6 @@
 % File src/library/stats/man/plot.lm.Rd
 % Part of the R package, https://www.R-project.org
-% Copyright 1995-2025 R Core Team
+% Copyright 1995-2023 R Core Team
 % Distributed under GPL 2 or later
 
 \name{plot.lm}
@@ -144,16 +144,36 @@
   distribution.  The saddlepoint approximation is exact for the normal
   and inverse Gaussian family, and holds approximately for the Gamma
   family with small dispersion (large shape) and for the Poisson and
-  binomial families with large counts \bibcitep{R:Dunn+Smyth:2018}.
+  binomial families with large counts (\bibcite{Dunn and Smyth 2018}).
 }
 
 \references{
-  \bibshow{*,
-    R:Belsley+Kuh+Welsch:1980,
-    R:Cook+Weisberg:1982,
-    R:Firth:1991,
-    R:Hinkley:1975,
-    R:McCullagh+Nelder:1989}
+  Belsley, D. A., Kuh, E. and Welsch, R. E. (1980).
+  \emph{Regression Diagnostics}.
+  New York: Wiley.
+
+  Cook, R. D. and Weisberg, S. (1982).
+  \emph{Residuals and Influence in Regression}.
+  London: Chapman and Hall.
+
+  Firth, D. (1991) Generalized Linear Models.
+  In Hinkley, D. V. and Reid, N. and Snell, E. J., eds:
+  Pp.\sspace{}55-82 in Statistical Theory and Modelling.
+  In Honour of Sir David Cox, FRS.
+  London: Chapman and Hall.
+
+  Hinkley, D. V. (1975).
+  On power transformations to symmetry.
+  \emph{Biometrika}, \bold{62}, 101--111.
+  \doi{10.2307/2334491}.
+
+  McCullagh, P. and Nelder, J. A. (1989).
+  \emph{Generalized Linear Models}.
+  London: Chapman and Hall.
+
+  Dunn, P.K. and Smyth G.K. (2018)
+  \emph{Generalized Linear Models with Examples in R}.
+  New York: Springer-Verlag.
 }
 \author{
   John Maindonald and Martin Maechler.

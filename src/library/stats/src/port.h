@@ -31,7 +31,13 @@
 #include <string.h> // for memmove, memcpy, strcmp
 #include <Rinternals.h>
 #include <R_ext/RS.h>
-#include "statsErr.h"
+
+#ifdef ENABLE_NLS
+#include <libintl.h>
+#define _(String) dgettext ("stats", String)
+#else
+#define _(String) (String)
+#endif
 
 /* PORT interface functions - reverse communication */
 

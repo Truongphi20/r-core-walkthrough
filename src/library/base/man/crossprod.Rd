@@ -14,7 +14,7 @@
   \code{x \%*\% t(y)} (\code{tcrossprod}).
 
   These are generic functions since \R 4.4.0: methods can be written
-  individually or via the \code{\link[=S3groupGeneric]{matrixOps}} group
+  individually or via the \code{\link[=S3groupGeneric]{matOps}} group
   generic function; it dispatches to S3 and S4 methods.
 }
 \usage{
@@ -49,7 +49,9 @@ tcrossprod(x, y = NULL, \dots)
 %% FALSE gives empty dimnames; NA = current behavior; TRUE gives "as much as sensible"
 
 \references{
-  \bibshow{R:Becker+Chambers+Wilks:1988}
+  Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+  \emph{The New S Language}.
+  Wadsworth & Brooks/Cole.
 }
 \seealso{
   \code{\link{\%*\%}} and outer product \code{\link{\%o\%}}.

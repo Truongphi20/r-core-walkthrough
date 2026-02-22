@@ -70,7 +70,11 @@
   and studentized (\code{\link{rstudent}}) residuals.
 }
 \references{
-  \bibshow{R:Chambers:1992:c4}}
+  Chambers, J. M. (1992)
+  \emph{Linear models.}
+  Chapter 4 of \emph{Statistical Models in S}
+  eds J. M. Chambers and T. J. Hastie, Wadsworth & Brooks/Cole.
+}
 \examples{
 \dontshow{utils::example("lm", echo = FALSE)}
 ##-- Continuing the  lm(.) example:

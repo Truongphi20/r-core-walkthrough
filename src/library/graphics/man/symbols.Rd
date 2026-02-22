@@ -96,9 +96,15 @@ symbols(x, y = NULL, circles, squares, rectangles, stars,
   pixel as some Windows versions omit smaller circles.
 }
 \references{
-  \bibshow{R:Becker+Chambers+Wilks:1988,
-    R:Cleveland:1985,
-    R:Murrell:2005}
+  Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+  \emph{The New S Language}.
+  Wadsworth & Brooks/Cole.
+
+  W. S. Cleveland (1985)
+  \emph{The Elements of Graphing Data.}
+  Monterey, California: Wadsworth.
+
+  Murrell, P. (2005) \emph{R Graphics}. Chapman & Hall/CRC Press.
 }
 \seealso{
   \code{\link{stars}} for drawing \emph{stars} with a bit more

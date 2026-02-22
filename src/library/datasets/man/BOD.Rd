@@ -25,12 +25,13 @@
   }
 }
 \source{
-  \bibcitet{|R:Bates+Watts:1988|Appendix A1.4}
+  Bates, D.M. and Watts, D.G. (1988),
+  \emph{Nonlinear Regression Analysis and Its Applications},
+  Wiley, Appendix A1.4.
 
-  Originally from \bibcitet{R:Marske:1967}.
-}
-\references{
-  \bibshow{*}
+  Originally from Marske (1967), \emph{Biochemical
+    Oxygen Demand Data Interpretation Using Sum of Squares Surface}
+  M.Sc. Thesis, University of Wisconsin -- Madison.
 }
 \examples{
 \dontshow{options(show.nls.convergence=FALSE)

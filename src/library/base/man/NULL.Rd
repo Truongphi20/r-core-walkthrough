@@ -43,7 +43,9 @@ is.null(x)
   \code{is.null} is a \link{primitive} function.
 }
 \references{
-  \bibshow{R:Becker+Chambers+Wilks:1988}
+  Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+  \emph{The New S Language}.
+  Wadsworth & Brooks/Cole.
 }
 \value{
   \code{as.null} ignores its argument and returns \code{NULL}.

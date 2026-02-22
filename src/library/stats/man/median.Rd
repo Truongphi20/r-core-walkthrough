@@ -40,7 +40,9 @@ median(x, na.rm = FALSE, \dots)
   generally the result of \code{x[NA_integer_]}).
 }
 \references{
-  \bibshow{R:Becker+Chambers+Wilks:1988}
+  Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+  \emph{The New S Language}.
+  Wadsworth & Brooks/Cole.
 }
 \seealso{\code{\link{quantile}} for general quantiles.}
 \examples{

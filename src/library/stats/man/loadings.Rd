@@ -1,20 +1,19 @@
 % File src/library/stats/man/loadings.Rd
 % Part of the R package, https://www.R-project.org
-% Copyright 1995-2025 R Core Team
+% Copyright 1995-2014 R Core Team
 % Distributed under GPL 2 or later
 
 \name{loadings}
-\title{Print Factor Analysis \code{factanal()}, Notably Loadings}
 \alias{loadings}
 \alias{print.loadings}
 \alias{print.factanal}
+\title{Print Loadings in Factor Analysis}
 \description{
-  Print factor analysis result,  \code{\link{factanal}()};
-  extract or print loadings in factor analysis (or principal
-  components analysis, PCA).
+  Extract or print loadings in factor analysis (or principal
+  components analysis).
 }
 \usage{
-loadings(x, \dots)
+loadings(x, ...)
 
 \method{print}{loadings}(x, digits = 3, cutoff = 0.1, sort = FALSE, \dots)
 
@@ -32,9 +31,8 @@ loadings(x, \dots)
     than 0.5 (in modulus) is assigned to the factor with the largest
     loading, and the variables are printed in the order of the factor
     they are assigned to, then those unassigned.}
-  \item{\dots}{further arguments for other methods; for \code{factanal}
-    printing, notably passed to \code{print(<loadings>, ...)}, hence, e.g.,
-    \code{cutoff = <frac>}; ignored for \code{loadings}.}
+  \item{\dots}{further arguments for other methods,
+    ignored for \code{loadings}.}
 }
 
 \details{
@@ -49,7 +47,7 @@ loadings(x, \dots)
   The \code{print} method for class \code{"\link{factanal}"} calls the
   \code{"loadings"} method to print the loadings, and so passes down
   arguments such as \code{cutoff} and \code{sort}.
-
+  
   The signs of the loadings vectors are arbitrary for both factor
   analysis and PCA.
 }

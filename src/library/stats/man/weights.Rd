@@ -29,7 +29,9 @@ weights(object, \dots)
   \code{\link{napredict}} on it.
 }
 \references{
-  \bibshow{R:Chambers+Hastie:1992}
+  Chambers, J. M. and Hastie, T. J. (1992)
+  \emph{Statistical Models in S}.
+  Wadsworth & Brooks/Cole.
 }
 \seealso{
   \code{\link{weights.glm}}

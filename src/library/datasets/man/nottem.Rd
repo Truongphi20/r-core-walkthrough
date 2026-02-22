@@ -15,8 +15,9 @@
 }
 \usage{nottem}
 \source{
-  \bibinfo{R:Anderson:1979}{note}{Series R}
-  \bibshow{R:Anderson:1979}
+  Anderson, O. D. (1976)
+  \emph{Time Series Analysis and Forecasting: The Box-Jenkins approach.}
+  Butterworths. Series R.
 }
 \examples{
 require(stats); require(graphics)

@@ -40,10 +40,11 @@ test-Examples-Base: Makefile
 ## <NOTE>
 ## We do *not* want this to be added to test-Examples conditional on
 ## @USE_RECOMMENDED_PACKAGES_TRUE@.
-## 'make check-all' is used for running test-Packages-Recommended in
-## addition to 'make check', which includes checking the examples.
+## 'make check-all' is used for running test-Examples-Recommended in
+## addition to 'make check'.
+## nlme suggests 'Hmisc'
 test-Examples-Recommended: test-Examples-Base
-	@$(ECHO) "tools::testInstalledPackages(scope='recommended', types='examples')" | $(R_EXE)
+	@$(ECHO) "tools::testInstalledPackages(scope='recommended', types='examples')" | _R_CHECK_FORCE_SUGGESTS_=FALSE $(R_EXE)
 ## </NOTE>
 
 mostlyclean: clean

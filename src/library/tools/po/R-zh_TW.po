@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: R 4.2.0\n"
 "Report-Msgid-Bugs-To: bugs.r-project.org\n"
-"POT-Creation-Date: 2025-03-31 11:51\n"
+"POT-Creation-Date: 2024-04-15 12:10\n"
 "PO-Revision-Date: 2021-11-06 22:40+0100\n"
 "Last-Translator: Wei-Lun Chao <bluebat@member.fsf.org>\n"
 "Language-Team: Chinese (traditional) <zh-l10n@linux.org.tw>\n"
@@ -276,18 +276,6 @@ msgstr "Authors@R 欄位沒有提供維護者角色、有效的電子郵件地�
 msgid "Authors@R field gives persons with invalid ORCID identifiers:"
 msgstr "Authors@R 欄位沒有提供作者姓名："
 
-#, fuzzy
-msgid "Authors@R field gives persons with duplicated ORCID identifiers:"
-msgstr "Authors@R 欄位沒有提供作者姓名："
-
-#, fuzzy
-msgid "Authors@R field gives persons with invalid ROR identifiers:"
-msgstr "Authors@R 欄位沒有提供作者姓名："
-
-#, fuzzy
-msgid "Authors@R field gives persons with duplicated ROR identifiers:"
-msgstr "Authors@R 欄位沒有提供作者姓名："
-
 msgid "Encoding '%s' is not portable"
 msgstr "編碼 '%s' 不可攜"
 
@@ -342,11 +330,11 @@ msgid "invalid 'OS.type' \"%s\".  Should not happen"
 msgstr ""
 
 #, fuzzy
-msgid "Missing link(s) in Rd file '%s':"
+msgid "Missing link or links in Rd file '%s':"
 msgstr "使用手冊物件 '%s' 缺少聯結："
 
 #, fuzzy
-msgid "Non-topic package-anchored link(s) in Rd file '%s':"
+msgid "Non-file package-anchored link(s) in Rd file '%s':"
 msgstr "使用手冊物件 '%s' 缺少聯結："
 
 msgid "See section 'Cross-references' in the 'Writing R Extensions' manual."
@@ -709,6 +697,9 @@ msgstr "尚未指定簡介引擎"
 msgid "Unsupported engine name"
 msgstr "不支援這樣的引擎名稱"
 
+msgid "None of packages %s have registered vignette engines"
+msgstr "沒有任何一個套件 %s 有已註冊的簡介引擎"
+
 msgid "Vignette engine %s is not registered"
 msgstr "簡介引擎 %s 尚未註冊"
 
@@ -794,12 +785,6 @@ msgstr "錯誤：R 的版本是 %s，需要的是版本為 %s %s 的 R"
 
 msgid "loading failed"
 msgstr "載入失敗"
-
-msgid "'cc' is not on the path"
-msgstr ""
-
-msgid "'objdump' is not on the path"
-msgstr ""
 
 msgid "Got %s in evaluating %s; wanted %s"
 msgstr "求值 %2$s 時取得 %1$s；原本是要 %3$s"
@@ -1154,13 +1139,6 @@ msgstr "套件沒有包含任何 R 編碼"
 msgid "package seems to be using lazy loading already"
 msgstr "套件已經使用延遲載入了"
 
-msgid "'files' and 'bytes' are mutually exclusive"
-msgstr ""
-
-#, fuzzy
-msgid "'bytes' must be a raw vector"
-msgstr "'text' 必須是字元向量"
-
 msgid ""
 "Cannot process chunk/lines:\n"
 "%s"
@@ -1254,13 +1232,6 @@ msgstr "引數 '%s' 必須是字串或聯結"
 
 msgid "unimplemented encoding"
 msgstr "還沒有實作的編碼"
-
-#, fuzzy
-msgid "x must be a single string"
-msgstr "'x' 必須是單字串"
-
-msgid "invalid hex string"
-msgstr ""
 
 msgid "this requires 'objdump.exe' to be on the PATH"
 msgstr "這需要 'objdump.exe' 位於 PATH 中"
@@ -1409,8 +1380,7 @@ msgstr ""
 msgid "update_PACKAGES complete."
 msgstr ""
 
-#, fuzzy
-msgid "'%s' must be a character string"
+msgid "'x' must be a single character string"
 msgstr "'x' 必須是單字串"
 
 msgid "test '%s' is not available"
@@ -1463,9 +1433,6 @@ msgstr "不明帶非 ASCII 資料的編碼: 轉換為 ASCII"
 
 msgid "cannot source package code:"
 msgstr "無法讀取套件來源編碼"
-
-msgid "inferiorCallError"
-msgstr ""
 
 msgid "inferior call failed"
 msgstr ""
@@ -1522,8 +1489,7 @@ msgid "Found a .Internal call in the following function:"
 msgid_plural "Found .Internal calls in the following functions:"
 msgstr[0] "下面的函式呼叫了.Internal:"
 
-#, fuzzy
-msgid "Found a .Internal call in methods for the following S4 generic:"
+msgid "Found a.Internal call in methods for the following S4 generic:"
 msgid_plural "Found .Internal calls in methods for the following S4 generics:"
 msgstr[0] "下面的 S4 泛型函式的方法呼叫了.Internal:"
 
@@ -1572,11 +1538,6 @@ msgstr[0] ""
 msgid "SUMMARY: processing the following file failed:"
 msgid_plural "SUMMARY: processing the following files failed:"
 msgstr[0] ""
-
-#, fuzzy
-msgid "Package %s does not have a registered vignette engine"
-msgid_plural "None of packages %s have registered vignette engines"
-msgstr[0] "沒有任何一個套件 %s 有已註冊的簡介引擎"
 
 msgid "unable to re-encode %s line %s"
 msgid_plural "unable to re-encode %s lines %s"

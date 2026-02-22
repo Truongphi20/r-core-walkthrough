@@ -1,6 +1,6 @@
 /*
  *  R : A Computer Language for Statistical Data Analysis
- *  Copyright (C) 2000-2025  The R Core Team
+ *  Copyright (C) 2000-2023  The R Core Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -48,7 +48,7 @@ attribute_hidden SEXP do_lapply(SEXP call, SEXP op, SEXP args, SEXP rho)
     XX = PROTECT(eval(CAR(args), rho));
     R_xlen_t n = xlength(XX);  // a vector, so will be valid.
     FUN = checkArgIsSymbol(CADR(args));
-    bool realIndx = n > INT_MAX;
+    Rboolean realIndx = n > INT_MAX;
 
     SEXP ans = PROTECT(allocVector(VECSXP, n));
     SEXP names = getAttrib(XX, R_NamesSymbol);
@@ -99,7 +99,7 @@ attribute_hidden SEXP do_vapply(SEXP call, SEXP op, SEXP args, SEXP rho)
     R_xlen_t i, n;
     int commonLen;
     int useNames, rnk_v = -1; // = array_rank(value) := length(dim(value))
-    bool array_value;
+    Rboolean array_value;
     SEXPTYPE commonType;
     PROTECT_INDEX index = 0; /* initialize to avoid a warning */
 
@@ -111,12 +111,11 @@ attribute_hidden SEXP do_vapply(SEXP call, SEXP op, SEXP args, SEXP rho)
     if (!isVector(value)) error(_("'FUN.VALUE' must be a vector"));
     useNames = asLogical(PROTECT(eval(CADDDR(args), rho)));
     UNPROTECT(1);
-    // FIXME: does not protect against length > 1
     if (useNames == NA_LOGICAL) error(_("invalid '%s' value"), "USE.NAMES");
 
     n = xlength(XX);
     if (n == NA_INTEGER) error(_("invalid length"));
-    bool realIndx = n > INT_MAX;
+    Rboolean realIndx = n > INT_MAX;
 
     commonLen = length(value);
     if (commonLen > 1 && n > INT_MAX)
@@ -179,7 +178,7 @@ attribute_hidden SEXP do_vapply(SEXP call, SEXP op, SEXP args, SEXP rho)
 		       commonLen, (long long)i+1, length(val));
 	    valType = TYPEOF(val);
 	    if (valType != commonType) {
-		bool okay = false;
+		Rboolean okay = FALSE;
 		switch (commonType) {
 		case CPLXSXP: okay = (valType == REALSXP) || (valType == INTSXP)
 				    || (valType == LGLSXP); break;
@@ -207,7 +206,7 @@ attribute_hidden SEXP do_vapply(SEXP call, SEXP op, SEXP args, SEXP rho)
 		case STRSXP:  SET_STRING_ELT(ans, i, STRING_ELT(val, 0)); break;
 		case VECSXP:  SET_VECTOR_ELT(ans, i, VECTOR_ELT(val, 0)); break;
 		}
-	    } else if (commonLen) { // commonLen > 1
+	    } else { // commonLen > 1 (typically, or == 0) :
 		switch (commonType) {
 		case REALSXP:
 		    memcpy(REAL(ans) + common_len_offset,
@@ -284,10 +283,10 @@ attribute_hidden SEXP do_vapply(SEXP call, SEXP op, SEXP args, SEXP rho)
 
 //  Apply FUN() to X recursively;  workhorse of rapply()
 static SEXP do_one(SEXP X, SEXP FUN, SEXP classes, SEXP deflt,
-		   bool replace, SEXP rho)
+		   Rboolean replace, SEXP rho)
 {
     SEXP ans, names, klass;
-    bool matched = false;
+    Rboolean matched = FALSE;
 
     /* if X is a list, recurse.  Otherwise if it matches classes call f */
     if(X == R_NilValue || isVectorList(X)) {
@@ -306,13 +305,13 @@ static SEXP do_one(SEXP X, SEXP FUN, SEXP classes, SEXP deflt,
 	return ans;
     }
     if(strcmp(CHAR(STRING_ELT(classes, 0)), "ANY") == 0) /* ASCII */
-	matched = true;
+	matched = TRUE;
     else {
-	PROTECT(klass = R_data_class(X, false));
+	PROTECT(klass = R_data_class(X, FALSE));
 	for(int i = 0; i < LENGTH(klass); i++)
 	    for(int j = 0; j < length(classes); j++)
 		if(Seql(STRING_ELT(klass, i), STRING_ELT(classes, j)))
-		    matched = true;
+		    matched = TRUE;
 	UNPROTECT(1);
     }
     if(matched) {
@@ -349,7 +348,7 @@ attribute_hidden SEXP do_rapply(SEXP call, SEXP op, SEXP args, SEXP rho)
     deflt = CAR(args); args = CDR(args);
     how = CAR(args);
     if(!isString(how)) error(_("invalid '%s' argument"), "how");
-    bool replace = strcmp(CHAR(STRING_ELT(how, 0)), "replace") == 0; /* ASCII */
+    Rboolean replace = strcmp(CHAR(STRING_ELT(how, 0)), "replace") == 0; /* ASCII */
     R_xlen_t n = xlength(X);
     if (replace) {
       PROTECT(ans = shallow_duplicate(X));
@@ -367,7 +366,7 @@ attribute_hidden SEXP do_rapply(SEXP call, SEXP op, SEXP args, SEXP rho)
 
 /**
  * Recursively check if  X  is a tree with only factor leaves;
- *   the workhorse for do_islistfactor()
+ *   the "work horse" for do_islistfactor()
  * @param X  list or expression
  * @return TRUE(1), FALSE(0) or NA_LOGICAL
  */
@@ -380,9 +379,9 @@ static int islistfactor(SEXP X)
 	for(int i = 0; i < n; i++) {
 	    int isLF = islistfactor(VECTOR_ELT(X, i));
 	    if(!isLF)
-		return false;
-	    else if(isLF == true)
-		ans = true;
+		return FALSE;
+	    else if(isLF == TRUE)
+		ans = TRUE;
 	    // else isLF is NA
 	}
 	return ans;
@@ -399,19 +398,19 @@ attribute_hidden SEXP do_islistfactor(SEXP call, SEXP op, SEXP args, SEXP rho)
 {
     checkArity(op, args);
     SEXP X = CAR(args);
-    bool recursive = asBool2(CADR(args), call);
+    Rboolean recursive = asLogical(CADR(args));
     int n = length(X);
     if(n == 0 || !isVectorList(X))
-	return ScalarLogical(false);
+	return ScalarLogical(FALSE);
 
     if(!recursive) {
 	for(int i = 0; i < n; i++)
 	    if(!isFactor(VECTOR_ELT(X, i)))
-		return ScalarLogical(false);
+		return ScalarLogical(FALSE);
 
-	return ScalarLogical(true);
+	return ScalarLogical(TRUE);
     }
     else { // recursive:  isVectorList(X) <==> X is VECSXP or EXPRSXP
-	return ScalarLogical((islistfactor(X) == true) ? true : false);
+	return ScalarLogical((islistfactor(X) == TRUE) ? TRUE : FALSE);
     }
 }

@@ -6,6 +6,7 @@
 
 \name{sleep}
 \docType{data}
+\encoding{UTF-8}
 \alias{sleep}
 \title{Student's Sleep Data}
 \description{
@@ -22,7 +23,13 @@
   }
 }
 \source{
-  \bibcitet{R:Cushny+Peebles:1905, R:Student:1908}.
+  Cushny, A. R. and Peebles, A. R. (1905)
+  The action of optical isomers: II hyoscines.
+  \emph{The Journal of Physiology} \bold{32}, 501--510.
+
+  Student (1908)
+  The probable error of the mean.
+  \emph{Biometrika}, \bold{6}, 20.
 }
 \details{
   The \code{group} variable name may be misleading about the data:
@@ -30,7 +37,9 @@
   %% But we keep it (as [,2]) for back compatibility.
 }
 \references{
-  \bibshow{*, R:Scheffe:1959}
+  \enc{Scheffé}{Scheffe}, Henry (1959)
+  \emph{The Analysis of Variance}.
+  New York, NY: Wiley.
 }
 \examples{
 require(stats)

@@ -1,7 +1,7 @@
 #  File src/library/utils/R/help.R
 #  Part of the R package, https://www.R-project.org
 #
-#  Copyright (C) 1995-2025 The R Core Team
+#  Copyright (C) 1995-2016 The R Core Team
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -88,15 +88,13 @@ function(topic, package = NULL, lib.loc = NULL,
 	      class = "help_files_with_topic")
 }
 
-print.help_files_with_topic <- function(x, ...) # ...  may contain  msg=FALSE
+print.help_files_with_topic <- function(x, ...)
 {
+    browser <- getOption("browser")
     topic <- attr(x, "topic")
-    type  <- attr(x, "type")
-    if(type == "html")
-        browser <- 
-            if (.Platform$GUI == "AQUA" && type == "html")
-                get("aqua.browser", envir = as.environment("tools:RGUI"))
-            else getOption("browser")
+    type <- attr(x, "type")
+    if (.Platform$GUI == "AQUA" && type == "html")
+        browser <- get("aqua.browser", envir = as.environment("tools:RGUI"))
     paths <- as.character(x)
     if(!length(paths)) {
         writeLines(c(gettextf("No documentation for %s in specified packages and libraries:",
@@ -106,7 +104,7 @@ print.help_files_with_topic <- function(x, ...) # ...  may contain  msg=FALSE
         return(invisible(x))
     }
 
-    if(type == "html") port <- tools::startDynamicHelp(NA)
+    port <- if(type == "html") tools::startDynamicHelp(NA) else NULL
 
     if(attr(x, "tried_all_packages")) {
         paths <- unique(dirname(dirname(paths)))
@@ -176,7 +174,7 @@ print.help_files_with_topic <- function(x, ...) # ...  may contain  msg=FALSE
                     tmp[tools::file_path_sans_ext(tmp$File) == tp[i], "Title"]
                 }
                 txt <- paste0(titles, " {", basename(paths), "}")
-                ## the default on menu() is currently graphics = FALSE
+                ## the default on menu() is currtently graphics = FALSE
                 res <- menu(txt, title = gettext("Choose one"),
                             graphics = getOption("menu.graphics"))
                 if(res > 0) file <- p[res]
@@ -217,22 +215,27 @@ print.help_files_with_topic <- function(x, ...) # ...  may contain  msg=FALSE
             texinputs <- file.path(dirpath, "help", "figures")
             tf2 <- tempfile("Rlatex")
             tools::Rd2latex(.getHelpFile(file), out = tf2)
-            .show_help_on_topic_offline(tf2, topic, type, texinputs, ...)
+            .show_help_on_topic_offline(tf2, topic, type, texinputs)
             unlink(tf2)
         }
     }
+
     invisible(x)
 }
 
-.help_topic_latex <- function(file, topic) { # Side effect: creates file  <topic>.tex in working directory
+.show_help_on_topic_offline <-
+    function(file, topic, type = "pdf", texinputs = NULL)
+{
+    encoding <-""
     lines <- readLines(file)
     encpatt <- "^\\\\inputencoding\\{(.*)\\}$"
-    encoding <- if(length(res <- grep(encpatt, lines,
-                                      perl = TRUE, useBytes = TRUE, value = TRUE)))
-                    sub(encpatt, "\\1", res, perl = TRUE, useBytes = TRUE)
-                else ""
+    if(length(res <- grep(encpatt, lines, perl = TRUE, useBytes = TRUE)))
+        encoding <- sub(encpatt, "\\1", lines[res],
+                        perl = TRUE, useBytes = TRUE)
     texfile <- paste0(topic, ".tex")
+    on.exit(unlink(texfile)) ## ? leave to helper
     if(nzchar(opt <- Sys.getenv("R_RD4PDF"))) opt else "times,inconsolata"
+    has_figure <- any(grepl("\\Figure", lines))
     cat("\\documentclass[", getOption("papersize"), "paper]{article}\n",
         "\\usepackage[", opt, "]{Rd}\n",
         if(nzchar(encoding)) sprintf("\\usepackage[%s]{inputenc}\n", encoding),
@@ -242,19 +245,11 @@ print.help_files_with_topic <- function(x, ...) # ...  may contain  msg=FALSE
         file = texfile, sep = "")
     file.append(texfile, file)
     cat("\\end{document}\n", file = texfile, append = TRUE)
-    structure(texfile, has_figure = any(grepl("\\Figure", lines)))
-}
-
-## "static": _only_ called once above for type == "pdf" : currently  "offline" <==> {latex -> pdf}
-.show_help_on_topic_offline <-
-    function(file, topic, type = "pdf", texinputs = NULL, msg = TRUE)
-{
-    texfile <- .help_topic_latex(file, topic)
-    on.exit(unlink(texfile)) ## ? leave to helper
-    helper <- get0("offline_help_helper", envir = .GlobalEnv) %||% offline_help_helper # <-> below
-    if (attr(texfile, "has_figure"))
-         helper(texfile, type, msg=msg, texinputs=texinputs)
-    else helper(texfile, type, msg=msg)
+    helper <- if (exists("offline_help_helper", envir = .GlobalEnv))
+        get("offline_help_helper", envir = .GlobalEnv)
+    else offline_help_helper
+    if (has_figure) helper(texfile, type, texinputs)
+    else helper(texfile, type)
     invisible()
 }
 
@@ -273,7 +268,7 @@ print.help_files_with_topic <- function(x, ...) # ...  may contain  msg=FALSE
 }
 
 
-offline_help_helper <- function(texfile, type, msg = TRUE, texinputs = NULL)
+offline_help_helper <- function(texfile, type, texinputs = NULL)
 {
     ## Some systems have problems with texfile names like ".C.tex"
     tf <- tempfile("tex", tmpdir = ".", fileext = ".tex"); on.exit(unlink(tf))
@@ -285,10 +280,11 @@ offline_help_helper <- function(texfile, type, msg = TRUE, texinputs = NULL)
         stop(gettextf("creation of %s failed", sQuote(ofile2)), domain = NA)
     if(file.copy(ofile, ofile2, overwrite = TRUE)) {
         unlink(ofile)
-        if(msg) ofile <- basename(ofile2)
-    }
-    if(msg)
+        message(gettextf("Saving help page to %s", sQuote(basename(ofile2))),
+                domain = NA)
+    } else {
         message(gettextf("Saving help page to %s", sQuote(ofile)), domain = NA)
+    }
     invisible()
 }
 

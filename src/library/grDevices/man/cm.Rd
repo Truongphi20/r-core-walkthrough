@@ -13,10 +13,7 @@
 cm(x)
 }
 \arguments{
-  \item{x}{numeric vector (in inches)}
-}
-\value{
-  \code{2.54 * x}, in centimeters.
+  \item{x}{numeric vector}
 }
 \examples{
 cm(1)  # = 2.54

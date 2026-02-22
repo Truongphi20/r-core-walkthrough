@@ -11,15 +11,21 @@
 #include <config.h>
 #endif
 
+#ifdef ENABLE_NLS
+#include <libintl.h>
+#define _(String) dgettext ("stats", String)
+#else
+#define _(String) (String)
+#endif
+
 #include <math.h>
 
-#include <R_ext/Random.h> // makes sure bool is available
+#include <R_ext/Random.h>
 #include <R_ext/Applic.h>
 #include <R_ext/Boolean.h>
 #include <R_ext/Error.h>
 #include <R_ext/Print.h>
 #include <R_ext/Utils.h>
-#include "statsErr.h"
 #ifdef DEBUG_rcont2
 # include <limits.h>
 #endif
@@ -82,7 +88,7 @@ rcont2(int nrow, int ncol,
 		    y = x;
 
 		int nll = nlm;
-		bool lsp;
+		Rboolean lsp;
 		do {
 		    /* Increment entry in row L, column M */
 		    double j = (id - nlm) * (double)(ia - nlm);
@@ -100,7 +106,7 @@ rcont2(int nrow, int ncol,
 			    goto L160;
 		    }
 
-		    bool lsm;
+		    Rboolean lsm;
 		    do {
 			R_CheckUserInterrupt();
 

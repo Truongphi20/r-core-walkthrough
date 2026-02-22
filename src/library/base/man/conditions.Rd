@@ -22,7 +22,6 @@
 \alias{simpleWarning}
 \alias{simpleMessage}
 \alias{errorCondition}
-\alias{messageCondition}
 \alias{warningCondition}
 \alias{tryCatch}
 \alias{withCallingHandlers}
@@ -61,7 +60,6 @@ simpleWarning  (message, call = NULL)
 simpleMessage  (message, call = NULL)
 
 errorCondition(message, ..., class = NULL, call = NULL)
-messageCondition(message, ..., class = NULL, call = NULL)
 warningCondition(message, ..., class = NULL, call = NULL)
 
 \method{as.character}{condition}(x, \dots)
@@ -133,8 +131,7 @@ allowInterrupts(expr)
    The function \code{errorCondition} can be
    used to construct error conditions of a particular class with
    additional fields specified as the \code{\dots} argument.
-   \code{messageCondition} and \code{warningCondition} are analogous
-   for messages and warnings, respectively.
+   \code{warningCondition} is analogous for warnings.
    
    Conditions are signaled by \code{signalCondition}.  In addition,
    the \code{stop} and \code{warning} functions have been modified to

@@ -1,6 +1,6 @@
 % File src/library/utils/man/news.Rd
 % Part of the R package, https://www.R-project.org
-% Copyright 1995-2024 R Core Team
+% Copyright 1995-2023 R Core Team
 % Distributed under GPL 2 or later
 
 \name{news}
@@ -93,14 +93,12 @@ news(query, package = "R", lib.loc = NULL, format = NULL,
 
 \subsection{\file{NEWS.md}}{
   File \file{NEWS.md} should contain the news in Markdown (following the
-  \I{CommonMark} (\url{https://commonmark.org/}) specification), with a
-  primary heading level (e.g., \I{ATX} heading \code{#} or \code{##}) giving
-  the version number after a prefix followed by a space, and optionally
-  followed by a space and a parenthesized ISO 8601 format date.  Where
-  available, secondary headings (i.e., one heading level higher than
-  the primary heading level) are taken to indicate categories.  To
-  accommodate for common practice, news entries are only split down to
-  the category level.
+  \I{CommonMark} (\url{https://commonmark.org/}) specification), with the
+  primary heading level giving the version number after a prefix
+  followed by a space, and optionally followed by a space and a
+  parenthesized ISO 8601 format date.  Where available, secondary
+  headings are taken to indicate categories.  To accommodate for common
+  practice, news entries are only split down to the category level.
 }
 
 \subsection{\file{NEWS}}{
@@ -145,7 +143,6 @@ db <- news()
 \dontshow{
   vv <- capture.output(print(db, doBrowse=FALSE))  # without an error
   stopifnot(is.character(vv), length(vv) >= 3) # was wrong (for weeks during devel.)
-  html <- tools::toHTML(subset(db, is.na(Version))) # emulate doBrowse with query
 }
 ## Bug fixes with PR number in 4.0.0.
 db4 <- news(Version == "4.0.0" & grepl("^BUG", Category) & grepl("PR#", Text),

@@ -6,8 +6,8 @@ C Local
       double precision bvalue
       integer i
 
-      do i=1,n
+      do 10 i=1,n
          s(i)=bvalue(knot,coef,nk,4,x(i),order)
-      end do
+ 10   continue
       return
       end

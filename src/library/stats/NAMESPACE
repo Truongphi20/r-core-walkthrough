@@ -6,8 +6,7 @@ importFrom(grDevices, as.graphicsAnnot, dev.cur, dev.flush, dev.hold,
            dev.interactive, dev.new, dev.set, devAskNewPage,
            extendrange, n2mfrow, palette, xy.coords)
 importFrom('utils',
-           count.fields, flush.console, modifyList, str,
-           head, tail, .checkHT)
+           count.fields, flush.console, modifyList, str, tail)
 
 export(.checkMFClasses, .getXlevels, .MFclass, .nknots.smspl,
        acf, acf2AR, add.scope,
@@ -60,7 +59,6 @@ export(.checkMFClasses, .getXlevels, .MFclass, .nknots.smspl,
        punif, pweibull, pwilcox, qbeta, qbinom, qcauchy, qchisq, qexp,
        qf, qgamma, qgeom, qhyper, qlnorm, qlogis, qnbinom, qnorm,
        qpois, qqline, qqnorm, qqplot, qsignrank, qt, qtukey, quantile,
-       qr.influence,
        quasi, quasibinomial, quasipoisson, qunif, qweibull, qwilcox,
        r2dtable, rbeta, rbinom, rcauchy, rchisq, read.ftable,
        rect.hclust, reformulate, relevel, reorder, replications,
@@ -115,7 +113,6 @@ S3method("[", formula)
 S3method("[", terms)
 S3method("[", ts)
 S3method("[", tskernel)
-S3method("[", Pair)
 S3method("[<-", ts)
 S3method("[[", dendrogram)
 S3method(add1, default)
@@ -208,9 +205,6 @@ S3method(df.residual, default)
 S3method(df.residual, nls)
 S3method(dfbeta, lm)
 S3method(dfbetas, lm)
-S3method(dfbetas, glm)
-S3method(dffits, lm)
-S3method(dffits, glm)
 S3method(diff, ts)
 S3method(drop1, default)
 S3method(drop1, glm)
@@ -259,7 +253,6 @@ S3method(getInitial, formula)
 S3method(getInitial, selfStart)
 S3method(hatvalues, lm)
 S3method(hatvalues, smooth.spline)
-S3method(head, ts)
 S3method(identify, hclust)
 S3method(influence, glm)
 S3method(influence, lm)
@@ -502,7 +495,6 @@ S3method(str, logLik)
 S3method(t, ts)
 S3method(t.test, default)
 S3method(t.test, formula)
-S3method(tail, ts)
 S3method(terms, aovlist)
 S3method(terms, default)
 S3method(terms, formula)

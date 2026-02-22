@@ -106,9 +106,13 @@ is.na(x) <- value
   (no longer warning since \R version 3.5.0).
 }
 \references{
-  \bibshow{R:Becker+Chambers+Wilks:1988}
+  Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+  \emph{The New S Language}.
+  Wadsworth & Brooks/Cole.
 
-  \bibshow{R:Chambers:1998}
+  Chambers, J. M. (1998)
+  \emph{Programming with Data.  A Guide to the S Language}.
+  Springer.
 }
 \seealso{
   \code{\link{NaN}}, \code{\link{is.nan}}, etc.,

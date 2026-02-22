@@ -1,7 +1,7 @@
 #  File src/library/tools/R/CRANtools.R
 #  Part of the R package, https://www.R-project.org
 #
-#  Copyright (C) 2014-2025 The R Core Team
+#  Copyright (C) 2014-2022 The R Core Team
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -16,6 +16,7 @@
 #  A copy of the GNU General Public License is available at
 #  https://www.R-project.org/Licenses/
 
+## exported
 summarize_CRAN_check_status <-
 function(packages, results = NULL, details = NULL, issues = NULL)
 {
@@ -196,7 +197,7 @@ function()
     Sys.getenv("R_CRAN_SRC", .get_CRAN_repository_URL())
 
 ## This allows for partial local mirrors, or to look at a
-## more-frequently-updated mirror.  Exposed as utils::findCRANmirror
+## more-freqently-updated mirror.  Exposed as utils::findCRANmirror
 CRAN_baseurl_for_web_area <-
 function()
     Sys.getenv("R_CRAN_WEB", .get_CRAN_repository_URL())
@@ -210,6 +211,7 @@ function(cran, path)
     readRDS(con)
 }
 
+## exported
 CRAN_check_results <-
 function(flavors = NULL)
 {
@@ -220,32 +222,7 @@ function(flavors = NULL)
     db
 }
 
-CRAN_check_results_diff <-
-function(f1, f2) 
-{
-    x <- CRAN_check_results()
-    s1 <- x[x$Flavor == f1, ]
-    s2 <- x[x$Flavor == f2, ]
-    s1 <- s1[c("Package", "Version", "Status")]
-    s2 <- s2[c("Package", "Version", "Status")]
-    db <- merge(s1, s2, by = 1, all = TRUE)
-    row.names(db) <- db$Package
-    db <- db[, c("Version.x", "Status.x", "Version.y", "Status.y")]
-    isc <- (is.na(db$Status.x) |
-            is.na(db$Status.y) |
-            (db$Status.x != db$Status.y)) # Status change.
-    ivc <- (is.na(db$Version.x) |
-            is.na(db$Version.y) |
-            (db$Version.x != db$Version.y)) # Version change.
-    names(db) <- c("V1", "S1", "V2", "S2")
-    db <- cbind("S" = ifelse(isc, "*", ""),
-                "V" = ifelse(ivc, "*", ""),
-                db)
-    db <- db[c(which(isc & !ivc), which(isc & ivc), which(!isc & ivc)),
-             c("S", "V", "S1", "S2", "V1", "V2")]
-    db
-}
-
+## exported
 CRAN_check_details <-
 function(flavors = NULL)
 {
@@ -253,6 +230,10 @@ function(flavors = NULL)
                            "web/checks/check_details.rds")
     if(!is.null(flavors))
         db <- db[!is.na(match(db$Flavor, flavors)), ]
+    ## <FIXME>
+    ## Remove eventually ...
+    class(db) <- c("CRAN_check_details", "check_details", "data.frame")
+    ## </FIXME>
     db
 }
 
@@ -265,6 +246,7 @@ function(flavors = NULL)
 ##                      "web/checks/memtest_notes.rds")
 ## }
 
+## exported
 CRAN_check_issues <-
 function()
     read_CRAN_object(CRAN_baseurl_for_web_area(),
@@ -285,11 +267,6 @@ CRAN_archive_db <-
 function()
     read_CRAN_object(CRAN_baseurl_for_src_area(),
                      "src/contrib/Meta/archive.rds")
-
-CRAN_authors_db <-
-function()
-    read_CRAN_object(CRAN_baseurl_for_src_area(),
-                     "src/contrib/Meta/authors.rds")
 
 CRAN_current_db <-
 function()
@@ -407,12 +384,12 @@ function(mirrors, db = NULL, collapse = TRUE)
     addresses <- gsub("[[:space:]]*#[[:space:]]*", "@", addresses)
     to <- unique(unlist(strsplit(addresses,
                                  "[[:space:]]*,[[:space:]]*")))
-    head <- list("To" = "CRAN@R-project.org",
-                 "Bcc" = to,
+    head <- list("To" = to,
+                 "CC" = "CRAN@R-project.org",
                  "Subject" = "CRAN mirrors maintained by you",
                  "Reply-To" = "CRAN@R-project.org")
     if(collapse) {
-        head$Bcc <- paste(head$Bcc, collapse = ",\n    ")
+        head$To <- paste(head$To, collapse = ",\n    ")
         head <- sprintf("%s: %s", names(head), unlist(head))
     }
     len <- length(addresses)
@@ -589,12 +566,12 @@ function(packages, db = NULL, collapse = TRUE)
     ind <- match(packages, db[, "Package"])
     addresses <- db[ind, "Address"]
     to <- sort(unique(addresses))
-    head <- list("To" = "CRAN@R-project.org",
-                 "Bcc" = to,
+    head <- list("To" = to,
+                 "CC" = "CRAN@R-project.org",
                  "Subject" = "CRAN packages maintained by you",
                  "Reply-To" = "CRAN@R-project.org")
     if(collapse) {
-        head$Bcc <- paste(head$Bcc, collapse = ",\n    ")
+        head$To <- paste(head$To, collapse = ",\n    ")
         head <- sprintf("%s: %s", names(head), unlist(head))
     }
     lst <- split(db[ind, "Package"], db[ind, "Maintainer"])
@@ -783,7 +760,7 @@ CRAN_package_check_URL <- function(p)
             p)
 
 BioC_package_db <-
-function(remap = TRUE)
+function()
 {
     urls <- .get_standard_repository_URLs()
     urls <- urls[startsWith(names(urls), "BioC")]
@@ -793,62 +770,8 @@ function(remap = TRUE)
                        on.exit(close(con))
                        read.dcf(con)
                    })
-    db <- Reduce(function(u, v) merge(u, v, all = TRUE),
-                 lapply(info,
-                        as.data.frame,
-                        stringsAsFactors = FALSE))
-    if(remap) {
-        ## Map BioC reverse dependency names to CRAN ones.
-        biocrevnames <- c(dependsOnMe = "Reverse depends",
-                          importsMe = "Reverse imports",
-                          linksToMe = "Reverse linking to",
-                          suggestsMe = "Reverse suggests")
-        pos <- match(colnames(db), names(biocrevnames), nomatch = 0L)
-        colnames(db)[pos > 0] <- biocrevnames[pos]
-    }
-    db
+    Reduce(function(u, v) merge(u, v, all = TRUE),
+           lapply(info,
+                  as.data.frame,
+                  stringsAsFactors = FALSE))
 }
-
-.get_BioC_repository_URL <-
-function(which = "BioCsoft")
-{
-    which <- match.arg(which)
-    repos <- getOption("repos")
-    if(!is.null(repos) && !is.na(u <- repos[which]))
-        return(u)
-    utils:::.get_repositories()[which, "URL"]
-}
-
-BioC_aliases_db <-
-function()
-    read_CRAN_object(.get_BioC_repository_URL(),
-                     "src/contrib/Meta/aliases.rds")
-
-BioC_rdxrefs_db <- 
-function()
-    read_CRAN_object(.get_BioC_repository_URL(),
-                     "src/contrib/Meta/rdxrefs.rds")
-
-CRAN_baseurl_for_package_actions <-
-function()
-    Sys.getenv("R_CRAN_PACKAGE_ACTIONS_URL",
-               "https://www.R-project.org/nosvn/actions")
-    
-
-CRAN_package_actions <-
-function()
-    read_CRAN_object(CRAN_baseurl_for_package_actions(),
-                     "actions.rds")
-
-CRAN_baseurl_for_package_issues <- 
-function()
-    Sys.getenv("R_CRAN_PACKAGE_ISSUES_URL",
-               "https://www.R-project.org/nosvn/issues")
-
-CRAN_package_issues <-
-function(full = TRUE)
-    read_CRAN_object(CRAN_baseurl_for_package_issues(),
-                     if(full)
-                         "CRAN_issue_full.rds"
-                     else
-                         "CRAN_issue_open.rds")

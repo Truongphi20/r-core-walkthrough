@@ -1,7 +1,7 @@
 #  File src/library/base/R/duplicated.R
 #  Part of the R package, https://www.R-project.org
 #
-#  Copyright (C) 1995-2025 The R Core Team
+#  Copyright (C) 1995-2018 The R Core Team
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -29,19 +29,15 @@ duplicated.data.frame <-
 function(x, incomparables = FALSE, fromLast = FALSE, ...)
 {
     if(!isFALSE(incomparables))
-        .NotYetUsed("incomparables != FALSE")
-    n <- length(x)
-    if(!n)
-        duplicated(logical(nrow(x)))
-    else if(n == 1L)
-        duplicated(x[[1L]], fromLast = fromLast, ...)
-    else {
+	.NotYetUsed("incomparables != FALSE")
+    if(length(x) != 1L) {
         if(any(i <- vapply(x, is.factor, NA)))
             x[i] <- lapply(x[i], as.numeric)
         if(any(i <- (lengths(lapply(x, dim)) == 2L)))
             x[i] <- lapply(x[i], split.data.frame, seq_len(nrow(x)))
         duplicated(do.call(Map, `names<-`(c(list, x), NULL)), fromLast = fromLast)
     }
+    else duplicated(x[[1L]], fromLast = fromLast, ...)
 }
 
 duplicated.matrix <- duplicated.array <-
@@ -57,7 +53,7 @@ function(x, incomparables = FALSE, MARGIN = 1L, fromLast = FALSE, ...)
                       paste(dx, collapse = ",")),
              domain = NA)
     temp <- if((ndim > 1L) && (prod(dx[-MARGIN]) > 1L))
-                asplit(x, MARGIN, TRUE)
+                asplit(x, MARGIN)
             else x
     res <- duplicated.default(temp, fromLast = fromLast, ...)
     dim(res) <- dim(temp)
@@ -96,7 +92,7 @@ function(x, incomparables = FALSE, MARGIN = 1L, fromLast = FALSE, ...)
                       paste(dx, collapse = ",")),
              domain = NA)
     temp <- if((ndim > 1L) && (prod(dx[-MARGIN]) > 1L))
-                asplit(x, MARGIN, TRUE)
+                asplit(x, MARGIN)
             else x
     anyDuplicated.default(temp, fromLast = fromLast)
 }
@@ -120,11 +116,9 @@ function(x, incomparables = FALSE, fromLast = FALSE, nmax = NA, ...)
     }
     z <- .Internal(unique(x, incomparables, fromLast, nmax))
     if(inherits(x, "POSIXct"))
-        .POSIXct(z, attr(x, "tzone"), class(x))
+        structure(z, class = class(x), tzone = attr(x, "tzone"))
     else if(inherits(x, "Date"))
-        .Date(z, class(x))
-    else if(inherits(x, "difftime"))
-        .difftime(z, attr(x,"units"), class(x))
+        structure(z, class = class(x))
     else z
 }
 
@@ -149,7 +143,7 @@ function(x, incomparables = FALSE, MARGIN = 1, fromLast = FALSE, ...)
                       paste(dx, collapse = ",")),
              domain = NA)
     temp <- if((ndim > 1L) && (prod(dx[-MARGIN]) > 1L))
-                asplit(x, MARGIN, TRUE)
+                asplit(x, MARGIN)
             else x
     args <- rep(alist(a=), ndim)
     names(args) <- NULL

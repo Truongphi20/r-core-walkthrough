@@ -33,7 +33,7 @@
 }
 \details{
   \code{.Library} is a character string giving the location of the
-  default library, the \file{library} subdirectory of \var{\link{R_HOME}}.
+  default library, the \file{library} subdirectory of \env{R_HOME}.
 
   \code{.Library.site} is a (possibly empty) character vector giving the
   locations of the site libraries.
@@ -117,7 +117,9 @@
   A character vector of file paths.
 }
 \references{
-  \bibshow{R:Becker+Chambers+Wilks:1988}
+  Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+  \emph{The New S Language}.
+  Wadsworth & Brooks/Cole.
 }
 \seealso{
   \code{\link{library}}

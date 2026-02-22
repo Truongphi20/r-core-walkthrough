@@ -102,7 +102,7 @@ setIs(class1, class2, test=NULL, coerce=NULL, replace=NULL,
       \code{\link{setAs}}.  The difference between the  two is simply
       that \code{\link{setAs}} will require a call to \code{\link{as}}
       for a conversion to take place, whereas after the call to
-      \code{setIs}, objects will be automatically converted to
+      \code{\link{setIs}}, objects will be automatically converted to
       the superclass.
 
       The automatic feature is the dangerous part, mainly because it
@@ -247,11 +247,19 @@ setIs(class1, class2, test=NULL, coerce=NULL, replace=NULL,
 
 
 \references{
-  \bibshow{R:Chambers:2016}
-  (Chapters 9 and 10.)
+ Chambers, John M. (2016)
+ \emph{Extending R},
+  Chapman & Hall.
+(Chapters 9 and 10.)
 }
 
 \examples{
+\dontshow{
+## A simple class with two slots
+setClass("track",
+         slots = c(x="numeric", y="numeric"))
+## A class extending the previous, adding one more slot
+}
 ## Two examples of setIs() with coerce= and replace= arguments
 ## The first one works fairly well, because neither class has many
 ## inherited methods do be disturbed by the new inheritance
@@ -259,19 +267,17 @@ setIs(class1, class2, test=NULL, coerce=NULL, replace=NULL,
 ## The second example does NOT work well, because the new superclass,
 ## "factor", causes methods to be inherited that should not be.
 
-## First example (classes taken from examples in ?setClass):
-## A simple class with two slots
-setClass("track", slots = c(x="numeric", y="numeric"))
-## A class extending the previous, adding one more slot
+## First example:
+## a class definition (see \link{setClass} for class "track")
 setClass("trackCurve", contains = "track",
-         slots = c(smooth = "numeric"))
+         slots = c( smooth = "numeric"))
 ## A class similar to "trackCurve", but with different structure
 ## allowing matrices for the "y" and "smooth" slots
 setClass("trackMultiCurve",
          slots = c(x="numeric", y="matrix", smooth="matrix"),
          prototype = structure(list(), x=numeric(), y=matrix(0,0,0),
-                               smooth=matrix(0,0,0)))
 
+                               smooth= matrix(0,0,0)))
 ## Automatically convert an object from class "trackCurve" into
 ## "trackMultiCurve", by making the y, smooth slots into 1-column matrices
 setIs("trackCurve",
@@ -287,6 +293,7 @@ setIs("trackCurve",
         obj@x <- value@x
         obj@smooth <- as.matrix(value@smooth)
         obj})
+
 
 \dontshow{
 removeClass("trackMultiCurve")

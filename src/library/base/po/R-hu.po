@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: R 4.2.0\n"
 "Report-Msgid-Bugs-To: bugs.r-project.org\n"
-"POT-Creation-Date: 2025-03-31 11:50\n"
+"POT-Creation-Date: 2024-03-27 16:14\n"
 "PO-Revision-Date: 2023-09-01 11:37+0000\n"
 "Last-Translator: Norbert Solymosi <solymosi.norbert@gmail.com>\n"
 "Language-Team: none\n"
@@ -34,6 +34,12 @@ msgstr "Lásd help(\"Deprecated\"), illetve help(\"%s-deprecated\")."
 msgid "See help(\"Deprecated\")"
 msgstr "Lásed help(\"Deprecated\")"
 
+msgid "unsupported value of _R_DEPRECATED_IS_R_,"
+msgstr ""
+
+msgid ", will be ignored"
+msgstr ""
+
 msgid "argument to 'La.svd' must be numeric or complex"
 msgstr "az 'La.svd' argumentuma numerikus vagy komplex típusú kell hogy legyen"
 
@@ -55,19 +61,20 @@ msgstr "a második argumentum lista kell hogy legyen"
 msgid "'iconvlist' is not available on this system"
 msgstr "'iconvlist' nem elérhető ezen a rendszeren"
 
-#, fuzzy
-msgid "'kind' must be a character string (RNG to be used)."
+msgid "'kind' must be a character string of length 1 (RNG to be used)."
 msgstr "'kind' 1 hosszúságú karakterlánc kell legyen (RNG alkalmazása esetén)."
 
 msgid "'%s' is not a valid abbreviation of an RNG"
 msgstr "'%s' az RNG-hez nem érvényes rövidítés"
 
-#, fuzzy
-msgid "'%s' must be a character string"
-msgstr "'file' karakterlánc vagy összeköttetés kell hogy legyen"
+msgid "'normal.kind' must be a character string of length 1"
+msgstr "'normal.kind' 1 hosszúságú karakterlánc kell legyen"
 
 msgid "'%s' is not a valid choice"
 msgstr "'%s' nem érvényes választás"
+
+msgid "'sample.kind' must be a character string of length 1"
+msgstr ""
 
 msgid "malformed version string"
 msgstr "nem megfelelő formátumú karakterlánc"
@@ -197,6 +204,9 @@ msgid "can only write character objects"
 msgstr "csak karakter objektumok írhatók"
 
 msgid "'headers' must have names and must not be NA"
+msgstr ""
+
+msgid "'name' must be a single character string"
 msgstr ""
 
 msgid "'origin' must be one of 'start', 'current' or 'end'"
@@ -390,20 +400,29 @@ msgstr ""
 msgid "%s not defined for \"Date\" objects"
 msgstr ""
 
-#, fuzzy
-msgid "'%s' must be of length 1"
-msgstr "a 'to' hosszúsága 1 kell hogy legyen"
+msgid "'from' must be specified"
+msgstr "a 'from' argumentumot meg kell adni"
 
-msgid "without 'by', at least one of 'to' and 'from' must be specified"
+msgid "'from' must be a \"Date\" object"
 msgstr ""
 
-#, fuzzy
-msgid "without 'by', when one of 'to', 'from' is missing, 'length.out' / 'along.with' must be specified"
+msgid "'from' must be of length 1"
+msgstr "a 'from' hosszúsága 1 kell hogy legyen"
+
+msgid "'to' must be a \"Date\" object"
+msgstr ""
+
+msgid "'to' must be of length 1"
+msgstr "a 'to' hosszúsága 1 kell hogy legyen"
+
+msgid "'length.out' must be of length 1"
+msgstr "'length.out' hosszúsága 1 kell hogy legyen"
+
+msgid "exactly two of 'to', 'by' and 'length.out' / 'along.with' must be specified"
 msgstr "a 'to', 'by', és 'length.out' / 'along.with' argumentumok közül pontosan kettőt meg kell adni"
 
-#, fuzzy
-msgid "given 'by', exactly two of 'to', 'from' and 'length.out' / 'along.with' must be specified"
-msgstr "a 'to', 'by', és 'length.out' / 'along.with' argumentumok közül pontosan kettőt meg kell adni"
+msgid "'by' must be of length 1"
+msgstr "a 'by' hosszúsága 1 kell hogy legyen"
 
 msgid "invalid 'by' string"
 msgstr "érvénytelen 'by' karakterlánc"
@@ -422,6 +441,9 @@ msgstr "'x' date-time objektum kell hogy legyen"
 
 msgid "invalid specification of 'breaks'"
 msgstr "'breaks' érvénytelen specifikációja"
+
+msgid "'origin' must be of length one"
+msgstr "'origin' hossza 1 kell hogy legyen"
 
 msgid "'lag' and 'differences' must be integers >= 1"
 msgstr "a 'lag' és a 'differences' egész szám kell hogy legyen, >= 1"
@@ -481,21 +503,16 @@ msgstr "* mindkét argumentuma nem lehet \"difftime\" objektum"
 msgid "second argument of / cannot be a \"difftime\" object"
 msgstr "/ második objektuma nem lehet \"difftime\" objektum"
 
-#, fuzzy
-msgid "exactly three of 'to', 'from', 'by' and 'length.out' / 'along.with' must be specified"
-msgstr "a 'to', 'by', és 'length.out' / 'along.with' argumentumok közül pontosan kettőt meg kell adni"
+msgid "'from' must be a \"POSIXt\" object"
+msgstr ""
 
-#, fuzzy
-msgid "'%s' must be a \"%s\" object"
-msgstr "'x' date-time objektum kell hogy legyen"
+msgid "'to' must be a \"POSIXt\" object"
+msgstr ""
 
 msgid "component subscript must be a character string"
 msgstr ""
 
 msgid "no Olson database found"
-msgstr ""
-
-msgid "No element named \"%s\" found in x, did you mean x[, \"%1$s\"] instead?"
 msgstr ""
 
 msgid "'file' must be a character string or connection"
@@ -634,6 +651,9 @@ msgstr "nincs célfájl/-könyvtár"
 msgid "no files to link to"
 msgstr "nincs célfájl"
 
+msgid "'package' must be of length 1"
+msgstr "'package' hossza 1 kell hogy legyen"
+
 msgid "no file found"
 msgstr "nem található fájl"
 
@@ -656,6 +676,9 @@ msgid "Found no format() method for class \"%s\""
 msgstr ""
 
 msgid "class of 'x' was discarded"
+msgstr ""
+
+msgid "'flag' must be a string, i.e., of length 1"
 msgstr ""
 
 msgid "'flag' should contain only characters from [0+- #'I]"
@@ -922,7 +945,7 @@ msgid "nothing specified to be save()d"
 msgstr ""
 
 #, fuzzy
-msgid "'%s' must be a non-empty character string"
+msgid "'%s' must be a non-empty string"
 msgstr "'x' kvadratikus mátrix kell hogy legyen"
 
 msgid "'compress' must be logical or character"
@@ -963,6 +986,9 @@ msgstr ""
 
 msgid "'arg' must be NULL or a character vector"
 msgstr "'arg' vagy NULL vagy karakter vektor kell legyen"
+
+msgid "'arg' must be of length 1"
+msgstr "'arg' hossza 1 kell hogy legyen"
 
 msgid "'arg' must be of length >= 1"
 msgstr "'arg' hossza >= 1 kell legyen"
@@ -1362,6 +1388,9 @@ msgstr "vagy 'nmax'-t vagy 'n'-t adjuk meg, de mindkettőt nem."
 msgid "'from' must be a finite number"
 msgstr ""
 
+msgid "argument 'length.out' must be of length 1"
+msgstr "a 'length.out' argumentum hossza 1 kell legyen"
+
 msgid "first element used of 'length.out' argument"
 msgstr "a 'length.out' argumentum első eleme lett használva"
 
@@ -1522,19 +1551,12 @@ msgstr ""
 msgid "additional arguments ignored in warning()"
 msgstr "a warning()-ban további argumentumok figyelmen kívül hagyva"
 
-msgid "no natural language support or missing translations"
-msgstr ""
-
-msgid "In bare C locale: LANGUAGE reset, but message language may be unchanged"
-msgstr ""
-
-msgid "In bare C locale, not forcing locale; possibly use 'force = TRUE'?"
-msgstr ""
-
 msgid "Sys.setenv(LANGUAGE=\"%s\") may have failed"
 msgstr ""
 
-msgid "attempt to set an attribute on NULL"
+msgid ""
+"Calling 'structure(NULL, *)' is deprecated, as NULL cannot have attributes.\n"
+"  Consider 'structure(list(), *)' instead."
 msgstr ""
 
 msgid "incorrect value for 'x'"
@@ -1601,6 +1623,9 @@ msgstr ""
 msgid "handler must be a function"
 msgstr "a kezelő függvény kell legyen"
 
+msgid "'which' must be of length 1"
+msgstr ""
+
 msgid "no such element '%s'"
 msgstr "nincsen '%s' elem"
 
@@ -1634,14 +1659,10 @@ msgstr "'width' pozitív kell legyen"
 msgid "No traceback available"
 msgstr "Traceback nem elérhető"
 
-#, fuzzy
-msgid "'recursive' must be a length-1 vector"
-msgstr "'origin' hossza 1 kell hogy legyen"
-
-msgid "'recursive' is NA"
+msgid "invalid non-character version specification 'x' (type: %s)"
 msgstr ""
 
-msgid "invalid non-character version specification 'x' (type: %s)"
+msgid "Calls"
 msgstr ""
 
 msgid "invalid version specification %s"
@@ -1907,30 +1928,6 @@ msgid_plural ""
 " extra arguments %s will be disregarded"
 msgstr[0] ""
 msgstr[1] ""
-
-#~ msgid "'from' must be specified"
-#~ msgstr "a 'from' argumentumot meg kell adni"
-
-#~ msgid "'from' must be of length 1"
-#~ msgstr "a 'from' hosszúsága 1 kell hogy legyen"
-
-#~ msgid "'length.out' must be of length 1"
-#~ msgstr "'length.out' hosszúsága 1 kell hogy legyen"
-
-#~ msgid "'by' must be of length 1"
-#~ msgstr "a 'by' hosszúsága 1 kell hogy legyen"
-
-#~ msgid "'package' must be of length 1"
-#~ msgstr "'package' hossza 1 kell hogy legyen"
-
-#~ msgid "'arg' must be of length 1"
-#~ msgstr "'arg' hossza 1 kell hogy legyen"
-
-#~ msgid "argument 'length.out' must be of length 1"
-#~ msgstr "a 'length.out' argumentum hossza 1 kell legyen"
-
-#~ msgid "'normal.kind' must be a character string of length 1"
-#~ msgstr "'normal.kind' 1 hosszúságú karakterlánc kell legyen"
 
 #~ msgid "norm '%s' currently always uses exact = FALSE"
 #~ msgstr "norm '%s' jelenleg mindig exact = FALSE beállítást használ"

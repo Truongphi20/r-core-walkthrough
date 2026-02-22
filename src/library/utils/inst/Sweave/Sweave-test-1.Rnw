@@ -1,11 +1,11 @@
 % -*- mode: noweb; noweb-default-code-mode: R-mode; -*-
-\documentclass{article}
+\documentclass[a4paper]{article}
 
 \title{A Test File}
 \author{Friedrich Leisch}
 
 \SweaveOpts{echo=FALSE}
-\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{a4wide}
 
 \begin{document}
 

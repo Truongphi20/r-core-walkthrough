@@ -1,7 +1,7 @@
 
-R Under development (unstable) (2024-08-27 r87063) -- "Unsuffered Consequences"
-Copyright (C) 2024 The R Foundation for Statistical Computing
-Platform: x86_64-pc-linux-gnu
+R Under development (unstable) (2022-03-19 r81942) -- "Unsuffered Consequences"
+Copyright (C) 2022 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -122,6 +122,26 @@ N1:P1:K1     0     0
 +   detach("package:cluster")
 + }
 > 
+> # confint.Rd
+> counts <- c(18,17,15,20,10,20,25,13,12)
+> outcome <- gl(3, 1, 9); treatment <- gl(3, 3)
+> glm.D93 <- glm(counts ~ outcome + treatment, family = poisson())
+> confint(glm.D93)
+Waiting for profiling to be done...
+                 2.5 %      97.5 %
+(Intercept)  2.6958215  3.36655581
+outcome2    -0.8577018 -0.06255840
+outcome3    -0.6753696  0.08244089
+treatment2  -0.3932548  0.39325483
+treatment3  -0.3932548  0.39325483
+> confint.default(glm.D93)  # based on asymptotic normality}
+                 2.5 %      97.5 %
+(Intercept)  2.7095672  3.37947764
+outcome2    -0.8505027 -0.05800787
+outcome3    -0.6707552  0.08478093
+treatment2  -0.3919928  0.39199279
+treatment3  -0.3919928  0.39199279
+> 
 > # contrasts.Rd
 > utils::example(factor)
 
@@ -236,13 +256,7 @@ t   -1   -1 -0.2471257  0.2688164
 > 
 > ## using sparse contrasts: % useful, once model.matrix() works with these :
 > ffs <- fff
-> if(requireNamespace("Matrix", lib.loc=.Library)) withAutoprint({
-+ contrasts(ffs) <- contr.sum(5, sparse = TRUE)[, 1:2]; contrasts(ffs)
-+ stopifnot(all.equal(ffs, fff))
-+ contrasts(ffs) <- contr.sum(5, sparse = TRUE); contrasts(ffs)
-+ })
-> contrasts(ffs) <- contr.sum(5, sparse = TRUE)[, 1:2]
-> contrasts(ffs)
+> contrasts(ffs) <- contr.sum(5, sparse = TRUE)[, 1:2]; contrasts(ffs)
   [,1] [,2]       [,3]       [,4]
 a    1    0 -0.2471257  0.2688164
 c    0    1 -0.2471257  0.2688164
@@ -250,8 +264,7 @@ i    0    0 -0.1498721 -0.8817814
 s    0    0  0.8912491  0.0753323
 t   -1   -1 -0.2471257  0.2688164
 > stopifnot(all.equal(ffs, fff))
-> contrasts(ffs) <- contr.sum(5, sparse = TRUE)
-> contrasts(ffs)
+> contrasts(ffs) <- contr.sum(5, sparse = TRUE); contrasts(ffs)
 5 x 4 sparse Matrix of class "dgCMatrix"
              
 a  1  .  .  .
@@ -423,8 +436,17 @@ Standard deviations:
 
  4  variables and  21 observations.
 > 
+> # termplot.R
+> library(MASS)
+> hills.lm <- lm(log(time) ~ log(climb)+log(dist), data = hills)
+> termplot(hills.lm, partial.resid = TRUE, smooth = panel.smooth,
++         terms = "log(dist)", main = "Original")
+> termplot(hills.lm, transform.x = TRUE,
++          partial.resid = TRUE, smooth = panel.smooth,
++ 	 terms = "log(dist)", main = "Transformed")
+> 
 > # xtabs.Rd
-> if(require("Matrix", .Library)) {
+> if(require("Matrix")) {
 +  ## similar to "nlme"s  'ergoStool' :
 +  d.ergo <- data.frame(Type = paste0("T", rep(1:4, 9*4)),
 +                       Subj = gl(9, 4, 36*4))

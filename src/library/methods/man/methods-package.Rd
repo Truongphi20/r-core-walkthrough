@@ -51,11 +51,15 @@ These pages will have additional links to related topics.
 }
 
 \references{
-  \bibshow{R:Chambers:2016}
-  (Chapters 9 and 10.)
+ Chambers, John M. (2016)
+ \emph{Extending R},
+  Chapman & Hall.
+(Chapters 9 and 10.)
 
-  \bibshow{R:Chambers:2008}
-  (Chapter 10 has some additional details.)
+ Chambers, John M. (2008)
+ \emph{Software for Data Analysis: Programming with R}
+  Springer.  (Chapter 10 has some additional details.)
+
 }
 \author{
 R Core Team

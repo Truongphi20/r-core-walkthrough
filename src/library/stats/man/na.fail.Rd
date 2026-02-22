@@ -48,7 +48,9 @@ na.pass(object, \dots)
   \code{na.exclude}.
 }
 \references{
-  \bibshow{R:Chambers+Hastie:1992}
+  Chambers, J. M. and Hastie, T. J. (1992)
+  \emph{Statistical Models in S.}
+  Wadsworth & Brooks/Cole.
 }
 \seealso{
   \code{\link{na.action}};
@@ -61,7 +63,7 @@ DF <- data.frame(x = c(1, 2, 3), y = c(0, 10, NA))
 na.omit(DF)
 m <- as.matrix(DF)
 na.omit(m)
-stopifnot(na.omit(1:3) == 1:3)  # does not affect objects with no NAs
+stopifnot(all(na.omit(1:3) == 1:3))  # does not affect objects with no NA's
 try(na.fail(DF))   #> Error: missing values in ...
 
 options("na.action")

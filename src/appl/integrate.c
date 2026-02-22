@@ -1,6 +1,6 @@
 /*
  *  R : A Computer Language for Statistical Data Analysis
- *  Copyright (C) 2001-2025  The R Core Team
+ *  Copyright (C) 2001-2023  The R Core Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -267,7 +267,7 @@ void rdqagie(integr_fn f, void *ex, double *bound, int *inf, double *
     double a1, a2, b1, b2, defab1, defab2, oflow;
     int ktmin, nrmax;
     double uflow;
-    bool noext;
+    Rboolean noext;
     int iroff1, iroff2, iroff3;
     double res3la[3], error1, error2;
     int id;
@@ -278,7 +278,7 @@ void rdqagie(integr_fn f, void *ex, double *bound, int *inf, double *
     double erlast, errmax;
     int maxerr;
     double reseps;
-    bool extrap;
+    Rboolean extrap;
     double ertest = 0.0, errsum;
 
 /**begin prologue  dqagie
@@ -550,8 +550,8 @@ standard fortran subroutine
     nres = 0;
     ktmin = 0;
     numrl2 = 2;
-    extrap = false;
-    noext = false;
+    extrap = FALSE;
+    noext = FALSE;
     ierro = 0;
     iroff1 = 0;
     iroff2 = 0;
@@ -669,7 +669,7 @@ standard fortran subroutine
 	    if (fabs(blist[maxerr] - alist[maxerr]) > small) {
 		continue;
 	    }
-	    extrap = true;
+	    extrap = TRUE;
 	    nrmax = 2;
 	}
 
@@ -718,7 +718,7 @@ standard fortran subroutine
 
 L70:
 	if (numrl2 == 1) {
-	    noext = true;
+	    noext = TRUE;
 	}
 	if (*ier == 5) {
 	    break;
@@ -726,7 +726,7 @@ L70:
 	maxerr = iord[1];
 	errmax = elist[maxerr];
 	nrmax = 1;
-	extrap = false;
+	extrap = FALSE;
 	small *= .5;
 	erlarg = errsum;
  L90:
@@ -978,7 +978,7 @@ void rdqagse(integr_fn f, void *ex, double *a, double *b, double *
 	     iord, int *last)
 {
     /* Local variables */
-    bool noext, extrap;
+    Rboolean noext, extrap;
     int k,ksgn, nres;
     int ierro;
     int ktmin, nrmax;
@@ -1259,8 +1259,8 @@ void rdqagse(integr_fn f, void *ex, double *a, double *b, double *
     nres = 0;
     numrl2 = 2;
     ktmin = 0;
-    extrap = false;
-    noext = false;
+    extrap = FALSE;
+    noext = FALSE;
     iroff1 = 0;
     iroff2 = 0;
     iroff3 = 0;
@@ -1373,7 +1373,7 @@ void rdqagse(integr_fn f, void *ex, double *a, double *b, double *
 	    if (fabs(blist[maxerr] - alist[maxerr]) > small) {
 		continue;
 	    }
-	    extrap = true;
+	    extrap = TRUE;
 	    nrmax = 2;
 	}
 
@@ -1421,7 +1421,7 @@ void rdqagse(integr_fn f, void *ex, double *a, double *b, double *
 /*           prepare bisection of the smallest interval.  L70: */
 
 	if (numrl2 == 1) {
-	    noext = true;
+	    noext = TRUE;
 	}
 	if (*ier == 5) {
 	    break;
@@ -1429,7 +1429,7 @@ void rdqagse(integr_fn f, void *ex, double *a, double *b, double *
 	maxerr = iord[1];
 	errmax = elist[maxerr];
 	nrmax = 1;
-	extrap = false;
+	extrap = FALSE;
 	small *= .5;
 	erlarg = errsum;
  L90:

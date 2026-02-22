@@ -86,7 +86,9 @@ unsplit(value, f, drop = FALSE)
   \code{\link{strsplit}} to split strings.
 }
 \references{
-  \bibshow{R:Becker+Chambers+Wilks:1988}
+  Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+  \emph{The New S Language}.
+  Wadsworth & Brooks/Cole.
 }
 \examples{
 require(stats); require(graphics)

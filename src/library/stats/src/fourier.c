@@ -1,6 +1,6 @@
 /*
  *  R : A Computer Language for Statistical Data Analysis
- *  Copyright (C) 1998--2025  The R Core Team
+ *  Copyright (C) 1998--2023  The R Core Team
  *  Copyright (C) 1995--1997  Robert Gentleman and Ross Ihaka
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -24,12 +24,27 @@
 #include <inttypes.h>
 // for PRIu64
 
-#include <Rinternals.h>
-#include "statsErr.h"
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
+#include <Defn.h>
+
+#undef _
+#ifdef ENABLE_NLS
+#include <libintl.h>
+#define _(String) dgettext ("stats", String)
+#else
+#define _(String) (String)
+#endif
+
+
+// workhorse routines from fft.c
+void fft_factor(int n, int *pmaxf, int *pmaxp);
+Rboolean fft_work(double *a, double *b, int nseg, int n, int nspn,
+		  int isn, double *work, int *iwork);
 
 #include "statsR.h"
-#include "stats.h"
 
 /* Fourier Transform for Univariate Spatial and Time Series */
 
@@ -177,22 +192,22 @@ SEXP mvfft(SEXP z, SEXP inverse)
     return z;
 }
 
-static bool ok_n(int n, const int f[], int nf)
+static Rboolean ok_n(int n, const int f[], int nf)
 {
     for (int i = 0; i < nf; i++) {
 	while(n % f[i] == 0) {
 	    if ((n = n / f[i]) == 1)
-		return true;
+		return TRUE;
 	}
     }
     return n == 1;
 }
-static bool ok_n_64(uint64_t n, const int f[], int nf)
+static Rboolean ok_n_64(uint64_t n, const int f[], int nf)
 {
     for (int i = 0; i < nf; i++) {
 	while(n % f[i] == 0) {
 	    if ((n = n / f[i]) == 1)
-		return true;
+		return TRUE;
 	}
     }
     return n == 1;
@@ -237,7 +252,7 @@ SEXP nextn(SEXP n, SEXP f)
 	if (f_[i] == NA_INTEGER || f_[i] <= 1)
 	    error(_("invalid factors"));
 
-    bool use_int = TYPEOF(n) == INTSXP;
+    Rboolean use_int = TYPEOF(n) == INTSXP;
     if(!use_int && TYPEOF(n) != REALSXP)
 	error(_("'n' must have typeof(.) \"integer\" or \"double\""));
     R_xlen_t nn = XLENGTH(n);
@@ -247,7 +262,7 @@ SEXP nextn(SEXP n, SEXP f)
 	    if (!ISNAN(d_n[i]) && d_n[i] > n_max) n_max = d_n[i];
 	}
 	if(n_max <= INT_MAX / f_[0]) { // maximal n[] should not be too large to find "next n"
-	    use_int = true;
+	    use_int = TRUE;
 	    n = PROTECT(n = coerceVector(n, INTSXP)); nprot++;
 	}
     }
