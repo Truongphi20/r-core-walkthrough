@@ -2754,3 +2754,8 @@ src/unix/sys-unix.o
 src/unix/system.d
 src/unix/system.o
 stamp-java
+
+## Some stuff for running
+library/
+.RData 
+.Rhistory
