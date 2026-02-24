@@ -13,15 +13,11 @@ Instead of treating R as a black box, the goal is to:
 
 This repo serves as a **learning laboratory** for exploring the under-the-hood implementation of R.
 
----
-
 # 1. Abstract
 
 ## Objective
 
 Use debuggers (R debugger and gdb) to understand how statistical functions are implemented internally.
-
----
 
 ## Updates
 
@@ -31,8 +27,6 @@ Use debuggers (R debugger and gdb) to understand how statistical functions are i
 
   * gdb (C level)
   * R debugger (R level)
-
----
 
 # 2. Building R with Debugging Enabled
 
@@ -48,8 +42,6 @@ The R executable will be available at:
 ```
 bin/exec/R
 ```
-
----
 
 # 3. Running Debuggers
 
@@ -73,8 +65,6 @@ Inside the debugger:
 
 The R debugger feels conceptually similar to gdb.
 
----
-
 ## 3.2 Exploring External (CRAN) Packages
 
 Example: exploring functions from `Seurat`.
@@ -94,8 +84,6 @@ Note:
 Because `Seurat` contains both R and C++ code for its core algorithms, the source code must be downloaded locally to properly trace execution during debugging.
 
 After installing `Seurat` using the debug-enabled R executable, its functions can be debugged in the same way as built-in functions.
-
----
 
 # 🔍 Why This Matters
 
