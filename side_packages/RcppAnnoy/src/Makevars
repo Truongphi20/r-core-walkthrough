@@ -1,0 +1,9 @@
+
+## Multithreaded indexing for Annoy (version 1.17 or later)
+## requires this define to be set
+# USE_MULTITTHREADING=-DANNOYLIB_MULTITHREADED_BUILD
+## So to use multithreaded indexing, comment out the setting above
+## Note that it may alter your result (or their order) slightly due
+## to the use of multithreading which alters the sequence of RNG draws
+
+PKG_CPPFLAGS = -I../inst/include/ ${USE_MULTITTHREADING}

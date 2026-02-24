@@ -38,6 +38,8 @@ RUN apt-get update && apt-get install -y \
 ENV LD_LIBRARY_PATH=/workspace/lib:${LD_LIBRARY_PATH}
 ENV R_HOME=/workspace
 ENV LC_ALL=en_US.UTF-8
+ENV CFLAGS="-g -O0 -fno-inline -fno-omit-frame-pointer"
+ENV CXXFLAGS="-g -O0 -fno-inline -fno-omit-frame-pointer"
 
 # Create vscode user
 RUN useradd -m -s /bin/bash vscode
