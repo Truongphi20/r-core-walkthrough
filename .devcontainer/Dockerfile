@@ -41,6 +41,11 @@ ENV LC_ALL=en_US.UTF-8
 ENV CFLAGS="-g -O0 -fno-inline -fno-omit-frame-pointer"
 ENV CXXFLAGS="-g -O0 -fno-inline -fno-omit-frame-pointer"
 
+# Install uv (Python package manager)
+RUN wget -qO- https://astral.sh/uv/install.sh | sh
+ENV PATH="/home/vscode/.local/bin:${PATH}"
+ENV UV_LINK_MODE=copy
+
 # Create vscode user
 RUN useradd -m -s /bin/bash vscode
 RUN echo "vscode ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/vscode
